@@ -30,7 +30,8 @@ public class DocumentExportServiceTests : IDisposable
         _dbContext = new DraftEngineDbContext(options);
         _dbContext.Database.EnsureCreated();
 
-        _service = new DocumentExportService(_dbContext);
+        // Same pattern as production: services open one short-lived context per operation.
+        _service = new DocumentExportService(new TestDatabaseContextFactory(options));
     }
 
     public void Dispose()

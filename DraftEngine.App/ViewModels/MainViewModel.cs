@@ -40,10 +40,6 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void NavigateContracts() => _navigation.Navigate("contracts");
 
-    /// <summary>Navigates to the contract detail page.</summary>
-    [RelayCommand]
-    private void NavigateContractDetail() => _navigation.Navigate("contract-detail");
-
     /// <summary>Navigates to the settings page.</summary>
     [RelayCommand]
     private void NavigateSettings() => _navigation.Navigate("settings");

@@ -25,22 +25,22 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddScoped<IFieldService>(provider =>
+        services.AddTransient<IFieldService>(provider =>
             new FieldService(ResolveDatabase(provider), provider.GetService<ILogger<FieldService>>()));
 
-        services.AddScoped<IClauseService>(provider =>
+        services.AddTransient<IClauseService>(provider =>
             new ClauseService(ResolveDatabase(provider)));
 
-        services.AddScoped<IContractService>(provider => new ContractService(
+        services.AddTransient<IContractService>(provider => new ContractService(
             ResolveDatabase(provider),
             provider.GetRequiredService<IFieldService>(),
             provider.GetService<IContractAiService>(),
             provider.GetService<ILogger<ContractService>>()));
 
-        services.AddScoped<IChatService>(provider =>
+        services.AddTransient<IChatService>(provider =>
             new ChatService(ResolveDatabase(provider)));
 
-        services.AddScoped<IDocumentExportService>(provider =>
+        services.AddTransient<IDocumentExportService>(provider =>
             new DocumentExportService(ResolveDatabase(provider)));
 
         return services;

@@ -52,20 +52,10 @@ public static class ServiceRegistration
         // AI drafting: the real OpenAI client when a key is configured, otherwise a
         // stand-in that throws the typed "key missing" exception so the UI can guide
         // the user to Settings. Non-AI features keep working either way.
-        services.AddSingleton<IContractAiService>(provider =>
-        {
-            if (string.IsNullOrWhiteSpace(options.OpenAi.ApiKey))
-            {
-                return new UnavailableOpenAiContractService();
-            }
-
-            var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("DraftEngine.AI");
-            return new OpenAiContractService(
-                new HttpClient(),
-                options.OpenAi.ApiKey,
-                options.OpenAi.Model,
-                message => logger.LogInformation("{AiDiagnostic}", message));
-        });
+        // The key saved in Settings (encrypted) wins over appsettings/environment, and is
+        // re-read on every call so changes apply without a restart.
+        services.AddAppSettings();
+        services.AddSingleton<IContractAiService, SettingsBackedAiService>();
 
         // Document building (the composite delegates to the specialized builders).
         services.AddSingleton<IDocxBuilder, DocxBuilder>();

@@ -37,7 +37,7 @@ public class NavigationService : INavigationService
     }
 
     /// <inheritdoc />
-    public bool Navigate(string key)
+    public bool Navigate(string key, object? parameter = null)
     {
         if (!PageRegistry.TryGetValue(key, out var viewModelType))
         {
@@ -46,6 +46,11 @@ public class NavigationService : INavigationService
         }
 
         var viewModel = _services.GetRequiredService(viewModelType);
+        if (viewModel is INavigationAware aware)
+        {
+            aware.OnNavigatedTo(parameter);
+        }
+
         CurrentViewModel = viewModel;
         CurrentKey = key;
         CurrentViewModelChanged?.Invoke(viewModel);

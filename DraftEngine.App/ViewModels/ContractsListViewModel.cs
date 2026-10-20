@@ -120,7 +120,7 @@ public partial class ContractsListViewModel : ObservableObject
     private void OpenContract(Contract? contract)
     {
         if (contract is null) return;
-        _navigation.Navigate("contract-detail");
+        _navigation.Navigate("contract-detail", contract.Id);
     }
 
     /// <summary>Deletes the selected contract after an explicit confirmation from the user.</summary>

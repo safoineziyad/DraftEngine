@@ -68,7 +68,7 @@ public partial class DashboardViewModel : ObservableObject
             return;
         }
 
-        _navigation.Navigate("contract-detail");
+        _navigation.Navigate("contract-detail", row.Contract.Id);
     }
 
     // The page view models are singletons, so refresh the data each time the

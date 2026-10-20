@@ -72,7 +72,7 @@ public partial class NewContractViewModel
                 .ToList();
             await _contractService.GenerateContractAsync(created.Id, selectedClauseIds);
 
-            _navigation.Navigate("contract-detail");
+            _navigation.Navigate("contract-detail", created.Id);
         }
         catch (Exception ex)
         {

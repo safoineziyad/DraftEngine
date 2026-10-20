@@ -26,7 +26,13 @@ public static class ServiceCollectionExtensions
 
         var expandedConnectionString = Environment.ExpandEnvironmentVariables(connectionString);
 
-        services.AddDbContext<DraftEngineDbContext>(options => options.UseSqlite(expandedConnectionString));
+        // Transient contexts: the page view models are singletons, so a scoped context would
+        // become one app-lifetime context shared by everything (stale data, tracking clashes).
+        // Options are singleton so resolving from the root provider never violates scoping.
+        services.AddDbContext<DraftEngineDbContext>(
+            options => options.UseSqlite(expandedConnectionString),
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Singleton);
 
         return services;
     }

@@ -56,3 +56,6 @@ Desktop.ini
 *.msi
 *.exe
 Output/
+
+# dotnet publish output (installer build staging)
+publish/

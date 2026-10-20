@@ -5,7 +5,220 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
-    <Border Style="{StaticResource Card}">
-        <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-    </Border>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header: contract title, metadata and document actions -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}"
+                           TextTrimming="CharacterEllipsis" />
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="{Binding Contract.ContractType}" Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="  ·  " Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{Binding Contract.Status}" Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="  ·  Client: " Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{Binding Contract.ClientName}" Style="{StaticResource SecondaryTextStyle}" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Regenerate" Padding="14,0" Height="34"
+                        Command="{Binding RegenerateCommand}"
+                        IsEnabled="{Binding HasDocument}" />
+                <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        Command="{Binding ExportDocxCommand}"
+                        IsEnabled="{Binding HasDocument}" />
+                <Button Content="Export PDF" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding ExportPdfCommand}"
+                        IsEnabled="{Binding HasDocument}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Error banner -->
+        <Border Grid.Row="1" Background="{StaticResource DangerBrush}" CornerRadius="6"
+                Padding="12" Margin="0,0,0,12"
+                Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="White" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Success banner -->
+        <Border Grid.Row="2" Background="{StaticResource SuccessBrush}" CornerRadius="6"
+                Padding="12" Margin="0,0,0,12"
+                Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding InfoMessage}" Foreground="White" TextWrapping="Wrap" />
+        </Border>
+
+        <!-- Main content: document panel + AI chat panel -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MinWidth="360" />
+                <ColumnDefinition Width="380" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Document panel -->
+            <Border Grid.Column="0" Style="{StaticResource Card}" Padding="20" Margin="0,0,16,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="Contract document" FontWeight="SemiBold" />
+                        <TextBlock Text="  (read-only — use the assistant or Regenerate to change it)"
+                                   Style="{StaticResource SecondaryTextStyle}" />
+                    </StackPanel>
+
+                    <TextBox Grid.Row="1"
+                             Text="{Binding DocumentText, Mode=OneWay}"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Disabled"
+                             FontFamily="{StaticResource DocumentFontFamily}"
+                             FontSize="14"
+                             Padding="16" />
+
+                    <!-- Busy overlay -->
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                        <ProgressBar IsIndeterminate="True" Width="180" Height="4" />
+                        <TextBlock Text="Working…" Style="{StaticResource SecondaryTextStyle}"
+                                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- AI chat panel -->
+            <Border Grid.Column="1" Style="{StaticResource Card}" Padding="20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock Text="AI assistant" FontWeight="SemiBold" />
+                        <TextBlock Text="Describe the change in plain language — the contract updates in place."
+                                   Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Chat history -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Empty hint -->
+                            <TextBlock Text="Example: &#x201C;Make the confidentiality term 3 years&#x201D;"
+                                       Style="{StaticResource SecondaryTextStyle}"
+                                       TextWrapping="Wrap" Margin="0,8"
+                                       Visibility="{Binding IsChatEmpty, Converter={StaticResource BoolToVis}}" />
+
+                            <ItemsControl ItemsSource="{Binding ChatMessages}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,4">
+                                            <Border CornerRadius="10" Padding="12,8" MaxWidth="280"
+                                                    HorizontalAlignment="Left"
+                                                    Background="{StaticResource PanelBrush}">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Content}" TextWrapping="Wrap">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                                                        <Setter Property="Foreground" Value="White" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <TextBlock Text="{Binding TimeLabel}" FontSize="10" Margin="0,4,0,0">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsUser}" Value="True">
+                                                                        <Setter Property="Foreground" Value="#DCE7FF" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Input -->
+                    <Grid Grid.Row="2" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ChatBox"
+                                 Text="{Binding ChatInput, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                                 VerticalContentAlignment="Top" Padding="8"
+                                 VerticalScrollBarVisibility="Auto">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <Button Grid.Column="1" Content="Send" Width="70" Height="60" Margin="8,0,0,0"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding SendChatEditCommand}"
+                                IsEnabled="{Binding CanChat}" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Load-failed state replaces the whole body -->
+            <Border Grid.ColumnSpan="2" Style="{StaticResource Card}"
+                    Visibility="{Binding LoadFailed, Converter={StaticResource BoolToVis}}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding LoadFailedMessage}" Style="{StaticResource BodyTextStyle}"
+                               TextWrapping="Wrap" HorizontalAlignment="Center" />
+                    <Button Content="Back to Contracts" Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding BackToListCommand}"
+                            HorizontalAlignment="Center" Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

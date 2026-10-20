@@ -27,6 +27,7 @@ public partial class ContractsListViewModel : ObservableObject
 
     private readonly IContractService _contractService;
     private readonly INavigationService _navigation;
+    private readonly IWizardDialogService _dialogs;
     private List<Contract> _allContracts = new();
 
     /// <summary>The page title shown in the view header.</summary>
@@ -73,10 +74,11 @@ public partial class ContractsListViewModel : ObservableObject
     public bool HasError => ErrorMessage is not null;
 
     /// <summary>Creates the view model and loads the contract list.</summary>
-    public ContractsListViewModel(IContractService contractService, INavigationService navigation)
+    public ContractsListViewModel(IContractService contractService, INavigationService navigation, IWizardDialogService dialogs)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
+        _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
 
         // View models are singletons: refresh the list every time this page becomes visible.
         _navigation.CurrentViewModelChanged += OnCurrentViewModelChanged;
@@ -129,12 +131,10 @@ public partial class ContractsListViewModel : ObservableObject
     {
         if (contract is null) return;
 
-        var confirm = MessageBox.Show(
+        var confirm = _dialogs.Confirm(
             $"Delete \"{contract.Title}\"?\n\nThis cannot be undone.",
-            "Delete contract",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning);
-        if (confirm != MessageBoxResult.Yes) return;
+            "Delete contract");
+        if (!confirm) return;
 
         IsLoading = true;
         ErrorMessage = null;

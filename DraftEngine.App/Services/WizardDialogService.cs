@@ -9,6 +9,9 @@ public interface IWizardDialogService
 {
     /// <summary>Shows an error dialog with a friendly title.</summary>
     void ShowError(string message, string title = "DraftEngine");
+
+    /// <summary>Shows a yes/no confirmation dialog. Returns <c>true</c> only when the user picks "Yes".</summary>
+    bool Confirm(string message, string title = "DraftEngine");
 }
 
 /// <summary>
@@ -20,5 +23,12 @@ public class WizardDialogService : IWizardDialogService
     public void ShowError(string message, string title = "DraftEngine")
     {
         MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+
+    /// <inheritdoc />
+    public bool Confirm(string message, string title = "DraftEngine")
+    {
+        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        return result == MessageBoxResult.Yes;
     }
 }

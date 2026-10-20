@@ -59,6 +59,7 @@ public class DocumentExportService : IDocumentExportService
         };
 
         contract.FinalFilePath = filePath;
+        contract.Status = ContractStatus.Exported;
         _database.Set<GeneratedDocument>().Add(document);
         await _database.SaveChangesAsync();
         return document;

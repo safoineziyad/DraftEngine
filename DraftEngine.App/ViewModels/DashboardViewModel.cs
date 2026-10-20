@@ -41,11 +41,20 @@ public partial class DashboardViewModel : ObservableObject
     /// <summary>Estimated hours saved (contracts count &times; 0.75 h, rounded).</summary>
     [ObservableProperty] private int _hoursSavedEstimate;
 
+    /// <summary>Friendly error message shown in the error banner; null when there is no error.</summary>
+    [ObservableProperty] private string? _errorMessage;
+
     /// <summary>Whether the recent contracts list has at least one row.</summary>
     public bool HasContracts => RecentContracts.Count > 0;
 
-    /// <summary>Whether the empty-state message should be shown.</summary>
-    public bool ShowEmptyState => !HasContracts && !IsLoading;
+    /// <summary>Whether a friendly load error is currently displayed.</summary>
+    public bool HasError => ErrorMessage is not null;
+
+    /// <summary>
+    /// Whether the empty-state message should be shown. Never true while an
+    /// error is displayed, so a failed load can't masquerade as "no contracts yet".
+    /// </summary>
+    public bool ShowEmptyState => !HasContracts && !IsLoading && !HasError;
 
     /// <summary>Creates the dashboard view model and loads the recent contracts.</summary>
     public DashboardViewModel(IContractService contractService, INavigationService navigation)
@@ -85,6 +94,7 @@ public partial class DashboardViewModel : ObservableObject
     private async Task LoadContractsAsync()
     {
         IsLoading = true;
+        ErrorMessage = null;
         try
         {
             var contracts = await _contractService.GetAllAsync(CurrentUserId);
@@ -97,13 +107,17 @@ public partial class DashboardViewModel : ObservableObject
 
             ContractCount = RecentContracts.Count;
             HoursSavedEstimate = (int)System.Math.Round(ContractCount * HoursSavedPerContract);
+            ErrorMessage = null;
         }
         catch (System.Exception ex)
         {
+            // Never show raw exceptions; log the detail and surface a friendly banner
+            // so a database failure isn't mistaken for an empty dashboard.
             Log.Error(ex, "Failed to load contracts for the dashboard.");
             RecentContracts.Clear();
             ContractCount = 0;
             HoursSavedEstimate = 0;
+            ErrorMessage = "We couldn't load your contracts. Please try again.";
         }
         finally
         {
@@ -114,4 +128,10 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     partial void OnIsLoadingChanged(bool value) => OnPropertyChanged(nameof(ShowEmptyState));
+
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasError));
+        OnPropertyChanged(nameof(ShowEmptyState));
+    }
 }

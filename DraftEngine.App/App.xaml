@@ -1,0 +1,35 @@
+﻿<Application x:Class="DraftEngine.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:DraftEngine.App.ViewModels"
+             xmlns:views="clr-namespace:DraftEngine.App.Views"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.xaml" />
+                <ResourceDictionary Source="Themes/Typography.xaml" />
+                <ResourceDictionary Source="Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Page view model -> view mappings for the ContentControl in MainWindow.
+                 WPF instantiates the view with its parameterless constructor; the
+                 ContentControl supplies the view model as the view's DataContext. -->
+            <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+                <views:DashboardView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:NewContractViewModel}">
+                <views:NewContractView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ContractsListViewModel}">
+                <views:ContractsListView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ContractDetailViewModel}">
+                <views:ContractDetailView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <views:SettingsView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

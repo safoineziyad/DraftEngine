@@ -1,0 +1,72 @@
+﻿<Window x:Class="DraftEngine.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="820" Width="1280"
+        MinHeight="700" MinWidth="1100"
+        WindowState="Maximized"
+        Background="{StaticResource WindowBackgroundBrush}"
+        FontFamily="{StaticResource UiFontFamily}"
+        FontSize="13">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left sidebar -->
+        <Border Grid.Column="0"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,0,1,0">
+            <DockPanel LastChildFill="True">
+
+                <!-- App title with deep blue accent bar -->
+                <Border DockPanel.Dock="Top" Background="{StaticResource AccentBrush}" Padding="16,18">
+                    <TextBlock Text="DraftEngine"
+                               Foreground="White"
+                               FontSize="16"
+                               FontWeight="SemiBold" />
+                </Border>
+
+                <!-- Navigation menu -->
+                <StackPanel DockPanel.Dock="Top" Margin="8,12">
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Dashboard"
+                            Command="{Binding NavigateDashboardCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="New Contract"
+                            Command="{Binding NavigateNewContractCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Contracts"
+                            Command="{Binding NavigateContractsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Settings"
+                            Command="{Binding NavigateSettingsCommand}" />
+                </StackPanel>
+
+                <!-- Bottom: version + settings shortcut -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="16,8,16,16">
+                    <Separator Margin="0,0,0,8"
+                               Background="{StaticResource BorderSubtleBrush}"
+                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <TextBlock Text="Version 1.0.0"
+                               Style="{StaticResource SecondaryTextStyle}"
+                               Margin="4,0,0,8" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Settings"
+                            Command="{Binding NavigateSettingsCommand}" />
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- Right content area -->
+        <ContentControl Grid.Column="1"
+                        Margin="24"
+                        Content="{Binding CurrentViewModel}" />
+    </Grid>
+</Window>

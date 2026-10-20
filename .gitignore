@@ -1,0 +1,58 @@
+﻿# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.vspscc
+*.vssscc
+.vs/
+*.psess
+*.vsp
+*.vspx
+*.gpState
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# App settings with secrets
+appsettings.Development.json
+appsettings.Local.json
+
+# User data
+%APPDATA%/
+
+# Logs
+*.log
+logs/
+
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.BIN/
+
+# MSIX/Inno
+*.msix
+*.msixbundle
+*.msi
+*.exe
+Output/

@@ -33,6 +33,10 @@ public class ChatCompletionMessage
     public string Content { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// OpenAI Chat Completion response envelope: the list of generated choices and, on error
+/// responses, the error payload returned by the API.
+/// </summary>
 public class ChatCompletionResponse
 {
     [JsonPropertyName("choices")]
@@ -42,12 +46,18 @@ public class ChatCompletionResponse
     public OpenAiError? Error { get; set; }
 }
 
+/// <summary>
+/// A single generated completion choice; the assistant message carries the model output.
+/// </summary>
 public class Choice
 {
     [JsonPropertyName("message")]
     public ChatCompletionMessage Message { get; set; } = new();
 }
 
+/// <summary>
+/// Error payload returned by the OpenAI API inside a failed response body.
+/// </summary>
 public class OpenAiError
 {
     [JsonPropertyName("message")]

@@ -281,7 +281,8 @@ public class OpenAiContractServiceTests
     private static (OpenAiContractService Service, HttpClient Client) CreateService(FakeHttpMessageHandler handler, string apiKey = ApiKey)
     {
         var client = new HttpClient(handler);
-        return (new OpenAiContractService(client, apiKey), client);
+        // maxRetries: 0 keeps this suite fast; retry behaviour is covered by OpenAiRetryTests.
+        return (new OpenAiContractService(client, apiKey, maxRetries: 0), client);
     }
 
     private static FakeHttpMessageHandler RespondingWith(HttpStatusCode status, string json)

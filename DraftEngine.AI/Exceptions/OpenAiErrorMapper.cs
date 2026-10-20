@@ -64,8 +64,9 @@ public static class OpenAiErrorMapper
         return ApiKeyPattern.Replace(redacted, RedactedApiKey);
     }
 
-    /// <summary>Detects insufficient-quota / billing errors by inspecting only the error type, code and message internally.</summary>
-    private static bool LooksLikeQuotaError(string? body)
+    /// <summary>Detects insufficient-quota / billing errors by inspecting only the error type, code and message internally.
+    /// Shared with the retry loop in <c>OpenAiContractService</c>, which must never retry quota failures.</summary>
+    internal static bool LooksLikeQuotaError(string? body)
     {
         if (!TryReadError(body, out var error)) return false;
 

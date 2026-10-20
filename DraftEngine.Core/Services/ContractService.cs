@@ -26,13 +26,13 @@ public class ContractService : IContractService
     private const string FriendlyFailure =
         "Something went wrong. Please try again. The full error was written to the log.";
 
-    private readonly DbContext _database;
+    private readonly IDatabaseContextFactory _databaseFactory;
     private readonly IFieldService _fieldService;
     private readonly IContractAiService? _aiService;
     private readonly ILogger<ContractService>? _logger;
 
     /// <summary>Creates the contract service.</summary>
-    /// <param name="database">EF Core context hosting the DraftEngine model.</param>
+    /// <param name="databaseFactory">Factory handing out one short-lived context per operation.</param>
     /// <param name="fieldService">Placeholder mapping used while filling clause templates.</param>
     /// <param name="aiService">
     /// Optional AI service. When null (no API key configured), generation stays template-only
@@ -40,14 +40,14 @@ public class ContractService : IContractService
     /// </param>
     /// <param name="logger">Optional logger.</param>
     public ContractService(
-        DbContext database,
+        IDatabaseContextFactory databaseFactory,
         IFieldService fieldService,
         IContractAiService? aiService = null,
         ILogger<ContractService>? logger = null)
     {
-        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(databaseFactory);
         ArgumentNullException.ThrowIfNull(fieldService);
-        _database = database;
+        _databaseFactory = databaseFactory;
         _fieldService = fieldService;
         _aiService = aiService;
         _logger = logger;
@@ -58,6 +58,8 @@ public class ContractService : IContractService
     {
         ArgumentNullException.ThrowIfNull(contract);
 
+        using var database = _databaseFactory.CreateContext();
+
         var now = DateTime.UtcNow;
         if (contract.CreatedAt == default)
         {
@@ -65,22 +67,34 @@ public class ContractService : IContractService
         }
 
         contract.UpdatedAt = now;
-        _database.Set<Contract>().Add(contract);
-        await _database.SaveChangesAsync();
+        database.Set<Contract>().Add(contract);
+        await database.SaveChangesAsync();
         return contract;
     }
 
     /// <inheritdoc />
-    public async Task<Contract?> GetByIdAsync(int id) =>
-        await _database.Set<Contract>().FirstOrDefaultAsync(contract => contract.Id == id);
+    public async Task<Contract?> GetByIdAsync(int id)
+    {
+        using var database = _databaseFactory.CreateContext();
+
+        return await database.Set<Contract>()
+            .Include(contract => contract.ContractClauses).ThenInclude(selection => selection.Clause)
+            .Include(contract => contract.ContractFields)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(contract => contract.Id == id);
+    }
 
     /// <inheritdoc />
-    public async Task<List<Contract>> GetAllAsync(int userId) =>
-        await _database.Set<Contract>()
+    public async Task<List<Contract>> GetAllAsync(int userId)
+    {
+        using var database = _databaseFactory.CreateContext();
+
+        return await database.Set<Contract>()
             .AsNoTracking()
             .Where(contract => contract.UserId == userId)
             .OrderByDescending(contract => contract.CreatedAt)
             .ToListAsync();
+    }
 
     /// <inheritdoc />
     public async Task<Contract?> UpdateAsync(Contract contract)
@@ -92,21 +106,19 @@ public class ContractService : IContractService
             return null; // Never persisted: nothing to update.
         }
 
-        if (_database.Entry(contract).State == EntityState.Detached)
-        {
-            _database.Set<Contract>().Attach(contract);
-        }
+        using var database = _databaseFactory.CreateContext();
 
         contract.UpdatedAt = DateTime.UtcNow;
+        database.Set<Contract>().Attach(contract);
+        database.Entry(contract).State = EntityState.Modified; // only the root row is updated
 
         try
         {
-            await _database.SaveChangesAsync();
+            await database.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
             // The row vanished between load and save: 404-safe null.
-            _database.Entry(contract).State = EntityState.Detached;
             return null;
         }
 
@@ -116,7 +128,9 @@ public class ContractService : IContractService
     /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
-        var contract = await _database.Set<Contract>()
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>()
             .Include(c => c.ContractClauses)
             .Include(c => c.ContractFields)
             .Include(c => c.ChatMessages)
@@ -128,13 +142,13 @@ public class ContractService : IContractService
             return; // Already gone: deleting is idempotent.
         }
 
-        _database.Set<ContractClause>().RemoveRange(contract.ContractClauses);
-        _database.Set<ContractField>().RemoveRange(contract.ContractFields);
-        _database.Set<ChatMessage>().RemoveRange(contract.ChatMessages);
-        _database.Set<GeneratedDocument>().RemoveRange(contract.GeneratedDocuments);
-        _database.Set<Contract>().Remove(contract);
+        database.Set<ContractClause>().RemoveRange(contract.ContractClauses);
+        database.Set<ContractField>().RemoveRange(contract.ContractFields);
+        database.Set<ChatMessage>().RemoveRange(contract.ChatMessages);
+        database.Set<GeneratedDocument>().RemoveRange(contract.GeneratedDocuments);
+        database.Set<Contract>().Remove(contract);
 
-        await _database.SaveChangesAsync();
+        await database.SaveChangesAsync();
     }
 
     /// <summary>
@@ -151,7 +165,9 @@ public class ContractService : IContractService
         List<int> selectedClauseIds,
         bool useAiPolish = false)
     {
-        var contract = await _database.Set<Contract>()
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>()
             .Include(c => c.ContractClauses)
             .FirstOrDefaultAsync(c => c.Id == contractId);
 
@@ -162,17 +178,17 @@ public class ContractService : IContractService
 
         if (selectedClauseIds is { Count: > 0 })
         {
-            await SyncSelectionAsync(contract, selectedClauseIds);
-            await _database.SaveChangesAsync();
+            await SyncSelectionAsync(database, contract, selectedClauseIds);
+            await database.SaveChangesAsync();
         }
 
-        var selectedClauses = await _database.Set<ContractClause>()
+        var selectedClauses = await database.Set<ContractClause>()
             .Include(cc => cc.Clause)
             .Where(cc => cc.ContractId == contractId && cc.Selected)
             .OrderBy(cc => cc.Clause.SortOrder)
             .ToListAsync();
 
-        var fieldValues = await LoadFieldValuesAsync(contract);
+        var fieldValues = await LoadFieldValuesAsync(database, contract);
         var documentText = BuildDocument(contract, selectedClauses, fieldValues);
 
         if (useAiPolish && _aiService is not null && selectedClauses.Count > 0)
@@ -199,7 +215,7 @@ public class ContractService : IContractService
         contract.UpdatedAt = DateTime.UtcNow;
         contract.Status = ContractStatus.Generated;
 
-        await _database.SaveChangesAsync();
+        await database.SaveChangesAsync();
         return documentText;
     }
 
@@ -216,7 +232,9 @@ public class ContractService : IContractService
             throw new InvalidOperationException("Describe the change you want first, then send it again.");
         }
 
-        var contract = await _database.Set<Contract>().FirstOrDefaultAsync(c => c.Id == contractId);
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>().FirstOrDefaultAsync(c => c.Id == contractId);
         if (contract is null)
         {
             throw new InvalidOperationException(ContractNotFound);
@@ -243,13 +261,13 @@ public class ContractService : IContractService
         catch (Exception exception)
         {
             _logger?.LogWarning(exception, "AI chat edit threw; reporting a friendly message.");
-            await AppendUserMessageAsync(contractId, instruction);
+            await AppendUserMessageAsync(database, contractId, instruction);
             throw new InvalidOperationException(FriendlyErrorOf(exception));
         }
 
         if (!result.Success || string.IsNullOrWhiteSpace(result.UpdatedContractText))
         {
-            await AppendUserMessageAsync(contractId, instruction);
+            await AppendUserMessageAsync(database, contractId, instruction);
             var reason = string.IsNullOrWhiteSpace(result.ErrorMessage) ? FriendlyFailure : result.ErrorMessage;
             throw new InvalidOperationException(reason);
         }
@@ -258,14 +276,14 @@ public class ContractService : IContractService
         contract.UpdatedAt = DateTime.UtcNow;
 
         var now = DateTime.UtcNow;
-        _database.Set<ChatMessage>().Add(new ChatMessage
+        database.Set<ChatMessage>().Add(new ChatMessage
         {
             ContractId = contractId,
             Role = MessageRole.User,
             Content = instruction,
             CreatedAt = now,
         });
-        _database.Set<ChatMessage>().Add(new ChatMessage
+        database.Set<ChatMessage>().Add(new ChatMessage
         {
             ContractId = contractId,
             Role = MessageRole.Assistant,
@@ -273,14 +291,14 @@ public class ContractService : IContractService
             CreatedAt = now,
         });
 
-        await _database.SaveChangesAsync();
+        await database.SaveChangesAsync();
         return contract.AssembledText;
     }
 
     /// <summary>Persists a single user chat message (used on the edit-failure path).</summary>
-    private async Task AppendUserMessageAsync(int contractId, string content)
+    private async Task AppendUserMessageAsync(DbContext database, int contractId, string content)
     {
-        _database.Set<ChatMessage>().Add(new ChatMessage
+        database.Set<ChatMessage>().Add(new ChatMessage
         {
             ContractId = contractId,
             Role = MessageRole.User,
@@ -288,14 +306,14 @@ public class ContractService : IContractService
             CreatedAt = DateTime.UtcNow,
         });
 
-        await _database.SaveChangesAsync();
+        await database.SaveChangesAsync();
     }
 
     /// <summary>
     /// Mirrors the caller's clause selection onto the stored rows: existing rows are toggled and
     /// selections without a row are created. Unknown clause ids are ignored.
     /// </summary>
-    private async Task SyncSelectionAsync(Contract contract, List<int> selectedClauseIds)
+    private async Task SyncSelectionAsync(DbContext database, Contract contract, List<int> selectedClauseIds)
     {
         var wanted = new HashSet<int>(selectedClauseIds);
 
@@ -312,12 +330,12 @@ public class ContractService : IContractService
                 continue;
             }
 
-            if (!await _database.Set<Clause>().AnyAsync(clause => clause.Id == clauseId))
+            if (!await database.Set<Clause>().AnyAsync(clause => clause.Id == clauseId))
             {
                 continue;
             }
 
-            _database.Set<ContractClause>().Add(new ContractClause
+            database.Set<ContractClause>().Add(new ContractClause
             {
                 ContractId = contract.Id,
                 ClauseId = clauseId,
@@ -330,7 +348,7 @@ public class ContractService : IContractService
     /// Builds the dictionary used for placeholder substitution: contract metadata and parties are
     /// seeded first, then stored intake fields overlay them (explicit answers win).
     /// </summary>
-    private async Task<Dictionary<string, string>> LoadFieldValuesAsync(Contract contract)
+    private async Task<Dictionary<string, string>> LoadFieldValuesAsync(DbContext database, Contract contract)
     {
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
 
@@ -367,7 +385,7 @@ public class ContractService : IContractService
             values["Party1"] = contract.ClientName.Trim();
         }
 
-        var storedFields = await _database.Set<ContractField>()
+        var storedFields = await database.Set<ContractField>()
             .AsNoTracking()
             .Where(field => field.ContractId == contract.Id)
             .ToListAsync();

@@ -8,7 +8,8 @@ namespace DraftEngine.Core.Services;
 /// <summary>
 /// Records an exported document (DOCX/PDF) for a contract: creates the
 /// <see cref="GeneratedDocument"/> row with the next version number and points the
-/// contract's FinalFilePath at the newest export.
+/// contract's FinalFilePath at the newest export. Stateless: each operation opens
+/// its own short-lived context via <see cref="IDatabaseContextFactory"/>.
 /// </summary>
 public interface IDocumentExportService
 {
@@ -22,14 +23,14 @@ public interface IDocumentExportService
 /// <summary>EF Core implementation of <see cref="IDocumentExportService"/>.</summary>
 public class DocumentExportService : IDocumentExportService
 {
-    private readonly DbContext _database;
+    private readonly IDatabaseContextFactory _databaseFactory;
 
     /// <summary>Creates the export recording service.</summary>
-    /// <param name="database">EF Core context hosting the DraftEngine model.</param>
-    public DocumentExportService(DbContext database)
+    /// <param name="databaseFactory">Factory handing out one short-lived context per operation.</param>
+    public DocumentExportService(IDatabaseContextFactory databaseFactory)
     {
-        ArgumentNullException.ThrowIfNull(database);
-        _database = database;
+        ArgumentNullException.ThrowIfNull(databaseFactory);
+        _databaseFactory = databaseFactory;
     }
 
     /// <inheritdoc />
@@ -40,11 +41,13 @@ public class DocumentExportService : IDocumentExportService
             throw new InvalidOperationException("The export did not produce a file path.");
         }
 
-        var contract = await _database.Set<Contract>().FirstOrDefaultAsync(c => c.Id == contractId)
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>().FirstOrDefaultAsync(c => c.Id == contractId)
             ?? throw new InvalidOperationException(
                 "This contract could not be found. Open it again from the Contracts list.");
 
-        var highestVersion = await _database.Set<GeneratedDocument>()
+        var highestVersion = await database.Set<GeneratedDocument>()
             .Where(document => document.ContractId == contractId)
             .Select(document => (int?)document.Version)
             .MaxAsync();
@@ -60,8 +63,8 @@ public class DocumentExportService : IDocumentExportService
 
         contract.FinalFilePath = filePath;
         contract.Status = ContractStatus.Exported;
-        _database.Set<GeneratedDocument>().Add(document);
-        await _database.SaveChangesAsync();
+        database.Set<GeneratedDocument>().Add(document);
+        await database.SaveChangesAsync();
         return document;
     }
 }

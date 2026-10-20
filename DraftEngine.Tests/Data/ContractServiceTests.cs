@@ -17,6 +17,7 @@ public class ContractServiceTests : IDisposable
 {
     private readonly SqliteConnection _connection;
     private readonly DraftEngineDbContext _dbContext;
+    private readonly TestDatabaseContextFactory _databaseFactory;
     private readonly FakeContractAiService _fakeAi = new();
     private readonly ContractService _service;
     private readonly FieldService _fieldService;
@@ -34,9 +35,11 @@ public class ContractServiceTests : IDisposable
         _dbContext = new DraftEngineDbContext(options);
         _dbContext.Database.EnsureCreated();
 
-        _fieldService = new FieldService(_dbContext);
-        _chatService = new ChatService(_dbContext);
-        _service = new ContractService(_dbContext, _fieldService, _fakeAi);
+        // Same pattern as production: services open one short-lived context per operation.
+        _databaseFactory = new TestDatabaseContextFactory(options);
+        _fieldService = new FieldService(_databaseFactory);
+        _chatService = new ChatService(_databaseFactory);
+        _service = new ContractService(_databaseFactory, _fieldService, _fakeAi);
     }
 
     public void Dispose()

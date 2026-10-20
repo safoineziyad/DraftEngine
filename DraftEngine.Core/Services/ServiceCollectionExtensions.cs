@@ -1,5 +1,4 @@
 using DraftEngine.Core.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,9 +12,11 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Registers <see cref="IFieldService"/>, <see cref="IClauseService"/>,
     /// <see cref="IContractService"/>, <see cref="IChatService"/> and
-    /// <see cref="IDocumentExportService"/>.
-    /// Call this once at startup, after the application DbContext has been registered with
-    /// AddDbContext (the context is resolved lazily, so call order does not matter).
+    /// <see cref="IDocumentExportService"/>. Call this once at startup, after
+    /// <c>IDatabaseContextFactory</c> has been registered (DraftEngine.Data's
+    /// AddDraftEngineData does that). The services are stateless and open one
+    /// short-lived DbContext per operation, so no context is ever shared or pinned
+    /// for the application's lifetime.
     /// The AI service is optional: when <see cref="IContractAiService"/> is not registered,
     /// generation stays template-only and chat edits report a friendly message.
     /// </summary>
@@ -26,39 +27,25 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddTransient<IFieldService>(provider =>
-            new FieldService(ResolveDatabase(provider), provider.GetService<ILogger<FieldService>>()));
+            new FieldService(
+                provider.GetRequiredService<IDatabaseContextFactory>(),
+                provider.GetService<ILogger<FieldService>>()));
 
         services.AddTransient<IClauseService>(provider =>
-            new ClauseService(ResolveDatabase(provider)));
+            new ClauseService(provider.GetRequiredService<IDatabaseContextFactory>()));
 
         services.AddTransient<IContractService>(provider => new ContractService(
-            ResolveDatabase(provider),
+            provider.GetRequiredService<IDatabaseContextFactory>(),
             provider.GetRequiredService<IFieldService>(),
             provider.GetService<IContractAiService>(),
             provider.GetService<ILogger<ContractService>>()));
 
         services.AddTransient<IChatService>(provider =>
-            new ChatService(ResolveDatabase(provider)));
+            new ChatService(provider.GetRequiredService<IDatabaseContextFactory>()));
 
         services.AddTransient<IDocumentExportService>(provider =>
-            new DocumentExportService(ResolveDatabase(provider)));
+            new DocumentExportService(provider.GetRequiredService<IDatabaseContextFactory>()));
 
         return services;
-    }
-
-    /// <summary>
-    /// Resolves the application DbContext. DraftEngine.Core cannot reference DraftEngine.Data,
-    /// so the concrete type is obtained at runtime from the registered DbContextOptions
-    /// (AddDbContext registers both the concrete context and the non-generic options).
-    /// </summary>
-    private static DbContext ResolveDatabase(IServiceProvider provider)
-    {
-        if (provider.GetService<DbContext>() is { } direct)
-        {
-            return direct;
-        }
-
-        var options = provider.GetRequiredService<DbContextOptions>();
-        return (DbContext)provider.GetRequiredService(options.ContextType);
     }
 }

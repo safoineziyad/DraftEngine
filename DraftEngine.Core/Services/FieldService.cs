@@ -36,16 +36,16 @@ public class FieldService : IFieldService
             ["ConfidentialInformation"] = "non-public information disclosed by either party under this Agreement",
         };
 
-    private readonly DbContext? _database;
+    private readonly IDatabaseContextFactory? _databaseFactory;
     private readonly ILogger<FieldService>? _logger;
 
     /// <summary>Creates the field service bound to the application database.</summary>
-    /// <param name="database">EF Core context hosting the DraftEngine model.</param>
+    /// <param name="databaseFactory">Factory handing out one short-lived context per operation.</param>
     /// <param name="logger">Optional logger used to report unmapped placeholders.</param>
-    public FieldService(DbContext database, ILogger<FieldService>? logger = null)
+    public FieldService(IDatabaseContextFactory databaseFactory, ILogger<FieldService>? logger = null)
     {
-        ArgumentNullException.ThrowIfNull(database);
-        _database = database;
+        ArgumentNullException.ThrowIfNull(databaseFactory);
+        _databaseFactory = databaseFactory;
         _logger = logger;
     }
 
@@ -60,12 +60,14 @@ public class FieldService : IFieldService
     /// <inheritdoc />
     public async Task<Dictionary<string, string>> MapFieldsAsync(int contractId, Dictionary<string, string> formValues)
     {
-        if (_database is null)
+        if (_databaseFactory is null)
         {
             throw new InvalidOperationException("The database is not available in this field service instance.");
         }
 
-        var stored = await _database.Set<ContractField>()
+        using var database = _databaseFactory.CreateContext();
+
+        var stored = await database.Set<ContractField>()
             .Where(field => field.ContractId == contractId)
             .ToListAsync();
 
@@ -86,7 +88,7 @@ public class FieldService : IFieldService
                 if (row is null)
                 {
                     row = new ContractField { ContractId = contractId, Key = key, Value = value };
-                    _database.Set<ContractField>().Add(row);
+                    database.Set<ContractField>().Add(row);
                     stored.Add(row);
                 }
                 else
@@ -95,7 +97,7 @@ public class FieldService : IFieldService
                 }
             }
 
-            await _database.SaveChangesAsync();
+            await database.SaveChangesAsync();
         }
 
         var merged = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

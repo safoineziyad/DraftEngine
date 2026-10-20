@@ -15,6 +15,7 @@ public class DataServicesTests : IDisposable
 {
     private readonly SqliteConnection _connection;
     private readonly DraftEngineDbContext _dbContext;
+    private readonly TestDatabaseContextFactory _databaseFactory;
 
     public DataServicesTests()
     {
@@ -27,6 +28,9 @@ public class DataServicesTests : IDisposable
 
         _dbContext = new DraftEngineDbContext(options);
         _dbContext.Database.EnsureCreated(); // schema + seeded Mutual NDA clause library
+
+        // Same pattern as production: services open one short-lived context per operation.
+        _databaseFactory = new TestDatabaseContextFactory(options);
     }
 
     public void Dispose()
@@ -41,7 +45,7 @@ public class DataServicesTests : IDisposable
     [Fact]
     public async Task ClauseService_ReturnsClausesForContractType_InSortOrder()
     {
-        var service = new ClauseService(_dbContext);
+        var service = new ClauseService(_databaseFactory);
 
         var clauses = await service.GetClausesByContractTypeAsync("Mutual NDA");
 
@@ -53,7 +57,7 @@ public class DataServicesTests : IDisposable
     [Fact]
     public async Task ClauseService_UnknownContractType_ReturnsEmptyList()
     {
-        var service = new ClauseService(_dbContext);
+        var service = new ClauseService(_databaseFactory);
 
         Assert.Empty(await service.GetClausesByContractTypeAsync("Lease Agreement"));
         Assert.Empty(await service.GetClausesByContractTypeAsync(""));
@@ -74,7 +78,7 @@ public class DataServicesTests : IDisposable
         });
         await _dbContext.SaveChangesAsync();
 
-        var service = new ClauseService(_dbContext);
+        var service = new ClauseService(_databaseFactory);
         var defaults = await service.GetDefaultSelectedClausesAsync("Mutual NDA");
 
         Assert.Equal(12, defaults.Count);
@@ -87,7 +91,7 @@ public class DataServicesTests : IDisposable
     public async Task FieldService_MapFields_PersistsAnswers_AndReturnsStoredRows()
     {
         var contract = await SeedContractAsync();
-        var service = new FieldService(_dbContext);
+        var service = new FieldService(_databaseFactory);
 
         var values = await service.MapFieldsAsync(
             contract.Id,
@@ -107,7 +111,7 @@ public class DataServicesTests : IDisposable
     public async Task FieldService_MapFields_UpdatingSameKey_DoesNotDuplicateRows()
     {
         var contract = await SeedContractAsync();
-        var service = new FieldService(_dbContext);
+        var service = new FieldService(_databaseFactory);
 
         await service.MapFieldsAsync(contract.Id, new Dictionary<string, string> { ["Party2"] = "First" });
         await service.MapFieldsAsync(contract.Id, new Dictionary<string, string> { ["Party2"] = "Second" });
@@ -123,7 +127,7 @@ public class DataServicesTests : IDisposable
     public async Task FieldService_MapFields_EmptyFormValues_ReturnsEmpty()
     {
         var contract = await SeedContractAsync();
-        var service = new FieldService(_dbContext);
+        var service = new FieldService(_databaseFactory);
 
         var values = await service.MapFieldsAsync(contract.Id, new Dictionary<string, string>());
 
@@ -133,7 +137,7 @@ public class DataServicesTests : IDisposable
     [Fact]
     public void FieldService_ReplacesPlaceholders_SubstitutesKnownKeys_AndDefaults()
     {
-        var fieldService = new FieldService(_dbContext);
+        var fieldService = new FieldService(_databaseFactory);
 
         var resolved = fieldService.ReplacePlaceholders(
             "This Agreement is between {{Party1}} and {{Party2}} for {{TermMonths}} months. {{Answered}}",
@@ -148,7 +152,7 @@ public class DataServicesTests : IDisposable
     [Fact]
     public void FieldService_ReplacesPlaceholders_FormatsEffectiveDateAsLongForm()
     {
-        var fieldService = new FieldService(_dbContext);
+        var fieldService = new FieldService(_databaseFactory);
 
         var resolved = fieldService.ReplacePlaceholders(
             "as of {{EffectiveDate}}",
@@ -163,7 +167,7 @@ public class DataServicesTests : IDisposable
     public async Task ChatService_AddAndGetMessages_RoundTripsInChronologicalOrder()
     {
         var contract = await SeedContractAsync();
-        var service = new ChatService(_dbContext);
+        var service = new ChatService(_databaseFactory);
 
         await service.AddMessageAsync(contract.Id, MessageRole.User, "First");
         await service.AddMessageAsync(contract.Id, MessageRole.Assistant, "Second");
@@ -178,7 +182,7 @@ public class DataServicesTests : IDisposable
     [Fact]
     public async Task ChatService_AddMessage_UnknownContract_Throws()
     {
-        var service = new ChatService(_dbContext);
+        var service = new ChatService(_databaseFactory);
 
         // The FK constraint on ChatMessages.ContractId rejects the orphaned message.
         await Assert.ThrowsAsync<DbUpdateException>(() =>

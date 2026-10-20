@@ -1,19 +1,21 @@
+using DraftEngine.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DraftEngine.Data;
 
 /// <summary>
-/// DI registration for the DraftEngine data layer: the SQLite DbContext.
+/// DI registration for the DraftEngine data layer: the SQLite DbContext and its factory.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="DraftEngineDbContext"/> (SQLite; environment variables such as
-    /// <c>%APPDATA%</c> in the connection string are expanded here, since SQLite does not
-    /// expand them itself). The DbContext-backed application services
-    /// (contract, clause, field, chat) are registered separately by
-    /// <c>AddContractServices</c> in DraftEngine.Core.
+    /// Registers <see cref="DraftEngineDbContext"/> and its <see cref="IDbContextFactory{TContext}"/>
+    /// (SQLite; environment variables such as <c>%APPDATA%</c> in the connection string are expanded
+    /// here, since SQLite does not expand them itself), plus <see cref="IDatabaseContextFactory"/>,
+    /// the abstraction the application services use to open one short-lived context per operation.
+    /// The DbContext-backed application services (contract, clause, field, chat) are registered
+    /// separately by <c>AddContractServices</c> in DraftEngine.Core.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="connectionString">SQLite connection string, possibly containing environment variables.</param>
@@ -26,13 +28,12 @@ public static class ServiceCollectionExtensions
 
         var expandedConnectionString = Environment.ExpandEnvironmentVariables(connectionString);
 
-        // Transient contexts: the page view models are singletons, so a scoped context would
-        // become one app-lifetime context shared by everything (stale data, tracking clashes).
-        // Options are singleton so resolving from the root provider never violates scoping.
-        services.AddDbContext<DraftEngineDbContext>(
-            options => options.UseSqlite(expandedConnectionString),
-            contextLifetime: ServiceLifetime.Transient,
-            optionsLifetime: ServiceLifetime.Singleton);
+        // Factory pattern (recommended by EF Core for desktop apps): no context is ever
+        // shared across operations or pinned for the application's lifetime.
+        services.AddDbContextFactory<DraftEngineDbContext>(options => options.UseSqlite(expandedConnectionString));
+
+        // Bridge to the Core-layer abstraction consumed by the application services.
+        services.AddSingleton<IDatabaseContextFactory, DatabaseContextFactory>();
 
         return services;
     }

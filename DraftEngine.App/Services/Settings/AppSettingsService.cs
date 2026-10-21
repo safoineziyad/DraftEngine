@@ -15,10 +15,16 @@ namespace DraftEngine.App.Services.Settings;
 /// <see cref="ISecretProtector"/> (DPAPI, current Windows user) and only decrypted into
 /// <see cref="Current"/> in memory. The raw key is never written to disk, logs or exceptions.
 /// Settings are loaded synchronously at construction (tiny local file) and saved on demand.
+/// HTTP goes through the shared "openai" <see cref="IHttpClientFactory"/> client
+/// (audit Finding #6: no <see cref="HttpClient"/> is constructed by hand).
 /// </summary>
 public sealed class AppSettingsService : IAppSettingsService
 {
+    /// <summary>Name of the factory client used for every OpenAI call.</summary>
+    private const string OpenAiHttpClientName = "openai";
+
     private readonly ISecretProtector _protector;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly string _settingsPath;
 
     /// <inheritdoc />
@@ -28,9 +34,10 @@ public sealed class AppSettingsService : IAppSettingsService
     public event Action? SettingsChanged;
 
     /// <summary>Creates the service and loads existing settings from %APPDATA%\DraftEngine\settings.json (defaults on any failure).</summary>
-    public AppSettingsService(ISecretProtector protector)
+    public AppSettingsService(ISecretProtector protector, IHttpClientFactory httpClientFactory)
     {
         _protector = protector ?? throw new ArgumentNullException(nameof(protector));
+        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         _settingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "DraftEngine",
@@ -93,9 +100,11 @@ public sealed class AppSettingsService : IAppSettingsService
             return null;
 
         var resolvedModel = string.IsNullOrWhiteSpace(model) ? AppSettings.FallbackModel : model;
-        // Fresh HttpClient per service: OpenAiContractService pins the Bearer header at
-        // construction, so a shared client would keep testing/sending the previous key.
-        return new OpenAiContractService(new HttpClient(), apiKey.Trim(), resolvedModel);
+        // Each CreateClient() call yields a distinct HttpClient instance (OpenAiContractService
+        // pins its Bearer header at construction, so instances must not be shared between
+        // services with different keys), while the factory pools and rotates the handlers.
+        return new OpenAiContractService(
+            _httpClientFactory.CreateClient(OpenAiHttpClientName), apiKey.Trim(), resolvedModel);
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };

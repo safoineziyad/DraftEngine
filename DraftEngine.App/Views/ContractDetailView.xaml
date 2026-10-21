@@ -38,13 +38,17 @@
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Content="Regenerate" Padding="14,0" Height="34"
+                        AutomationProperties.Name="Regenerate contract from clauses"
+                        AutomationProperties.HelpText="Rebuilds the document from the selected clauses and intake answers."
                         Command="{Binding RegenerateCommand}"
                         IsEnabled="{Binding HasDocument}" />
                 <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        AutomationProperties.Name="Export contract as DOCX"
                         Command="{Binding ExportDocxCommand}"
                         IsEnabled="{Binding HasDocument}" />
                 <Button Content="Export PDF" Padding="14,0" Height="34" Margin="8,0,0,0"
                         Style="{StaticResource PrimaryButtonStyle}"
+                        AutomationProperties.Name="Export contract as PDF"
                         Command="{Binding ExportPdfCommand}"
                         IsEnabled="{Binding HasDocument}" />
             </StackPanel>
@@ -114,6 +118,7 @@
                                                            Style="{StaticResource SecondaryTextStyle}"
                                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                                 <Button Grid.Column="2" Content="Restore" Padding="10,2" Margin="8,0,0,0"
+                                                        AutomationProperties.Name="{Binding VersionLabel, StringFormat=Restore version {0}}"
                                                         Command="{Binding DataContext.RevertToVersionCommand,
                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                         CommandParameter="{Binding VersionId}" />
@@ -128,6 +133,8 @@
                     <TextBox Grid.Row="2"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
+                             AutomationProperties.Name="Contract document"
+                             AutomationProperties.HelpText="The assembled contract text. Edit it by asking the assistant for changes."
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
@@ -229,6 +236,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="ChatBox"
                                  Text="{Binding ChatInput, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="Instruction for the AI assistant"
+                                 AutomationProperties.HelpText="Describe the change you want. Tab to the Send button and press Enter to apply it."
                                  AcceptsReturn="True" TextWrapping="Wrap" Height="60"
                                  VerticalContentAlignment="Top" Padding="8"
                                  VerticalScrollBarVisibility="Auto">
@@ -244,6 +253,7 @@
                         </TextBox>
                         <Button Grid.Column="1" Content="Send" Width="70" Height="60" Margin="8,0,0,0"
                                 Style="{StaticResource PrimaryButtonStyle}"
+                                AutomationProperties.Name="Send instruction to the AI assistant"
                                 Command="{Binding SendChatEditCommand}"
                                 IsEnabled="{Binding CanChat}" />
                     </Grid>
@@ -257,6 +267,7 @@
                     <TextBlock Text="{Binding LoadFailedMessage}" Style="{StaticResource BodyTextStyle}"
                                TextWrapping="Wrap" HorizontalAlignment="Center" />
                     <Button Content="Back to Contracts" Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="Back to the Contracts list"
                             Command="{Binding BackToListCommand}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>

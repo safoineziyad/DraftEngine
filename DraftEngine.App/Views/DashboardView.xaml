@@ -71,6 +71,7 @@
                 </StackPanel>
                 <Button Content="New Contract"
                         Style="{StaticResource PrimaryButtonStyle}"
+                        AutomationProperties.Name="Start a new contract"
                         Command="{Binding NewContractCommand}"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
@@ -138,6 +139,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Style="{StaticResource ContractRowStyle}"
+                                        AutomationProperties.Name="{Binding Title, StringFormat=Open contract {0}}"
                                         Command="{Binding DataContext.OpenContractCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
@@ -200,6 +202,7 @@
                                    Margin="0,4,0,14" TextWrapping="Wrap" />
                         <Button Content="New Contract"
                                 Style="{StaticResource PrimaryButtonStyle}"
+                                AutomationProperties.Name="Start a new contract"
                                 Command="{Binding NewContractCommand}"
                                 HorizontalAlignment="Left"
                                 MinWidth="140" />

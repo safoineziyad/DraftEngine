@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:DraftEngine.App"
         mc:Ignorable="d"
         Title="{Binding Title}"
         Height="820" Width="1280"
@@ -36,15 +37,19 @@
                 <StackPanel DockPanel.Dock="Top" Margin="8,12">
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="Dashboard"
+                            AutomationProperties.Name="Go to Dashboard"
                             Command="{Binding NavigateDashboardCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="New Contract"
+                            AutomationProperties.Name="Start a new contract"
                             Command="{Binding NavigateNewContractCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="Contracts"
+                            AutomationProperties.Name="Go to Contracts list"
                             Command="{Binding NavigateContractsCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="Settings"
+                            AutomationProperties.Name="Go to Settings"
                             Command="{Binding NavigateSettingsCommand}" />
                 </StackPanel>
 
@@ -53,11 +58,15 @@
                     <Separator Margin="0,0,0,8"
                                Background="{StaticResource BorderSubtleBrush}"
                                BorderBrush="{StaticResource BorderSubtleBrush}" />
-                    <TextBlock Text="Version 1.0.0"
-                               Style="{StaticResource SecondaryTextStyle}"
-                               Margin="4,0,0,8" />
+                    <!-- Version comes from the csproj <Version> via AppVersion.Display: one source of truth. -->
+                    <TextBlock Style="{StaticResource SecondaryTextStyle}"
+                               Margin="4,0,0,8"
+                               AutomationProperties.Name="Application version">
+                        <Run Text="Version " /><Run Text="{x:Static app:AppVersion.Display}" />
+                    </TextBlock>
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="Settings"
+                            AutomationProperties.Name="Open Settings"
                             Command="{Binding NavigateSettingsCommand}" />
                 </StackPanel>
 

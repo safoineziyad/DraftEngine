@@ -180,6 +180,7 @@
                                 <Button Style="{StaticResource TypeCardButtonStyle}"
                                         Margin="0,0,12,12"
                                         IsEnabled="{Binding IsAvailable}"
+                                        AutomationProperties.Name="{Binding Name, StringFormat=Select contract type {0}}"
                                         Command="{Binding DataContext.SelectContractTypeCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
@@ -246,13 +247,16 @@
                                             </StackPanel>
                                             <TextBox Margin="0,8,0,0"
                                                      Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                     AutomationProperties.Name="{Binding Label}"
                                                      Visibility="{Binding IsTextInput, Converter={StaticResource BoolToVis}}" />
                                             <DatePicker Margin="0,8,0,0"
                                                         SelectedDate="{Binding DateValue}"
+                                                        AutomationProperties.Name="{Binding Label}"
                                                         Visibility="{Binding IsDateInput, Converter={StaticResource BoolToVis}}" />
                                             <ComboBox Margin="0,8,0,0"
                                                       ItemsSource="{Binding Choices}"
                                                       SelectedItem="{Binding SelectedChoice}"
+                                                      AutomationProperties.Name="{Binding Label}"
                                                       Visibility="{Binding IsChoiceInput, Converter={StaticResource BoolToVis}}" />
                                         </StackPanel>
                                     </Border>
@@ -316,6 +320,7 @@
                                                                 </Grid.ColumnDefinitions>
                                                                 <CheckBox Grid.Column="0"
                                                                           IsChecked="{Binding IsSelected}"
+                                                                          AutomationProperties.Name="{Binding Title, StringFormat=Include {0} in the contract}"
                                                                           VerticalAlignment="Center" />
                                                                 <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                                             Margin="10,0,0,0"
@@ -332,6 +337,7 @@
                                                                 </StackPanel>
                                                                 <ToggleButton Grid.Column="2"
                                                                               Style="{StaticResource GhostToggleStyle}"
+                                                                              AutomationProperties.Name="{Binding Title, StringFormat=Show or hide the preview of {0}}"
                                                                               IsChecked="{Binding IsExpanded}" />
                                                             </Grid>
                                                             <Border Grid.Row="1" Margin="0,12,0,0"
@@ -411,18 +417,21 @@
                          Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
             <Grid Grid.Row="1">
                 <Button Content="&#x2190; Back" MinWidth="100"
+                        AutomationProperties.Name="Go back to the previous step"
                         Command="{Binding BackCommand}"
                         Visibility="{Binding IsBackVisible, Converter={StaticResource BoolToVis}}"
                         HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="Next" MinWidth="120"
                             Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="Continue to the next step"
                             Command="{Binding NextCommand}"
                             Visibility="{Binding IsNextVisible, Converter={StaticResource BoolToVis}}" />
                     <Button MinWidth="170" Margin="12,0,0,0"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding GenerateCommand}"
                             Content="{Binding GenerateButtonText}"
+                            AutomationProperties.Name="{Binding GenerateButtonText}"
                             Visibility="{Binding IsGenerateVisible, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
             </Grid>

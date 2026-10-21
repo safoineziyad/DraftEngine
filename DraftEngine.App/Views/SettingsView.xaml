@@ -46,6 +46,7 @@
                         <!-- Masked entry (hidden while the key is shown) -->
                         <PasswordBox Grid.Column="0"
                                      settings:PasswordBoxHelper.BoundPassword="{Binding OpenAiApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="OpenAI API key"
                                      ToolTip="OpenAI API key">
                             <PasswordBox.Style>
                                 <Style TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
@@ -61,12 +62,15 @@
                         <!-- Plain-text entry (Show mode) -->
                         <TextBox Grid.Column="0"
                                  Text="{Binding OpenAiApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="OpenAI API key"
                                  Visibility="{Binding IsKeyVisible, Converter={StaticResource BoolToVis}}"
                                  ToolTip="OpenAI API key" />
 
                         <Button Grid.Column="1" Content="{Binding ShowHideKeyText}" Margin="8,0"
+                                AutomationProperties.Name="Show or hide the API key"
                                 Command="{Binding ToggleKeyVisibilityCommand}" />
                         <Button Grid.Column="2" Content="Test Connection"
+                                AutomationProperties.Name="Test the OpenAI connection"
                                 Command="{Binding TestConnectionCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource QuietButtonStyle}">
@@ -107,6 +111,7 @@
                     <TextBlock Text="Model" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                     <ComboBox ItemsSource="{Binding ModelOptions}"
                               SelectedItem="{Binding SelectedModel}"
+                              AutomationProperties.Name="OpenAI model"
                               HorizontalAlignment="Left" Width="240" />
                     <TextBlock Text="gpt-4o-mini is faster and cheaper; gpt-4o is more capable."
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,6,0,0" />
@@ -132,13 +137,15 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Default governing law" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                             <ComboBox ItemsSource="{Binding GoverningLawOptions}"
-                                      SelectedItem="{Binding SelectedGoverningLaw}" />
+                                      SelectedItem="{Binding SelectedGoverningLaw}"
+                                      AutomationProperties.Name="Default governing law" />
                         </StackPanel>
 
                         <!-- Term months -->
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Default term (months)" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                             <TextBox Text="{Binding DefaultTermMonths, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                                     AutomationProperties.Name="Default contract term in months"
                                      ToolTip="Contract term in months (1–120)" />
                             <TextBlock Text="Whole number of months, between 1 and 120."
                                        Style="{StaticResource SecondaryTextStyle}" Margin="0,6,0,0" />
@@ -170,6 +177,7 @@
 
                     <Button Grid.Column="2" Content="Save settings"
                             Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="Save settings"
                             Command="{Binding SaveCommand}" VerticalAlignment="Center" />
                 </Grid>
             </Border>

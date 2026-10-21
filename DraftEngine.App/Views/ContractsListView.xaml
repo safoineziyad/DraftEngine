@@ -31,6 +31,7 @@
             </StackPanel>
             <Button Grid.Column="1" Content="+ New Contract"
                     Style="{StaticResource PrimaryButtonStyle}"
+                    AutomationProperties.Name="Start a new contract"
                     Command="{Binding NewContractCommand}"
                     VerticalAlignment="Center" />
         </Grid>
@@ -45,7 +46,8 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Margin="0,0,12,0">
                     <TextBox x:Name="SearchBox"
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.Name="Search contracts by title or client" />
                     <TextBlock Text="Search by title or client…"
                                Margin="12,0,0,0" VerticalAlignment="Center"
                                Foreground="{StaticResource TextSecondaryBrush}"
@@ -67,14 +69,16 @@
                                VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox Width="160"
                               ItemsSource="{Binding TypeFilters}"
-                              SelectedItem="{Binding SelectedTypeFilter}" />
+                              SelectedItem="{Binding SelectedTypeFilter}"
+                              AutomationProperties.Name="Filter by contract type" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <TextBlock Text="Sort" Style="{StaticResource SecondaryTextStyle}"
                                VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox Width="160"
                               ItemsSource="{Binding SortOptions}"
-                              SelectedItem="{Binding SelectedSortMode}" />
+                              SelectedItem="{Binding SelectedSortMode}"
+                              AutomationProperties.Name="Sort contracts" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -174,12 +178,14 @@
                                         <!-- Row actions -->
                                         <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Content="Open" Padding="12,0" Height="30" FontSize="12"
+                                                    AutomationProperties.Name="{Binding Title, StringFormat=Open contract {0}}"
                                                     Command="{Binding DataContext.OpenContractCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     CommandParameter="{Binding}" />
                                             <Button Content="Delete" Padding="12,0" Height="30" FontSize="12"
                                                     Margin="8,0,0,0"
                                                     Foreground="{StaticResource DangerBrush}"
+                                                    AutomationProperties.Name="{Binding Title, StringFormat=Delete contract {0}}"
                                                     Command="{Binding DataContext.DeleteCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     CommandParameter="{Binding}" />
@@ -208,6 +214,7 @@
                                        VerticalAlignment="Center" />
                             <Button Content="Try again" Height="28" Padding="10,0" FontSize="12"
                                     Margin="12,0,0,0"
+                                    AutomationProperties.Name="Retry loading contracts"
                                     Command="{Binding LoadCommand}" />
                         </StackPanel>
                     </Border>
@@ -220,6 +227,7 @@
                                Style="{StaticResource BodyTextStyle}" FontSize="15"
                                HorizontalAlignment="Center" />
                     <Button Content="+ New Contract" Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="Start a new contract"
                             Command="{Binding NewContractCommand}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>

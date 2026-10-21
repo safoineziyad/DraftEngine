@@ -568,10 +568,25 @@ public partial class ContractDetailViewModel : ObservableObject
 
     partial void OnIsHistoryVisibleChanged(bool value)
     {
-        // Refresh the snapshots when the panel opens so it is never stale.
-        if (value && Contract is not null)
+        // The Toolkit-generated property-changed hook cannot be awaited, so the refresh is
+        // handed to a helper that awaits it internally and reports every failure.
+        _ = RefreshVersionsAsync(value);
+    }
+
+    /// <summary>Reloads the version snapshots when the history panel is opened, reporting failures to the user.</summary>
+    private async Task RefreshVersionsAsync(bool visible)
+    {
+        try
         {
-            _ = ReloadVersionsAsync(Contract.Id);
+            if (visible && Contract is not null)
+            {
+                await ReloadVersionsAsync(Contract.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to reload versions");
+            ErrorMessage = "Could not load version history.";
         }
     }
 

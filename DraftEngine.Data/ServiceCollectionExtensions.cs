@@ -28,9 +28,17 @@ public static class ServiceCollectionExtensions
 
         var expandedConnectionString = Environment.ExpandEnvironmentVariables(connectionString);
 
+        // Encrypts the sensitive text columns (document, intake answers, chat, versions) at
+        // rest with DPAPI — audit Finding #3. Registered as a singleton so the same
+        // interceptor instance covers every context handed out by the factory.
+        services.AddSingleton<SensitiveDataInterceptor>();
+
         // Factory pattern (recommended by EF Core for desktop apps): no context is ever
         // shared across operations or pinned for the application's lifetime.
-        services.AddDbContextFactory<DraftEngineDbContext>(options => options.UseSqlite(expandedConnectionString));
+        services.AddDbContextFactory<DraftEngineDbContext>((serviceProvider, options) =>
+            options
+                .UseSqlite(expandedConnectionString)
+                .AddInterceptors(serviceProvider.GetRequiredService<SensitiveDataInterceptor>()));
 
         // Bridge to the Core-layer abstraction consumed by the application services.
         services.AddSingleton<IDatabaseContextFactory, DatabaseContextFactory>();

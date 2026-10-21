@@ -3,15 +3,18 @@ using System.Windows;
 namespace DraftEngine.App.Services;
 
 /// <summary>
-/// Shows small modal dialogs to the user (used by the contract wizard for friendly error reporting).
+/// Shows small modal dialogs to the user (used by the contract wizard for friendly error
+/// reporting and by the contract page for follow-up prompts).
 /// </summary>
 public interface IWizardDialogService
 {
     /// <summary>Shows an error dialog with a friendly title.</summary>
     void ShowError(string message, string title = "DraftEngine");
 
-    /// <summary>Shows a yes/no confirmation dialog. Returns <c>true</c> only when the user picks "Yes".</summary>
-    bool Confirm(string message, string title = "DraftEngine");
+    /// <summary>
+    /// Shows a yes/no confirmation dialog. Returns <c>true</c> only when the user picks "Yes".
+    /// </summary>
+    bool Confirm(string message, string title = "DraftEngine", MessageBoxImage icon = MessageBoxImage.Warning);
 }
 
 /// <summary>
@@ -26,9 +29,9 @@ public class WizardDialogService : IWizardDialogService
     }
 
     /// <inheritdoc />
-    public bool Confirm(string message, string title = "DraftEngine")
+    public bool Confirm(string message, string title = "DraftEngine", MessageBoxImage icon = MessageBoxImage.Warning)
     {
-        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, icon);
         return result == MessageBoxResult.Yes;
     }
 }

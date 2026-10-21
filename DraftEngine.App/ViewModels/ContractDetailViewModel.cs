@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
@@ -29,6 +31,7 @@ public partial class ContractDetailViewModel : ObservableObject
     private readonly IPdfBuilder _pdfBuilder;
     private readonly IDocumentExportService _exportService;
     private readonly INavigationService _navigation;
+    private readonly IWizardDialogService _dialogService;
 
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
@@ -105,7 +108,8 @@ public partial class ContractDetailViewModel : ObservableObject
         IDocxBuilder docxBuilder,
         IPdfBuilder pdfBuilder,
         IDocumentExportService exportService,
-        INavigationService navigation)
+        INavigationService navigation,
+        IWizardDialogService dialogService)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
@@ -113,19 +117,31 @@ public partial class ContractDetailViewModel : ObservableObject
         _pdfBuilder = pdfBuilder ?? throw new ArgumentNullException(nameof(pdfBuilder));
         _exportService = exportService ?? throw new ArgumentNullException(nameof(exportService));
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
+        _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
     }
 
     /// <inheritdoc cref="INavigationAware" />
     public async void OnNavigatedTo(object? parameter)
     {
-        var contractId = parameter as int?;
-        if (contractId is null or <= 0)
+        // The INavigationAware contract is async void (WPF navigation calls it synchronously),
+        // so the whole body is guarded: no exception may ever escape into the dispatcher and
+        // take the application down (audit Finding #5).
+        try
         {
-            MarkAsUnloaded("This contract could not be opened. Select it again from the Contracts list.");
-            return;
-        }
+            var contractId = parameter as int?;
+            if (contractId is null or <= 0)
+            {
+                MarkAsUnloaded("This contract could not be opened. Select it again from the Contracts list.");
+                return;
+            }
 
-        await LoadAsync(contractId.Value);
+            await LoadAsync(contractId.Value);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Unexpected failure while opening the contract detail page.");
+            MarkAsUnloaded("We couldn't open this contract. Please try again.");
+        }
     }
 
     /// <summary>Reloads the contract and its chat history.</summary>
@@ -328,14 +344,18 @@ public partial class ContractDetailViewModel : ObservableObject
             return;
         }
 
+        // The dialog usually yields a safe path, but a hand-typed name can still carry
+        // invalid characters or a Windows-reserved device name (audit Finding #12).
+        var targetPath = SanitizeExportPath(dialog.FileName, extension);
+
         IsBusy = true;
         ErrorMessage = null;
         InfoMessage = null;
         try
         {
             var finalPath = fileType == FileType.Pdf
-                ? await _pdfBuilder.BuildPdfAsync(Contract!, DocumentText, dialog.FileName)
-                : await _docxBuilder.BuildDocxAsync(Contract!, DocumentText, dialog.FileName);
+                ? await _pdfBuilder.BuildPdfAsync(Contract!, DocumentText, targetPath)
+                : await _docxBuilder.BuildDocxAsync(Contract!, DocumentText, targetPath);
 
             await _exportService.RecordExportAsync(Contract!.Id, finalPath, fileType);
 
@@ -346,6 +366,15 @@ public partial class ContractDetailViewModel : ObservableObject
             }
 
             InfoMessage = $"Exported to {finalPath}";
+
+            // Offer to open the exported file right away (audit Finding #20); declining or
+            // a failing shell open must never turn a successful export into an error.
+            if (_dialogService.Confirm(
+                    "The document was exported successfully. Open it now?", "Export complete",
+                    MessageBoxImage.Information))
+            {
+                OpenExportedFile(finalPath);
+            }
         }
         catch (InvalidOperationException ex)
         {
@@ -418,9 +447,61 @@ public partial class ContractDetailViewModel : ObservableObject
     private static string BuildDefaultFileName(Contract contract, string extension)
     {
         var raw = $"{contract.Title}-{contract.ContractType}";
+        return SanitizeFileName(raw, extension);
+    }
+
+    /// <summary>
+    /// Rebuilds an exported file path so it is always writable: invalid filename characters
+    /// are replaced, surrounding spaces and dots are trimmed, empty names fall back to a
+    /// generic one, and Windows-reserved device names (CON, NUL, COM1…) are prefixed.
+    /// </summary>
+    private static string SanitizeExportPath(string path, string extension)
+    {
+        var directory = Path.GetDirectoryName(path) ?? string.Empty;
+        var name = Path.GetFileNameWithoutExtension(path);
+        return Path.Combine(directory, SanitizeFileName(name, extension));
+    }
+
+    /// <summary>Sanitizes a bare file name (no directory) and appends the extension.</summary>
+    private static string SanitizeFileName(string rawName, string extension)
+    {
         var invalid = Path.GetInvalidFileNameChars();
-        var safe = new string(raw.Select(c => invalid.Contains(c) ? '-' : c).ToArray());
-        return $"{safe.Trim('-', ' ', '.')}.{extension}";
+        var safe = new string(rawName.Select(c => invalid.Contains(c) ? '_' : c).ToArray())
+            .Trim(' ', '.');
+
+        if (safe.Length == 0)
+        {
+            safe = "Contract";
+        }
+
+        if (ReservedFileNames.Contains(safe))
+        {
+            safe = "_" + safe;
+        }
+
+        return $"{safe}.{extension}";
+    }
+
+    /// <summary>Windows device names that cannot be used as file names.</summary>
+    private static readonly HashSet<string> ReservedFileNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "CON", "PRN", "AUX", "NUL",
+        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+    };
+
+    /// <summary>Opens a file with the Windows shell; failures are logged, never surfaced as errors.</summary>
+    private static void OpenExportedFile(string path)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            // The export itself succeeded; an unopenable file (deleted, no handler) is not an error.
+            Log.Warning(ex, "Failed to open the exported file {Path}.", path);
+        }
     }
 
     partial void OnDocumentTextChanged(string value)

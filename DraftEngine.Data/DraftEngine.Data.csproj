@@ -21,6 +21,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- DraftEngine is a Windows-only desktop product; the at-rest encryption deliberately
+         uses Windows DPAPI (System.Security.Cryptography.ProtectedData), which is
+         Windows-only by design. No cross-platform support is claimed for this project. -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
 </Project>

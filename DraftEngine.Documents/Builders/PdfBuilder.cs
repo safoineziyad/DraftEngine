@@ -17,6 +17,12 @@ public class PdfBuilder : IPdfBuilder
     {
         // QuestPDF requires a license to be set once, before the first document is generated.
         QuestPDF.Settings.License = LicenseType.Community;
+
+        // Since QuestPDF 2026.9 system fonts are disabled by default and a missing family
+        // (Georgia, our body font) fails generation. DraftEngine is a Windows-only app and
+        // Georgia ships with Windows, so system fonts are re-enabled deliberately — same
+        // rendering behaviour as previous QuestPDF versions.
+        QuestPDF.Settings.UseSystemFonts = true;
     }
 
     public async Task<string> BuildPdfAsync(Contract contract, string fullContractText, string outputPath)

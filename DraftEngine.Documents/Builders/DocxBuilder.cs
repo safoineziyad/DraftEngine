@@ -57,7 +57,7 @@ public class DocxBuilder : IDocxBuilder
         AppendContractBody(body, segments);
         AppendSignatureBlock(body, contract, signatureNames);
 
-        AppendFooter(mainPart);
+        AppendFooter(mainPart, body);
         mainPart.Document.Save();
     }
 
@@ -135,7 +135,7 @@ public class DocxBuilder : IDocxBuilder
             NewRun(rightLabel, 22)));
     }
 
-    private static void AppendFooter(MainDocumentPart mainPart)
+    private static void AppendFooter(MainDocumentPart mainPart, Body body)
     {
         var footerPart = mainPart.AddNewPart<FooterPart>();
         var footerParagraph = new Paragraph(
@@ -161,7 +161,9 @@ public class DocxBuilder : IDocxBuilder
                 Header = 720U,
                 Footer = 720U
             });
-        mainPart.Document.Body!.AppendChild(sectionProperties);
+        // Section properties must be the last child of the body; the body is handed in
+        // by WriteDocument (MainDocumentPart.Document is nullable in OpenXml 3.5+).
+        body.AppendChild(sectionProperties);
     }
 
     private static void AppendField(Paragraph paragraph, string fieldCode, string placeholder)

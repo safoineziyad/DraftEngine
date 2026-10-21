@@ -161,6 +161,155 @@ public class DataServicesTests : IDisposable
         Assert.Equal("as of January 15, 2026", resolved);
     }
 
+    // ---------------------------------------------------------------- FieldService edge cases
+
+    [Fact]
+    public async Task FieldService_MapFields_UnknownKeys_ArePersistedAndReturned()
+    {
+        var contract = await SeedContractAsync();
+        var service = new FieldService(_databaseFactory);
+
+        var values = await service.MapFieldsAsync(
+            contract.Id,
+            new Dictionary<string, string> { ["FavoriteColor"] = "Blue" });
+
+        // Free-form intake answers are stored verbatim, even when no placeholder uses them.
+        Assert.Equal("Blue", values["FavoriteColor"]);
+        var row = await _dbContext.ContractFields.AsNoTracking()
+            .SingleAsync(f => f.ContractId == contract.Id && f.Key == "FavoriteColor");
+        Assert.Equal("Blue", row.Value);
+    }
+
+    [Fact]
+    public async Task FieldService_MapFields_NullValue_IsStoredAsEmptyString()
+    {
+        var contract = await SeedContractAsync();
+        var service = new FieldService(_databaseFactory);
+
+        var values = await service.MapFieldsAsync(
+            contract.Id,
+            new Dictionary<string, string> { ["Party2"] = null! });
+
+        Assert.Equal(string.Empty, values["Party2"]);
+        var row = await _dbContext.ContractFields.AsNoTracking()
+            .SingleAsync(f => f.ContractId == contract.Id && f.Key == "Party2");
+        Assert.Equal(string.Empty, row.Value);
+    }
+
+    [Fact]
+    public async Task FieldService_MapFields_WhitespaceKey_IsSkipped()
+    {
+        var contract = await SeedContractAsync();
+        var service = new FieldService(_databaseFactory);
+
+        var values = await service.MapFieldsAsync(
+            contract.Id,
+            new Dictionary<string, string> { ["   "] = "junk", ["Party2"] = "Globex Corp" });
+
+        Assert.False(values.ContainsKey("   "));
+        Assert.Equal("Globex Corp", values["Party2"]);
+        Assert.Equal(1, await _dbContext.ContractFields.AsNoTracking()
+            .CountAsync(f => f.ContractId == contract.Id));
+    }
+
+    [Fact]
+    public async Task FieldService_MapFields_KeyIsTrimmed_AndMatchedCaseInsensitively()
+    {
+        var contract = await SeedContractAsync();
+        var service = new FieldService(_databaseFactory);
+
+        await service.MapFieldsAsync(contract.Id, new Dictionary<string, string> { ["Party2"] = "First" });
+        await service.MapFieldsAsync(contract.Id, new Dictionary<string, string> { [" party2 "] = "Second" });
+
+        // The padded/lowercased key matches the stored row instead of creating a duplicate.
+        var rows = await _dbContext.ContractFields.AsNoTracking()
+            .Where(f => f.ContractId == contract.Id)
+            .ToListAsync();
+        var row = Assert.Single(rows);
+        Assert.Equal("Party2", row.Key);
+        Assert.Equal("Second", row.Value);
+    }
+
+    [Fact]
+    public async Task FieldService_MapFields_NullFormValues_ReturnsStoredRowsOnly()
+    {
+        var contract = await SeedContractAsync();
+        _dbContext.ContractFields.Add(new ContractField { ContractId = contract.Id, Key = "Purpose", Value = "Evaluation" });
+        await _dbContext.SaveChangesAsync();
+
+        var service = new FieldService(_databaseFactory);
+        var values = await service.MapFieldsAsync(contract.Id, null!);
+
+        Assert.Equal("Evaluation", values["Purpose"]);
+    }
+
+    [Fact]
+    public void FieldService_ReplacesPlaceholders_LookupIsCaseInsensitive()
+    {
+        var fieldService = new FieldService();
+
+        var resolved = fieldService.ReplacePlaceholders(
+            "between {{Party1}} and {{party2}}",
+            new Dictionary<string, string> { ["party2"] = "Globex Corp" });
+
+        Assert.Equal("between the Disclosing Party and Globex Corp", resolved);
+    }
+
+    [Fact]
+    public void FieldService_ReplacesPlaceholders_WhitespaceValue_FallsBackToDefault()
+    {
+        var fieldService = new FieldService();
+
+        var resolved = fieldService.ReplacePlaceholders(
+            "{{Party2}} accepts delivery.",
+            new Dictionary<string, string> { ["Party2"] = "   " });
+
+        // A blank answer counts as missing, so the safe default is substituted instead.
+        Assert.Equal("the Receiving Party accepts delivery.", resolved);
+    }
+
+    [Fact]
+    public void FieldService_ReplacesPlaceholders_EffectiveDatePassThroughValues_AreStable()
+    {
+        var fieldService = new FieldService();
+
+        var alreadyLongForm = fieldService.ReplacePlaceholders(
+            "as of {{EffectiveDate}}",
+            new Dictionary<string, string> { ["EffectiveDate"] = "January 15, 2026" });
+        var unparseable = fieldService.ReplacePlaceholders(
+            "as of {{EffectiveDate}}",
+            new Dictionary<string, string> { ["EffectiveDate"] = "TBD" });
+
+        // Values that are already long-form (or are not dates at all) pass through unchanged.
+        Assert.Equal("as of January 15, 2026", alreadyLongForm);
+        Assert.Equal("as of TBD", unparseable);
+    }
+
+    [Fact]
+    public void FieldService_ReplacesPlaceholders_LowercaseEffectiveDateKey_SkipsLongFormFormatting()
+    {
+        var fieldService = new FieldService();
+
+        var resolved = fieldService.ReplacePlaceholders(
+            "as of {{effectivedate}}",
+            new Dictionary<string, string> { ["EffectiveDate"] = "2026-01-15" });
+
+        // Actual contract: the lookup is case-insensitive, but the long-form date formatting
+        // only triggers for the canonical "EffectiveDate" spelling, so the ISO value passes
+        // through raw. Seeded templates always use the canonical casing (guarded by
+        // SeededTemplateIntegrityTests); see AGENT-A-REPORT.md for the inconsistency note.
+        Assert.Equal("as of 2026-01-15", resolved);
+    }
+
+    [Fact]
+    public void FieldService_ReplacesPlaceholders_NullOrEmptyTemplate_ReturnsEmpty()
+    {
+        var fieldService = new FieldService();
+
+        Assert.Equal(string.Empty, fieldService.ReplacePlaceholders(null!, new Dictionary<string, string>()));
+        Assert.Equal(string.Empty, fieldService.ReplacePlaceholders(string.Empty, new Dictionary<string, string>()));
+    }
+
     // ---------------------------------------------------------------- ChatService
 
     [Fact]

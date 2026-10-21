@@ -16,6 +16,7 @@ public class DocumentExportServiceTests : IDisposable
 {
     private readonly SqliteConnection _connection;
     private readonly DraftEngineDbContext _dbContext;
+    private readonly TestDatabaseContextFactory _databaseFactory;
     private readonly DocumentExportService _service;
 
     public DocumentExportServiceTests()
@@ -31,7 +32,8 @@ public class DocumentExportServiceTests : IDisposable
         _dbContext.Database.EnsureCreated();
 
         // Same pattern as production: services open one short-lived context per operation.
-        _service = new DocumentExportService(new TestDatabaseContextFactory(options));
+        _databaseFactory = new TestDatabaseContextFactory(options);
+        _service = new DocumentExportService(_databaseFactory);
     }
 
     public void Dispose()
@@ -105,15 +107,109 @@ public class DocumentExportServiceTests : IDisposable
         Assert.Equal(0, await _dbContext.GeneratedDocuments.AsNoTracking().CountAsync());
     }
 
+    [Fact]
+    public async Task RecordExportAsync_MultipleExports_AllRecordsAccumulate()
+    {
+        var contract = await CreateContractAsync();
+
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v1.docx", FileType.Docx);
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v2.docx", FileType.Docx);
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v3.pdf", FileType.Pdf);
+
+        var documents = await _dbContext.GeneratedDocuments
+            .AsNoTracking()
+            .Where(d => d.ContractId == contract.Id)
+            .OrderBy(d => d.Version)
+            .ToListAsync();
+
+        Assert.Equal(3, documents.Count);
+        Assert.Equal(new[] { 1, 2, 3 }, documents.Select(d => d.Version));
+        Assert.Equal(new[] { FileType.Docx, FileType.Docx, FileType.Pdf }, documents.Select(d => d.FileType));
+
+        // The contract always points at the newest export.
+        var persistedContract = await _dbContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contract.Id);
+        Assert.Equal(@"C:\exports\v3.pdf", persistedContract.FinalFilePath);
+        Assert.Equal(ContractStatus.Exported, persistedContract.Status);
+    }
+
+    [Fact]
+    public async Task RecordExportAsync_VersionsAreIndependent_PerContract()
+    {
+        var contractA = await CreateContractAsync(email: "a@example.com");
+        var contractB = await CreateContractAsync(email: "b@example.com");
+
+        await _service.RecordExportAsync(contractA.Id, @"C:\exports\a-v1.docx", FileType.Docx);
+        await _service.RecordExportAsync(contractA.Id, @"C:\exports\a-v2.pdf", FileType.Pdf);
+        var firstForB = await _service.RecordExportAsync(contractB.Id, @"C:\exports\b-v1.docx", FileType.Docx);
+
+        // Contract A having two exports must not inflate contract B's version counter.
+        Assert.Equal(1, firstForB.Version);
+        Assert.Equal(2, await _dbContext.GeneratedDocuments.AsNoTracking().CountAsync(d => d.ContractId == contractB.Id));
+    }
+
+    [Fact]
+    public async Task RecordExportAsync_DeletedHighestVersion_ResumesFromRemainingMax()
+    {
+        var contract = await CreateContractAsync();
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v1.docx", FileType.Docx);
+        var second = await _service.RecordExportAsync(contract.Id, @"C:\exports\v2.pdf", FileType.Pdf);
+
+        // Remove the newest record directly; the next export must continue from the max
+        // remaining version (not from the row count), keeping versions collision-free.
+        _dbContext.GeneratedDocuments.Remove(second);
+        await _dbContext.SaveChangesAsync();
+
+        var third = await _service.RecordExportAsync(contract.Id, @"C:\exports\v3.pdf", FileType.Pdf);
+
+        Assert.Equal(2, third.Version);
+    }
+
+    [Fact]
+    public async Task RecordExportAsync_ContractDeleted_WithCascades()
+    {
+        var contract = await CreateContractAsync();
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v1.docx", FileType.Docx);
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v2.pdf", FileType.Pdf);
+
+        // Delete the contract row directly: the configured cascade removes the export records.
+        var tracked = await _dbContext.Contracts.SingleAsync(c => c.Id == contract.Id);
+        _dbContext.Contracts.Remove(tracked);
+        await _dbContext.SaveChangesAsync();
+
+        Assert.Empty(await _dbContext.GeneratedDocuments.AsNoTracking()
+            .Where(d => d.ContractId == contract.Id)
+            .ToListAsync());
+    }
+
+    [Fact]
+    public async Task RecordExportAsync_ContractDeletedViaService_RemovesExportRecords()
+    {
+        var contract = await CreateContractAsync();
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v1.docx", FileType.Docx);
+        await _service.RecordExportAsync(contract.Id, @"C:\exports\v2.pdf", FileType.Pdf);
+
+        // The application-level delete (ContractService) also purges GeneratedDocuments.
+        var contractService = new ContractService(
+            _databaseFactory, new FieldService(_databaseFactory), aiService: null);
+        await contractService.DeleteAsync(contract.Id);
+
+        Assert.Empty(await _dbContext.GeneratedDocuments.AsNoTracking()
+            .Where(d => d.ContractId == contract.Id)
+            .ToListAsync());
+        Assert.Null(await _dbContext.Contracts.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == contract.Id));
+    }
+
     // ---------------------------------------------------------------- helpers
 
-    private async Task<Contract> CreateContractAsync()
+    /// <summary>Seeds a generated-status contract for the given email and returns it.</summary>
+    private async Task<Contract> CreateContractAsync(string email = "user@example.com")
     {
         var contract = new Contract
         {
             User = new User
             {
-                Email = "user@example.com",
+                Email = email,
                 DisplayName = "Test User",
                 OpenAiApiKeyEncrypted = string.Empty
             },

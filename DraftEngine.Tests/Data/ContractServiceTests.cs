@@ -353,6 +353,7 @@ public class ContractServiceTests : IDisposable
         public string AssembledText { get; set; } = "ASSEMBLED";
         public ContractEditResult EditResult { get; set; } = new() { Success = true, UpdatedContractText = "UPDATED" };
         public Exception? AssemblyException { get; set; }
+        public Exception? EditException { get; set; }
         public List<(ContractClause ContractClause, Clause Clause)>? LastAssemblyClauses { get; private set; }
 
         public Task<string> GenerateClauseBodyAsync(Clause clause, Dictionary<string, string> fieldValues)
@@ -376,7 +377,14 @@ public class ContractServiceTests : IDisposable
         }
 
         public Task<ContractEditResult> ApplyChatEditAsync(Contract contract, string currentDocument, string userInstruction)
-            => Task.FromResult(EditResult);
+        {
+            if (EditException is not null)
+            {
+                throw EditException;
+            }
+
+            return Task.FromResult(EditResult);
+        }
 
         public Task<bool> TestConnectionAsync() => Task.FromResult(true);
 

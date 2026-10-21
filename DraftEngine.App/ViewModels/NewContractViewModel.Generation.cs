@@ -46,6 +46,7 @@ public partial class NewContractViewModel
         }
 
         IsBusy = true;
+        int createdId = 0;
         try
         {
             var values = GetFieldValues();
@@ -64,6 +65,7 @@ public partial class NewContractViewModel
             };
 
             var created = await _contractService.CreateAsync(contract);
+            createdId = created.Id;
             await _fieldService.MapFieldsAsync(created.Id, values);
 
             var selectedClauseIds = AllClauseOptions()
@@ -76,10 +78,9 @@ public partial class NewContractViewModel
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Contract generation failed.");
+            Log.Error(ex, "Contract generation failed for contract {ContractId}", createdId);
             _dialogs.ShowError(
-                "The contract could not be generated. Please review your entries and try again.\n\n" +
-                ex.Message);
+                "Contract generation failed. Please try again. If the problem persists, check your API key in Settings.");
         }
         finally
         {

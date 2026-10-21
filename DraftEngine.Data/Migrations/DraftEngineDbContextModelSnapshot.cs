@@ -351,6 +351,40 @@ namespace DraftEngine.Data.Migrations
                     b.ToTable("ContractFields", (string)null);
                 });
 
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.HasIndex("ContractId", "VersionNumber")
+                        .IsUnique();
+
+                    b.ToTable("ContractVersions", (string)null);
+                });
+
             modelBuilder.Entity("DraftEngine.Core.Models.GeneratedDocument", b =>
                 {
                     b.Property<int>("Id")
@@ -473,6 +507,17 @@ namespace DraftEngine.Data.Migrations
                     b.Navigation("Contract");
                 });
 
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractVersion", b =>
+                {
+                    b.HasOne("DraftEngine.Core.Models.Contract", "Contract")
+                        .WithMany("Versions")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+                });
+
             modelBuilder.Entity("DraftEngine.Core.Models.GeneratedDocument", b =>
                 {
                     b.HasOne("DraftEngine.Core.Models.Contract", "Contract")
@@ -498,6 +543,8 @@ namespace DraftEngine.Data.Migrations
                     b.Navigation("ContractFields");
 
                     b.Navigation("GeneratedDocuments");
+
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.User", b =>

@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:DraftEngine.App.Converters"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="BoolToVisInverse" />
     </UserControl.Resources>
 
     <Grid>
@@ -74,6 +76,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -83,7 +86,46 @@
                                    Style="{StaticResource SecondaryTextStyle}" />
                     </StackPanel>
 
-                    <TextBox Grid.Row="1"
+                    <!-- Version history: snapshots taken automatically before AI edits and regenerations -->
+                    <Expander Grid.Row="1" Margin="0,0,0,10"
+                              IsExpanded="{Binding IsHistoryVisible}"
+                              AutomationProperties.Name="Version history">
+                        <Expander.Header>
+                            <TextBlock Text="{Binding VersionHistoryHeader}" FontWeight="SemiBold" />
+                        </Expander.Header>
+                        <Grid Margin="0,6,0,2">
+                            <TextBlock Text="No earlier versions yet — one is saved automatically before every AI edit and regeneration."
+                                       Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap"
+                                       Visibility="{Binding IsVersionHistoryEmpty, Converter={StaticResource BoolToVis}}" />
+                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                                          Visibility="{Binding IsVersionHistoryEmpty, Converter={StaticResource BoolToVisInverse}}">
+                                <ItemsControl ItemsSource="{Binding Versions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding VersionLabel}" FontWeight="SemiBold"
+                                                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="1" Text="{Binding DetailsLabel}"
+                                                           Style="{StaticResource SecondaryTextStyle}"
+                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <Button Grid.Column="2" Content="Restore" Padding="10,2" Margin="8,0,0,0"
+                                                        Command="{Binding DataContext.RevertToVersionCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding VersionId}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Expander>
+
+                    <TextBox Grid.Row="2"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
                              AcceptsReturn="True"

@@ -38,4 +38,18 @@ public interface IContractService
     /// user-friendly message when the edit fails.
     /// </summary>
     Task<string> ApplyChatEditAsync(int contractId, string userInstruction);
+
+    /// <summary>
+    /// Returns the version history of a contract (automatic snapshots taken before AI edits,
+    /// regenerations and reverts), oldest first. Missing contracts yield an empty list.
+    /// </summary>
+    Task<IReadOnlyList<ContractVersion>> GetVersionsAsync(int contractId);
+
+    /// <summary>
+    /// Restores the contract's assembled text from an earlier snapshot. The text being
+    /// replaced is snapshotted first, so a revert can itself be undone. Returns the
+    /// restored text. Throws an InvalidOperationException with a user-friendly message
+    /// when the contract or the snapshot no longer exists.
+    /// </summary>
+    Task<string> RevertToVersionAsync(int contractId, int versionId);
 }

@@ -49,4 +49,10 @@ public class Contract
     /// Gets the documents generated from the contract.
     /// </summary>
     public ICollection<GeneratedDocument> GeneratedDocuments { get; set; } = new List<GeneratedDocument>();
+
+    /// <summary>
+    /// Gets the automatic text snapshots (version history) taken before AI edits,
+    /// regenerations and reverts, so an earlier draft can always be restored.
+    /// </summary>
+    public ICollection<ContractVersion> Versions { get; set; } = new List<ContractVersion>();
 }

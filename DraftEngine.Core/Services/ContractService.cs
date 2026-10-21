@@ -26,6 +26,19 @@ public class ContractService : IContractService
     private const string FriendlyFailure =
         "Something went wrong. Please try again. The full error was written to the log.";
 
+    /// <summary>Snapshot reason recorded before an AI chat edit replaces the text.</summary>
+    public const string AiEditReason = "AI edit";
+
+    /// <summary>Snapshot reason recorded before a regeneration replaces the text.</summary>
+    public const string RegenerationReason = "Regeneration";
+
+    /// <summary>Snapshot reason recorded before a revert replaces the text.</summary>
+    public const string RevertReason = "Before revert";
+
+    // Version history hygiene: snapshots are taken automatically, so cap them per contract
+    // to keep the database (and the history list) bounded for long-lived contracts.
+    private const int MaxVersionsPerContract = 50;
+
     private readonly IDatabaseContextFactory _databaseFactory;
     private readonly IFieldService _fieldService;
     private readonly IContractAiService? _aiService;
@@ -135,6 +148,7 @@ public class ContractService : IContractService
             .Include(c => c.ContractFields)
             .Include(c => c.ChatMessages)
             .Include(c => c.GeneratedDocuments)
+            .Include(c => c.Versions)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (contract is null)
@@ -146,6 +160,7 @@ public class ContractService : IContractService
         database.Set<ContractField>().RemoveRange(contract.ContractFields);
         database.Set<ChatMessage>().RemoveRange(contract.ChatMessages);
         database.Set<GeneratedDocument>().RemoveRange(contract.GeneratedDocuments);
+        database.Set<ContractVersion>().RemoveRange(contract.Versions);
         database.Set<Contract>().Remove(contract);
 
         await database.SaveChangesAsync();
@@ -210,12 +225,16 @@ public class ContractService : IContractService
             }
         }
 
+        // Keep the text being replaced in the version history so a regeneration is undoable.
+        StageVersionSnapshot(database, contract, RegenerationReason);
+
         contract.AssembledText = documentText;
         contract.LastGeneratedAt = DateTime.UtcNow;
         contract.UpdatedAt = DateTime.UtcNow;
         contract.Status = ContractStatus.Generated;
 
         await database.SaveChangesAsync();
+        await PruneOldVersionsAsync(database, contract.Id);
         return documentText;
     }
 
@@ -272,6 +291,10 @@ public class ContractService : IContractService
             throw new InvalidOperationException(reason);
         }
 
+        // Keep the pre-edit text in the version history so the user can always revert a
+        // chat edit that damaged the contract (audit Finding #1).
+        StageVersionSnapshot(database, contract, AiEditReason);
+
         contract.AssembledText = result.UpdatedContractText.Trim();
         contract.UpdatedAt = DateTime.UtcNow;
 
@@ -292,7 +315,108 @@ public class ContractService : IContractService
         });
 
         await database.SaveChangesAsync();
+        await PruneOldVersionsAsync(database, contractId);
         return contract.AssembledText;
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<ContractVersion>> GetVersionsAsync(int contractId)
+    {
+        using var database = _databaseFactory.CreateContext();
+
+        return await database.Set<ContractVersion>()
+            .AsNoTracking()
+            .Where(version => version.ContractId == contractId)
+            .OrderBy(version => version.VersionNumber)
+            .ToListAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<string> RevertToVersionAsync(int contractId, int versionId)
+    {
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>()
+            .FirstOrDefaultAsync(c => c.Id == contractId);
+        if (contract is null)
+        {
+            throw new InvalidOperationException(ContractNotFound);
+        }
+
+        var version = await database.Set<ContractVersion>()
+            .FirstOrDefaultAsync(v => v.Id == versionId && v.ContractId == contractId);
+        if (version is null)
+        {
+            throw new InvalidOperationException(
+                "That earlier version could not be found. Reload the version history and try again.");
+        }
+
+        if (string.IsNullOrWhiteSpace(contract.AssembledText))
+        {
+            throw new InvalidOperationException("There is no current document to revert.");
+        }
+
+        if (string.Equals(contract.AssembledText, version.Text, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                "The contract already shows this version, so there is nothing to restore.");
+        }
+
+        // Snapshot the text being replaced: reverting must itself be undoable.
+        StageVersionSnapshot(database, contract, RevertReason);
+
+        contract.AssembledText = version.Text;
+        contract.UpdatedAt = DateTime.UtcNow;
+
+        await database.SaveChangesAsync();
+        await PruneOldVersionsAsync(database, contractId);
+        return contract.AssembledText;
+    }
+
+    /// <summary>
+    /// Stages a snapshot of the contract's current text (without saving: the caller's
+    /// SaveChanges persists it together with its own changes). Snapshots are skipped when
+    /// there is no text yet — an empty document has no history worth keeping.
+    /// </summary>
+    private static void StageVersionSnapshot(DbContext database, Contract contract, string reason)
+    {
+        if (string.IsNullOrWhiteSpace(contract.AssembledText))
+        {
+            return;
+        }
+
+        var currentMax = database.Set<ContractVersion>()
+            .Where(version => version.ContractId == contract.Id)
+            .OrderByDescending(version => version.VersionNumber)
+            .Select(version => (int?)version.VersionNumber)
+            .FirstOrDefault();
+
+        database.Set<ContractVersion>().Add(new ContractVersion
+        {
+            ContractId = contract.Id,
+            VersionNumber = (currentMax ?? 0) + 1,
+            Text = contract.AssembledText,
+            Reason = reason,
+            CreatedAt = DateTime.UtcNow,
+        });
+    }
+
+    /// <summary>Deletes the oldest snapshots beyond <see cref="MaxVersionsPerContract"/>.</summary>
+    private static async Task PruneOldVersionsAsync(DbContext database, int contractId)
+    {
+        var excess = await database.Set<ContractVersion>()
+            .Where(version => version.ContractId == contractId)
+            .OrderByDescending(version => version.VersionNumber)
+            .Skip(MaxVersionsPerContract)
+            .ToListAsync();
+
+        if (excess.Count == 0)
+        {
+            return;
+        }
+
+        database.Set<ContractVersion>().RemoveRange(excess);
+        await database.SaveChangesAsync();
     }
 
     /// <summary>Persists a single user chat message (used on the edit-failure path).</summary>

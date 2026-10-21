@@ -45,6 +45,20 @@ public partial class ContractDetailViewModel : ObservableObject
     /// <summary>Chat history rows displayed in the assistant panel.</summary>
     public ObservableCollection<ChatMessageRowViewModel> ChatMessages { get; } = new();
 
+    /// <summary>Version history rows (newest first) shown in the document panel.</summary>
+    public ObservableCollection<ContractVersionRowViewModel> Versions { get; } = new();
+
+    /// <summary>True when the version history panel is expanded.</summary>
+    [ObservableProperty]
+    private bool isHistoryVisible;
+
+    /// <summary>Header text of the version history panel, including the snapshot count.</summary>
+    public string VersionHistoryHeader =>
+        Versions.Count == 0 ? "Version history" : $"Version history ({Versions.Count})";
+
+    /// <summary>True when no snapshots exist yet (hint text shown instead of the list).</summary>
+    public bool IsVersionHistoryEmpty => Versions.Count == 0;
+
     /// <summary>The draft of the next chat instruction.</summary>
     [ObservableProperty]
     private string chatInput = string.Empty;
@@ -137,6 +151,7 @@ public partial class ContractDetailViewModel : ObservableObject
             PageTitle = contract.Title;
             DocumentText = contract.AssembledText ?? string.Empty;
             await ReloadChatAsync(contractId);
+            await ReloadVersionsAsync(contractId);
         }
         catch (Exception ex)
         {
@@ -171,6 +186,7 @@ public partial class ContractDetailViewModel : ObservableObject
                 Contract = refreshed;
             }
 
+            await ReloadVersionsAsync(Contract.Id);
             InfoMessage = "The contract was regenerated from its clauses and intake answers.";
         }
         catch (InvalidOperationException ex)
@@ -214,6 +230,7 @@ public partial class ContractDetailViewModel : ObservableObject
             ChatInput = string.Empty;
             Contract!.AssembledText = updatedText;
             await ReloadChatAsync(Contract.Id);
+            await ReloadVersionsAsync(Contract.Id);
         }
         catch (InvalidOperationException ex)
         {
@@ -233,10 +250,52 @@ public partial class ContractDetailViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Restores the document text from an earlier version-history snapshot. The text being
+    /// replaced is snapshotted first, so the revert itself can be undone from the same list.
+    /// </summary>
+    [RelayCommand]
+    private async Task RevertToVersionAsync(int versionId)
+    {
+        if (IsBusy || Contract is null) return;
+
+        IsBusy = true;
+        ErrorMessage = null;
+        InfoMessage = null;
+        try
+        {
+            var restoredText = await _contractService.RevertToVersionAsync(Contract.Id, versionId);
+            DocumentText = restoredText;
+            Contract!.AssembledText = restoredText;
+
+            var refreshed = await _contractService.GetByIdAsync(Contract.Id);
+            if (refreshed is not null)
+            {
+                Contract = refreshed;
+            }
+
+            await ReloadVersionsAsync(Contract.Id);
+            InfoMessage = "The earlier version was restored. The text it replaced was kept in the version history.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            Log.Warning(ex, "Version revert rejected for contract {ContractId}.", Contract.Id);
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to revert contract {ContractId} to version {VersionId}.", Contract.Id, versionId);
+            ErrorMessage = "We couldn't restore that version. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     /// <summary>Exports the document as DOCX via a save-file dialog.</summary>
     [RelayCommand]
     private async Task ExportDocxAsync() => await ExportAsync(FileType.Docx);
-
     /// <summary>Exports the document as PDF via a save-file dialog.</summary>
     [RelayCommand]
     private async Task ExportPdfAsync() => await ExportAsync(FileType.Pdf);
@@ -323,6 +382,29 @@ public partial class ContractDetailViewModel : ObservableObject
         }
     }
 
+    /// <summary>Reloads the version history (newest first); failures never block the page.</summary>
+    private async Task ReloadVersionsAsync(int contractId)
+    {
+        try
+        {
+            var versions = await _contractService.GetVersionsAsync(contractId);
+
+            Versions.Clear();
+            foreach (var version in versions.Reverse())
+            {
+                Versions.Add(new ContractVersionRowViewModel(version));
+            }
+
+            OnPropertyChanged(nameof(VersionHistoryHeader));
+            OnPropertyChanged(nameof(IsVersionHistoryEmpty));
+        }
+        catch (Exception ex)
+        {
+            // Supporting context only: the page stays usable without the history list.
+            Log.Warning(ex, "Failed to load the version history for contract {ContractId}.", contractId);
+        }
+    }
+
     private void MarkAsUnloaded(string message)
     {
         LoadFailed = true;
@@ -345,6 +427,15 @@ public partial class ContractDetailViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasDocument));
         OnPropertyChanged(nameof(CanChat));
+    }
+
+    partial void OnIsHistoryVisibleChanged(bool value)
+    {
+        // Refresh the snapshots when the panel opens so it is never stale.
+        if (value && Contract is not null)
+        {
+            _ = ReloadVersionsAsync(Contract.Id);
+        }
     }
 
     partial void OnChatInputChanged(string value) => RaiseChatAvailability();
@@ -384,4 +475,29 @@ public partial class ChatMessageRowViewModel : ObservableObject
 
     /// <summary>The local creation time, shown as HH:mm.</summary>
     public string TimeLabel { get; }
+}
+
+/// <summary>
+/// Display row for one version-history snapshot: version number, why it was taken
+/// and when, plus the identifier the revert command needs.
+/// </summary>
+public sealed class ContractVersionRowViewModel
+{
+    /// <summary>Creates the row from the persisted snapshot.</summary>
+    public ContractVersionRowViewModel(ContractVersion version)
+    {
+        ArgumentNullException.ThrowIfNull(version);
+        VersionId = version.Id;
+        VersionLabel = $"#{version.VersionNumber}";
+        DetailsLabel = $"{version.Reason} · {version.CreatedAt.ToLocalTime():g}";
+    }
+
+    /// <summary>Database identifier passed to the revert command.</summary>
+    public int VersionId { get; }
+
+    /// <summary>Short version label, e.g. "#3".</summary>
+    public string VersionLabel { get; }
+
+    /// <summary>Human-readable reason and local timestamp of the snapshot.</summary>
+    public string DetailsLabel { get; }
 }

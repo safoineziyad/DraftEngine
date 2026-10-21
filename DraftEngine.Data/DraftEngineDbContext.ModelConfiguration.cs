@@ -130,6 +130,24 @@ public partial class DraftEngineDbContext
 
             entity.Property(document => document.FilePath).HasMaxLength(1024).IsRequired();
         });
+
+        modelBuilder.Entity<ContractVersion>(entity =>
+        {
+            entity.ToTable("ContractVersions");
+            entity.HasKey(version => version.Id);
+
+            entity.Property(version => version.Reason).HasMaxLength(100).IsRequired();
+            // Text: unbounded snapshot text, deliberately no max length.
+
+            entity.HasIndex(version => version.ContractId);
+            entity.HasIndex(version => new { version.ContractId, version.VersionNumber }).IsUnique();
+
+            // Snapshots are owned history: removing the contract removes them too.
+            entity.HasOne(version => version.Contract)
+                .WithMany(contract => contract.Versions)
+                .HasForeignKey(version => version.ContractId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 
     private static void SeedClauses(ModelBuilder modelBuilder)

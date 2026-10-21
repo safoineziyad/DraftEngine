@@ -19,6 +19,7 @@ public partial class DraftEngineDbContext : DbContext
     public DbSet<ContractField> ContractFields => Set<ContractField>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<GeneratedDocument> GeneratedDocuments => Set<GeneratedDocument>();
+    public DbSet<ContractVersion> ContractVersions => Set<ContractVersion>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

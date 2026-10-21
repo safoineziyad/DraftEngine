@@ -24,7 +24,15 @@
                     <TextBlock Text="OpenAI" FontWeight="SemiBold" FontSize="15"
                                Foreground="{StaticResource TextPrimaryBrush}" />
                     <TextBlock Text="Your API key is stored encrypted on this computer and is never sent anywhere except to OpenAI."
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,16" />
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <TextBlock Text="How your data is handled: when you use AI features (chat edits and AI polish), the contract text, "
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
+                    <TextBlock Text="your instructions and the intake answers are transmitted to OpenAI for processing. Contract content and "
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
+                    <TextBlock Text="chat history are stored encrypted on this computer. Do not use AI features for privileged or confidential "
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
+                    <TextBlock Text="client material you are not permitted to share with a third-party service."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,16" />
 
                     <!-- API key -->
                     <TextBlock Text="API key" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />

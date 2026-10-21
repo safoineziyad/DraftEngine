@@ -9,6 +9,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Settings;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
@@ -32,6 +33,7 @@ public partial class ContractDetailViewModel : ObservableObject
     private readonly IDocumentExportService _exportService;
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogService;
+    private readonly IAppSettingsService _settingsService;
 
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
@@ -109,7 +111,8 @@ public partial class ContractDetailViewModel : ObservableObject
         IPdfBuilder pdfBuilder,
         IDocumentExportService exportService,
         INavigationService navigation,
-        IWizardDialogService dialogService)
+        IWizardDialogService dialogService,
+        IAppSettingsService settingsService)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
@@ -118,6 +121,7 @@ public partial class ContractDetailViewModel : ObservableObject
         _exportService = exportService ?? throw new ArgumentNullException(nameof(exportService));
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+        _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
     }
 
     /// <inheritdoc cref="INavigationAware" />
@@ -236,6 +240,14 @@ public partial class ContractDetailViewModel : ObservableObject
         if (!HasDocument)
         {
             ErrorMessage = "Generate the contract before asking for edits.";
+            return;
+        }
+
+        // First AI edit only: explain that the contract text leaves this computer
+        // (audit Finding #10) and record the acknowledgement so it is never asked again.
+        if (!await EnsureAiDataConsentAsync())
+        {
+            InfoMessage = "The instruction was not sent. AI edits share the contract text with OpenAI.";
             return;
         }
 
@@ -516,6 +528,37 @@ public partial class ContractDetailViewModel : ObservableObject
     /// <summary>True when the text still contains raw <c>{{...}}</c> placeholders.</summary>
     private static bool HasUnresolvedPlaceholders(string text) =>
         text.Contains("{{", StringComparison.Ordinal);
+
+    /// <summary>
+    /// Asks for the AI data-sharing acknowledgement before the first chat edit, and persists
+    /// it so the question is only ever shown once (audit Finding #10). Declining is free of
+    /// consequences: nothing is sent and the chat box keeps the typed instruction.
+    /// </summary>
+    private async Task<bool> EnsureAiDataConsentAsync()
+    {
+        if (_settingsService.Current.AiDataConsentAccepted)
+        {
+            return true;
+        }
+
+        var accepted = _dialogService.Confirm(
+            "AI edits share this contract's text with OpenAI for processing.\n\n" +
+            "Only continue if you are comfortable sending this document to OpenAI — for " +
+            "example, if it contains no privileged or confidential client material you are " +
+            "not permitted to share with a third-party service.\n\n" +
+            "Continue with AI editing?",
+            "AI editing sends data to OpenAI",
+            MessageBoxImage.Information);
+
+        if (!accepted)
+        {
+            return false;
+        }
+
+        _settingsService.Current.AiDataConsentAccepted = true;
+        await _settingsService.SaveAsync(_settingsService.Current);
+        return true;
+    }
 
     partial void OnDocumentTextChanged(string value)
     {

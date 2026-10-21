@@ -159,6 +159,9 @@ public partial class SettingsViewModel : ObservableObject
                 OpenAiModel = SelectedModel,
                 DefaultGoverningLaw = SelectedGoverningLaw,
                 DefaultTermMonths = termMonths,
+                // Preserve the AI data-sharing acknowledgement — editing settings must not
+                // silently withdraw the consent given during a chat edit.
+                AiDataConsentAccepted = _settingsService.Current.AiDataConsentAccepted,
             };
             await _settingsService.SaveAsync(settings);
             IsDirty = false;

@@ -71,6 +71,7 @@ public sealed class AppSettingsService : IAppSettingsService
                 ? "California"
                 : settings.DefaultGoverningLaw,
             DefaultTermMonths = settings.DefaultTermMonths <= 0 ? 12 : settings.DefaultTermMonths,
+            AiDataConsentAccepted = settings.AiDataConsentAccepted,
         };
 
         var json = JsonSerializer.Serialize(stored, JsonOptions);
@@ -133,6 +134,7 @@ public sealed class AppSettingsService : IAppSettingsService
                     ? "California"
                     : stored.DefaultGoverningLaw,
                 DefaultTermMonths = stored.DefaultTermMonths <= 0 ? 12 : stored.DefaultTermMonths,
+                AiDataConsentAccepted = stored.AiDataConsentAccepted,
             };
         }
         catch (Exception ex)
@@ -150,5 +152,6 @@ public sealed class AppSettingsService : IAppSettingsService
         public string OpenAiModel { get; set; } = AppSettings.FallbackModel;
         public string DefaultGoverningLaw { get; set; } = "California";
         public int DefaultTermMonths { get; set; } = 12;
+        public bool AiDataConsentAccepted { get; set; }
     }
 }

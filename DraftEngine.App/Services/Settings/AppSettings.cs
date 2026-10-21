@@ -21,4 +21,10 @@ public class AppSettings
 
     /// <summary>The default contract term length in months.</summary>
     public int DefaultTermMonths { get; set; } = 12;
+
+    /// <summary>
+    /// True once the user has acknowledged that AI edits send the contract text to OpenAI
+    /// (audit Finding #10). Persisted so the acknowledgement is only ever asked once.
+    /// </summary>
+    public bool AiDataConsentAccepted { get; set; }
 }

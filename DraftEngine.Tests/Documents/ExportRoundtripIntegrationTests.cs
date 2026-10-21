@@ -95,8 +95,8 @@ public class ExportRoundtripIntegrationTests : IDisposable
         // Valid OpenXML zip
         using var doc = WordprocessingDocument.Open(path, false);
         Assert.NotNull(doc.MainDocumentPart);
-        Assert.NotNull(doc.MainDocumentPart!.Document.Body);
-        var inner = doc.MainDocumentPart.Document.Body!.InnerText;
+        Assert.NotNull(doc.MainDocumentPart!.Document!.Body);
+        var inner = doc.MainDocumentPart!.Document!.Body!.InnerText;
         Assert.Contains("Confidentiality", inner);
         Assert.Contains("Governing Law", inner);
         Assert.DoesNotContain("{{", inner);
@@ -124,7 +124,7 @@ public class ExportRoundtripIntegrationTests : IDisposable
         Assert.True(File.Exists(pdfPath));
 
         using var doc = WordprocessingDocument.Open(docxPath, false);
-        var inner = doc.MainDocumentPart!.Document.Body!.InnerText;
+        var inner = doc.MainDocumentPart!.Document!.Body!.InnerText;
         Assert.Contains("café", inner);
     }
 }

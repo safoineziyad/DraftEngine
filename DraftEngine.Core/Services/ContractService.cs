@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
@@ -291,11 +292,23 @@ public class ContractService : IContractService
             throw new InvalidOperationException(reason);
         }
 
+        var updatedText = result.UpdatedContractText.Trim();
+
+        // Guard against a truncated or clause-dropping reply before it can replace the
+        // stored contract (audit Finding #2): an accepted edit must not silently destroy
+        // most of the document.
+        var validationError = ValidateEditedText(contract.AssembledText, updatedText);
+        if (validationError is not null)
+        {
+            await AppendUserMessageAsync(database, contractId, instruction);
+            throw new InvalidOperationException(validationError);
+        }
+
         // Keep the pre-edit text in the version history so the user can always revert a
         // chat edit that damaged the contract (audit Finding #1).
         StageVersionSnapshot(database, contract, AiEditReason);
 
-        contract.AssembledText = result.UpdatedContractText.Trim();
+        contract.AssembledText = updatedText;
         contract.UpdatedAt = DateTime.UtcNow;
 
         var now = DateTime.UtcNow;
@@ -371,6 +384,50 @@ public class ContractService : IContractService
         await database.SaveChangesAsync();
         await PruneOldVersionsAsync(database, contractId);
         return contract.AssembledText;
+    }
+
+    /// <summary>Matches the numbered clause headings ("1. Title") the document builders detect.</summary>
+    private static readonly Regex ClauseHeadingPattern = new(@"^\s*\d+\.\s+\S", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Rejects an AI reply that would clearly destroy the contract (audit Finding #2): text
+    /// below a third of the original length is treated as truncated, and losing more than one
+    /// numbered clause heading is treated as accidental clause deletion. Returns a
+    /// user-friendly rejection message, or null when the reply looks sane. Legitimate edits
+    /// (wording changes, condensing a single clause) always pass.
+    /// </summary>
+    internal static string? ValidateEditedText(string originalText, string editedText)
+    {
+        if (editedText.Length * 3 < originalText.Length)
+        {
+            return "The assistant's reply looks incomplete — it is much shorter than the current " +
+                   "contract — so it was not applied. Nothing was changed. Try a more specific request.";
+        }
+
+        var originalHeadings = CountClauseHeadings(originalText);
+        var editedHeadings = CountClauseHeadings(editedText);
+        if (originalHeadings > 0 && editedHeadings < originalHeadings - 1)
+        {
+            return "The assistant's reply appears to have removed clauses from the contract, so " +
+                   "it was not applied. Nothing was changed. Try asking for one smaller, specific change.";
+        }
+
+        return null;
+    }
+
+    /// <summary>Counts numbered clause heading lines ("1. Title") in a document.</summary>
+    private static int CountClauseHeadings(string text)
+    {
+        var count = 0;
+        foreach (var line in text.Split('\n'))
+        {
+            if (ClauseHeadingPattern.IsMatch(line.TrimEnd('\r')))
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     /// <summary>

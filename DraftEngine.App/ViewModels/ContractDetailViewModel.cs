@@ -203,7 +203,10 @@ public partial class ContractDetailViewModel : ObservableObject
             }
 
             await ReloadVersionsAsync(Contract.Id);
-            InfoMessage = "The contract was regenerated from its clauses and intake answers.";
+            InfoMessage = HasUnresolvedPlaceholders(text)
+                ? "The contract was regenerated, but some placeholders could not be filled and " +
+                  "are still visible as {{...}} in the document. Use the assistant to complete them."
+                : "The contract was regenerated from its clauses and intake answers.";
         }
         catch (InvalidOperationException ex)
         {
@@ -247,6 +250,12 @@ public partial class ContractDetailViewModel : ObservableObject
             Contract!.AssembledText = updatedText;
             await ReloadChatAsync(Contract.Id);
             await ReloadVersionsAsync(Contract.Id);
+
+            if (HasUnresolvedPlaceholders(updatedText))
+            {
+                InfoMessage = "Some placeholders are still visible as {{...}} in the document — " +
+                              "ask the assistant to fill them in.";
+            }
         }
         catch (InvalidOperationException ex)
         {
@@ -503,6 +512,10 @@ public partial class ContractDetailViewModel : ObservableObject
             Log.Warning(ex, "Failed to open the exported file {Path}.", path);
         }
     }
+
+    /// <summary>True when the text still contains raw <c>{{...}}</c> placeholders.</summary>
+    private static bool HasUnresolvedPlaceholders(string text) =>
+        text.Contains("{{", StringComparison.Ordinal);
 
     partial void OnDocumentTextChanged(string value)
     {

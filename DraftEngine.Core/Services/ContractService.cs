@@ -40,6 +40,11 @@ public class ContractService : IContractService
     // to keep the database (and the history list) bounded for long-lived contracts.
     private const int MaxVersionsPerContract = 50;
 
+    // Chat history hygiene (audit Finding #7): every chat edit appends two messages, so an
+    // active contract would otherwise grow the table without bound. Only the newest
+    // messages matter for the on-screen history.
+    private const int MaxChatMessagesPerContract = 200;
+
     private readonly IDatabaseContextFactory _databaseFactory;
     private readonly IFieldService _fieldService;
     private readonly IContractAiService? _aiService;
@@ -207,6 +212,15 @@ public class ContractService : IContractService
         var fieldValues = await LoadFieldValuesAsync(database, contract);
         var documentText = BuildDocument(contract, selectedClauses, fieldValues);
 
+        if (documentText.Contains("{{", StringComparison.Ordinal))
+        {
+            // Audit Finding #11: never let an unfilled placeholder pass silently — the UI
+            // surfaces a friendly hint on top of this log entry.
+            _logger?.LogWarning(
+                "Contract {ContractId} was generated with unresolved placeholders still visible as {{...}}.",
+                contract.Id);
+        }
+
         if (useAiPolish && _aiService is not null && selectedClauses.Count > 0)
         {
             try
@@ -329,6 +343,7 @@ public class ContractService : IContractService
 
         await database.SaveChangesAsync();
         await PruneOldVersionsAsync(database, contractId);
+        await PruneOldChatMessagesAsync(database, contractId);
         return contract.AssembledText;
     }
 
@@ -473,6 +488,28 @@ public class ContractService : IContractService
         }
 
         database.Set<ContractVersion>().RemoveRange(excess);
+        await database.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Deletes the oldest chat messages beyond <see cref="MaxChatMessagesPerContract"/>,
+    /// keeping the newest ones the user actually reads (audit Finding #7).
+    /// </summary>
+    private static async Task PruneOldChatMessagesAsync(DbContext database, int contractId)
+    {
+        var excess = await database.Set<ChatMessage>()
+            .Where(message => message.ContractId == contractId)
+            .OrderByDescending(message => message.CreatedAt)
+            .ThenByDescending(message => message.Id)
+            .Skip(MaxChatMessagesPerContract)
+            .ToListAsync();
+
+        if (excess.Count == 0)
+        {
+            return;
+        }
+
+        database.Set<ChatMessage>().RemoveRange(excess);
         await database.SaveChangesAsync();
     }
 

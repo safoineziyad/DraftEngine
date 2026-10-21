@@ -15,7 +15,10 @@ namespace DraftEngine.Core.Services;
 /// </summary>
 public class FieldService : IFieldService
 {
-    private static readonly Regex PlaceholderPattern = new(@"\{\{(\w+)\}\}", RegexOptions.Compiled);
+    // Matches {{Placeholder}} keys, allowing word characters plus hyphens and dots
+    // (e.g. {{Party-1.Name}}) — audit Finding #17: the previous \w-only pattern left
+    // hyphenated or dotted keys literal even when a matching value existed.
+    private static readonly Regex PlaceholderPattern = new(@"\{\{([\w\-.]+)\}\}", RegexOptions.Compiled);
 
     /// <summary>
     /// Defaults for the supported placeholder keys, so a contract never contains a raw {{...}}.

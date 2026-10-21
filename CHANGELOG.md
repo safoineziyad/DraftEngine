@@ -1,26 +1,33 @@
 # Changelog
 
-All notable changes to DraftEngine are documented in this file.
+All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-10-20
-
-Initial release.
+## [0.2.0] - 2026-10-21
 
 ### Added
+- Contract version history with snapshots before AI edits/regenerations and one-click restore in Contract Detail (WP2)
+- DPAPI encryption for contract text, intake answers, chat history, and version snapshots at rest (WP4) with Windows-profile migration warnings
+- App version shown from csproj; accessibility names added to controls
+- AI data sharing disclosure with first-chat confirmation
+- IHttpClientFactory for OpenAI traffic; placeholder widening; unresolved placeholder surfacing
+- Navigation guard, export path sanitization, and "open export" action
+- Chat history cap (200) and placeholder validation
 
-- **Application shell**: WPF/.NET 8 desktop app using MVVM (CommunityToolkit.Mvvm), dependency injection (Microsoft.Extensions.Hosting), and Serilog rolling file logs in `%APPDATA%\DraftEngine\logs`.
-- **Dashboard**: contract counts and a list of recently updated contracts.
-- **New Contract wizard** with four steps (Type → Details → Clauses → Review). **Mutual NDA** is the live contract type; One-Way NDA, Independent Contractor Agreement and Consulting Agreement are listed as *Coming soon*.
-- **Intake form** with required fields (parties and addresses, client name/email, effective date, governing law, term in months, purpose), pre-filled from Settings defaults.
-- **Clause library**: 12 Mutual NDA clauses seeded into SQLite on first run, grouped by category, with live previews and per-clause selection (core clauses pre-selected, some optional).
-- **Contract generation pipeline**: deterministic, template-first assembly via `{{Placeholder}}` substitution (`FieldService`); works with no OpenAI API key configured.
-- **Contract detail view**: read-only assembled document plus **chat-based editing** with natural-language instructions (OpenAI API key required; chat history persisted locally).
-- **Export**: DOCX (`DocumentFormat.OpenXml`) and PDF (QuestPDF) from the contract detail page, with export history recorded per contract.
-- **Contracts list**: search by title or client, filter by contract type, sort options, status and dates.
-- **Settings**: OpenAI API key entry with **Test Connection** button, model selection (`gpt-4o-mini` default, `gpt-4o`), and contract defaults (governing law, term). The API key is stored **DPAPI-encrypted for the current Windows user** in `%APPDATA%\DraftEngine\settings.json` (encrypted on disk, never logged); an `OPENAI_API_KEY` environment variable is honored as a fallback and `appsettings.json` ships with an empty key.
-- **Storage**: SQLite via EF Core with automatic migration on first start to `%APPDATA%\DraftEngine\draftengine.db`.
-- **Tests**: xUnit suite (46+ tests as of this writing) covering services, generation, export and AI plumbing; all AI calls mocked, no network required — run `dotnet test DraftEngine.sln`.
-- **Installer**: Inno Setup 6 script and PowerShell build script (`installer\Build-Installer.ps1`) producing a per-user, no-UAC setup at `installer\Output\DraftEngine-Setup-1.0.0.exe` (see `installer/README.md`).
+### Changed
+- Dependency updates in .NET 8 band (SQLitePCLRaw advisory patch)
+- Export/rendering compatibility adjustments
+
+### Security
+- At-rest encryption of sensitive contract data with Windows DPAPI (current user)
+- Safer export paths and navigation guards
+
+### Verification (this release)
+- Safety branches `v0.2.0-backup` and `v0.2.0-verify` created/pushed before changes
+- Baseline: build 0 errors/0 warnings, tests 135/135 green (expanded to 142/142 during verification)
+- DPAPI: real disk-level integration tests (roundtrip, raw SQLite inspection for `DEENC1:`, legacy v0.1 plaintext compatibility, degradation) — all passed; Windows-profile warnings added to Settings and README
+- Exports: real roundtrip tests for PDF (valid `%PDF-`, no leakage) and DOCX (valid OpenXML zip, clauses present) plus special characters — passed with byte-scan validation (no PdfPig dependency)
+- Version history: implemented and functional; runtime app launch verified (started, ran >10s, killed cleanly), no fatal log entries, DB intact
+- All merges/reverts via `git revert` only; no history rewrites; tagged/pushed after gates passed

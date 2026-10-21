@@ -60,7 +60,7 @@ Enter the key under **Settings → OpenAI → API key**, then **Save**. Key reso
 2. The `OPENAI_API_KEY` environment variable
 3. `OpenAI:ApiKey` in `DraftEngine.App\appsettings.json` — ships empty on purpose; never commit a real key to this file
 
-The saved key is encrypted with **Windows DPAPI scoped to the current Windows user** and stored in `%APPDATA%\DraftEngine\settings.json` in encrypted form only. The raw key is never written to disk in plaintext and never written to logs; it is only decrypted in memory. The default model is `gpt-4o-mini`; Settings also offers `gpt-4o`.
+**Data safety:** Contract text, intake answers, chat history and version snapshots are encrypted at rest with Windows DPAPI using your Windows user profile. If you migrate to a new Windows profile, reset your Windows password, or copy the database to another account, encrypted contract data will be unreadable. Export important contracts to DOCX/PDF before changing Windows users. The OpenAI API key is also encrypted with Windows DPAPI scoped to the current Windows user and stored in encrypted form only. Contract text is stored locally in the SQLite database under `%APPDATA%\DraftEngine\`. Network calls are only made to OpenAI when you explicitly use AI features (chat edits/connection test), and only with your own API key.
 
 ## Tests
 

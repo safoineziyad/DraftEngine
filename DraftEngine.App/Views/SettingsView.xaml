@@ -23,8 +23,8 @@
                 <StackPanel>
                     <TextBlock Text="OpenAI" FontWeight="SemiBold" FontSize="15"
                                Foreground="{StaticResource TextPrimaryBrush}" />
-                    <TextBlock Text="Your API key is stored encrypted on this computer and is never sent anywhere except to OpenAI."
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <TextBlock Text="Contract data is encrypted with your Windows user profile. Do not reset your Windows password or copy the database to another Windows account — the data will be unreadable. If you plan to change Windows users, export all contracts to DOCX/PDF first."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
                     <TextBlock Text="How your data is handled: when you use AI features (chat edits and AI polish), the contract text, "
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
                     <TextBlock Text="your instructions and the intake answers are transmitted to OpenAI for processing. Contract content and "

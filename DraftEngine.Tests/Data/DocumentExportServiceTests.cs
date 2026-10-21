@@ -144,7 +144,8 @@ public class DocumentExportServiceTests : IDisposable
 
         // Contract A having two exports must not inflate contract B's version counter.
         Assert.Equal(1, firstForB.Version);
-        Assert.Equal(2, await _dbContext.GeneratedDocuments.AsNoTracking().CountAsync(d => d.ContractId == contractB.Id));
+        Assert.Equal(2, await _dbContext.GeneratedDocuments.AsNoTracking().CountAsync(d => d.ContractId == contractA.Id));
+        Assert.Equal(1, await _dbContext.GeneratedDocuments.AsNoTracking().CountAsync(d => d.ContractId == contractB.Id));
     }
 
     [Fact]

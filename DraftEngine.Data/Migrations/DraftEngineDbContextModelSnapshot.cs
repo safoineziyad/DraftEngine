@@ -15,7 +15,7 @@ namespace DraftEngine.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.32");
 
             modelBuilder.Entity("DraftEngine.Core.Models.ChatMessage", b =>
                 {
@@ -453,6 +453,17 @@ namespace DraftEngine.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DisplayName = "Local User",
+                            Email = "local@draftengine.local",
+                            OpenAiApiKeyEncrypted = "",
+                            SubscriptionTier = "Free"
+                        });
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.ChatMessage", b =>

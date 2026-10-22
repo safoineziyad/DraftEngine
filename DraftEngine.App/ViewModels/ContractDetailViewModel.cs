@@ -35,6 +35,12 @@ public partial class ContractDetailViewModel : ObservableObject
     private readonly IWizardDialogService _dialogService;
     private readonly IAppSettingsService _settingsService;
 
+    /// <summary>
+    /// Contract id requested while an operation was still running; loaded as soon as the
+    /// busy state clears, so a navigation request is never silently dropped.
+    /// </summary>
+    private int? _pendingContractId;
+
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
     private string pageTitle = "Contract Detail";
@@ -152,7 +158,16 @@ public partial class ContractDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadAsync(int contractId)
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            // Another operation is still running (the user opened a different contract
+            // while an AI chat edit was in flight). The request is remembered instead of
+            // dropped: dropping it left the page showing the previous contract, and the
+            // next edit or revert was then applied to the wrong contract. The pending
+            // load is picked up as soon as the busy state clears.
+            _pendingContractId = contractId;
+            return;
+        }
 
         IsBusy = true;
         ErrorMessage = null;
@@ -592,7 +607,45 @@ public partial class ContractDetailViewModel : ObservableObject
 
     partial void OnChatInputChanged(string value) => RaiseChatAvailability();
 
-    partial void OnIsBusyChanged(bool value) => RaiseChatAvailability();
+    partial void OnIsBusyChanged(bool value)
+    {
+        RaiseChatAvailability();
+
+        if (!value)
+        {
+            // The operation just finished: pick up a navigation request that arrived
+            // while it was running.
+            _ = LoadPendingContractAsync();
+        }
+    }
+
+    /// <summary>
+    /// Loads the contract whose navigation request arrived while an operation was running.
+    /// </summary>
+    private async Task LoadPendingContractAsync()
+    {
+        try
+        {
+            var pending = _pendingContractId;
+            _pendingContractId = null;
+
+            if (pending is null)
+            {
+                return;
+            }
+
+            if (Contract?.Id == pending.Value)
+            {
+                return; // The page already shows that contract.
+            }
+
+            await LoadAsync(pending.Value);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Unexpected failure while loading the contract requested during a running operation.");
+        }
+    }
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
 

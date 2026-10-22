@@ -225,9 +225,27 @@ public class ContractService : IContractService
         {
             try
             {
-                var tuples = selectedClauses.Select(cc => (ContractClause: cc, Clause: cc.Clause)).ToList();
+                // The AI layer expects the clause texts to be filled already (see
+                // IContractAiService.AssembleContractAsync): sending the raw templates made
+                // the model echo the literal {{...}} placeholders into the contract.
+                var tuples = selectedClauses
+                    .Select(cc => BuildAiClause(cc, fieldValues))
+                    .ToList();
                 var polished = await _aiService.AssembleContractAsync(contract, tuples, fieldValues);
-                if (!string.IsNullOrWhiteSpace(polished))
+
+                if (string.IsNullOrWhiteSpace(polished))
+                {
+                    // Nothing came back: the deterministic text is kept.
+                }
+                else if (polished.Contains("{{", StringComparison.Ordinal))
+                {
+                    // The reply still shows unresolved placeholders: storing it would ship a
+                    // contract with {{...}} in it, so the deterministic text is kept instead.
+                    _logger?.LogWarning(
+                        "AI polish of contract {ContractId} still contained unresolved placeholders; the template text is kept.",
+                        contract.Id);
+                }
+                else
                 {
                     documentText = polished.Trim();
                 }
@@ -585,6 +603,54 @@ public class ContractService : IContractService
                 Selected = true,
             });
         }
+    }
+
+    /// <summary>
+    /// Builds the detached clause pair handed to the AI layer.
+    /// </summary>
+    /// <remarks>
+    /// The AI layer expects the clause texts to be filled with the intake answers already
+    /// (see <see cref="IContractAiService.AssembleContractAsync"/>), and it prefers the
+    /// custom body override over the clause body. Both texts are therefore filled here, on
+    /// detached copies, so the model receives the text the user will actually read instead
+    /// of the raw <c>{{Placeholder}}</c> templates.
+    /// </remarks>
+    private (ContractClause ContractClause, Clause Clause) BuildAiClause(
+        ContractClause selection,
+        Dictionary<string, string> fieldValues)
+    {
+        var source = selection.Clause;
+
+        var overrideText = string.IsNullOrWhiteSpace(selection.CustomBodyOverride)
+            ? string.Empty
+            : _fieldService.ReplacePlaceholders(selection.CustomBodyOverride, fieldValues);
+
+        var bodyText = string.IsNullOrWhiteSpace(selection.CustomBodyOverride)
+            ? _fieldService.ReplacePlaceholders(source.BodyTemplate, fieldValues)
+            : overrideText;
+
+        var clause = new Clause
+        {
+            Id = source.Id,
+            ContractType = source.ContractType,
+            Category = source.Category,
+            Title = source.Title,
+            BodyTemplate = bodyText,
+            IsOptional = source.IsOptional,
+            IsDefaultSelected = source.IsDefaultSelected,
+            SortOrder = source.SortOrder
+        };
+
+        var detached = new ContractClause
+        {
+            Id = selection.Id,
+            ContractId = selection.ContractId,
+            ClauseId = selection.ClauseId,
+            Selected = selection.Selected,
+            CustomBodyOverride = overrideText
+        };
+
+        return (detached, clause);
     }
 
     /// <summary>

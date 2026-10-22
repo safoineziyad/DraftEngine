@@ -100,13 +100,44 @@ public partial class NewContractViewModel
         return $"{MutualNdaType}{parties}";
     }
 
-    private static string BuildPartiesJson(IReadOnlyDictionary<string, string> values) =>
-        JsonSerializer.Serialize(new Dictionary<string, string>
+    /// <summary>
+    /// Builds the <c>PartiesJson</c> payload stored on the contract.
+    /// </summary>
+    /// <remarks>
+    /// The payload must be a JSON <em>array</em> of <c>{name, address}</c> objects:
+    /// <c>ContractService.AddPartyValues</c> and <c>ContractParties.GetNames</c> (used by
+    /// the DOCX/PDF builders) only understand that shape. Storing a JSON object instead
+    /// made the exported document print the raw JSON on the "Parties" line and left the
+    /// signature block showing "Counterparty" instead of the counterparty's name.
+    /// <para>
+    /// Parties without a name are omitted; the "Purpose" answer is persisted
+    /// separately as a <c>ContractField</c> row and is not part of the parties payload.
+    /// </para>
+    /// </remarks>
+    private static string BuildPartiesJson(IReadOnlyDictionary<string, string> values)
+    {
+        var parties = new List<Dictionary<string, string>>();
+
+        var party1 = values.GetValueOrDefault("Party1", string.Empty);
+        if (!string.IsNullOrWhiteSpace(party1))
         {
-            ["party1"] = values.GetValueOrDefault("Party1", string.Empty),
-            ["party1Address"] = values.GetValueOrDefault("Party1Address", string.Empty),
-            ["party2"] = values.GetValueOrDefault("Party2", string.Empty),
-            ["party2Address"] = values.GetValueOrDefault("Party2Address", string.Empty),
-            ["purpose"] = values.GetValueOrDefault("Purpose", string.Empty)
-        });
+            parties.Add(new Dictionary<string, string>
+            {
+                ["name"] = party1,
+                ["address"] = values.GetValueOrDefault("Party1Address", string.Empty)
+            });
+        }
+
+        var party2 = values.GetValueOrDefault("Party2", string.Empty);
+        if (!string.IsNullOrWhiteSpace(party2))
+        {
+            parties.Add(new Dictionary<string, string>
+            {
+                ["name"] = party2,
+                ["address"] = values.GetValueOrDefault("Party2Address", string.Empty)
+            });
+        }
+
+        return JsonSerializer.Serialize(parties);
+    }
 }

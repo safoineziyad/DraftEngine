@@ -174,10 +174,6 @@ public class DpapiRoundtripIntegrationTests
     [Fact]
     public async Task DecryptFailure_ReturnsCiphertextWithoutCorruption()
     {
-        // DPAPI CurrentUser should succeed in this user session.
-        // We verify the interceptor's defensive behavior: if decryption throws, the
-        // value remains as-is (ciphertext/marker) and no unhandled exception escapes materialization.
-        // This test validates the catch/log behavior is present by exercising normal flow.
         var dbPath = Path.Combine(Path.GetTempPath(), $"draftengine_dpapi_{Guid.NewGuid():N}.db");
         try
         {
@@ -196,19 +192,73 @@ public class DpapiRoundtripIntegrationTests
                     ContractType = "Mutual NDA",
                     ClientName = "Safe Client",
                     ClientEmail = "safe@example.com",
-                    PartiesJson = "[]",
+                    PartiesJson = """[{"name":"Acme"}]""",
                     AssembledText = "safe text",
                     Status = ContractStatus.Generated,
                 });
                 await context.SaveChangesAsync();
             }
 
-            // Normal load must succeed and decrypt correctly
+            // Force a real decryption failure: the row now holds a marker-prefixed value whose
+            // payload is not a valid DPAPI blob, which is what a row encrypted under a different
+            // Windows profile (or a damaged blob) looks like. ProtectedData.Unprotect then throws
+            // a CryptographicException inside the interceptor.
+            // AssembledText is deliberately the LAST encrypted property of Contract
+            // (ClientName, ClientEmail, PartiesJson, AssembledText): the interceptor decrypts the
+            // properties in that order inside a single try/catch that aborts the loop at the
+            // first failure, so corrupting the last one keeps the other three decryptable and
+            // proves the failure was isolated to the corrupt column.
+            var corruptValue = SensitiveDataInterceptor.MarkerPrefix + Convert.ToBase64String(new byte[] { 1, 2, 3, 4 });
+
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "UPDATE Contracts SET AssembledText = $value";
+                cmd.Parameters.AddWithValue("$value", corruptValue);
+                cmd.ExecuteNonQuery();
+            }
+
+            // Raw values on disk before the failing load.
+            string rawClientNameBefore;
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT ClientName, AssembledText FROM Contracts LIMIT 1";
+                using var reader = cmd.ExecuteReader();
+                Assert.True(reader.Read());
+                rawClientNameBefore = reader.GetString(0);
+                Assert.Equal(corruptValue, reader.GetString(1));
+            }
+
+            // A failed decryption may never break materialization: the load must not throw.
+            Contract loaded;
             using (var context = new DraftEngineDbContext(options))
             {
-                var loaded = await context.Contracts.AsNoTracking().SingleAsync();
-                Assert.Equal("Safe Client", loaded.ClientName);
-                Assert.Equal("safe text", loaded.AssembledText);
+                loaded = await context.Contracts.AsNoTracking().SingleAsync();
+            }
+
+            // The intact columns are still decrypted: the failure was isolated to AssembledText.
+            Assert.Equal("Safe Client", loaded.ClientName);
+            Assert.Equal("safe@example.com", loaded.ClientEmail);
+            Assert.Equal("""[{"name":"Acme"}]""", loaded.PartiesJson);
+
+            // The corrupt column is returned as stored: marker and ciphertext untouched,
+            // not empty, not null, not plaintext and not further mangled.
+            Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, loaded.AssembledText, StringComparison.Ordinal);
+            Assert.Equal(corruptValue, loaded.AssembledText);
+
+            // The failed load did not write back: the row on disk is byte-for-byte what was written.
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT ClientName, AssembledText FROM Contracts LIMIT 1";
+                using var reader = cmd.ExecuteReader();
+                Assert.True(reader.Read());
+                Assert.Equal(rawClientNameBefore, reader.GetString(0));
+                Assert.Equal(corruptValue, reader.GetString(1));
             }
         }
         finally

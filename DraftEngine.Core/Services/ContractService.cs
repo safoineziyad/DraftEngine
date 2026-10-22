@@ -249,7 +249,7 @@ public class ContractService : IContractService
         contract.Status = ContractStatus.Generated;
 
         await database.SaveChangesAsync();
-        await PruneOldVersionsAsync(database, contract.Id);
+        await PruneHistoryAsync(database, contract.Id);
         return documentText;
     }
 
@@ -342,8 +342,7 @@ public class ContractService : IContractService
         });
 
         await database.SaveChangesAsync();
-        await PruneOldVersionsAsync(database, contractId);
-        await PruneOldChatMessagesAsync(database, contractId);
+        await PruneHistoryAsync(database, contractId);
         return contract.AssembledText;
     }
 
@@ -397,7 +396,7 @@ public class ContractService : IContractService
         contract.UpdatedAt = DateTime.UtcNow;
 
         await database.SaveChangesAsync();
-        await PruneOldVersionsAsync(database, contractId);
+        await PruneHistoryAsync(database, contractId);
         return contract.AssembledText;
     }
 
@@ -471,6 +470,32 @@ public class ContractService : IContractService
             Reason = reason,
             CreatedAt = DateTime.UtcNow,
         });
+    }
+
+    /// <summary>
+    /// Prunes the stored history of a contract, never failing the operation that triggered it.
+    /// </summary>
+    /// <remarks>
+    /// The prunes run <em>after</em> the change itself was committed, so a failure here must
+    /// not be reported as a failed edit or regeneration: the new text is already stored, and
+    /// telling the user it failed left the editor showing the old text, which was then
+    /// exported as the current document. The failure is logged instead, and the rows are
+    /// pruned again by the next operation.
+    /// </remarks>
+    private async Task PruneHistoryAsync(DbContext database, int contractId)
+    {
+        try
+        {
+            await PruneOldVersionsAsync(database, contractId);
+            await PruneOldChatMessagesAsync(database, contractId);
+        }
+        catch (Exception exception)
+        {
+            _logger?.LogWarning(
+                exception,
+                "Could not prune the history of contract {ContractId}; the change itself was saved.",
+                contractId);
+        }
     }
 
     /// <summary>Deletes the oldest snapshots beyond <see cref="MaxVersionsPerContract"/>.</summary>

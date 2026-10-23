@@ -210,8 +210,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         InfoMessage = null;
         try
         {
-            // Empty clause ids keep the stored selection; AI polish is off so generation
-            // also works without an API key (the wizard's AI polish applies when configured).
+            // Empty clause ids keep the stored selection; AI polish is disabled because
+            // there is currently no UI path that uses it (the caller must opt in explicitly).
             var text = await _contractService.GenerateContractAsync(Contract.Id, new List<int>(), useAiPolish: false);
             DocumentText = text;
 

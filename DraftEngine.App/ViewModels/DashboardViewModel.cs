@@ -107,7 +107,6 @@ public partial class DashboardViewModel : ObservableObject
 
             ContractCount = RecentContracts.Count;
             HoursSavedEstimate = (int)System.Math.Round(ContractCount * HoursSavedPerContract);
-            ErrorMessage = null;
         }
         catch (System.Exception ex)
         {

@@ -24,7 +24,7 @@ namespace DraftEngine.App.ViewModels;
 /// template-based regeneration, AI chat editing, and DOCX/PDF export. View models are
 /// singletons, so everything reloads from the database on every navigation.
 /// </summary>
-public partial class ContractDetailViewModel : ObservableObject
+public partial class ContractDetailViewModel : ObservableObject, INavigationAware
 {
     private readonly IContractService _contractService;
     private readonly IChatService _chatService;
@@ -34,6 +34,12 @@ public partial class ContractDetailViewModel : ObservableObject
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogService;
     private readonly IAppSettingsService _settingsService;
+
+    /// <summary>
+    /// Contract id requested while an operation was still running; loaded as soon as the
+    /// busy state clears, so a navigation request is never silently dropped.
+    /// </summary>
+    private int? _pendingContractId;
 
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
@@ -152,7 +158,16 @@ public partial class ContractDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadAsync(int contractId)
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            // Another operation is still running (the user opened a different contract
+            // while an AI chat edit was in flight). The request is remembered instead of
+            // dropped: dropping it left the page showing the previous contract, and the
+            // next edit or revert was then applied to the wrong contract. The pending
+            // load is picked up as soon as the busy state clears.
+            _pendingContractId = contractId;
+            return;
+        }
 
         IsBusy = true;
         ErrorMessage = null;
@@ -195,8 +210,8 @@ public partial class ContractDetailViewModel : ObservableObject
         InfoMessage = null;
         try
         {
-            // Empty clause ids keep the stored selection; AI polish is off so generation
-            // also works without an API key (the wizard's AI polish applies when configured).
+            // Empty clause ids keep the stored selection; AI polish is disabled because
+            // there is currently no UI path that uses it (the caller must opt in explicitly).
             var text = await _contractService.GenerateContractAsync(Contract.Id, new List<int>(), useAiPolish: false);
             DocumentText = text;
 
@@ -424,6 +439,10 @@ public partial class ContractDetailViewModel : ObservableObject
             {
                 ChatMessages.Add(new ChatMessageRowViewModel(message));
             }
+
+            // IsChatEmpty is a computed property: without this notification the "Example:"
+            // hint stayed pinned above the history for the rest of the session.
+            OnPropertyChanged(nameof(IsChatEmpty));
         }
         catch (Exception ex)
         {
@@ -463,6 +482,7 @@ public partial class ContractDetailViewModel : ObservableObject
         DocumentText = string.Empty;
         PageTitle = "Contract Detail";
         ChatMessages.Clear();
+        OnPropertyChanged(nameof(IsChatEmpty));
     }
 
     private static string BuildDefaultFileName(Contract contract, string extension)
@@ -568,16 +588,69 @@ public partial class ContractDetailViewModel : ObservableObject
 
     partial void OnIsHistoryVisibleChanged(bool value)
     {
-        // Refresh the snapshots when the panel opens so it is never stale.
-        if (value && Contract is not null)
+        // The Toolkit-generated property-changed hook cannot be awaited, so the refresh is
+        // handed to a helper that awaits it internally and reports every failure.
+        _ = RefreshVersionsAsync(value);
+    }
+
+    /// <summary>Reloads the version snapshots when the history panel is opened, reporting failures to the user.</summary>
+    private async Task RefreshVersionsAsync(bool visible)
+    {
+        try
         {
-            _ = ReloadVersionsAsync(Contract.Id);
+            if (visible && Contract is not null)
+            {
+                await ReloadVersionsAsync(Contract.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to reload versions");
+            ErrorMessage = "Could not load version history.";
         }
     }
 
     partial void OnChatInputChanged(string value) => RaiseChatAvailability();
 
-    partial void OnIsBusyChanged(bool value) => RaiseChatAvailability();
+    partial void OnIsBusyChanged(bool value)
+    {
+        RaiseChatAvailability();
+
+        if (!value)
+        {
+            // The operation just finished: pick up a navigation request that arrived
+            // while it was running.
+            _ = LoadPendingContractAsync();
+        }
+    }
+
+    /// <summary>
+    /// Loads the contract whose navigation request arrived while an operation was running.
+    /// </summary>
+    private async Task LoadPendingContractAsync()
+    {
+        try
+        {
+            var pending = _pendingContractId;
+            _pendingContractId = null;
+
+            if (pending is null)
+            {
+                return;
+            }
+
+            if (Contract?.Id == pending.Value)
+            {
+                return; // The page already shows that contract.
+            }
+
+            await LoadAsync(pending.Value);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Unexpected failure while loading the contract requested during a running operation.");
+        }
+    }
 
     partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
 

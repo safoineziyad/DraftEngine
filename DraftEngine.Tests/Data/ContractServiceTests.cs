@@ -195,6 +195,38 @@ public class ContractServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GenerateContractAsync_UseAiPolish_SendsTheFilledClauseTextToTheAi()
+    {
+        var contract = await SeedContractAsync();
+        await AttachClausesAsync(contract.Id, 2); // Definitions ({{Party1}}, {{Party2}})
+
+        await _service.GenerateContractAsync(contract.Id, new List<int> { 2 }, useAiPolish: true);
+
+        Assert.NotNull(_fakeAi.LastAssemblyClauses);
+        var received = _fakeAi.LastAssemblyClauses![0];
+
+        // The AI layer must not receive the raw template: it echoes what it is given, so the
+        // literal {{...}} placeholders ended up in the contract text.
+        Assert.DoesNotContain("{{", received.Clause.BodyTemplate);
+        Assert.DoesNotContain("{{", received.ContractClause.CustomBodyOverride);
+        Assert.Contains("Acme Inc", received.Clause.BodyTemplate);
+    }
+
+    [Fact]
+    public async Task GenerateContractAsync_UseAiPolish_KeepsTheTemplateText_WhenThePolishStillHasPlaceholders()
+    {
+        var contract = await SeedContractAsync();
+        await AttachClausesAsync(contract.Id, 2);
+        _fakeAi.AssembledText = "A polished contract that still shows {{Party1}}.";
+
+        var result = await _service.GenerateContractAsync(contract.Id, new List<int> { 2 }, useAiPolish: true);
+
+        // A reply with unresolved placeholders must never be stored as the contract text.
+        Assert.DoesNotContain("{{", result);
+        Assert.Contains("Confidential Information means", result);
+    }
+
+    [Fact]
     public async Task GenerateContractAsync_SyncsSelection_WithRequestedClausesOnly()
     {
         var contract = await SeedContractAsync();

@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Interfaces;
 
@@ -32,6 +34,7 @@ public partial class NewContractViewModel : ObservableObject
     private readonly IFieldService _fieldService;
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogs;
+    private readonly IAppSettingsService _appSettings;
 
     private bool _clausesLoaded;
 
@@ -101,13 +104,15 @@ public partial class NewContractViewModel : ObservableObject
         IClauseService clauseService,
         IFieldService fieldService,
         INavigationService navigation,
-        IWizardDialogService dialogs)
+        IWizardDialogService dialogs,
+        IAppSettingsService appSettings)
     {
         _contractService = contractService;
         _clauseService = clauseService;
         _fieldService = fieldService;
         _navigation = navigation;
         _dialogs = dialogs;
+        _appSettings = appSettings;
 
         Steps.Add(new WizardStepViewModel(1, "Type"));
         Steps.Add(new WizardStepViewModel(2, "Details"));
@@ -235,6 +240,13 @@ public partial class NewContractViewModel : ObservableObject
     private void BuildIntakeFields()
     {
         IntakeFields.Clear();
+
+        // Contract defaults come from the Settings page. This method runs from the
+        // constructor *and* from ResetWizard (on every navigation), so the latest saved
+        // defaults are applied every time the wizard opens (A3).
+        var governingLaw = ResolveDefaultGoverningLaw(out var governingLawChoices);
+        var termMonths = _appSettings.Current.DefaultTermMonths.ToString(CultureInfo.InvariantCulture);
+
         var fields = new[]
         {
             NewField("Party1", "Party 1 name"),
@@ -245,8 +257,8 @@ public partial class NewContractViewModel : ObservableObject
             NewField("ClientEmail", "Client email"),
             NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
             NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                choices: GoverningLawChoices, defaultValue: GoverningLawChoices[0]),
-            NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: "12"),
+                choices: governingLawChoices, defaultValue: governingLaw),
+            NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
             NewField("Purpose", "Purpose of disclosure"),
         };
 
@@ -255,6 +267,35 @@ public partial class NewContractViewModel : ObservableObject
             field.PropertyChanged += OnIntakeFieldChanged;
             IntakeFields.Add(field);
         }
+    }
+
+    /// <summary>
+    /// Resolves the governing law pre-selected on step 2 and the options offered for it (A3).
+    /// </summary>
+    /// <remarks>
+    /// The configured default is appended to the built-in options when it is not already
+    /// one, so a custom value saved on the Settings page is still shown and stays selected.
+    /// </remarks>
+    private string ResolveDefaultGoverningLaw(out string[] choices)
+    {
+        var preferred = _appSettings.Current.DefaultGoverningLaw;
+        choices = GoverningLawChoices;
+
+        if (string.IsNullOrWhiteSpace(preferred))
+        {
+            return GoverningLawChoices[0];
+        }
+
+        var known = GoverningLawChoices.FirstOrDefault(
+            choice => string.Equals(choice, preferred, StringComparison.OrdinalIgnoreCase));
+
+        if (known is not null)
+        {
+            return known;
+        }
+
+        choices = GoverningLawChoices.Append(preferred).ToArray();
+        return preferred;
     }
 
     private static IntakeFieldViewModel NewField(

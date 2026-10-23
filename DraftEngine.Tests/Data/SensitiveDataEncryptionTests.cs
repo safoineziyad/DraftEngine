@@ -1,5 +1,6 @@
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Services;
 using DraftEngine.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -184,6 +185,107 @@ public class SensitiveDataEncryptionTests : IDisposable
         var stored = await rawContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
         Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, stored.AssembledText, StringComparison.Ordinal);
         Assert.Equal("Text before the update", contract.AssembledText);
+    }
+
+    /// <summary>
+    /// Changing an encrypted column of an already stored row must write ciphertext.
+    /// EF Core runs the <c>SavingChanges</c> interception <em>before</em> the change tracker
+    /// detects the changes, so the row was still "Unchanged" when the interceptor looked at
+    /// it and the update was written to disk in plaintext. That defeated the at-rest
+    /// encryption for every in-place update - which is how the contract body, the chat
+    /// edits and the re-mapped intake answers are actually stored.
+    /// </summary>
+    [Fact]
+    public async Task UpdateOfAnEncryptedColumn_WritesCiphertextToDisk()
+    {
+        var contractId = await SaveContractAsync("Text before the update");
+
+        using var appContext = new DraftEngineDbContext(_encryptedOptions);
+        var contract = await appContext.Contracts.SingleAsync(c => c.Id == contractId);
+        contract.AssembledText = "Confidentiality now applies for five years.";
+        await appContext.SaveChangesAsync();
+
+        // The application keeps seeing plaintext.
+        Assert.Equal("Confidentiality now applies for five years.", contract.AssembledText);
+
+        using var rawContext = new DraftEngineDbContext(_plainOptions);
+        var stored = await rawContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
+
+        // The database file must not contain the new plaintext.
+        Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, stored.AssembledText, StringComparison.Ordinal);
+        Assert.DoesNotContain("five years", stored.AssembledText, StringComparison.Ordinal);
+
+        // The update really reached the database (otherwise the assertions above would
+        // only prove that the old ciphertext was left untouched).
+        using var reloadContext = new DraftEngineDbContext(_encryptedOptions);
+        var reloaded = await reloadContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
+        Assert.Equal("Confidentiality now applies for five years.", reloaded.AssembledText);
+    }
+
+    /// <summary>
+    /// The generated document body - the text that contains the party names, the client
+    /// e-mail and the purpose of the contract - must be ciphertext in the database file.
+    /// This is the write path the wizard uses for every contract the user creates.
+    /// </summary>
+    [Fact]
+    public async Task GeneratedContractBody_IsStoredAsCiphertextOnDisk()
+    {
+        int contractId;
+        using (var appContext = new DraftEngineDbContext(_encryptedOptions))
+        {
+            var contract = CreateContract(string.Empty);
+            appContext.Contracts.Add(contract);
+            await appContext.SaveChangesAsync();
+            contractId = contract.Id;
+        }
+
+        var factory = new TestDatabaseContextFactory(_encryptedOptions);
+        var service = new ContractService(factory, new FieldService(factory));
+
+        var text = await service.GenerateContractAsync(contractId, new List<int>());
+
+        // The service returns the plaintext the user expects to see.
+        Assert.Contains("Acme Inc", text);
+
+        using var rawContext = new DraftEngineDbContext(_plainOptions);
+        var stored = await rawContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
+
+        Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, stored.AssembledText, StringComparison.Ordinal);
+        Assert.DoesNotContain("Acme Inc", stored.AssembledText, StringComparison.Ordinal);
+
+        // The body really reached the database.
+        using var reloadContext = new DraftEngineDbContext(_encryptedOptions);
+        var reloaded = await reloadContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
+        Assert.Equal(text, reloaded.AssembledText);
+    }
+
+    /// <summary>
+    /// Re-mapping an intake answer updates an already stored row. It must stay ciphertext:
+    /// the field value is free-form text the user typed (names, addresses, purposes).
+    /// </summary>
+    [Fact]
+    public async Task RemappingAnIntakeAnswer_WritesCiphertextToDisk()
+    {
+        var contractId = await SaveContractAsync("Document text");
+
+        var factory = new TestDatabaseContextFactory(_encryptedOptions);
+        var fieldService = new FieldService(factory);
+
+        await fieldService.MapFieldsAsync(
+            contractId, new Dictionary<string, string> { ["Purpose"] = "Initial purpose" });
+        await fieldService.MapFieldsAsync(
+            contractId, new Dictionary<string, string> { ["Purpose"] = "Revised purpose" });
+
+        using var rawContext = new DraftEngineDbContext(_plainOptions);
+        var stored = await rawContext.ContractFields.AsNoTracking().SingleAsync();
+
+        Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, stored.Value, StringComparison.Ordinal);
+        Assert.DoesNotContain("Revised purpose", stored.Value, StringComparison.Ordinal);
+
+        // The re-mapped value really reached the database.
+        using var reloadContext = new DraftEngineDbContext(_encryptedOptions);
+        var reloaded = await reloadContext.ContractFields.AsNoTracking().SingleAsync();
+        Assert.Equal("Revised purpose", reloaded.Value);
     }
 
     /// <summary>Saves a contract through the production-shaped (encrypted) context.</summary>

@@ -31,3 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exports: real roundtrip tests for PDF (valid `%PDF-`, no leakage) and DOCX (valid OpenXML zip, clauses present) plus special characters — passed with byte-scan validation (no PdfPig dependency)
 - Version history: implemented and functional; runtime app launch verified (started, ran >10s, killed cleanly), no fatal log entries, DB intact
 - All merges/reverts via `git revert` only; no history rewrites; tagged/pushed after gates passed
+## [0.2.1] - 2026-10-21
+
+### Fixed
+- **A1 (Data)**: Seed the local owner user (Users) via HasData and SeedDefaultUser migration so contracts can be created without FOREIGN KEY constraint failed (wizard sets UserId = 1).
+- **A1 (Tests)**: Regression tests for FK-only insert and full migrated create→generate→reload flow (ContractOwnerUserTests, ContractCreationIntegrationTests).
+- **A2 (App)**: ContractDetailViewModel implements INavigationAware so navigation passes OnNavigatedTo(parameter) and the detail page loads.
+- **A3 (Wizard)**: New Contract wizard reads Settings.DefaultGoverningLaw and Settings.DefaultTermMonths as intake defaults (re-applied on each open/reset).
+- **B1 (UI)**: ContractsListView header row placed in its own grid row to prevent overlap with contract rows.
+- **B2 (UI)**: DashboardView header uses two-column grid so title/subtitle stay left and **New Contract** button stays right/aligned.
+

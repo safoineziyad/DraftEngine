@@ -21,9 +21,6 @@ public class ContractRowViewModel
     /// <summary>The status text shown in the badge (Draft / Generated / Exported).</summary>
     public string StatusText => Contract.Status.ToString();
 
-    /// <summary>Whether the status badge uses the draft (neutral) style.</summary>
-    public bool IsDraft => Contract.Status == ContractStatus.Draft;
-
     /// <summary>Whether the status badge uses the generated (accent) style.</summary>
     public bool IsGenerated => Contract.Status == ContractStatus.Generated;
 

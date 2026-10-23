@@ -439,6 +439,10 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             {
                 ChatMessages.Add(new ChatMessageRowViewModel(message));
             }
+
+            // IsChatEmpty is a computed property: without this notification the "Example:"
+            // hint stayed pinned above the history for the rest of the session.
+            OnPropertyChanged(nameof(IsChatEmpty));
         }
         catch (Exception ex)
         {
@@ -478,6 +482,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         DocumentText = string.Empty;
         PageTitle = "Contract Detail";
         ChatMessages.Clear();
+        OnPropertyChanged(nameof(IsChatEmpty));
     }
 
     private static string BuildDefaultFileName(Contract contract, string extension)

@@ -87,8 +87,13 @@
         <Border Grid.Row="2" Style="{StaticResource Card}" Padding="0">
             <Grid>
                 <Grid IsSharedSizeScope="True">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
                     <!-- Header row -->
-                    <Border BorderBrush="{StaticResource BorderSubtleBrush}"
+                    <Border Grid.Row="0" BorderBrush="{StaticResource BorderSubtleBrush}"
                             BorderThickness="0,0,0,1"
                             Background="{StaticResource PanelBrush}"
                             Padding="16,10">
@@ -113,7 +118,7 @@
                     </Border>
 
                     <!-- Rows -->
-                    <ItemsControl Margin="0,4,0,0" ItemsSource="{Binding Contracts}">
+                    <ItemsControl Grid.Row="1" Margin="0,4,0,0" ItemsSource="{Binding Contracts}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border Padding="16,10" BorderBrush="{StaticResource BorderSubtleBrush}"

@@ -64,16 +64,20 @@
 
             <!-- Header -->
             <Grid Grid.Row="0" Margin="0,0,0,20">
-                <StackPanel VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
                     <TextBlock Text="Your agreements and drafting activity at a glance."
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
                 </StackPanel>
-                <Button Content="New Contract"
+                <Button Grid.Column="1"
+                        Content="New Contract"
                         Style="{StaticResource PrimaryButtonStyle}"
                         AutomationProperties.Name="Start a new contract"
                         Command="{Binding NewContractCommand}"
-                        HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         MinWidth="140" />
             </Grid>

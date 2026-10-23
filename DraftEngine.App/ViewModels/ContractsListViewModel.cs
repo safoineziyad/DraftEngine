@@ -142,6 +142,11 @@ public partial class ContractsListViewModel : ObservableObject
         {
             await _contractService.DeleteAsync(contract.Id);
             _allContracts.Remove(contract);
+
+            // The deleted contract may have been the only one of its type: rebuild the
+            // dropdown (it resets the selection to "All" when the type is gone) instead of
+            // leaving an option that can only ever filter to an empty list.
+            RebuildTypeFilters();
             ApplyFilters();
         }
         catch (Exception ex)

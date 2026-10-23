@@ -24,7 +24,7 @@ namespace DraftEngine.App.ViewModels;
 /// template-based regeneration, AI chat editing, and DOCX/PDF export. View models are
 /// singletons, so everything reloads from the database on every navigation.
 /// </summary>
-public partial class ContractDetailViewModel : ObservableObject
+public partial class ContractDetailViewModel : ObservableObject, INavigationAware
 {
     private readonly IContractService _contractService;
     private readonly IChatService _chatService;

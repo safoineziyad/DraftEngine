@@ -172,7 +172,7 @@ public class DpapiRoundtripIntegrationTests
     }
 
     [Fact]
-    public async Task DecryptFailure_WithCorruptedCiphertext_ReturnsCiphertextWithoutCorruption()
+    public async Task DecryptFailure_WithCorruptedCiphertext_ScrubsValueInsteadOfLeakingCiphertext()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"draftengine_dpapi_{Guid.NewGuid():N}.db");
         try

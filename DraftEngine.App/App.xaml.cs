@@ -88,8 +88,16 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log.Fatal(ex, "Application startup failed.");
+
+            // The database bootstrap throws a curated InvalidOperationException; surface that
+            // sentence so the user knows what to fix. Anything else could be any technical
+            // failure (DI, XAML, IO), so only the generic line is shown - never ex.Message.
+            var detail = ex is InvalidOperationException
+                ? "\n\n" + ex.Message
+                : string.Empty;
+
             MessageBox.Show(
-                "DraftEngine could not start. The error has been logged.\n\n" + ex.Message,
+                "DraftEngine could not start. The error has been logged." + detail,
                 _appOptions?.App.DisplayName ?? "DraftEngine",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

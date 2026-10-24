@@ -33,7 +33,6 @@ namespace DraftEngine.Data;
 /// DPAPI itself provides the security boundary (the Windows user profile).
 /// </para>
 /// </remarks>
-[SupportedOSPlatform("windows")]
 public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterializationInterceptor
 {
     /// <summary>Marker prefixed to every encrypted value so plaintext is never decrypted twice.</summary>
@@ -263,7 +262,7 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
     }
 
     /// <summary>Encrypts a plaintext value with DPAPI (current user) and adds the marker.</summary>
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("windows")]
     private string Protect(string plaintext)
     {
         try
@@ -280,7 +279,7 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
     }
 
     /// <summary>Decrypts a marker-prefixed value with DPAPI (current user).</summary>
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("windows")]
     private string Unprotect(string ciphertext)
     {
         try

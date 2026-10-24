@@ -259,14 +259,26 @@ public class ContractService : IContractService
         }
 
         // Keep the text being replaced in the version history so a regeneration is undoable.
-        StageVersionSnapshot(database, contract, RegenerationReason);
-
-        contract.AssembledText = documentText;
-        contract.LastGeneratedAt = DateTime.UtcNow;
-        contract.UpdatedAt = DateTime.UtcNow;
-        contract.Status = ContractStatus.Generated;
-
-        await database.SaveChangesAsync();
+        var strategy = database.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await database.Database.BeginTransactionAsync();
+            try
+            {
+                await StageVersionSnapshotAsync(database, contract, RegenerationReason);
+                contract.AssembledText = documentText;
+                contract.LastGeneratedAt = DateTime.UtcNow;
+                contract.UpdatedAt = DateTime.UtcNow;
+                contract.Status = ContractStatus.Generated;
+                await database.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                try { await transaction.RollbackAsync(); } catch { /* ignore rollback failures */ }
+                throw;
+            }
+        });
         await PruneHistoryAsync(database, contract.Id);
         return documentText;
     }
@@ -338,28 +350,41 @@ public class ContractService : IContractService
 
         // Keep the pre-edit text in the version history so the user can always revert a
         // chat edit that damaged the contract (audit Finding #1).
-        StageVersionSnapshot(database, contract, AiEditReason);
-
-        contract.AssembledText = updatedText;
-        contract.UpdatedAt = DateTime.UtcNow;
-
-        var now = DateTime.UtcNow;
-        database.Set<ChatMessage>().Add(new ChatMessage
+        var strategy = database.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
         {
-            ContractId = contractId,
-            Role = MessageRole.User,
-            Content = instruction,
-            CreatedAt = now,
-        });
-        database.Set<ChatMessage>().Add(new ChatMessage
-        {
-            ContractId = contractId,
-            Role = MessageRole.Assistant,
-            Content = ChatEditConfirmation,
-            CreatedAt = now,
-        });
+            await using var transaction = await database.Database.BeginTransactionAsync();
+            try
+            {
+                await StageVersionSnapshotAsync(database, contract, AiEditReason);
+                contract.AssembledText = updatedText;
+                contract.UpdatedAt = DateTime.UtcNow;
 
-        await database.SaveChangesAsync();
+                var now = DateTime.UtcNow;
+                database.Set<ChatMessage>().Add(new ChatMessage
+                {
+                    ContractId = contractId,
+                    Role = MessageRole.User,
+                    Content = instruction,
+                    CreatedAt = now,
+                });
+                database.Set<ChatMessage>().Add(new ChatMessage
+                {
+                    ContractId = contractId,
+                    Role = MessageRole.Assistant,
+                    Content = ChatEditConfirmation,
+                    CreatedAt = now,
+                });
+
+                await database.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                try { await transaction.RollbackAsync(); } catch { /* ignore rollback failures */ }
+                throw;
+            }
+        });
         await PruneHistoryAsync(database, contractId);
         return contract.AssembledText;
     }
@@ -408,12 +433,24 @@ public class ContractService : IContractService
         }
 
         // Snapshot the text being replaced: reverting must itself be undoable.
-        StageVersionSnapshot(database, contract, RevertReason);
-
-        contract.AssembledText = version.Text;
-        contract.UpdatedAt = DateTime.UtcNow;
-
-        await database.SaveChangesAsync();
+        var strategy = database.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await database.Database.BeginTransactionAsync();
+            try
+            {
+                await StageVersionSnapshotAsync(database, contract, RevertReason);
+                contract.AssembledText = version.Text;
+                contract.UpdatedAt = DateTime.UtcNow;
+                await database.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                try { await transaction.RollbackAsync(); } catch { /* ignore rollback failures */ }
+                throw;
+            }
+        });
         await PruneHistoryAsync(database, contractId);
         return contract.AssembledText;
     }
@@ -467,18 +504,18 @@ public class ContractService : IContractService
     /// SaveChanges persists it together with its own changes). Snapshots are skipped when
     /// there is no text yet — an empty document has no history worth keeping.
     /// </summary>
-    private static void StageVersionSnapshot(DbContext database, Contract contract, string reason)
+    private static async Task StageVersionSnapshotAsync(DbContext database, Contract contract, string reason)
     {
         if (string.IsNullOrWhiteSpace(contract.AssembledText))
         {
             return;
         }
 
-        var currentMax = database.Set<ContractVersion>()
+        var currentMax = await database.Set<ContractVersion>()
             .Where(version => version.ContractId == contract.Id)
             .OrderByDescending(version => version.VersionNumber)
             .Select(version => (int?)version.VersionNumber)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         database.Set<ContractVersion>().Add(new ContractVersion
         {

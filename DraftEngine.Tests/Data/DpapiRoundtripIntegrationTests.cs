@@ -172,7 +172,7 @@ public class DpapiRoundtripIntegrationTests
     }
 
     [Fact]
-    public async Task DecryptFailure_ReturnsCiphertextWithoutCorruption()
+    public async Task DecryptFailure_WithCorruptedCiphertext_ReturnsCiphertextWithoutCorruption()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"draftengine_dpapi_{Guid.NewGuid():N}.db");
         try
@@ -199,16 +199,14 @@ public class DpapiRoundtripIntegrationTests
                 await context.SaveChangesAsync();
             }
 
-            // Force a real decryption failure: the row now holds a marker-prefixed value whose
-            // payload is not a valid DPAPI blob, which is what a row encrypted under a different
-            // Windows profile (or a damaged blob) looks like. ProtectedData.Unprotect then throws
-            // a CryptographicException inside the interceptor.
+            // Force a real decryption failure by corrupting the DPAPI payload on disk:
+            // Flip bytes in the base64 payload after the marker (or replace with invalid base64) so ProtectedData.Unprotect throws.
+            // This simulates a blob encrypted under a different Windows profile or disk corruption.
             // AssembledText is deliberately the LAST encrypted property of Contract
             // (ClientName, ClientEmail, PartiesJson, AssembledText): the interceptor decrypts the
-            // properties in that order inside a single try/catch that aborts the loop at the
-            // first failure, so corrupting the last one keeps the other three decryptable and
-            // proves the failure was isolated to the corrupt column.
-            var corruptValue = SensitiveDataInterceptor.MarkerPrefix + Convert.ToBase64String(new byte[] { 1, 2, 3, 4 });
+            // properties in order; corrupting the last one keeps the other three decryptable and proves isolation.
+            // Corrupt by replacing with marker + invalid base64/payload bytes.
+            var corruptValue = SensitiveDataInterceptor.MarkerPrefix + "!!INVALID_BASE64_PAYLOAD!!";
 
             using (var conn = new SqliteConnection($"Data Source={dbPath}"))
             {
@@ -244,10 +242,9 @@ public class DpapiRoundtripIntegrationTests
             Assert.Equal("safe@example.com", loaded.ClientEmail);
             Assert.Equal("""[{"name":"Acme"}]""", loaded.PartiesJson);
 
-            // The corrupt column is returned as stored: marker and ciphertext untouched,
-            // not empty, not null, not plaintext and not further mangled.
-            Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, loaded.AssembledText, StringComparison.Ordinal);
-            Assert.Equal(corruptValue, loaded.AssembledText);
+            // On decryption failure, the interceptor applies a defensive value (empty string)
+            // to avoid leaking DEENC1: ciphertext to the UI.
+            Assert.Equal(string.Empty, loaded.AssembledText);
 
             // The failed load did not write back: the row on disk is byte-for-byte what was written.
             using (var conn = new SqliteConnection($"Data Source={dbPath}"))

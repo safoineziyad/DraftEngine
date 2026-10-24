@@ -1,4 +1,5 @@
-﻿using DraftEngine.Core.Interfaces;
+﻿using System.Diagnostics;
+using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -13,17 +14,15 @@ namespace DraftEngine.Documents.Builders;
 /// </summary>
 public class PdfBuilder : IPdfBuilder
 {
-    static PdfBuilder()
-    {
-        // QuestPDF requires a license to be set once, before the first document is generated.
-        QuestPDF.Settings.License = LicenseType.Community;
-
-        // Since QuestPDF 2026.9 system fonts are disabled by default and a missing family
-        // (Georgia, our body font) fails generation. DraftEngine is a Windows-only app and
-        // Georgia ships with Windows, so system fonts are re-enabled deliberately — same
-        // rendering behaviour as previous QuestPDF versions.
-        QuestPDF.Settings.UseSystemFonts = true;
-    }
+    private const float PageMarginPoints = 72;
+    private const float BodyFontSize = 11;
+    private const float BodyLineHeight = 1.15f;
+    private const float TitleFontSize = 28;
+    private const float PartiesFontSize = 12;
+    private const float HeadingFontSize = 12;
+    private const float FooterFontSize = 9;
+    private const float TitleTopPadding = 140;
+    private const float SignatureLineHeight = 24;
 
     public async Task<string> BuildPdfAsync(Contract contract, string fullContractText, string outputPath)
     {
@@ -35,59 +34,82 @@ public class PdfBuilder : IPdfBuilder
             throw new ArgumentException("Output path must not be empty.", nameof(outputPath));
         }
 
+        // Configure QuestPDF once, before any document is generated.
+        QuestPdfConfiguration.EnsureInitialized();
+
+        var title = DocumentDefaults.NormalizeTitle(contract.Title);
         var segments = ContractTextParser.Parse(fullContractText);
         var parties = ContractParties.ToDisplayText(contract.PartiesJson);
-        var signatureNames = ContractParties.GetNames(contract.PartiesJson);
+        var signatures = ContractParties.GetSignatureNames(contract);
 
-        await Task.Run(() =>
+        if (string.IsNullOrWhiteSpace(fullContractText))
         {
-            var directory = Path.GetDirectoryName(outputPath);
-            if (!string.IsNullOrEmpty(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            // Keep exporting a safe title/signature document instead of failing the user's export.
+            Trace.TraceWarning(
+                "Contract text is empty; generating a PDF with the title page and signature block only.");
+        }
 
-            Document.Create(container => ComposeDocument(container, contract, segments, parties, signatureNames))
-                .WithMetadata(new DocumentMetadata
+        try
+        {
+            await Task.Run(() =>
+                DocumentFileWriter.WriteAtomically(outputPath, tempPath =>
                 {
-                    Title = contract.Title,
-                    Author = "DraftEngine",
-                    Subject = contract.ContractType
-                })
-                .GeneratePdf(outputPath);
-        });
+                    Document.Create(container => ComposeDocument(container, contract, title, segments, parties, signatures))
+                        .WithMetadata(new DocumentMetadata
+                        {
+                            Title = title,
+                            Author = "DraftEngine",
+                            Subject = contract.ContractType ?? string.Empty
+                        })
+                        .GeneratePdf(tempPath);
+
+                    DocumentFileWriter.ValidatePdf(tempPath);
+                }));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"Failed to generate the PDF document '{title}' at '{outputPath}'. " +
+                "No existing file was modified.",
+                ex);
+        }
+
         return outputPath;
     }
 
     private static void ComposeDocument(
         IDocumentContainer container,
         Contract contract,
+        string title,
         IReadOnlyList<ContractSegment> segments,
         string parties,
-        IReadOnlyList<string> signatureNames)
+        SignatureNames signatures)
     {
         container.Page(page =>
         {
             page.Size(PageSizes.Letter);
-            page.MarginTop(72);
-            page.MarginBottom(72);
-            page.MarginLeft(72);
-            page.MarginRight(72);
-            page.DefaultTextStyle(text => text.FontFamily("Georgia").FontSize(11).LineHeight(1.15f));
+            page.MarginTop(PageMarginPoints);
+            page.MarginBottom(PageMarginPoints);
+            page.MarginLeft(PageMarginPoints);
+            page.MarginRight(PageMarginPoints);
+            page.DefaultTextStyle(text => text
+                .FontFamily("Georgia")
+                .FontSize(BodyFontSize)
+                .LineHeight(BodyLineHeight));
 
             page.Content().Column(column =>
             {
-                column.Item().PaddingTop(140).AlignCenter().Text(contract.Title).FontSize(28).Bold();
-                column.Item().PaddingTop(24).AlignCenter().Text(parties).FontSize(12);
+                column.Item().PaddingTop(TitleTopPadding).AlignCenter().Text(title).FontSize(TitleFontSize).Bold();
+                column.Item().PaddingTop(24).AlignCenter().Text(parties).FontSize(PartiesFontSize);
 
                 column.Item().PaddingTop(48).Column(details =>
                 {
                     AppendDetail(details, "Client", contract.ClientName);
                     AppendDetail(details, "Email", contract.ClientEmail);
-                    AppendDetail(details, "Effective Date", contract.EffectiveDate?.ToString("yyyy-MM-dd") ?? "N/A");
-                    AppendDetail(details, "Governing Law", string.IsNullOrWhiteSpace(contract.GoverningLaw) ? "N/A" : contract.GoverningLaw);
-                    AppendDetail(details, "Term", contract.TermMonths > 0 ? $"{contract.TermMonths} month(s)" : "N/A");
-                    AppendDetail(details, "Contract Type", string.IsNullOrWhiteSpace(contract.ContractType) ? "N/A" : contract.ContractType);
+                    AppendDetail(details, "Effective Date", DocumentDefaults.FormatEffectiveDate(contract.EffectiveDate));
+                    AppendDetail(details, "Governing Law", DocumentDefaults.OrNotApplicable(contract.GoverningLaw));
+                    AppendDetail(details, "Term", DocumentDefaults.FormatTerm(contract.TermMonths));
+                    AppendDetail(details, "Contract Type", DocumentDefaults.OrNotApplicable(contract.ContractType));
                 });
 
                 column.Item().PageBreak();
@@ -96,7 +118,7 @@ public class PdfBuilder : IPdfBuilder
                 {
                     if (segment.IsHeading)
                     {
-                        column.Item().PaddingTop(14).Text(segment.Text).Bold().FontSize(12);
+                        column.Item().PaddingTop(14).Text(segment.Text).Bold().FontSize(HeadingFontSize);
                     }
                     else
                     {
@@ -104,20 +126,19 @@ public class PdfBuilder : IPdfBuilder
                     }
                 }
 
-                var rightName = signatureNames.Count > 1 ? signatureNames[1] : "Counterparty";
-                column.Item().PaddingTop(36).Text("IN WITNESS WHEREOF, the parties have executed this Agreement as of the Effective Date.");
+                column.Item().PaddingTop(36).Text(DocumentDefaults.WitnessClause);
                 column.Item().PaddingTop(24).Row(row =>
                 {
                     row.RelativeItem().Column(left =>
                     {
-                        left.Item().Height(24).BorderBottom(1).PaddingBottom(2);
-                        left.Item().PaddingTop(4).Text(contract.ClientName);
+                        left.Item().Height(SignatureLineHeight).BorderBottom(1).PaddingBottom(2);
+                        left.Item().PaddingTop(4).Text(signatures.LeftName);
                     });
                     row.Spacing(24);
                     row.RelativeItem().Column(right =>
                     {
-                        right.Item().Height(24).BorderBottom(1).PaddingBottom(2);
-                        right.Item().PaddingTop(4).Text(rightName);
+                        right.Item().Height(SignatureLineHeight).BorderBottom(1).PaddingBottom(2);
+                        right.Item().PaddingTop(4).Text(signatures.RightName);
                     });
                 });
                 column.Item().PaddingTop(16).Row(row =>
@@ -130,10 +151,10 @@ public class PdfBuilder : IPdfBuilder
 
             page.Footer().AlignCenter().Text(text =>
             {
-                text.Span("Page ").FontSize(9);
-                text.CurrentPageNumber().FontSize(9);
-                text.Span(" of ").FontSize(9);
-                text.TotalPages().FontSize(9);
+                text.Span("Page ").FontSize(FooterFontSize);
+                text.CurrentPageNumber().FontSize(FooterFontSize);
+                text.Span(" of ").FontSize(FooterFontSize);
+                text.TotalPages().FontSize(FooterFontSize);
             });
         });
     }

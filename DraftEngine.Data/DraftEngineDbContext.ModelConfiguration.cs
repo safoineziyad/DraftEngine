@@ -42,6 +42,8 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.ClientEmail).HasMaxLength(256).IsRequired();
             entity.Property(contract => contract.GoverningLaw).HasMaxLength(200).IsRequired();
             entity.Property(contract => contract.FinalFilePath).HasMaxLength(1024).IsRequired();
+            entity.Property(contract => contract.PartiesJson).IsRequired();
+            entity.Property(contract => contract.AssembledText).IsRequired();
             // PartiesJson, AssembledText: unbounded JSON/free text, deliberately no max length.
 
             entity.HasIndex(contract => contract.Title);
@@ -78,6 +80,7 @@ public partial class DraftEngineDbContext
             entity.Property(clause => clause.ContractType).HasMaxLength(100).IsRequired();
             entity.Property(clause => clause.Category).HasMaxLength(150).IsRequired();
             entity.Property(clause => clause.Title).HasMaxLength(300).IsRequired();
+            entity.Property(clause => clause.BodyTemplate).IsRequired();
             // BodyTemplate: unbounded template text, deliberately no max length.
 
             entity.HasIndex(clause => clause.ContractType);
@@ -110,6 +113,7 @@ public partial class DraftEngineDbContext
             entity.HasKey(field => field.Id);
 
             entity.Property(field => field.Key).HasMaxLength(150).IsRequired();
+            entity.Property(field => field.Value).IsRequired();
             // Value: unbounded answer text, deliberately no max length.
         });
 
@@ -118,6 +122,7 @@ public partial class DraftEngineDbContext
             entity.ToTable("ChatMessages");
             entity.HasKey(message => message.Id);
 
+            entity.Property(message => message.Content).IsRequired();
             // Content: unbounded message text, deliberately no max length.
 
             entity.HasIndex(message => message.ContractId);
@@ -137,6 +142,7 @@ public partial class DraftEngineDbContext
             entity.HasKey(version => version.Id);
 
             entity.Property(version => version.Reason).HasMaxLength(100).IsRequired();
+            entity.Property(version => version.Text).IsRequired();
             // Text: unbounded snapshot text, deliberately no max length.
 
             entity.HasIndex(version => version.ContractId);

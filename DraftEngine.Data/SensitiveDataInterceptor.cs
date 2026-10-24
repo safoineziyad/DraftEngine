@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using DraftEngine.Core.Models;
@@ -30,6 +33,7 @@ namespace DraftEngine.Data;
 /// DPAPI itself provides the security boundary (the Windows user profile).
 /// </para>
 /// </remarks>
+[SupportedOSPlatform("windows")]
 public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterializationInterceptor
 {
     /// <summary>Marker prefixed to every encrypted value so plaintext is never decrypted twice.</summary>
@@ -37,6 +41,8 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
 
     /// <summary>DPAPI entropy, app-specific so blobs never mix with other applications'.</summary>
     private static readonly byte[] Entropy = Encoding.UTF8.GetBytes("DraftEngine.v1.SensitiveData");
+
+    private static readonly ConcurrentDictionary<(Type EntityType, string PropertyName), PropertyInfo?> PropertyCache = new();
 
     /// <summary>Entity types and the string properties encrypted at rest.</summary>
     private static readonly IReadOnlyDictionary<Type, string[]> EncryptedProperties =
@@ -121,24 +127,52 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
             return entity;
         }
 
-        try
+        foreach (var propertyName in propertyNames)
         {
-            foreach (var propertyName in propertyNames)
+            try
             {
-                var propertyInfo = entityType.GetProperty(propertyName);
+                var propertyInfo = GetCachedProperty(entityType, propertyName);
                 if (propertyInfo?.GetValue(entity) is string value &&
                     value.StartsWith(MarkerPrefix, StringComparison.Ordinal))
                 {
-                    propertyInfo.SetValue(entity, Unprotect(value));
+                    try
+                    {
+                        var decrypted = Unprotect(value);
+                        propertyInfo.SetValue(entity, decrypted);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogWarning(ex,
+                            "Decrypting sensitive column '{PropertyName}' on entity '{EntityType}' failed during materialization; applying defensive value.",
+                            propertyName,
+                            entityType.Name);
+                        try
+                        {
+                            if (propertyInfo != null && propertyInfo.CanWrite)
+                            {
+                                var propType = propertyInfo.PropertyType;
+                                if (propType == typeof(string))
+                                {
+                                    propertyInfo.SetValue(entity, string.Empty);
+                                }
+                                else if (Nullable.GetUnderlyingType(propType) == typeof(string))
+                                {
+                                    propertyInfo.SetValue(entity, null);
+                                }
+                                // For non-nullable required strings, setting empty is defensive; avoid leaving DEENC1: visible
+                            }
+                        }
+                        catch
+                        {
+                            // Avoid breaking materialization
+                        }
+                    }
                 }
             }
-        }
-        catch (Exception exception)
-        {
-            // A value that cannot be decrypted (for example after a Windows profile change)
-            // must not prevent the row from loading; the stored ciphertext is returned as-is
-            // and the problem is logged for diagnosis.
-            _logger?.LogWarning(exception, "Decrypting a sensitive column failed; the stored value is returned unchanged.");
+            catch (Exception)
+            {
+                // Continue to other properties
+            }
         }
 
         return entity;
@@ -172,7 +206,20 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
                     continue; // Already ciphertext (for example a failed earlier save).
                 }
 
-                property.CurrentValue = Protect(value);
+                try
+                {
+                    property.CurrentValue = Protect(value);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex,
+                        "Encrypting sensitive column '{PropertyName}' on entity '{EntityType}' failed.",
+                        propertyName,
+                        entry.Metadata.ClrType.Name);
+                    throw new InvalidOperationException(
+                        "Failed to protect sensitive data. Ensure the application is running under a valid Windows user profile with DPAPI available.",
+                        ex);
+                }
             }
         }
     }
@@ -206,25 +253,59 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogWarning(exception, "Restoring an in-memory value after save failed.");
+                    _logger?.LogWarning(exception,
+                        "Restoring in-memory value for sensitive column '{PropertyName}' on entity '{EntityType}' after save failed; leaving stored value unchanged.",
+                        propertyName,
+                        entry.Metadata.ClrType.Name);
                 }
             }
         }
     }
 
     /// <summary>Encrypts a plaintext value with DPAPI (current user) and adds the marker.</summary>
-    private static string Protect(string plaintext)
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    private string Protect(string plaintext)
     {
-        var protectedBytes = ProtectedData.Protect(
-            Encoding.UTF8.GetBytes(plaintext), Entropy, DataProtectionScope.CurrentUser);
-        return MarkerPrefix + Convert.ToBase64String(protectedBytes);
+        try
+        {
+            var protectedBytes = ProtectedData.Protect(
+                Encoding.UTF8.GetBytes(plaintext), Entropy, DataProtectionScope.CurrentUser);
+            return MarkerPrefix + Convert.ToBase64String(protectedBytes);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "DPAPI Protect failed.");
+            throw;
+        }
     }
 
     /// <summary>Decrypts a marker-prefixed value with DPAPI (current user).</summary>
-    private static string Unprotect(string ciphertext)
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+    private string Unprotect(string ciphertext)
     {
-        var payload = Convert.FromBase64String(ciphertext.Substring(MarkerPrefix.Length));
-        var bytes = ProtectedData.Unprotect(payload, Entropy, DataProtectionScope.CurrentUser);
-        return Encoding.UTF8.GetString(bytes);
+        try
+        {
+            var payload = Convert.FromBase64String(ciphertext.Substring(MarkerPrefix.Length));
+            var bytes = ProtectedData.Unprotect(payload, Entropy, DataProtectionScope.CurrentUser);
+            return Encoding.UTF8.GetString(bytes);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "DPAPI Unprotect failed.");
+            throw;
+        }
+    }
+
+    private static PropertyInfo? GetCachedProperty(Type entityType, string propertyName)
+    {
+        var key = (entityType, propertyName);
+        if (PropertyCache.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+
+        var prop = entityType.GetProperty(propertyName);
+        PropertyCache[key] = prop;
+        return prop;
     }
 }

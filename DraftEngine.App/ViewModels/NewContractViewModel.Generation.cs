@@ -92,12 +92,18 @@ public partial class NewContractViewModel
 
     private string BuildTitle(IReadOnlyDictionary<string, string> values)
     {
-        var party1 = values.GetValueOrDefault("Party1", string.Empty);
-        var party2 = values.GetValueOrDefault("Party2", string.Empty);
-        var parties = string.IsNullOrWhiteSpace(party1) && string.IsNullOrWhiteSpace(party2)
-            ? string.Empty
-            : $" \u2013 {party1} & {party2}".TrimEnd();
-        return $"{MutualNdaType}{parties}";
+        var party1 = values.GetValueOrDefault("Party1", string.Empty)?.Trim();
+        var party2 = values.GetValueOrDefault("Party2", string.Empty)?.Trim();
+
+        // Join only the parties that were actually entered: a single party must not
+        // leave a dangling " & " in the title ("Mutual NDA – Acme &").
+        var parties = string.Join(
+            " & ",
+            new[] { party1, party2 }.Where(name => !string.IsNullOrWhiteSpace(name)));
+
+        return string.IsNullOrWhiteSpace(parties)
+            ? MutualNdaType
+            : $"{MutualNdaType} \u2013 {parties}";
     }
 
     /// <summary>

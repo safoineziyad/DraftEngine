@@ -79,6 +79,21 @@
                               ItemsSource="{Binding SortOptions}"
                               SelectedItem="{Binding SelectedSortMode}"
                               AutomationProperties.Name="Sort contracts" />
+                    <Button Content="Clear filters" Margin="12,0,0,0" Padding="12,0" Height="34"
+                            AutomationProperties.Name="Clear all filters and sorting"
+                            ToolTip="Reset search, type filter and sort to defaults"
+                            Command="{Binding ClearFiltersCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasActiveFilters}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

@@ -13,7 +13,6 @@ using DraftEngine.App.Services.Settings;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
-using DraftEngine.Core.Services;
 using Microsoft.Win32;
 using Serilog;
 
@@ -106,8 +105,14 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     /// <summary>True when the chat panel has no messages yet (hint shown instead).</summary>
     public bool IsChatEmpty => ChatMessages.Count == 0;
 
-    /// <summary>True when AI chat editing can be attempted (contract generated first).</summary>
-    public bool CanChat => HasDocument && !IsBusy;
+    /// <summary>True when an OpenAI API key is configured in settings.</summary>
+    public bool HasApiKey => !string.IsNullOrWhiteSpace(_settingsService.Current.OpenAiApiKey);
+
+    /// <summary>True when a warning about missing API key should be shown.</summary>
+    public bool ShowApiKeyWarning => HasDocument && !HasApiKey && !LoadFailed;
+
+    /// <summary>True when AI chat editing can be attempted (contract generated first and API key configured).</summary>
+    public bool CanChat => HasDocument && !IsBusy && HasApiKey;
 
     /// <summary>Creates the view model.</summary>
     public ContractDetailViewModel(
@@ -138,6 +143,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         // take the application down (audit Finding #5).
         try
         {
+            RaiseChatAvailability();
             var contractId = parameter as int?;
             if (contractId is null or <= 0)
             {
@@ -355,6 +361,10 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     /// <summary>Navigates back to the contracts list.</summary>
     [RelayCommand]
     private void BackToList() => _navigation.Navigate("contracts");
+
+    /// <summary>Navigates to the Settings page.</summary>
+    [RelayCommand]
+    private void GoToSettings() => _navigation.Navigate("settings");
 
     private async Task ExportAsync(FileType fileType)
     {
@@ -584,13 +594,28 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     {
         OnPropertyChanged(nameof(HasDocument));
         OnPropertyChanged(nameof(CanChat));
+        OnPropertyChanged(nameof(ShowApiKeyWarning));
     }
 
     partial void OnIsHistoryVisibleChanged(bool value)
     {
-        // The Toolkit-generated property-changed hook cannot be awaited, so the refresh is
-        // handed to a helper that awaits it internally and reports every failure.
-        _ = RefreshVersionsAsync(value);
+        // The Toolkit-generated property-changed hook cannot be awaited; invoke safely
+        // (async void with internal try/catch) so no unobserved exceptions escape.
+        SafeReloadVersions(value);
+    }
+
+    /// <summary>Invokes version history reload without fire-and-forget leakage.</summary>
+    private async void SafeReloadVersions(bool value)
+    {
+        try
+        {
+            await RefreshVersionsAsync(value);
+        }
+        catch (Exception ex)
+        {
+            // Defensive guard: RefreshVersionsAsync already handles/report failures.
+            Log.Warning(ex, "Unexpected error while reloading version history.");
+        }
     }
 
     /// <summary>Reloads the version snapshots when the history panel is opened, reporting failures to the user.</summary>
@@ -615,6 +640,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     partial void OnIsBusyChanged(bool value)
     {
         RaiseChatAvailability();
+        OnPropertyChanged(nameof(ShowApiKeyWarning));
 
         if (!value)
         {
@@ -660,6 +686,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     {
         SendChatEditCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(CanChat));
+        OnPropertyChanged(nameof(HasApiKey));
+        OnPropertyChanged(nameof(ShowApiKeyWarning));
     }
 }
 

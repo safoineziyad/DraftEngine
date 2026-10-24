@@ -167,8 +167,10 @@
                 <StackPanel Visibility="{Binding IsStep1Visible, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Choose a contract type" FontSize="15" FontWeight="SemiBold"
                                Foreground="{StaticResource TextPrimaryBrush}" />
+                    <TextBlock Text="Only Mutual NDA is currently available. Other contract types are shown for preview only and cannot be selected."
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,8" TextWrapping="Wrap" />
                     <TextBlock Text="Select the agreement you want to draft."
-                               Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,16" />
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,16" />
                     <ItemsControl ItemsSource="{Binding ContractTypes}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

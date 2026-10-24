@@ -54,6 +54,20 @@ public partial class ContractsListViewModel : ObservableObject
     [ObservableProperty]
     private string selectedSortMode = SortByUpdated;
 
+    /// <summary>True when any filter is active (search or type filter not "All").</summary>
+    public bool HasActiveFilters =>
+        !string.IsNullOrWhiteSpace(SearchText) ||
+        (!string.IsNullOrEmpty(SelectedTypeFilter) && SelectedTypeFilter != AllTypesFilter);
+
+    /// <summary>Resets all filters and sorting to defaults.</summary>
+    [RelayCommand]
+    private void ClearFilters()
+    {
+        SearchText = string.Empty;
+        SelectedTypeFilter = AllTypesFilter;
+        SelectedSortMode = SortByUpdated;
+    }
+
     /// <summary>True while contracts are being fetched or deleted.</summary>
     [ObservableProperty]
     private bool isLoading;
@@ -160,9 +174,17 @@ public partial class ContractsListViewModel : ObservableObject
         }
     }
 
-    partial void OnSearchTextChanged(string value) => ApplyFilters();
+    partial void OnSearchTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasActiveFilters));
+        ApplyFilters();
+    }
 
-    partial void OnSelectedTypeFilterChanged(string value) => ApplyFilters();
+    partial void OnSelectedTypeFilterChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasActiveFilters));
+        ApplyFilters();
+    }
 
     partial void OnSelectedSortModeChanged(string value) => ApplyFilters();
 

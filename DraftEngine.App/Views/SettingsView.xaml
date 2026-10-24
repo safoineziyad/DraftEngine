@@ -35,7 +35,19 @@
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,16" />
 
                     <!-- API key -->
-                    <TextBlock Text="API key" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <TextBlock Text="API key" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding ApiKeyStatusText}" Margin="0,0,0,6">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
+                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasApiKey}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -147,8 +159,11 @@
                             <TextBox Text="{Binding DefaultTermMonths, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                      AutomationProperties.Name="Default contract term in months"
                                      ToolTip="Contract term in months (1–120)" />
+                            <TextBlock Text="{Binding TermMonthsError}" Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding HasTermMonthsError, Converter={StaticResource BoolToVis}}" />
                             <TextBlock Text="Whole number of months, between 1 and 120."
-                                       Style="{StaticResource SecondaryTextStyle}" Margin="0,6,0,0" />
+                                       Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -178,7 +193,8 @@
                     <Button Grid.Column="2" Content="Save settings"
                             Style="{StaticResource PrimaryButtonStyle}"
                             AutomationProperties.Name="Save settings"
-                            Command="{Binding SaveCommand}" VerticalAlignment="Center" />
+                            Command="{Binding SaveCommand}" VerticalAlignment="Center"
+                            IsEnabled="{Binding CanSave}" />
                 </Grid>
             </Border>
 

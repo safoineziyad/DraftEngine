@@ -160,6 +160,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="0,0,0,12">
@@ -228,8 +229,20 @@
                         </StackPanel>
                     </ScrollViewer>
 
+                    <!-- API key warning -->
+                    <Border Grid.Row="2" Margin="0,8,0,8" Padding="10,8"
+                            Background="#FFF4E5" CornerRadius="6" BorderBrush="#FFB74D" BorderThickness="1"
+                            Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="Configure your OpenAI API key in Settings to use AI editing."
+                                       TextWrapping="Wrap" Foreground="#E65100" FontSize="12" />
+                            <Button Content="Go to Settings" Margin="0,6,0,0" Padding="10,4" HorizontalAlignment="Left"
+                                    Command="{Binding GoToSettingsCommand}" FontSize="11" />
+                        </StackPanel>
+                    </Border>
+
                     <!-- Input -->
-                    <Grid Grid.Row="2" Margin="0,12,0,0">
+                    <Grid Grid.Row="3" Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -237,10 +250,14 @@
                         <TextBox x:Name="ChatBox"
                                  Text="{Binding ChatInput, UpdateSourceTrigger=PropertyChanged}"
                                  AutomationProperties.Name="Instruction for the AI assistant"
-                                 AutomationProperties.HelpText="Describe the change you want. Tab to the Send button and press Enter to apply it."
+                                 AutomationProperties.HelpText="Describe the change you want. Press Enter to send, Shift+Enter for a new line."
                                  AcceptsReturn="True" TextWrapping="Wrap" Height="60"
                                  VerticalContentAlignment="Top" Padding="8"
-                                 VerticalScrollBarVisibility="Auto">
+                                 VerticalScrollBarVisibility="Auto"
+                                 IsEnabled="{Binding HasApiKey}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding SendChatEditCommand}" />
+                            </TextBox.InputBindings>
                             <TextBox.Style>
                                 <Style TargetType="TextBox">
                                     <Style.Triggers>
@@ -255,7 +272,12 @@
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 AutomationProperties.Name="Send instruction to the AI assistant"
                                 Command="{Binding SendChatEditCommand}"
-                                IsEnabled="{Binding CanChat}" />
+                                IsEnabled="{Binding CanChat}">
+                            <Button.ToolTip>
+                                <ToolTip Content="Configure your OpenAI API key in Settings to use AI editing." 
+                                         Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}" />
+                            </Button.ToolTip>
+                        </Button>
                     </Grid>
                 </Grid>
             </Border>

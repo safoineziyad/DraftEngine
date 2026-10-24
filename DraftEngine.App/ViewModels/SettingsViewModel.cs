@@ -68,6 +68,24 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool isDirty;
 
+    /// <summary>True when the term-months validation error should be shown.</summary>
+    public bool HasTermMonthsError => !string.IsNullOrEmpty(TermMonthsError);
+
+    /// <summary>True when settings can be saved (no blocking validation errors).</summary>
+    public bool CanSave => string.IsNullOrEmpty(TermMonthsError);
+
+    /// <summary>API key status text for UI display.</summary>
+    [ObservableProperty]
+    private string apiKeyStatusText = "No API key configured";
+
+    /// <summary>True if an API key is configured.</summary>
+    [ObservableProperty]
+    private bool hasApiKey;
+
+    /// <summary>Inline validation message for default term months.</summary>
+    [ObservableProperty]
+    private string? termMonthsError;
+
     /// <summary>The Show/Hide toggle label for the API key field.</summary>
     public string ShowHideKeyText => IsKeyVisible ? "Hide" : "Show";
 
@@ -178,15 +196,31 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    partial void OnOpenAiApiKeyChanged(string value) => MarkDirty();
+    partial void OnOpenAiApiKeyChanged(string value)
+    {
+        MarkDirty();
+        var hasKey = !string.IsNullOrWhiteSpace(value);
+        HasApiKey = hasKey;
+        ApiKeyStatusText = hasKey ? "API key configured" : "No API key configured";
+    }
 
     partial void OnSelectedModelChanged(string value) => MarkDirty();
 
     partial void OnSelectedGoverningLawChanged(string value) => MarkDirty();
 
-    partial void OnDefaultTermMonthsChanged(int value) => MarkDirty();
+    partial void OnDefaultTermMonthsChanged(int value)
+    {
+        ValidateTermMonths(value);
+        MarkDirty();
+    }
 
     partial void OnIsKeyVisibleChanged(bool value) => OnPropertyChanged(nameof(ShowHideKeyText));
+
+    partial void OnTermMonthsErrorChanged(string? value)
+    {
+        OnPropertyChanged(nameof(CanSave));
+        OnPropertyChanged(nameof(HasTermMonthsError));
+    }
 
     partial void OnTestStatusMessageChanged(string? value) => OnPropertyChanged(nameof(HasTestStatus));
 
@@ -213,14 +247,49 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             OpenAiApiKey = saved.OpenAiApiKey;
+            UpdateApiKeyStatus(saved.OpenAiApiKey);
             SelectedModel = ModelOptions.Contains(saved.OpenAiModel) ? saved.OpenAiModel : AppSettings.FallbackModel;
             SelectedGoverningLaw = saved.DefaultGoverningLaw;
             DefaultTermMonths = saved.DefaultTermMonths;
+            ValidateTermMonths(saved.DefaultTermMonths);
             IsDirty = false;
         }
         finally
         {
             SetIsLoadingState(false);
+        }
+    }
+
+    private void UpdateApiKeyStatus(string? key)
+    {
+        var trimmed = key?.Trim() ?? string.Empty;
+        if (string.IsNullOrEmpty(trimmed))
+        {
+            HasApiKey = false;
+            ApiKeyStatusText = "No API key configured";
+            return;
+        }
+
+        HasApiKey = true;
+        if (trimmed.Length > 8)
+        {
+            ApiKeyStatusText = $"API key configured ({trimmed.Substring(0, 3)}...{trimmed.Substring(trimmed.Length - 4)})";
+        }
+        else
+        {
+            ApiKeyStatusText = "API key configured";
+        }
+    }
+
+    private void ValidateTermMonths(int value)
+    {
+        if (value < 1 || value > 120)
+        {
+            TermMonthsError = "Term must be between 1 and 120 months.";
+        }
+        else
+        {
+            TermMonthsError = null;
         }
     }
 }

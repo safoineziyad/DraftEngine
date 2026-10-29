@@ -225,16 +225,16 @@ public partial class NewContractViewModel : ObservableObject
             isAvailable: true));
         ContractTypes.Add(new ContractTypeOptionViewModel(
             "Non-Disclosure Agreement (One-Way)",
-            "Protects information disclosed by a single party.",
-            isAvailable: false));
+            "One-way confidentiality agreement protecting information disclosed by a single party.",
+            isAvailable: true));
         ContractTypes.Add(new ContractTypeOptionViewModel(
             "Independent Contractor Agreement",
-            "Defines scope, fees and ownership for contract work.",
-            isAvailable: false));
+            "Defines scope, fees, deliverables and ownership for contract work.",
+            isAvailable: true));
         ContractTypes.Add(new ContractTypeOptionViewModel(
             "Consulting Agreement",
-            "Sets the terms of an ongoing advisory engagement.",
-            isAvailable: false));
+            "Sets the terms for an ongoing advisory engagement between the parties.",
+            isAvailable: true));
     }
 
     private void BuildIntakeFields()
@@ -247,20 +247,79 @@ public partial class NewContractViewModel : ObservableObject
         var governingLaw = ResolveDefaultGoverningLaw(out var governingLawChoices);
         var termMonths = _appSettings.Current.DefaultTermMonths.ToString(CultureInfo.InvariantCulture);
 
-        var fields = new[]
+        var contractType = SelectedContractType?.Name ?? MutualNdaType;
+        IntakeFieldViewModel[] fields;
+
+        if (string.Equals(contractType, "Non-Disclosure Agreement (One-Way)", StringComparison.OrdinalIgnoreCase))
         {
-            NewField("Party1", "Party 1 name"),
-            NewField("Party1Address", "Party 1 address"),
-            NewField("Party2", "Party 2 name"),
-            NewField("Party2Address", "Party 2 address"),
-            NewField("ClientName", "Client name"),
-            NewField("ClientEmail", "Client email"),
-            NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-            NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                choices: governingLawChoices, defaultValue: governingLaw),
-            NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-            NewField("Purpose", "Purpose of disclosure"),
-        };
+            // One-way NDA: focus on discloser/recipient; reuse existing keys for compatibility
+            fields = new[]
+            {
+                NewField("Party1", "Disclosing Party"),
+                NewField("Party1Address", "Disclosing Party Address"),
+                NewField("Party2", "Receiving Party"),
+                NewField("Party2Address", "Receiving Party Address"),
+                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
+                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
+                    choices: governingLawChoices, defaultValue: governingLaw),
+                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
+                NewField("Purpose", "Purpose of disclosure"),
+            };
+        }
+        else if (string.Equals(contractType, "Independent Contractor Agreement", StringComparison.OrdinalIgnoreCase))
+        {
+            // Independent Contractor: reuse Party1/Party2/ClientName keys where compatible
+            fields = new[]
+            {
+                NewField("Party1", "Contractor Name"),
+                NewField("Party1Address", "Contractor Address"),
+                NewField("Party2", "Client Name"),
+                NewField("Party2Address", "Client Address"),
+                NewField("ClientEmail", "Client Email"),
+                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
+                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
+                    choices: governingLawChoices, defaultValue: governingLaw),
+                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
+                NewField("Scope", "Scope of Work"),
+                NewField("Fee", "Fee/Rate"),
+            };
+        }
+        else if (string.Equals(contractType, "Consulting Agreement", StringComparison.OrdinalIgnoreCase))
+        {
+            // Consulting Agreement
+            fields = new[]
+            {
+                NewField("Party1", "Consultant Name"),
+                NewField("Party1Address", "Consultant Address"),
+                NewField("Party2", "Client Name"),
+                NewField("Party2Address", "Client Address"),
+                NewField("ClientEmail", "Client Email"),
+                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
+                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
+                    choices: governingLawChoices, defaultValue: governingLaw),
+                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
+                NewField("Scope", "Scope of Services"),
+                NewField("Fee", "Consulting Fee"),
+            };
+        }
+        else
+        {
+            // Mutual NDA - keep exactly as before
+            fields = new[]
+            {
+                NewField("Party1", "Party 1 name"),
+                NewField("Party1Address", "Party 1 address"),
+                NewField("Party2", "Party 2 name"),
+                NewField("Party2Address", "Party 2 address"),
+                NewField("ClientName", "Client name"),
+                NewField("ClientEmail", "Client email"),
+                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
+                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
+                    choices: governingLawChoices, defaultValue: governingLaw),
+                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
+                NewField("Purpose", "Purpose of disclosure"),
+            };
+        }
 
         foreach (var field in fields)
         {
@@ -344,7 +403,12 @@ public partial class NewContractViewModel : ObservableObject
         RefreshCommands();
     }
 
-    partial void OnSelectedContractTypeChanged(ContractTypeOptionViewModel? value) => RefreshCommands();
+    partial void OnSelectedContractTypeChanged(ContractTypeOptionViewModel? value)
+    {
+        // Rebuild intake fields when contract type changes (before moving to step 2)
+        BuildIntakeFields();
+        RefreshCommands();
+    }
 
     partial void OnSelectedClauseCountChanged(int value) => RefreshCommands();
 

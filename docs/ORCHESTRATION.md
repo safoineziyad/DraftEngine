@@ -8,11 +8,11 @@
 ## Status
 | Agent | Status | Notes |
 |---|---|---|
-| A1 | todo | Registry in Core/ContractTypes |
-| A2 | todo | Migrations/schema |
-| A3 | todo | FieldService alignment |
-| A4 | todo | Preamble/signature type-aware |
-| A5 | todo | Wizard refactor |
+| A1 | merged | Registry in Core/ContractTypes |
+| A2 | merged | Migrations/schema |
+| A3 | merged | FieldService alignment |
+| A4 | merged | Preamble/signature type-aware |
+| A5 | merged | Wizard refactor |
 | A6 | todo | Clause Manager |
 | A7 | todo | AI privacy/consent/endpoint/redaction |
 | A8 | todo | Editable contracts, duplicate, archive |

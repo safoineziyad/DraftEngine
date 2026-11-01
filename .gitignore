@@ -59,3 +59,7 @@ Output/
 
 # dotnet publish output (installer build staging)
 publish/
+
+# Offline license signing material (never commit)
+.license-issuer/
+

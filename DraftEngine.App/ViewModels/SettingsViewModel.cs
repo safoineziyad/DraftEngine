@@ -180,6 +180,10 @@ public partial class SettingsViewModel : ObservableObject
                 // Preserve the AI data-sharing acknowledgement — editing settings must not
                 // silently withdraw the consent given during a chat edit.
                 AiDataConsentAccepted = _settingsService.Current.AiDataConsentAccepted,
+                OnboardingCompleted = _settingsService.Current.OnboardingCompleted,
+                OpenAiBaseUrl = _settingsService.Current.OpenAiBaseUrl,
+                UseCustomOpenAiEndpoint = _settingsService.Current.UseCustomOpenAiEndpoint,
+                HidePartyNamesFromAi = _settingsService.Current.HidePartyNamesFromAi,
             };
             await _settingsService.SaveAsync(settings);
             IsDirty = false;

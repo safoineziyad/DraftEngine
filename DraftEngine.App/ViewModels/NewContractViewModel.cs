@@ -10,6 +10,7 @@ using DraftEngine.App.Services;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Interfaces;
+using DraftEngine.Core.Models.ContractTypes;
 
 namespace DraftEngine.App.ViewModels;
 
@@ -219,22 +220,14 @@ public partial class NewContractViewModel : ObservableObject
     private void BuildContractTypes()
     {
         ContractTypes.Clear();
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Mutual NDA",
-            "Two-way confidentiality agreement between parties sharing sensitive information.",
-            isAvailable: true));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Non-Disclosure Agreement (One-Way)",
-            "One-way confidentiality agreement protecting information disclosed by a single party.",
-            isAvailable: true));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Independent Contractor Agreement",
-            "Defines scope, fees, deliverables and ownership for contract work.",
-            isAvailable: true));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Consulting Agreement",
-            "Sets the terms for an ongoing advisory engagement between the parties.",
-            isAvailable: true));
+        var mutual = ContractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId);
+        ContractTypes.Add(new ContractTypeOptionViewModel(mutual.DisplayName, mutual.Description, isAvailable: true));
+        var oneWay = ContractTypeRegistry.GetById(ContractTypeRegistry.OneWayNdaId);
+        ContractTypes.Add(new ContractTypeOptionViewModel(oneWay.DisplayName, oneWay.Description, isAvailable: true));
+        var contractor = ContractTypeRegistry.GetById(ContractTypeRegistry.ContractorAgreementId);
+        ContractTypes.Add(new ContractTypeOptionViewModel(contractor.DisplayName, contractor.Description, isAvailable: true));
+        var consulting = ContractTypeRegistry.GetById(ContractTypeRegistry.ConsultingAgreementId);
+        ContractTypes.Add(new ContractTypeOptionViewModel(consulting.DisplayName, consulting.Description, isAvailable: true));
     }
 
     private void BuildIntakeFields()

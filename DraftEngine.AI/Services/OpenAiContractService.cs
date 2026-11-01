@@ -58,7 +58,8 @@ public class OpenAiContractService : IContractAiService
         string model = "gpt-4o-mini",
         Action<string>? log = null,
         int maxRetries = 2,
-        TimeSpan? retryBaseDelay = null)
+        TimeSpan? retryBaseDelay = null,
+        string? baseUrl = null)
     {
         if (string.IsNullOrWhiteSpace(apiKey))
             throw new OpenAiApiKeyMissingException("The configured OpenAI API key is null or empty.");
@@ -75,7 +76,14 @@ public class OpenAiContractService : IContractAiService
         _retryBaseDelay = retryBaseDelay ?? TimeSpan.FromMilliseconds(500);
 
         _httpClient.Timeout = TimeSpan.FromSeconds(90);
-        _httpClient.BaseAddress ??= new Uri("https://api.openai.com/v1/");
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+        {
+            _httpClient.BaseAddress = new Uri(baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/");
+        }
+        else
+        {
+            _httpClient.BaseAddress ??= new Uri("https://api.openai.com/v1/");
+        }
         if (_httpClient.DefaultRequestHeaders.Authorization is null)
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
     }

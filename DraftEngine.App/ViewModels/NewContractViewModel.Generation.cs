@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -20,30 +21,32 @@ public partial class NewContractViewModel
     {
         SummaryItems.Clear();
         var contractType = SelectedContractType?.Name ?? MutualNdaType;
+        var def = ContractTypeRegistry.GetByDisplayName(contractType);
+        contractType = def.DisplayName;
         SummaryItems.Add(new SummaryItemViewModel("Contract type", contractType));
 
-        if (string.Equals(contractType, "Mutual NDA", StringComparison.OrdinalIgnoreCase))
+        if (def.Id == ContractTypeRegistry.MutualNdaId)
         {
             AddSummaryRow("Party 1", "Party1");
             AddSummaryRow("Party 1 address", "Party1Address");
             AddSummaryRow("Party 2", "Party2");
             AddSummaryRow("Party 2 address", "Party2Address");
         }
-        else if (string.Equals(contractType, "One-Way NDA", StringComparison.OrdinalIgnoreCase))
+        else if (def.Id == ContractTypeRegistry.OneWayNdaId)
         {
             AddSummaryRow("Disclosing party", "Party1");
             AddSummaryRow("Disclosing party address", "Party1Address");
             AddSummaryRow("Receiving party", "Party2");
             AddSummaryRow("Receiving party address", "Party2Address");
         }
-        else if (string.Equals(contractType, "Independent Contractor Agreement", StringComparison.OrdinalIgnoreCase))
+        else if (def.Id == ContractTypeRegistry.ContractorAgreementId)
         {
             AddSummaryRow("Contractor", "ContractorName");
             AddSummaryRow("Contractor address", "ContractorAddress");
             AddSummaryRow("Client", "ClientName");
             AddSummaryRow("Client address", "ClientAddress");
         }
-        else if (string.Equals(contractType, "Consulting Agreement", StringComparison.OrdinalIgnoreCase))
+        else if (def.Id == ContractTypeRegistry.ConsultingAgreementId)
         {
             AddSummaryRow("Consultant", "ConsultantName");
             AddSummaryRow("Consultant address", "ConsultantAddress");

@@ -44,11 +44,13 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.FinalFilePath).HasMaxLength(1024).IsRequired();
             entity.Property(contract => contract.PartiesJson).IsRequired();
             entity.Property(contract => contract.AssembledText).IsRequired();
+            entity.Property(contract => contract.IsDeleted).HasDefaultValue(false);
             // PartiesJson, AssembledText: unbounded JSON/free text, deliberately no max length.
 
             entity.HasIndex(contract => contract.Title);
             entity.HasIndex(contract => contract.ContractType);
             entity.HasIndex(contract => contract.CreatedAt);
+            entity.HasIndex(contract => contract.IsDeleted);
 
             // Dependent owned data is removed with the contract.
             entity.HasMany(contract => contract.ContractClauses)
@@ -81,10 +83,17 @@ public partial class DraftEngineDbContext
             entity.Property(clause => clause.Category).HasMaxLength(150).IsRequired();
             entity.Property(clause => clause.Title).HasMaxLength(300).IsRequired();
             entity.Property(clause => clause.BodyTemplate).IsRequired();
+            entity.Property(clause => clause.Source).HasMaxLength(50).IsRequired();
             // BodyTemplate: unbounded template text, deliberately no max length.
 
             entity.HasIndex(clause => clause.ContractType);
             entity.HasIndex(clause => clause.SortOrder);
+            entity.HasIndex(clause => clause.OwnerUserId);
+
+            entity.HasOne(clause => clause.OwnerUser)
+                .WithMany()
+                .HasForeignKey(clause => clause.OwnerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<ContractClause>(entity =>

@@ -26,6 +26,8 @@ public class Contract
     public string AssembledText { get; set; } = string.Empty;
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public bool IsArchived { get; set; }
+    public DateTime? ArchivedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the user who owns the contract.

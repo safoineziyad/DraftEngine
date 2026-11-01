@@ -26,6 +26,19 @@ namespace DraftEngine.Data.Migrations
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsArchived",
+                table: "Contracts",
+                type: "INTEGER",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "ArchivedAt",
+                table: "Contracts",
+                type: "TEXT",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsArchived",
                 table: "Clauses",
                 type: "INTEGER",
                 nullable: false,
@@ -51,6 +64,13 @@ namespace DraftEngine.Data.Migrations
                 maxLength: 50,
                 nullable: false,
                 defaultValue: "");
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsUserDefined",
+                table: "Clauses",
+                type: "INTEGER",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.UpdateData(
                 table: "Clauses",

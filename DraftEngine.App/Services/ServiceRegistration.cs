@@ -43,6 +43,16 @@ public static class ServiceRegistration
         services.AddSingleton<IAiEndpointSettings, AiEndpointSettings>();
         services.AddSingleton<IAiRedactionService, AiRedactionService>();
 
+        // Contract editing, duplicate and archive.
+        services.AddTransient<IContractEditService, ContractEditService>();
+
+        // Wizard draft persistence, licensing (disabled by default), update check (off by default).
+        services.AddTransient<IWizardDraftService, WizardDraftService>();
+        services.AddSingleton<ILicenseService, LicenseService>();
+        services.AddSingleton<IUpdateCheckService, UpdateCheckService>(sp => new UpdateCheckService(null));
+
+        return services;
+
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<NewContractViewModel>();

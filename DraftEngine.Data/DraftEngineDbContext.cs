@@ -61,5 +61,4 @@ public partial class DraftEngineDbContext : DbContext
             SubscriptionTier = "Free",
             SubscriptionExpiresAt = null
         });
-    }
-}
+    }}

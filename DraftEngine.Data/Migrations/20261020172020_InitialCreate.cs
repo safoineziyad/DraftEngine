@@ -196,6 +196,11 @@ namespace DraftEngine.Data.Migrations
                     { 12, "This Agreement may be executed in counterparts, each of which shall be deemed an original.", "Miscellaneous", "Mutual NDA", true, true, 12, "Counterparts" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "DisplayName", "CreatedAt", "OpenAiApiKeyEncrypted", "SubscriptionTier", "SubscriptionExpiresAt" },
+                values: new object[] { 1, "local@draftengine.local", "Local User", new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), string.Empty, "Free", null });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessages_ContractId",
                 table: "ChatMessages",

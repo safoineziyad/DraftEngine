@@ -26,9 +26,6 @@ public class Clause
     /// <summary>Source/origin of the clause (e.g. "System", "User").</summary>
     public string Source { get; set; } = "System";
 
-    /// <summary>True if the clause is user-defined.</summary>
-    public bool IsUserDefined { get; set; }
-
     /// <summary>
     /// Gets the contract clause selections that reference this clause template.
     /// </summary>

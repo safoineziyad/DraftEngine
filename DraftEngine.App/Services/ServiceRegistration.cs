@@ -62,6 +62,12 @@ public static class ServiceRegistration
         services.AddSingleton<IPdfBuilder, PdfBuilder>();
         services.AddSingleton<IDocumentBuilder, DocumentBuilder>();
 
+        // Document export recording.
+        // Document export recording (UI depends on Core.Interfaces.IDocumentExportService;
+        // the EF implementation implements Core.Services.IDocumentExportService).
+        services.AddTransient<DraftEngine.Core.Interfaces.IDocumentExportService>(sp =>
+            new DocumentExportServiceAdapter(sp.GetRequiredService<DraftEngine.Core.Services.IDocumentExportService>()));
+
         return services;
     }
 }

@@ -356,11 +356,6 @@ namespace DraftEngine.Data.Migrations
                 table: "Clauses",
                 column: "OwnerUserId");
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Email", "DisplayName", "CreatedAt", "OpenAiApiKeyEncrypted", "SubscriptionTier", "SubscriptionExpiresAt" },
-                values: new object[] { 1, "local@draftengine.local", "Local User", new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc), string.Empty, "Free", null });
-
             migrationBuilder.AddForeignKey(
                 name: "FK_Clauses_Users_OwnerUserId",
                 table: "Clauses",

@@ -35,6 +35,14 @@ public static class ServiceRegistration
         // DbContext-backed application services (contract, clause, field, chat, export).
         services.AddContractServices();
 
+        // Clause management (user-owned clauses).
+        services.AddTransient<IClauseManagementService, ClauseManagementService>();
+
+        // AI privacy (consent, configurable endpoint, redaction).
+        services.AddSingleton<IAiConsentService, AiConsentService>();
+        services.AddSingleton<IAiEndpointSettings, AiEndpointSettings>();
+        services.AddSingleton<IAiRedactionService, AiRedactionService>();
+
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<NewContractViewModel>();

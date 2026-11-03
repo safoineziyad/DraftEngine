@@ -5,8 +5,8 @@ DraftEngine is a native Windows desktop application for drafting contracts, aime
 ## Features
 
 - **Four-step drafting wizard**: contract type → details (intake form) → clauses → review & generate.
-- **Mutual NDA at launch.** One-Way NDA, Independent Contractor Agreement and Consulting Agreement are shown as *Coming soon*.
-- **Clause library**: 12 Mutual NDA clauses are seeded on first run, grouped by category with live previews; core clauses are pre-selected and a few are optional.
+- **Multiple contract types**: Mutual NDA, Non-Disclosure Agreement (One-Way), Independent Contractor Agreement, Consulting Agreement.
+- **Clause library**: Seeded clauses per contract type, grouped by category with live previews; core clauses are pre-selected and some are optional.
 - **Deterministic, template-first generation**: `{{Placeholder}}` substitution from your intake answers (see `DraftEngine.Core/Services/FieldService.cs`). Works fully offline, **no API key required**.
 - **Contract detail view**: read the assembled contract and edit it through natural-language **chat instructions** (requires an OpenAI API key).
 - **Export to DOCX and PDF** from the contract detail page.
@@ -45,7 +45,7 @@ dotnet run --project DraftEngine.App
 
 ### First run
 
-On first launch, DraftEngine creates `%APPDATA%\DraftEngine\` if needed, applies its pending EF Core migrations to create `draftengine.db`, and seeds 12 Mutual NDA clauses into it. Logs are written to `%APPDATA%\DraftEngine\logs\`. No configuration is required to draft a contract.
+On first launch, DraftEngine creates `%APPDATA%\DraftEngine\` if needed, applies its pending EF Core migrations to create `draftengine.db`, and seeds clauses for all supported contract types. Logs are written to `%APPDATA%\DraftEngine\logs\`. No configuration is required to draft a contract.
 
 ## Settings & OpenAI key
 
@@ -68,7 +68,7 @@ Enter the key under **Settings → OpenAI → API key**, then **Save**. Key reso
 dotnet test DraftEngine.sln
 ```
 
-xUnit tests (46+ as of this writing — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
+xUnit tests (157+ as of this writing — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
 
 ## Installer
 

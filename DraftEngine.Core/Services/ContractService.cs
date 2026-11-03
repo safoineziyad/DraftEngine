@@ -884,10 +884,77 @@ public class ContractService : IContractService
     /// <summary>Preamble template identifying the contract type, effective date and both parties.</summary>
     private static string BuildPreamble(Contract contract)
     {
-        var typeLabel = string.IsNullOrWhiteSpace(contract.ContractType)
-            ? "Agreement"
-            : contract.ContractType.Trim();
+        var def = DraftEngine.Core.Models.ContractTypes.ContractTypeRegistry.GetByDisplayName(contract.ContractType);
+        var partiesJson = contract.PartiesJson;
+        var partyNames = new List<string>();
+        if (!string.IsNullOrWhiteSpace(partiesJson))
+        {
+            try
+            {
+                using var json = System.Text.Json.JsonDocument.Parse(partiesJson);
+                if (json.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    foreach (var element in json.RootElement.EnumerateArray())
+                    {
+                        if (element.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            var v = element.GetString();
+                            if (!string.IsNullOrWhiteSpace(v)) partyNames.Add(v.Trim());
+                        }
+                        else if (element.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        {
+                            foreach (var p in element.EnumerateObject())
+                            {
+                                if (p.Name.Equals("name", StringComparison.OrdinalIgnoreCase) && p.Value.ValueKind == System.Text.Json.JsonValueKind.String)
+                                {
+                                    var v2 = p.Value.GetString();
+                                    if (!string.IsNullOrWhiteSpace(v2)) { partyNames.Add(v2.Trim()); break; }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
 
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Party1"] = partyNames.Count > 0 ? partyNames[0] : "the First Party",
+            ["Party2"] = partyNames.Count > 1 ? partyNames[1] : (contract.ClientName ?? "the Second Party"),
+            ["Party1Address"] = string.Empty,
+            ["Party2Address"] = string.Empty,
+            ["ContractorName"] = partyNames.Count > 0 ? partyNames[0] : "the Contractor",
+            ["ContractorAddress"] = string.Empty,
+            ["ConsultantName"] = partyNames.Count > 0 ? partyNames[0] : "the Consultant",
+            ["ConsultantAddress"] = string.Empty,
+            ["ClientName"] = contract.ClientName ?? (partyNames.Count > 1 ? partyNames[1] : "the Client"),
+            ["ClientAddress"] = string.Empty,
+            ["ClientEmail"] = contract.ClientEmail ?? string.Empty,
+            ["EffectiveDate"] = contract.EffectiveDate?.ToString("MMMM d, yyyy") ?? "{{EffectiveDate}}",
+            ["Purpose"] = string.Empty
+        };
+
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(def.PreambleTemplate))
+            {
+                var fieldService = new FieldService();
+                return fieldService.ReplacePlaceholders(def.PreambleTemplate, values);
+            }
+        }
+        catch { }
+
+        if (def.Id == DraftEngine.Core.Models.ContractTypes.ContractTypeRegistry.ContractorAgreementId)
+        {
+            return $"This {def.DisplayName} is entered into as of {values["EffectiveDate"]} by and between {values["ContractorName"]} (\"Contractor\") and {values["ClientName"]} (\"Client\") for the provision of services.";
+        }
+        if (def.Id == DraftEngine.Core.Models.ContractTypes.ContractTypeRegistry.ConsultingAgreementId)
+        {
+            return $"This {def.DisplayName} is entered into as of {values["EffectiveDate"]} by and between {values["ConsultantName"]} (\"Consultant\") and {values["ClientName"]} (\"Client\") for the provision of consulting services.";
+        }
+
+        var typeLabel = def.DisplayName;
         return "This " + typeLabel +
                " is entered into as of {{EffectiveDate}} by and between {{Party1}} and {{Party2}}, " +
                "and sets out the terms under which the parties will exchange and protect confidential information.";

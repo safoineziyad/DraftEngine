@@ -99,17 +99,27 @@ public class ContractOwnerUserTests
     [Fact]
     public async Task EnsureCreatedDatabase_SeedsTheOwnerUser()
     {
-        using var connection = new SqliteConnection("Data Source=:memory:");
-        connection.Open();
+        var dbPath = Path.Combine(Path.GetTempPath(), $"draftengine_owner_{Guid.NewGuid():N}.db");
+        try
+        {
+            var options = new DbContextOptionsBuilder<DraftEngineDbContext>()
+                .UseSqlite($"Data Source={dbPath}")
+                .Options;
 
-        var options = new DbContextOptionsBuilder<DraftEngineDbContext>()
-            .UseSqlite(connection)
-            .Options;
+            using (var context = new DraftEngineDbContext(options))
+            {
+                await context.Database.MigrateAsync();
+            }
 
-        using var context = new DraftEngineDbContext(options);
-        await context.Database.EnsureCreatedAsync();
-
-        Assert.Equal(1, await context.Users.CountAsync());
+            using (var context = new DraftEngineDbContext(options))
+            {
+                Assert.Equal(1, await context.Users.CountAsync());
+            }
+        }
+        finally
+        {
+            TryDelete(dbPath);
+        }
     }
 
     private static void TryDelete(string path)

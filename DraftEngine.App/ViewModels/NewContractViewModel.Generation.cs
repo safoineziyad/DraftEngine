@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -19,12 +20,47 @@ public partial class NewContractViewModel
     private void BuildSummary()
     {
         SummaryItems.Clear();
-        SummaryItems.Add(new SummaryItemViewModel(
-            "Contract type", SelectedContractType?.Name ?? MutualNdaType));
-        AddSummaryRow("Party 1", "Party1");
-        AddSummaryRow("Party 1 address", "Party1Address");
-        AddSummaryRow("Party 2", "Party2");
-        AddSummaryRow("Party 2 address", "Party2Address");
+        var contractType = SelectedContractType?.Name ?? MutualNdaType;
+        var def = ContractTypeRegistry.GetByDisplayName(contractType);
+        contractType = def.DisplayName;
+        SummaryItems.Add(new SummaryItemViewModel("Contract type", contractType));
+
+        if (def.Id == ContractTypeRegistry.MutualNdaId)
+        {
+            AddSummaryRow("Party 1", "Party1");
+            AddSummaryRow("Party 1 address", "Party1Address");
+            AddSummaryRow("Party 2", "Party2");
+            AddSummaryRow("Party 2 address", "Party2Address");
+        }
+        else if (def.Id == ContractTypeRegistry.OneWayNdaId)
+        {
+            AddSummaryRow("Disclosing party", "Party1");
+            AddSummaryRow("Disclosing party address", "Party1Address");
+            AddSummaryRow("Receiving party", "Party2");
+            AddSummaryRow("Receiving party address", "Party2Address");
+        }
+        else if (def.Id == ContractTypeRegistry.ContractorAgreementId)
+        {
+            AddSummaryRow("Contractor", "ContractorName");
+            AddSummaryRow("Contractor address", "ContractorAddress");
+            AddSummaryRow("Client", "ClientName");
+            AddSummaryRow("Client address", "ClientAddress");
+        }
+        else if (def.Id == ContractTypeRegistry.ConsultingAgreementId)
+        {
+            AddSummaryRow("Consultant", "ConsultantName");
+            AddSummaryRow("Consultant address", "ConsultantAddress");
+            AddSummaryRow("Client", "ClientName");
+            AddSummaryRow("Client address", "ClientAddress");
+        }
+        else
+        {
+            AddSummaryRow("Party 1", "Party1");
+            AddSummaryRow("Party 1 address", "Party1Address");
+            AddSummaryRow("Party 2", "Party2");
+            AddSummaryRow("Party 2 address", "Party2Address");
+        }
+
         AddSummaryRow("Client", "ClientName");
         AddSummaryRow("Client email", "ClientEmail");
         AddSummaryRow("Effective date", "EffectiveDate");
@@ -57,7 +93,7 @@ public partial class NewContractViewModel
                 ContractType = SelectedContractType?.Name ?? MutualNdaType,
                 ClientName = values.GetValueOrDefault("ClientName", string.Empty),
                 ClientEmail = values.GetValueOrDefault("ClientEmail", string.Empty),
-                PartiesJson = BuildPartiesJson(values),
+                PartiesJson = BuildPartiesJson(values), // array of {"name","address"}
                 EffectiveDate = IntakeFields
                     .FirstOrDefault(field => field.Key == "EffectiveDate")?.DateValue,
                 GoverningLaw = values.GetValueOrDefault("GoverningLaw", string.Empty),
@@ -92,18 +128,88 @@ public partial class NewContractViewModel
 
     private string BuildTitle(IReadOnlyDictionary<string, string> values)
     {
+        var contractType = SelectedContractType?.Name ?? MutualNdaType;
         var party1 = values.GetValueOrDefault("Party1", string.Empty)?.Trim();
         var party2 = values.GetValueOrDefault("Party2", string.Empty)?.Trim();
+        var contractor = values.GetValueOrDefault("ContractorName", string.Empty)?.Trim();
+        var consultant = values.GetValueOrDefault("ConsultantName", string.Empty)?.Trim();
+        var client = values.GetValueOrDefault("ClientName", string.Empty)?.Trim();
 
-        // Join only the parties that were actually entered: a single party must not
-        // leave a dangling " & " in the title ("Mutual NDA – Acme &").
-        var parties = string.Join(
+        if (string.Equals(contractType, "Mutual NDA", StringComparison.OrdinalIgnoreCase))
+        {
+            var parties = string.Join(
+                " & ",
+                new[] { party1, party2 }.Where(name => !string.IsNullOrWhiteSpace(name)));
+
+            return string.IsNullOrWhiteSpace(parties)
+                ? contractType
+                : $"{contractType} \u2013 {parties}";
+        }
+
+        if (string.Equals(contractType, "One-Way NDA", StringComparison.OrdinalIgnoreCase))
+        {
+            var disclosing = party1 ?? string.Empty;
+            var receiving = party2 ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(disclosing) && string.IsNullOrWhiteSpace(receiving))
+            {
+                return contractType;
+            }
+            if (string.IsNullOrWhiteSpace(receiving))
+            {
+                return string.IsNullOrWhiteSpace(disclosing) ? contractType : $"{contractType} \u2013 {disclosing}";
+            }
+            if (string.IsNullOrWhiteSpace(disclosing))
+            {
+                return $"{contractType} \u2013 {receiving}";
+            }
+            return $"{contractType} \u2013 {disclosing} to {receiving}";
+        }
+
+        if (string.Equals(contractType, "Independent Contractor Agreement", StringComparison.OrdinalIgnoreCase))
+        {
+            var c = !string.IsNullOrWhiteSpace(contractor) ? contractor : party1;
+            var cl = client ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(c) && string.IsNullOrWhiteSpace(cl))
+            {
+                return contractType;
+            }
+            if (string.IsNullOrWhiteSpace(cl))
+            {
+                return string.IsNullOrWhiteSpace(c) ? contractType : $"{contractType} \u2013 {c}";
+            }
+            if (string.IsNullOrWhiteSpace(c))
+            {
+                return $"{contractType} \u2013 {cl}";
+            }
+            return $"{contractType} \u2013 {c} – {cl}";
+        }
+
+        if (string.Equals(contractType, "Consulting Agreement", StringComparison.OrdinalIgnoreCase))
+        {
+            var cons = !string.IsNullOrWhiteSpace(consultant) ? consultant : party1;
+            var cl = client ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(cons) && string.IsNullOrWhiteSpace(cl))
+            {
+                return contractType;
+            }
+            if (string.IsNullOrWhiteSpace(cl))
+            {
+                return string.IsNullOrWhiteSpace(cons) ? contractType : $"{contractType} \u2013 {cons}";
+            }
+            if (string.IsNullOrWhiteSpace(cons))
+            {
+                return $"{contractType} \u2013 {cl}";
+            }
+            return $"{contractType} \u2013 {cons} – {cl}";
+        }
+
+        var partiesFallback = string.Join(
             " & ",
-            new[] { party1, party2 }.Where(name => !string.IsNullOrWhiteSpace(name)));
+            new[] { party1, party2, client, contractor, consultant }.Where(name => !string.IsNullOrWhiteSpace(name)));
 
-        return string.IsNullOrWhiteSpace(parties)
-            ? MutualNdaType
-            : $"{MutualNdaType} \u2013 {parties}";
+        return string.IsNullOrWhiteSpace(partiesFallback)
+            ? contractType
+            : $"{contractType} \u2013 {partiesFallback}";
     }
 
     /// <summary>

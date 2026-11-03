@@ -72,6 +72,10 @@ public sealed class AppSettingsService : IAppSettingsService
                 : settings.DefaultGoverningLaw,
             DefaultTermMonths = settings.DefaultTermMonths <= 0 ? 12 : settings.DefaultTermMonths,
             AiDataConsentAccepted = settings.AiDataConsentAccepted,
+            OnboardingCompleted = settings.OnboardingCompleted,
+            OpenAiBaseUrl = string.IsNullOrWhiteSpace(settings.OpenAiBaseUrl) ? null : settings.OpenAiBaseUrl,
+            UseCustomOpenAiEndpoint = settings.UseCustomOpenAiEndpoint,
+            HidePartyNamesFromAi = settings.HidePartyNamesFromAi,
         };
 
         var json = JsonSerializer.Serialize(stored, JsonOptions);
@@ -101,11 +105,14 @@ public sealed class AppSettingsService : IAppSettingsService
             return null;
 
         var resolvedModel = string.IsNullOrWhiteSpace(model) ? AppSettings.FallbackModel : model;
+        var baseUrl = Current.UseCustomOpenAiEndpoint && !string.IsNullOrWhiteSpace(Current.OpenAiBaseUrl)
+            ? Current.OpenAiBaseUrl
+            : null;
         // Each CreateClient() call yields a distinct HttpClient instance (OpenAiContractService
         // pins its Bearer header at construction, so instances must not be shared between
         // services with different keys), while the factory pools and rotates the handlers.
         return new OpenAiContractService(
-            _httpClientFactory.CreateClient(OpenAiHttpClientName), apiKey.Trim(), resolvedModel);
+            _httpClientFactory.CreateClient(OpenAiHttpClientName), apiKey.Trim(), resolvedModel, null, 2, null, baseUrl);
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
@@ -135,6 +142,10 @@ public sealed class AppSettingsService : IAppSettingsService
                     : stored.DefaultGoverningLaw,
                 DefaultTermMonths = stored.DefaultTermMonths <= 0 ? 12 : stored.DefaultTermMonths,
                 AiDataConsentAccepted = stored.AiDataConsentAccepted,
+                OnboardingCompleted = stored.OnboardingCompleted,
+                OpenAiBaseUrl = string.IsNullOrWhiteSpace(stored.OpenAiBaseUrl) ? null : stored.OpenAiBaseUrl,
+                UseCustomOpenAiEndpoint = stored.UseCustomOpenAiEndpoint,
+                HidePartyNamesFromAi = stored.HidePartyNamesFromAi,
             };
         }
         catch (Exception ex)
@@ -153,5 +164,9 @@ public sealed class AppSettingsService : IAppSettingsService
         public string DefaultGoverningLaw { get; set; } = "California";
         public int DefaultTermMonths { get; set; } = 12;
         public bool AiDataConsentAccepted { get; set; }
+        public bool OnboardingCompleted { get; set; }
+        public string? OpenAiBaseUrl { get; set; }
+        public bool UseCustomOpenAiEndpoint { get; set; }
+        public bool HidePartyNamesFromAi { get; set; }
     }
 }

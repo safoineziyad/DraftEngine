@@ -27,4 +27,19 @@ public class AppSettings
     /// (audit Finding #10). Persisted so the acknowledgement is only ever asked once.
     /// </summary>
     public bool AiDataConsentAccepted { get; set; }
+
+    /// <summary>
+    /// True once the first-run onboarding dialog has been completed or skipped.
+    /// Only consulted when <c>Features:OnboardingEnabled</c> is on.
+    /// </summary>
+    public bool OnboardingCompleted { get; set; }
+
+    /// <summary>Custom OpenAI-compatible base URL (e.g., http://localhost:11434/v1/ for Ollama).</summary>
+    public string? OpenAiBaseUrl { get; set; }
+
+    /// <summary>Whether to use a custom base URL instead of OpenAI default.</summary>
+    public bool UseCustomOpenAiEndpoint { get; set; }
+
+    /// <summary>When true, replace party names and addresses with placeholders before sending to AI.</summary>
+    public bool HidePartyNamesFromAi { get; set; }
 }

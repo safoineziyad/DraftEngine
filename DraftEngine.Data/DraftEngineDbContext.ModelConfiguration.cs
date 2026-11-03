@@ -44,11 +44,13 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.FinalFilePath).HasMaxLength(1024).IsRequired();
             entity.Property(contract => contract.PartiesJson).IsRequired();
             entity.Property(contract => contract.AssembledText).IsRequired();
+            entity.Property(contract => contract.IsDeleted).HasDefaultValue(false);
             // PartiesJson, AssembledText: unbounded JSON/free text, deliberately no max length.
 
             entity.HasIndex(contract => contract.Title);
             entity.HasIndex(contract => contract.ContractType);
             entity.HasIndex(contract => contract.CreatedAt);
+            entity.HasIndex(contract => contract.IsDeleted);
 
             // Dependent owned data is removed with the contract.
             entity.HasMany(contract => contract.ContractClauses)
@@ -81,10 +83,17 @@ public partial class DraftEngineDbContext
             entity.Property(clause => clause.Category).HasMaxLength(150).IsRequired();
             entity.Property(clause => clause.Title).HasMaxLength(300).IsRequired();
             entity.Property(clause => clause.BodyTemplate).IsRequired();
+            entity.Property(clause => clause.Source).HasMaxLength(50).IsRequired();
             // BodyTemplate: unbounded template text, deliberately no max length.
 
             entity.HasIndex(clause => clause.ContractType);
             entity.HasIndex(clause => clause.SortOrder);
+            entity.HasIndex(clause => clause.OwnerUserId);
+
+            entity.HasOne(clause => clause.OwnerUser)
+                .WithMany()
+                .HasForeignKey(clause => clause.OwnerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<ContractClause>(entity =>
@@ -291,6 +300,342 @@ public partial class DraftEngineDbContext
                 IsOptional = true,
                 IsDefaultSelected = true,
                 SortOrder = 12
+            },
+
+            // Seed Non-Disclosure Agreement (One-Way) clauses.
+            new Clause
+            {
+                Id = 13,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Confidentiality",
+                Title = "Confidentiality",
+                BodyTemplate = "The Receiving Party agrees to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 1
+            },
+            new Clause
+            {
+                Id = 14,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Definitions",
+                Title = "Definition of Confidential Information",
+                BodyTemplate = "Confidential Information means any non-public information disclosed by the Disclosing Party that is marked confidential or would reasonably be considered confidential.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 2
+            },
+            new Clause
+            {
+                Id = 15,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Exclusions",
+                Title = "Exclusions",
+                BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 3
+            },
+            new Clause
+            {
+                Id = 16,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Obligations",
+                Title = "Obligations of Receiving Party",
+                BodyTemplate = "The Receiving Party shall use {{ConfidentialInformation}} solely for the purpose of evaluating the relationship between {{Party1}} and {{Party2}} and shall take reasonable precautions to protect it.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 4
+            },
+            new Clause
+            {
+                Id = 17,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Term",
+                Title = "Term / Duration",
+                BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}). The obligations of confidentiality shall survive termination.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 5
+            },
+            new Clause
+            {
+                Id = 18,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Return of Materials",
+                Title = "Return or Destruction of Information",
+                BodyTemplate = "Upon request or termination, the Receiving Party shall return or destroy all Confidential Information received from the Disclosing Party.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 6
+            },
+            new Clause
+            {
+                Id = 19,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Governing Law",
+                Title = "Governing Law",
+                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 7
+            },
+            new Clause
+            {
+                Id = 20,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Remedies",
+                Title = "Remedies",
+                BodyTemplate = "The Disclosing Party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 8
+            },
+            new Clause
+            {
+                Id = 21,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Miscellaneous",
+                Title = "Entire Agreement",
+                BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 9
+            },
+            new Clause
+            {
+                Id = 22,
+                ContractType = "Non-Disclosure Agreement (One-Way)",
+                Category = "Miscellaneous",
+                Title = "Severability",
+                BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
+                IsOptional = true,
+                IsDefaultSelected = true,
+                SortOrder = 10
+            },
+
+            // Seed Independent Contractor Agreement clauses.
+            new Clause
+            {
+                Id = 23,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Engagement",
+                Title = "Engagement / Scope of Work",
+                BodyTemplate = "{{Party1}} engages {{Party2}} as an independent contractor to perform the services described for {{ClientName}} under the scope of {{Purpose}}.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 1
+            },
+            new Clause
+            {
+                Id = 24,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Status",
+                Title = "Independent Contractor Status",
+                BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall be responsible for taxes, insurance, and benefits.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 2
+            },
+            new Clause
+            {
+                Id = 25,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Compensation",
+                Title = "Fees and Payment",
+                BodyTemplate = "{{Party1}} shall pay {{Party2}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 3
+            },
+            new Clause
+            {
+                Id = 26,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Term",
+                Title = "Term and Termination",
+                BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 4
+            },
+            new Clause
+            {
+                Id = 27,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Intellectual Property",
+                Title = "Intellectual Property Rights",
+                BodyTemplate = "All work product created by {{Party2}} under this Agreement shall be assigned to {{Party1}} unless otherwise agreed in writing.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 5
+            },
+            new Clause
+            {
+                Id = 28,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Confidentiality",
+                Title = "Confidentiality",
+                BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 6
+            },
+            new Clause
+            {
+                Id = 29,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Liability",
+                Title = "Limitation of Liability",
+                BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 7
+            },
+            new Clause
+            {
+                Id = 30,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Indemnification",
+                Title = "Indemnification",
+                BodyTemplate = "{{Party2}} agrees to indemnify and hold harmless {{Party1}} from claims arising from {{Party2}}'s negligence or willful misconduct.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 8
+            },
+            new Clause
+            {
+                Id = 31,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Governing Law",
+                Title = "Governing Law",
+                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 9
+            },
+            new Clause
+            {
+                Id = 32,
+                ContractType = "Independent Contractor Agreement",
+                Category = "Miscellaneous",
+                Title = "Entire Agreement / Severability",
+                BodyTemplate = "This Agreement constitutes the entire agreement between the parties. If any provision is found invalid, the remainder shall remain in full force and effect.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 10
+            },
+
+            // Seed Consulting Agreement clauses.
+            new Clause
+            {
+                Id = 33,
+                ContractType = "Consulting Agreement",
+                Category = "Services",
+                Title = "Services",
+                BodyTemplate = "{{Party2}} agrees to provide consulting services to {{Party1}} for {{ClientName}} in connection with {{Purpose}} as described herein.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 1
+            },
+            new Clause
+            {
+                Id = 34,
+                ContractType = "Consulting Agreement",
+                Category = "Compensation",
+                Title = "Fees and Expenses",
+                BodyTemplate = "{{Party1}} shall pay {{Party2}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 2
+            },
+            new Clause
+            {
+                Id = 35,
+                ContractType = "Consulting Agreement",
+                Category = "Term",
+                Title = "Term and Termination",
+                BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 3
+            },
+            new Clause
+            {
+                Id = 36,
+                ContractType = "Consulting Agreement",
+                Category = "Status",
+                Title = "Independent Contractor Relationship",
+                BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall have no authority to bind {{Party1}}.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 4
+            },
+            new Clause
+            {
+                Id = 37,
+                ContractType = "Consulting Agreement",
+                Category = "Confidentiality",
+                Title = "Confidentiality",
+                BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties except as required by law.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 5
+            },
+            new Clause
+            {
+                Id = 38,
+                ContractType = "Consulting Agreement",
+                Category = "Intellectual Property",
+                Title = "Intellectual Property",
+                BodyTemplate = "All deliverables and work product created by {{Party2}} under this Agreement shall be owned by {{Party1}} upon full payment.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 6
+            },
+            new Clause
+            {
+                Id = 39,
+                ContractType = "Consulting Agreement",
+                Category = "Non-Solicitation",
+                Title = "Non-Solicitation",
+                BodyTemplate = "During the term and for one year thereafter, {{Party2}} shall not solicit {{Party1}}'s employees or clients.",
+                IsOptional = true,
+                IsDefaultSelected = false,
+                SortOrder = 7
+            },
+            new Clause
+            {
+                Id = 40,
+                ContractType = "Consulting Agreement",
+                Category = "Liability",
+                Title = "Limitation of Liability",
+                BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 8
+            },
+            new Clause
+            {
+                Id = 41,
+                ContractType = "Consulting Agreement",
+                Category = "Governing Law",
+                Title = "Governing Law",
+                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 9
+            },
+            new Clause
+            {
+                Id = 42,
+                ContractType = "Consulting Agreement",
+                Category = "Miscellaneous",
+                Title = "Miscellaneous",
+                BodyTemplate = "This Agreement constitutes the entire agreement between the parties. Any amendments must be in writing and signed by both parties.",
+                IsOptional = false,
+                IsDefaultSelected = true,
+                SortOrder = 10
             }
         );
     }

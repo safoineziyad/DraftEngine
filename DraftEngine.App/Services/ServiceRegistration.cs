@@ -35,6 +35,24 @@ public static class ServiceRegistration
         // DbContext-backed application services (contract, clause, field, chat, export).
         services.AddContractServices();
 
+        // Clause management (user-owned clauses).
+        services.AddTransient<IClauseManagementService, ClauseManagementService>();
+
+        // AI privacy (consent, configurable endpoint, redaction).
+        services.AddSingleton<IAiConsentService, AiConsentService>();
+        services.AddSingleton<IAiEndpointSettings, AiEndpointSettings>();
+        services.AddSingleton<IAiRedactionService, AiRedactionService>();
+
+        // Contract editing, duplicate and archive.
+        services.AddTransient<IContractEditService, ContractEditService>();
+
+        // Wizard draft persistence, licensing (disabled by default), update check (off by default).
+        services.AddTransient<IWizardDraftService, WizardDraftService>();
+        services.AddSingleton<ILicenseService, LicenseService>();
+        services.AddSingleton<IUpdateCheckService, UpdateCheckService>(sp => new UpdateCheckService(null));
+
+        return services;
+
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<NewContractViewModel>();
@@ -61,6 +79,12 @@ public static class ServiceRegistration
         services.AddSingleton<IDocxBuilder, DocxBuilder>();
         services.AddSingleton<IPdfBuilder, PdfBuilder>();
         services.AddSingleton<IDocumentBuilder, DocumentBuilder>();
+
+        // Document export recording.
+        // Document export recording (UI depends on Core.Interfaces.IDocumentExportService;
+        // the EF implementation implements Core.Services.IDocumentExportService).
+        services.AddTransient<DraftEngine.Core.Interfaces.IDocumentExportService>(sp =>
+            new DocumentExportServiceAdapter(sp.GetRequiredService<DraftEngine.Core.Services.IDocumentExportService>()));
 
         return services;
     }

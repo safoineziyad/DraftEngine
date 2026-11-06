@@ -64,7 +64,9 @@ namespace DraftEngine.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsArchived")
-                        .HasColumnType("INTEGER");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDefaultSelected")
                         .HasColumnType("INTEGER");
@@ -74,6 +76,11 @@ namespace DraftEngine.Data.Migrations
 
                     b.Property<bool>("IsSystem")
                         .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUserDefined")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<int?>("OwnerUserId")
                         .HasColumnType("INTEGER");
@@ -107,11 +114,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 1,
                             BodyTemplate = "The parties agree to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
                             Category = "Confidentiality",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Confidentiality"
@@ -121,11 +129,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 2,
                             BodyTemplate = "Confidential Information means any non-public information disclosed by {{Party1}} or {{Party2}} that is marked confidential or would reasonably be considered confidential.",
                             Category = "Definitions",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Definition of Confidential Information"
@@ -135,11 +144,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 3,
                             BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
                             Category = "Exclusions",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Exclusions"
@@ -149,11 +159,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 4,
                             BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}).",
                             Category = "Term",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Term"
@@ -163,11 +174,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 5,
                             BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
                             Category = "Governing Law",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Governing Law"
@@ -177,11 +189,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 6,
                             BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Entire Agreement"
@@ -191,11 +204,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 7,
                             BodyTemplate = "Nothing in this Agreement grants any license or rights to the other party's intellectual property.",
                             Category = "Intellectual Property",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "No License"
@@ -205,11 +219,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 8,
                             BodyTemplate = "Upon termination, each party shall return or destroy all Confidential Information received from the other party.",
                             Category = "Return of Materials",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Return of Materials"
@@ -219,11 +234,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 9,
                             BodyTemplate = "Each party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
                             Category = "Remedies",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Remedies"
@@ -233,11 +249,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 10,
                             BodyTemplate = "Neither party may assign this Agreement without the prior written consent of the other party.",
                             Category = "Assignment",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Assignment"
@@ -247,11 +264,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 11,
                             BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 11,
                             Source = "System",
                             Title = "Severability"
@@ -261,11 +279,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 12,
                             BodyTemplate = "This Agreement may be executed in counterparts, each of which shall be deemed an original.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 12,
                             Source = "System",
                             Title = "Counterparts"
@@ -275,11 +294,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 13,
                             BodyTemplate = "The Receiving Party agrees to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
                             Category = "Confidentiality",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Confidentiality"
@@ -289,11 +309,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 14,
                             BodyTemplate = "Confidential Information means any non-public information disclosed by the Disclosing Party that is marked confidential or would reasonably be considered confidential.",
                             Category = "Definitions",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Definition of Confidential Information"
@@ -303,11 +324,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 15,
                             BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
                             Category = "Exclusions",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Exclusions"
@@ -317,11 +339,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 16,
                             BodyTemplate = "The Receiving Party shall use {{ConfidentialInformation}} solely for the purpose of evaluating the relationship between {{Party1}} and {{Party2}} and shall take reasonable precautions to protect it.",
                             Category = "Obligations",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Obligations of Receiving Party"
@@ -331,11 +354,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 17,
                             BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}). The obligations of confidentiality shall survive termination.",
                             Category = "Term",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Term / Duration"
@@ -345,11 +369,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 18,
                             BodyTemplate = "Upon request or termination, the Receiving Party shall return or destroy all Confidential Information received from the Disclosing Party.",
                             Category = "Return of Materials",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Return or Destruction of Information"
@@ -359,11 +384,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 19,
                             BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
                             Category = "Governing Law",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Governing Law"
@@ -373,11 +399,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 20,
                             BodyTemplate = "The Disclosing Party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
                             Category = "Remedies",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Remedies"
@@ -387,11 +414,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 21,
                             BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
                             Category = "Miscellaneous",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Entire Agreement"
@@ -401,11 +429,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 22,
                             BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
                             Category = "Miscellaneous",
-                            ContractType = "Non-Disclosure Agreement (One-Way)",
+                            ContractType = "OneWayNda",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Severability"
@@ -413,13 +442,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 23,
-                            BodyTemplate = "{{Party1}} engages {{Party2}} as an independent contractor to perform the services described for {{ClientName}} under the scope of {{Purpose}}.",
+                            BodyTemplate = "{{ClientName}} engages {{ContractorName}} as an independent contractor to perform the services described under the scope of {{Purpose}}.",
                             Category = "Engagement",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Engagement / Scope of Work"
@@ -427,13 +457,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 24,
-                            BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall be responsible for taxes, insurance, and benefits.",
+                            BodyTemplate = "{{ContractorName}} is an independent contractor and not an employee of {{ClientName}}. {{ContractorName}} shall be responsible for taxes, insurance, and benefits.",
                             Category = "Status",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Independent Contractor Status"
@@ -441,13 +472,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 25,
-                            BodyTemplate = "{{Party1}} shall pay {{Party2}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
+                            BodyTemplate = "{{ClientName}} shall pay {{ContractorName}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
                             Category = "Compensation",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Fees and Payment"
@@ -457,11 +489,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 26,
                             BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
                             Category = "Term",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Term and Termination"
@@ -469,13 +502,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 27,
-                            BodyTemplate = "All work product created by {{Party2}} under this Agreement shall be assigned to {{Party1}} unless otherwise agreed in writing.",
+                            BodyTemplate = "All work product created by {{ContractorName}} under this Agreement shall be assigned to {{ClientName}} unless otherwise agreed in writing.",
                             Category = "Intellectual Property",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Intellectual Property Rights"
@@ -483,13 +517,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 28,
-                            BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties.",
+                            BodyTemplate = "{{ContractorName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties.",
                             Category = "Confidentiality",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Confidentiality"
@@ -499,11 +534,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 29,
                             BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
                             Category = "Liability",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Limitation of Liability"
@@ -511,13 +547,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 30,
-                            BodyTemplate = "{{Party2}} agrees to indemnify and hold harmless {{Party1}} from claims arising from {{Party2}}'s negligence or willful misconduct.",
+                            BodyTemplate = "{{ContractorName}} agrees to indemnify and hold harmless {{ClientName}} from claims arising from {{ContractorName}}'s negligence or willful misconduct.",
                             Category = "Indemnification",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Indemnification"
@@ -527,11 +564,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 31,
                             BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
                             Category = "Governing Law",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Governing Law"
@@ -541,11 +579,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 32,
                             BodyTemplate = "This Agreement constitutes the entire agreement between the parties. If any provision is found invalid, the remainder shall remain in full force and effect.",
                             Category = "Miscellaneous",
-                            ContractType = "Independent Contractor Agreement",
+                            ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Entire Agreement / Severability"
@@ -553,13 +592,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 33,
-                            BodyTemplate = "{{Party2}} agrees to provide consulting services to {{Party1}} for {{ClientName}} in connection with {{Purpose}} as described herein.",
+                            BodyTemplate = "{{ConsultantName}} agrees to provide consulting services to {{ClientName}} in connection with {{Purpose}} as described herein.",
                             Category = "Services",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Services"
@@ -567,13 +607,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 34,
-                            BodyTemplate = "{{Party1}} shall pay {{Party2}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
+                            BodyTemplate = "{{ClientName}} shall pay {{ConsultantName}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
                             Category = "Compensation",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Fees and Expenses"
@@ -583,11 +624,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 35,
                             BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
                             Category = "Term",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Term and Termination"
@@ -595,13 +637,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 36,
-                            BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall have no authority to bind {{Party1}}.",
+                            BodyTemplate = "{{ConsultantName}} is an independent contractor and not an employee of {{ClientName}}. {{ConsultantName}} shall have no authority to bind {{ClientName}}.",
                             Category = "Status",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Independent Contractor Relationship"
@@ -609,13 +652,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 37,
-                            BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties except as required by law.",
+                            BodyTemplate = "{{ConsultantName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties except as required by law.",
                             Category = "Confidentiality",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Confidentiality"
@@ -623,13 +667,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 38,
-                            BodyTemplate = "All deliverables and work product created by {{Party2}} under this Agreement shall be owned by {{Party1}} upon full payment.",
+                            BodyTemplate = "All deliverables and work product created by {{ConsultantName}} under this Agreement shall be owned by {{ClientName}} upon full payment.",
                             Category = "Intellectual Property",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Intellectual Property"
@@ -637,13 +682,14 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 39,
-                            BodyTemplate = "During the term and for one year thereafter, {{Party2}} shall not solicit {{Party1}}'s employees or clients.",
+                            BodyTemplate = "During the term and for one year thereafter, {{ConsultantName}} shall not solicit {{ClientName}}'s employees or clients.",
                             Category = "Non-Solicitation",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = false,
                             IsOptional = true,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Non-Solicitation"
@@ -653,11 +699,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 40,
                             BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
                             Category = "Liability",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Limitation of Liability"
@@ -667,11 +714,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 41,
                             BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
                             Category = "Governing Law",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Governing Law"
@@ -681,11 +729,12 @@ namespace DraftEngine.Data.Migrations
                             Id = 42,
                             BodyTemplate = "This Agreement constitutes the entire agreement between the parties. Any amendments must be in writing and signed by both parties.",
                             Category = "Miscellaneous",
-                            ContractType = "Consulting Agreement",
+                            ContractType = "ConsultingAgreement",
                             IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
                             IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Miscellaneous"
@@ -697,6 +746,9 @@ namespace DraftEngine.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AssembledText")
                         .IsRequired()
@@ -735,6 +787,11 @@ namespace DraftEngine.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -946,6 +1003,24 @@ namespace DraftEngine.Data.Migrations
                             OpenAiApiKeyEncrypted = "",
                             SubscriptionTier = "Free"
                         });
+                });
+
+            modelBuilder.Entity("DraftEngine.Core.Models.WizardDraft", b =>
+                {
+                    b.Property<string>("DraftKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EncryptedPayload")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DraftKey");
+
+                    b.ToTable("WizardDrafts", (string)null);
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.ChatMessage", b =>

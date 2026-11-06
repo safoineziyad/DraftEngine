@@ -17,6 +17,13 @@ public class Clause
     /// <summary>True if this clause was created by a user rather than seeded as system template.</summary>
     public bool IsSystem { get; set; } = true;
 
+    /// <summary>
+    /// True when the clause is user-created (as opposed to a seeded system clause). Kept in
+    /// sync with <see cref="IsSystem"/> for older rows but stored explicitly so clause-selection
+    /// queries can rely on a single, indexed flag.
+    /// </summary>
+    public bool IsUserDefined { get; set; }
+
     /// <summary>Owner user id for user-created clauses; null for system clauses.</summary>
     public int? OwnerUserId { get; set; }
 

@@ -46,6 +46,13 @@ public class FieldService : IFieldService
             ["ConfidentialInformation"] = "non-public information disclosed by either party under this Agreement",
         };
 
+    /// <summary>
+    /// Read-only view of the supported placeholder keys and their fallback values. Tests and
+    /// tooling use this to prove that every seeded template placeholder is either collected
+    /// by the intake form or safely defaulted here.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> Defaults => SupportedKeyDefaults;
+
     private readonly IDatabaseContextFactory? _databaseFactory;
     private readonly ILogger<FieldService>? _logger;
 

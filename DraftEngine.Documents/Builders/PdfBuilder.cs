@@ -38,7 +38,9 @@ public class PdfBuilder : IPdfBuilder
         QuestPdfConfiguration.EnsureInitialized();
 
         var title = DocumentDefaults.NormalizeTitle(contract.Title);
-        var segments = ContractTextParser.Parse(fullContractText);
+        // The assembled text ends with the registry signature block. Strip it here because the
+        // builder renders its own role-labelled signature block after the clauses.
+        var segments = ContractTextParser.ParseBody(fullContractText);
         var parties = ContractParties.ToDisplayText(contract.PartiesJson);
         var signatures = ContractParties.GetSignatureNames(contract);
 
@@ -109,7 +111,7 @@ public class PdfBuilder : IPdfBuilder
                     AppendDetail(details, "Effective Date", DocumentDefaults.FormatEffectiveDate(contract.EffectiveDate));
                     AppendDetail(details, "Governing Law", DocumentDefaults.OrNotApplicable(contract.GoverningLaw));
                     AppendDetail(details, "Term", DocumentDefaults.FormatTerm(contract.TermMonths));
-                    AppendDetail(details, "Contract Type", DocumentDefaults.OrNotApplicable(contract.ContractType));
+                    AppendDetail(details, "Contract Type", DocumentDefaults.FormatContractType(contract.ContractType));
                 });
 
                 column.Item().PageBreak();

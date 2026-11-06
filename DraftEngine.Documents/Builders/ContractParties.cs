@@ -1,5 +1,6 @@
 using System.Text.Json;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 
 namespace DraftEngine.Documents.Builders;
 
@@ -28,17 +29,22 @@ internal static class ContractParties
     /// Resolves the two signatory labels used by both document formats. Parsed parties are
     /// authoritative; <c>Contract.ClientName</c> is only a fallback. This avoids printing the
     /// misleading literal "Counterparty" when data is missing and keeps PDF/DOCX consistent.
+    /// Each name is suffixed with the contract type's role label (e.g. "Acme Corp (Contractor)")
+    /// so the signature block is type-aware rather than a generic party list.
     /// </summary>
     internal static SignatureNames GetSignatureNames(Contract contract)
     {
         ArgumentNullException.ThrowIfNull(contract);
 
+        var definition = ContractTypeRegistry.GetByDisplayName(contract.ContractType);
         var names = GetNames(contract.PartiesJson);
         var clientName = string.IsNullOrWhiteSpace(contract.ClientName) ? null : contract.ClientName.Trim();
 
         if (names.Count >= 2)
         {
-            return new SignatureNames(names[0], names[1]);
+            return new SignatureNames(
+                WithRoleLabel(names[0], definition.SignatureFirstPartyLabel),
+                WithRoleLabel(names[1], definition.SignatureSecondPartyLabel));
         }
 
         if (names.Count == 1)
@@ -47,13 +53,18 @@ internal static class ContractParties
             var right = clientName is not null && !string.Equals(clientName, left, StringComparison.OrdinalIgnoreCase)
                 ? clientName
                 : DocumentDefaults.FallbackSecondParty;
-            return new SignatureNames(left, right);
+            return new SignatureNames(
+                WithRoleLabel(left, definition.SignatureFirstPartyLabel),
+                WithRoleLabel(right, definition.SignatureSecondPartyLabel));
         }
 
         return new SignatureNames(
-            clientName ?? DocumentDefaults.FallbackFirstParty,
-            DocumentDefaults.FallbackSecondParty);
+            WithRoleLabel(clientName ?? DocumentDefaults.FallbackFirstParty, definition.SignatureFirstPartyLabel),
+            WithRoleLabel(DocumentDefaults.FallbackSecondParty, definition.SignatureSecondPartyLabel));
     }
+
+    private static string WithRoleLabel(string name, string? roleLabel) =>
+        string.IsNullOrWhiteSpace(roleLabel) ? name : $"{name} ({roleLabel.Trim()})";
 
     /// <summary>
     /// Extracts party names from PartiesJson (array of objects with a "name" property,

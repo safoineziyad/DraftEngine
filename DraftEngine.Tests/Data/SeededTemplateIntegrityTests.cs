@@ -43,7 +43,7 @@ public class SeededTemplateIntegrityTests : IDisposable
     public async Task AllSeededClauses_WithEmptyFieldValues_ContainNoRawPlaceholders()
     {
         var clauses = await _dbContext.Clauses.AsNoTracking()
-            .Where(c => c.ContractType == "Mutual NDA")
+            .Where(c => c.ContractType == "MutualNda")
             .OrderBy(c => c.SortOrder)
             .ToListAsync();
 
@@ -71,7 +71,7 @@ public class SeededTemplateIntegrityTests : IDisposable
         };
 
         var clauses = await _dbContext.Clauses.AsNoTracking()
-            .Where(c => c.ContractType == "Mutual NDA")
+            .Where(c => c.ContractType == "MutualNda")
             .OrderBy(c => c.SortOrder)
             .ToListAsync();
 

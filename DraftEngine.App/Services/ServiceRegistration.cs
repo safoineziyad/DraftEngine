@@ -2,6 +2,7 @@ using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
+using DraftEngine.Core.Models.ContractTypes;
 using DraftEngine.Core.Services;
 using DraftEngine.Data;
 using DraftEngine.Documents.Builders;
@@ -34,6 +35,7 @@ public static class ServiceRegistration
 
         // DbContext-backed application services (contract, clause, field, chat, export).
         services.AddContractServices();
+        services.AddSingleton<IContractTypeRegistry>(ContractTypeRegistry.Instance);
 
         // Clause management (user-owned clauses).
         services.AddTransient<IClauseManagementService, ClauseManagementService>();

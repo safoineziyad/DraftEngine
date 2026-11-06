@@ -1,6 +1,7 @@
 using System;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 
 namespace DraftEngine.App.ViewModels;
 
@@ -16,7 +17,7 @@ public class ContractRowViewModel
     public string Title => string.IsNullOrWhiteSpace(Contract.Title) ? "Untitled contract" : Contract.Title;
 
     /// <summary>The contract type (e.g. "Mutual NDA").</summary>
-    public string ContractType => Contract.ContractType;
+    public string ContractType => ContractTypeRegistry.GetByDisplayName(Contract.ContractType).DisplayName;
 
     /// <summary>The status text shown in the badge (Draft / Generated / Exported).</summary>
     public string StatusText => Contract.Status.ToString();

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DraftEngine.Core.Services;
@@ -36,11 +37,12 @@ public class ClauseManagementService : IClauseManagementService
     public async Task<Clause> CreateUserClauseAsync(string contractType, Clause clause)
     {
         using var database = _databaseFactory.CreateContext();
-        clause.ContractType = contractType;
+        clause.ContractType = NormalizeContractType(contractType);
         clause.Source = "User";
         clause.OwnerUserId = 1;
         clause.IsArchived = false;
         clause.IsSystem = false;
+        clause.IsUserDefined = true;
         clause.ContractClauses = null;
         database.Set<Clause>().Add(clause);
         await database.SaveChangesAsync();
@@ -68,7 +70,7 @@ public class ClauseManagementService : IClauseManagementService
         if (source is null) return;
         var copy = new Clause
         {
-            ContractType = contractType,
+            ContractType = NormalizeContractType(contractType),
             Category = source.Category,
             Title = $"Copy of {source.Title}",
             BodyTemplate = source.BodyTemplate,
@@ -78,7 +80,8 @@ public class ClauseManagementService : IClauseManagementService
             Source = "User",
             OwnerUserId = 1,
             IsArchived = false,
-            IsSystem = false
+            IsSystem = false,
+            IsUserDefined = true
         };
         database.Set<Clause>().Add(copy);
         await database.SaveChangesAsync();
@@ -92,6 +95,13 @@ public class ClauseManagementService : IClauseManagementService
         clause.IsArchived = true;
         await database.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Stores the canonical registry id when the caller supplied a display name or alias, so
+    /// clause rows written by different parts of the app agree on one spelling.
+    /// </summary>
+    private static string NormalizeContractType(string contractType) =>
+        ContractTypeRegistry.TryGetByDisplayName(contractType)?.Id ?? contractType;
 
     public async Task<(bool IsValid, IEnumerable<string> UnknownKeys)> ValidatePlaceholdersAsync(string bodyTemplate)
     {

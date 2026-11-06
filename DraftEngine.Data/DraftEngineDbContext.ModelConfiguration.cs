@@ -1,4 +1,5 @@
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DraftEngine.Data;
@@ -45,6 +46,7 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.PartiesJson).IsRequired();
             entity.Property(contract => contract.AssembledText).IsRequired();
             entity.Property(contract => contract.IsDeleted).HasDefaultValue(false);
+            entity.Property(contract => contract.IsArchived).HasDefaultValue(false);
             // PartiesJson, AssembledText: unbounded JSON/free text, deliberately no max length.
 
             entity.HasIndex(contract => contract.Title);
@@ -84,6 +86,8 @@ public partial class DraftEngineDbContext
             entity.Property(clause => clause.Title).HasMaxLength(300).IsRequired();
             entity.Property(clause => clause.BodyTemplate).IsRequired();
             entity.Property(clause => clause.Source).HasMaxLength(50).IsRequired();
+            entity.Property(clause => clause.IsArchived).HasDefaultValue(false);
+            entity.Property(clause => clause.IsUserDefined).HasDefaultValue(false);
             // BodyTemplate: unbounded template text, deliberately no max length.
 
             entity.HasIndex(clause => clause.ContractType);
@@ -163,6 +167,16 @@ public partial class DraftEngineDbContext
                 .HasForeignKey(version => version.ContractId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<WizardDraft>(entity =>
+        {
+            entity.ToTable("WizardDrafts");
+            entity.HasKey(draft => draft.DraftKey);
+
+            entity.Property(draft => draft.DraftKey).HasMaxLength(256).IsRequired();
+            entity.Property(draft => draft.EncryptedPayload).IsRequired();
+            entity.Property(draft => draft.UpdatedAt).IsRequired();
+        });
     }
 
     private static void SeedClauses(ModelBuilder modelBuilder)
@@ -172,7 +186,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 1,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Confidentiality",
                 Title = "Confidentiality",
                 BodyTemplate = "The parties agree to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
@@ -183,7 +197,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 2,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Definitions",
                 Title = "Definition of Confidential Information",
                 BodyTemplate = "Confidential Information means any non-public information disclosed by {{Party1}} or {{Party2}} that is marked confidential or would reasonably be considered confidential.",
@@ -194,7 +208,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 3,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Exclusions",
                 Title = "Exclusions",
                 BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
@@ -205,7 +219,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 4,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Term",
                 Title = "Term",
                 BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}).",
@@ -216,7 +230,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 5,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Governing Law",
                 Title = "Governing Law",
                 BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
@@ -227,7 +241,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 6,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Miscellaneous",
                 Title = "Entire Agreement",
                 BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
@@ -238,7 +252,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 7,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Intellectual Property",
                 Title = "No License",
                 BodyTemplate = "Nothing in this Agreement grants any license or rights to the other party's intellectual property.",
@@ -249,7 +263,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 8,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Return of Materials",
                 Title = "Return of Materials",
                 BodyTemplate = "Upon termination, each party shall return or destroy all Confidential Information received from the other party.",
@@ -260,7 +274,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 9,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Remedies",
                 Title = "Remedies",
                 BodyTemplate = "Each party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
@@ -271,7 +285,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 10,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Assignment",
                 Title = "Assignment",
                 BodyTemplate = "Neither party may assign this Agreement without the prior written consent of the other party.",
@@ -282,7 +296,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 11,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Miscellaneous",
                 Title = "Severability",
                 BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
@@ -293,7 +307,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 12,
-                ContractType = "Mutual NDA",
+                ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Miscellaneous",
                 Title = "Counterparts",
                 BodyTemplate = "This Agreement may be executed in counterparts, each of which shall be deemed an original.",
@@ -306,7 +320,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 13,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Confidentiality",
                 Title = "Confidentiality",
                 BodyTemplate = "The Receiving Party agrees to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
@@ -317,7 +331,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 14,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Definitions",
                 Title = "Definition of Confidential Information",
                 BodyTemplate = "Confidential Information means any non-public information disclosed by the Disclosing Party that is marked confidential or would reasonably be considered confidential.",
@@ -328,7 +342,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 15,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Exclusions",
                 Title = "Exclusions",
                 BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
@@ -339,7 +353,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 16,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Obligations",
                 Title = "Obligations of Receiving Party",
                 BodyTemplate = "The Receiving Party shall use {{ConfidentialInformation}} solely for the purpose of evaluating the relationship between {{Party1}} and {{Party2}} and shall take reasonable precautions to protect it.",
@@ -350,7 +364,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 17,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Term",
                 Title = "Term / Duration",
                 BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}). The obligations of confidentiality shall survive termination.",
@@ -361,7 +375,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 18,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Return of Materials",
                 Title = "Return or Destruction of Information",
                 BodyTemplate = "Upon request or termination, the Receiving Party shall return or destroy all Confidential Information received from the Disclosing Party.",
@@ -372,7 +386,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 19,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Governing Law",
                 Title = "Governing Law",
                 BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
@@ -383,7 +397,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 20,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Remedies",
                 Title = "Remedies",
                 BodyTemplate = "The Disclosing Party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
@@ -394,7 +408,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 21,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Miscellaneous",
                 Title = "Entire Agreement",
                 BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
@@ -405,7 +419,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 22,
-                ContractType = "Non-Disclosure Agreement (One-Way)",
+                ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Miscellaneous",
                 Title = "Severability",
                 BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
@@ -418,10 +432,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 23,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Engagement",
                 Title = "Engagement / Scope of Work",
-                BodyTemplate = "{{Party1}} engages {{Party2}} as an independent contractor to perform the services described for {{ClientName}} under the scope of {{Purpose}}.",
+                BodyTemplate = "{{ClientName}} engages {{ContractorName}} as an independent contractor to perform the services described under the scope of {{Purpose}}.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 1
@@ -429,10 +443,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 24,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Status",
                 Title = "Independent Contractor Status",
-                BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall be responsible for taxes, insurance, and benefits.",
+                BodyTemplate = "{{ContractorName}} is an independent contractor and not an employee of {{ClientName}}. {{ContractorName}} shall be responsible for taxes, insurance, and benefits.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 2
@@ -440,10 +454,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 25,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Compensation",
                 Title = "Fees and Payment",
-                BodyTemplate = "{{Party1}} shall pay {{Party2}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
+                BodyTemplate = "{{ClientName}} shall pay {{ContractorName}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 3
@@ -451,7 +465,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 26,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Term",
                 Title = "Term and Termination",
                 BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
@@ -462,10 +476,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 27,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Intellectual Property",
                 Title = "Intellectual Property Rights",
-                BodyTemplate = "All work product created by {{Party2}} under this Agreement shall be assigned to {{Party1}} unless otherwise agreed in writing.",
+                BodyTemplate = "All work product created by {{ContractorName}} under this Agreement shall be assigned to {{ClientName}} unless otherwise agreed in writing.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 5
@@ -473,10 +487,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 28,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Confidentiality",
                 Title = "Confidentiality",
-                BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties.",
+                BodyTemplate = "{{ContractorName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 6
@@ -484,7 +498,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 29,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Liability",
                 Title = "Limitation of Liability",
                 BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
@@ -495,10 +509,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 30,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Indemnification",
                 Title = "Indemnification",
-                BodyTemplate = "{{Party2}} agrees to indemnify and hold harmless {{Party1}} from claims arising from {{Party2}}'s negligence or willful misconduct.",
+                BodyTemplate = "{{ContractorName}} agrees to indemnify and hold harmless {{ClientName}} from claims arising from {{ContractorName}}'s negligence or willful misconduct.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 8
@@ -506,7 +520,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 31,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Governing Law",
                 Title = "Governing Law",
                 BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
@@ -517,7 +531,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 32,
-                ContractType = "Independent Contractor Agreement",
+                ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Miscellaneous",
                 Title = "Entire Agreement / Severability",
                 BodyTemplate = "This Agreement constitutes the entire agreement between the parties. If any provision is found invalid, the remainder shall remain in full force and effect.",
@@ -530,10 +544,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 33,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Services",
                 Title = "Services",
-                BodyTemplate = "{{Party2}} agrees to provide consulting services to {{Party1}} for {{ClientName}} in connection with {{Purpose}} as described herein.",
+                BodyTemplate = "{{ConsultantName}} agrees to provide consulting services to {{ClientName}} in connection with {{Purpose}} as described herein.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 1
@@ -541,10 +555,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 34,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Compensation",
                 Title = "Fees and Expenses",
-                BodyTemplate = "{{Party1}} shall pay {{Party2}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
+                BodyTemplate = "{{ClientName}} shall pay {{ConsultantName}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 2
@@ -552,7 +566,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 35,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Term",
                 Title = "Term and Termination",
                 BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
@@ -563,10 +577,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 36,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Status",
                 Title = "Independent Contractor Relationship",
-                BodyTemplate = "{{Party2}} is an independent contractor and not an employee of {{Party1}}. {{Party2}} shall have no authority to bind {{Party1}}.",
+                BodyTemplate = "{{ConsultantName}} is an independent contractor and not an employee of {{ClientName}}. {{ConsultantName}} shall have no authority to bind {{ClientName}}.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 4
@@ -574,10 +588,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 37,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Confidentiality",
                 Title = "Confidentiality",
-                BodyTemplate = "{{Party2}} agrees to keep all {{ConfidentialInformation}} of {{Party1}} confidential and not disclose it to third parties except as required by law.",
+                BodyTemplate = "{{ConsultantName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties except as required by law.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 5
@@ -585,10 +599,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 38,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Intellectual Property",
                 Title = "Intellectual Property",
-                BodyTemplate = "All deliverables and work product created by {{Party2}} under this Agreement shall be owned by {{Party1}} upon full payment.",
+                BodyTemplate = "All deliverables and work product created by {{ConsultantName}} under this Agreement shall be owned by {{ClientName}} upon full payment.",
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 6
@@ -596,10 +610,10 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 39,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Non-Solicitation",
                 Title = "Non-Solicitation",
-                BodyTemplate = "During the term and for one year thereafter, {{Party2}} shall not solicit {{Party1}}'s employees or clients.",
+                BodyTemplate = "During the term and for one year thereafter, {{ConsultantName}} shall not solicit {{ClientName}}'s employees or clients.",
                 IsOptional = true,
                 IsDefaultSelected = false,
                 SortOrder = 7
@@ -607,7 +621,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 40,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Liability",
                 Title = "Limitation of Liability",
                 BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
@@ -618,7 +632,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 41,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Governing Law",
                 Title = "Governing Law",
                 BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
@@ -629,7 +643,7 @@ public partial class DraftEngineDbContext
             new Clause
             {
                 Id = 42,
-                ContractType = "Consulting Agreement",
+                ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Miscellaneous",
                 Title = "Miscellaneous",
                 BodyTemplate = "This Agreement constitutes the entire agreement between the parties. Any amendments must be in writing and signed by both parties.",

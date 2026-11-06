@@ -51,7 +51,7 @@ public class DataServicesTests : IDisposable
 
         Assert.Equal(12, clauses.Count); // seeded library
         Assert.Equal(clauses.OrderBy(c => c.SortOrder).Select(c => c.Id), clauses.Select(c => c.Id));
-        Assert.All(clauses, c => Assert.Equal("Mutual NDA", c.ContractType));
+        Assert.All(clauses, c => Assert.Equal("MutualNda", c.ContractType));
     }
 
     [Fact]

@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -202,16 +203,21 @@ public partial class ContractsListViewModel : ObservableObject
         var types = _allContracts
             .Select(c => c.ContractType?.Trim() ?? string.Empty)
             .Where(t => t.Length > 0)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+            .Select(ContractTypeRegistry.GetByDisplayName)
+            .GroupBy(definition => definition.Id, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.First())
+            .OrderBy(definition => definition.DisplayName, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         TypeFilters.Clear();
         TypeFilters.Add(AllTypesFilter);
         foreach (var type in types)
-            TypeFilters.Add(type);
+            TypeFilters.Add(type.DisplayName);
 
-        SelectedTypeFilter = types.Contains(selected, StringComparer.OrdinalIgnoreCase) ? selected : AllTypesFilter;
+        SelectedTypeFilter = types.Any(type =>
+            string.Equals(type.DisplayName, selected, StringComparison.OrdinalIgnoreCase))
+            ? types.First(type => string.Equals(type.DisplayName, selected, StringComparison.OrdinalIgnoreCase)).DisplayName
+            : AllTypesFilter;
     }
 
     private void ApplyFilters()
@@ -228,8 +234,12 @@ public partial class ContractsListViewModel : ObservableObject
 
         if (!string.IsNullOrEmpty(SelectedTypeFilter) && SelectedTypeFilter != AllTypesFilter)
         {
+            var selectedTypeId = ContractTypeRegistry.GetByDisplayName(SelectedTypeFilter).Id;
             query = query.Where(c =>
-                string.Equals(c.ContractType?.Trim(), SelectedTypeFilter, StringComparison.OrdinalIgnoreCase));
+                string.Equals(
+                    ContractTypeRegistry.GetByDisplayName(c.ContractType ?? string.Empty).Id,
+                    selectedTypeId,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         query = SelectedSortMode == SortByCreated

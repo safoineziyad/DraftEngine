@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -20,7 +21,7 @@ namespace DraftEngine.App.ViewModels;
 public partial class ClauseManagerViewModel : ObservableObject
 {
     private const int CurrentUserId = 1;
-    private const string DefaultContractType = "Mutual NDA";
+    private const string DefaultContractType = ContractTypeRegistry.MutualNdaId;
 
     private readonly IClauseManagementService _clauseService;
 

@@ -50,7 +50,7 @@ internal static class ContractTextParser
             return segments;
         }
 
-        var normalized = fullContractText.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
+        var normalized = Normalize(fullContractText);
         foreach (var rawLine in normalized.Split('\n'))
         {
             var line = rawLine.Trim();
@@ -65,6 +65,36 @@ internal static class ContractTextParser
 
         return segments;
     }
+
+    /// <summary>
+    /// Parses only the clause body of assembled contract text: everything from the first
+    /// "IN WITNESS WHEREOF" line onward is dropped because the DOCX/PDF builders render
+    /// their own signature block from the contract type's role labels. Without this, the
+    /// assembled signature paragraph was rendered twice in every exported document.
+    /// </summary>
+    internal static IReadOnlyList<ContractSegment> ParseBody(string fullContractText)
+    {
+        if (string.IsNullOrWhiteSpace(fullContractText))
+        {
+            return new List<ContractSegment>();
+        }
+
+        var normalized = Normalize(fullContractText);
+        var end = normalized.Length;
+        foreach (var rawLine in normalized.Split('\n'))
+        {
+            if (rawLine.TrimStart().StartsWith("IN WITNESS WHEREOF", StringComparison.OrdinalIgnoreCase))
+            {
+                end = normalized.IndexOf(rawLine, StringComparison.Ordinal);
+                break;
+            }
+        }
+
+        return Parse(normalized[..end]);
+    }
+
+    private static string Normalize(string text) =>
+        text.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
 
     private static bool IsHeading(string line) =>
         NumberedHeadingPattern.IsMatch(line) || IsColonHeading(line);

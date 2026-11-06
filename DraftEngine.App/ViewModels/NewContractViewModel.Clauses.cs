@@ -19,8 +19,9 @@ public partial class NewContractViewModel
         IsLoadingClauses = true;
         try
         {
-            var clauses = await _clauseService.GetClausesByContractTypeAsync(
-                SelectedContractType?.Name ?? MutualNdaType);
+            // ClauseService resolves the canonical registry id and includes the user's own
+            // (non-archived) clauses alongside the seeded system clauses.
+            var clauses = await _clauseService.GetClausesByContractTypeAsync(SelectedDefinition.Id);
 
             ClauseGroups.Clear();
             var values = GetFieldValues();

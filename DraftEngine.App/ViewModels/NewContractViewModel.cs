@@ -22,8 +22,9 @@ namespace DraftEngine.App.ViewModels;
 /// </summary>
 public partial class NewContractViewModel : ObservableObject, INavigationAware
 {
-    /// <summary>The only contract type currently implemented.</summary>
-    internal const string MutualNdaType = "Mutual NDA";
+    /// <summary>The registry definition for the current selection (Mutual NDA before step 1).</summary>
+    private ContractTypeDefinition SelectedDefinition =>
+        SelectedContractType?.Definition ?? _contractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId);
 
     // The local user id used until authentication is available (single-user desktop app).
     private const int CurrentUserId = 1;
@@ -42,6 +43,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     private readonly IWizardDialogService _dialogs;
     private readonly IAppSettingsService _appSettings;
     private readonly IWizardDraftService _drafts;
+    private readonly IContractTypeRegistry _contractTypeRegistry;
 
     private bool _clausesLoaded;
     private bool _isNavigatingAway;
@@ -117,7 +119,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         INavigationService navigation,
         IWizardDialogService dialogs,
         IAppSettingsService appSettings,
-        IWizardDraftService drafts)
+        IWizardDraftService drafts,
+        IContractTypeRegistry? contractTypeRegistry = null)
     {
         _contractService = contractService;
         _clauseService = clauseService;
@@ -126,6 +129,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         _dialogs = dialogs;
         _appSettings = appSettings;
         _drafts = drafts ?? throw new ArgumentNullException(nameof(drafts));
+        _contractTypeRegistry = contractTypeRegistry ?? ContractTypeRegistry.Instance;
 
         Steps.Add(new WizardStepViewModel(1, "Type"));
         Steps.Add(new WizardStepViewModel(2, "Details"));
@@ -240,14 +244,10 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     private void BuildContractTypes()
     {
         ContractTypes.Clear();
-        var mutual = ContractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId);
-        ContractTypes.Add(new ContractTypeOptionViewModel(mutual.DisplayName, mutual.Description, isAvailable: true));
-        var oneWay = ContractTypeRegistry.GetById(ContractTypeRegistry.OneWayNdaId);
-        ContractTypes.Add(new ContractTypeOptionViewModel(oneWay.DisplayName, oneWay.Description, isAvailable: true));
-        var contractor = ContractTypeRegistry.GetById(ContractTypeRegistry.ContractorAgreementId);
-        ContractTypes.Add(new ContractTypeOptionViewModel(contractor.DisplayName, contractor.Description, isAvailable: true));
-        var consulting = ContractTypeRegistry.GetById(ContractTypeRegistry.ConsultingAgreementId);
-        ContractTypes.Add(new ContractTypeOptionViewModel(consulting.DisplayName, consulting.Description, isAvailable: true));
+        foreach (var definition in _contractTypeRegistry.All)
+        {
+            ContractTypes.Add(new ContractTypeOptionViewModel(definition, isAvailable: true));
+        }
     }
 
     private void BuildIntakeFields()
@@ -259,86 +259,54 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // defaults are applied every time the wizard opens (A3).
         var governingLaw = ResolveDefaultGoverningLaw(out var governingLawChoices);
         var termMonths = _appSettings.Current.DefaultTermMonths.ToString(CultureInfo.InvariantCulture);
+        var definition = SelectedDefinition;
 
-        var contractType = SelectedContractType?.Name ?? MutualNdaType;
-        IntakeFieldViewModel[] fields;
-
-        if (string.Equals(contractType, "Non-Disclosure Agreement (One-Way)", StringComparison.OrdinalIgnoreCase))
+        // The registry is the single source of truth for which fields a type asks for and
+        // which placeholder keys they map to; the wizard only adapts them to input kinds.
+        foreach (var intake in definition.IntakeFields)
         {
-            // One-way NDA: focus on discloser/recipient; reuse existing keys for compatibility
-            fields = new[]
-            {
-                NewField("Party1", "Disclosing Party"),
-                NewField("Party1Address", "Disclosing Party Address"),
-                NewField("Party2", "Receiving Party"),
-                NewField("Party2Address", "Receiving Party Address"),
-                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                    choices: governingLawChoices, defaultValue: governingLaw),
-                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-                NewField("Purpose", "Purpose of disclosure"),
-            };
-        }
-        else if (string.Equals(contractType, "Independent Contractor Agreement", StringComparison.OrdinalIgnoreCase))
-        {
-            // Independent Contractor: reuse Party1/Party2/ClientName keys where compatible
-            fields = new[]
-            {
-                NewField("Party1", "Contractor Name"),
-                NewField("Party1Address", "Contractor Address"),
-                NewField("Party2", "Client Name"),
-                NewField("Party2Address", "Client Address"),
-                NewField("ClientEmail", "Client Email"),
-                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                    choices: governingLawChoices, defaultValue: governingLaw),
-                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-                NewField("Scope", "Scope of Work"),
-                NewField("Fee", "Fee/Rate"),
-            };
-        }
-        else if (string.Equals(contractType, "Consulting Agreement", StringComparison.OrdinalIgnoreCase))
-        {
-            // Consulting Agreement
-            fields = new[]
-            {
-                NewField("Party1", "Consultant Name"),
-                NewField("Party1Address", "Consultant Address"),
-                NewField("Party2", "Client Name"),
-                NewField("Party2Address", "Client Address"),
-                NewField("ClientEmail", "Client Email"),
-                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                    choices: governingLawChoices, defaultValue: governingLaw),
-                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-                NewField("Scope", "Scope of Services"),
-                NewField("Fee", "Consulting Fee"),
-            };
-        }
-        else
-        {
-            // Mutual NDA - keep exactly as before
-            fields = new[]
-            {
-                NewField("Party1", "Party 1 name"),
-                NewField("Party1Address", "Party 1 address"),
-                NewField("Party2", "Party 2 name"),
-                NewField("Party2Address", "Party 2 address"),
-                NewField("ClientName", "Client name"),
-                NewField("ClientEmail", "Client email"),
-                NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-                NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                    choices: governingLawChoices, defaultValue: governingLaw),
-                NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-                NewField("Purpose", "Purpose of disclosure"),
-            };
-        }
-
-        foreach (var field in fields)
-        {
+            var field = BuildIntakeField(intake, governingLaw, governingLawChoices, termMonths);
             field.PropertyChanged += OnIntakeFieldChanged;
             IntakeFields.Add(field);
         }
+    }
+
+    private static IntakeFieldViewModel BuildIntakeField(
+        ContractTypeIntakeField intake,
+        string governingLaw,
+        string[] governingLawChoices,
+        string termMonths)
+    {
+        var kind = intake.Kind switch
+        {
+            "Date" => IntakeFieldKind.Date,
+            "Choice" => IntakeFieldKind.Choice,
+            "Number" => IntakeFieldKind.Number,
+            _ => IntakeFieldKind.Text
+        };
+
+        var choices = intake.Choices;
+        var defaultValue = intake.DefaultValue;
+        var defaultDate = kind == IntakeFieldKind.Date ? DateTime.Today : (DateTime?)null;
+
+        if (string.Equals(intake.DefaultValueKey, "DefaultGoverningLaw", StringComparison.OrdinalIgnoreCase))
+        {
+            choices = governingLawChoices;
+            defaultValue = governingLaw;
+        }
+        else if (string.Equals(intake.DefaultValueKey, "DefaultTermMonths", StringComparison.OrdinalIgnoreCase))
+        {
+            defaultValue = termMonths;
+        }
+
+        return new IntakeFieldViewModel(
+            intake.Key,
+            intake.Label,
+            kind,
+            intake.Required,
+            choices,
+            defaultValue,
+            defaultDate);
     }
 
     /// <summary>
@@ -369,15 +337,6 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         choices = GoverningLawChoices.Append(preferred).ToArray();
         return preferred;
     }
-
-    private static IntakeFieldViewModel NewField(
-        string key,
-        string label,
-        IntakeFieldKind kind = IntakeFieldKind.Text,
-        string[]? choices = null,
-        string? defaultValue = null,
-        DateTime? defaultDate = null) =>
-        new(key, label, kind, isRequired: true, choices, defaultValue, defaultDate);
 
     private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e) => RefreshCommands();
 

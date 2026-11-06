@@ -108,7 +108,7 @@ public partial class NewContractViewModel
                 .Where(option => option.IsSelected)
                 .Select(option => option.Id)
                 .ToList();
-            await _contractService.GenerateContractAsync(created.Id, selectedClauseIds);
+            await _contractService.GenerateContractAsync(created.Id, selectedClauseIds, useAiPolish: UseAiPolish);
 
             _navigation.Navigate("contract-detail", created.Id);
         }

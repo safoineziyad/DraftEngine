@@ -51,6 +51,10 @@
                             Content="Settings"
                             AutomationProperties.Name="Go to Settings"
                             Command="{Binding NavigateSettingsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Clause Manager"
+                            AutomationProperties.Name="Go to Clause Manager"
+                            Command="{Binding NavigateClauseManagementCommand}" />
                 </StackPanel>
 
                 <!-- Bottom: version + settings shortcut -->

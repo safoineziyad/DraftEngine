@@ -51,14 +51,13 @@ public static class ServiceRegistration
         services.AddSingleton<ILicenseService, LicenseService>();
         services.AddSingleton<IUpdateCheckService, UpdateCheckService>(sp => new UpdateCheckService(null));
 
-        return services;
-
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<NewContractViewModel>();
         services.AddSingleton<ContractsListViewModel>();
         services.AddSingleton<ContractDetailViewModel>();
         services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<ClauseManagerViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Navigation.

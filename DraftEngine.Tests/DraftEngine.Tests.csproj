@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -23,6 +23,7 @@
     <ProjectReference Include="..\DraftEngine.AI\DraftEngine.AI.csproj" />
     <ProjectReference Include="..\DraftEngine.Data\DraftEngine.Data.csproj" />
     <ProjectReference Include="..\DraftEngine.Documents\DraftEngine.Documents.csproj" />
+    <ProjectReference Include="..\DraftEngine.App\DraftEngine.App.csproj" />
   </ItemGroup>
 
 </Project>

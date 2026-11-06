@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
@@ -18,13 +20,16 @@ namespace DraftEngine.App.ViewModels;
 /// View model for the 4-step New Contract wizard: contract type, intake form,
 /// clause selection and review/generate.
 /// </summary>
-public partial class NewContractViewModel : ObservableObject
+public partial class NewContractViewModel : ObservableObject, INavigationAware
 {
     /// <summary>The only contract type currently implemented.</summary>
     internal const string MutualNdaType = "Mutual NDA";
 
     // The local user id used until authentication is available (single-user desktop app).
     private const int CurrentUserId = 1;
+
+    // Draft key used to persist the in-progress wizard across navigation.
+    private const string NewContractDraftKey = "new-contract";
 
     // Default governing law offered on step 2. (Hook up to the Settings page when it
     // exposes a user preference; "California" is the built-in fallback.)
@@ -36,8 +41,10 @@ public partial class NewContractViewModel : ObservableObject
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogs;
     private readonly IAppSettingsService _appSettings;
+    private readonly IWizardDraftService _drafts;
 
     private bool _clausesLoaded;
+    private bool _isNavigatingAway;
 
     /// <summary>The page title shown in the view header.</summary>
     public string PageTitle => "New Contract";
@@ -59,6 +66,9 @@ public partial class NewContractViewModel : ObservableObject
 
     /// <summary>How many clauses were offered on step 3.</summary>
     [ObservableProperty] private int _totalClauseCount;
+
+    /// <summary>Whether AI polish should be applied during generation.</summary>
+    [ObservableProperty] private bool _useAiPolish;
 
     /// <summary>The contract type cards shown on step 1.</summary>
     public ObservableCollection<ContractTypeOptionViewModel> ContractTypes { get; } = new();
@@ -106,7 +116,8 @@ public partial class NewContractViewModel : ObservableObject
         IFieldService fieldService,
         INavigationService navigation,
         IWizardDialogService dialogs,
-        IAppSettingsService appSettings)
+        IAppSettingsService appSettings,
+        IWizardDraftService drafts)
     {
         _contractService = contractService;
         _clauseService = clauseService;
@@ -114,6 +125,7 @@ public partial class NewContractViewModel : ObservableObject
         _navigation = navigation;
         _dialogs = dialogs;
         _appSettings = appSettings;
+        _drafts = drafts ?? throw new ArgumentNullException(nameof(drafts));
 
         Steps.Add(new WizardStepViewModel(1, "Type"));
         Steps.Add(new WizardStepViewModel(2, "Details"));
@@ -125,7 +137,8 @@ public partial class NewContractViewModel : ObservableObject
         UpdateStepVisibility();
         UpdateStepIndicators();
 
-        // The wizard is a singleton page: start fresh every time it is opened.
+        // The wizard is a singleton page: when navigated away, persist the draft;
+        // when navigated to, load the saved draft instead of always resetting.
         _navigation.CurrentViewModelChanged += OnPageChanged;
     }
 
@@ -190,6 +203,12 @@ public partial class NewContractViewModel : ObservableObject
         GenerateCommand.NotifyCanExecuteChanged();
     }
 
+    /// <inheritdoc cref="INavigationAware" />
+    public void OnNavigatedTo(object? parameter)
+    {
+        ResetWizard();
+    }
+
     private void OnPageChanged(object? viewModel)
     {
         if (ReferenceEquals(viewModel, this))
@@ -215,6 +234,7 @@ public partial class NewContractViewModel : ObservableObject
         _clausesLoaded = false;
         SelectedClauseCount = 0;
         TotalClauseCount = 0;
+        UseAiPolish = false;
     }
 
     private void BuildContractTypes()

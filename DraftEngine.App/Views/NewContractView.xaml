@@ -398,6 +398,11 @@
                             <TextBlock Text="{Binding SelectedClauseCount}" FontSize="13"
                                        Foreground="{StaticResource TextPrimaryBrush}" Margin="6,0,0,0" />
                         </StackPanel>
+                        <CheckBox Margin="0,16,0,0"
+                                  Content="Apply AI polish (requires OpenAI API key)"
+                                  IsChecked="{Binding UseAiPolish}"
+                                  AutomationProperties.Name="Apply AI polish to the generated contract"
+                                  Foreground="{StaticResource TextPrimaryBrush}" />
                     </StackPanel>
                 </ScrollViewer>
 

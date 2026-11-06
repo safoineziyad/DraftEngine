@@ -43,4 +43,8 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Navigates to the settings page.</summary>
     [RelayCommand]
     private void NavigateSettings() => _navigation.Navigate("settings");
+
+    /// <summary>Navigates to the clause management page.</summary>
+    [RelayCommand]
+    private void NavigateClauseManagement() => _navigation.Navigate("clause-management");
 }

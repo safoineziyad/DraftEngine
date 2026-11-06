@@ -42,6 +42,11 @@
                         AutomationProperties.HelpText="Rebuilds the document from the selected clauses and intake answers."
                         Command="{Binding RegenerateCommand}"
                         IsEnabled="{Binding HasDocument}" />
+                <CheckBox Margin="12,0,0,0" VerticalAlignment="Center"
+                          Content="AI polish"
+                          IsChecked="{Binding UseAiPolish}"
+                          AutomationProperties.Name="Apply AI polish when regenerating"
+                          Foreground="{StaticResource TextPrimaryBrush}" />
                 <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
                         AutomationProperties.Name="Export contract as DOCX"
                         Command="{Binding ExportDocxCommand}"

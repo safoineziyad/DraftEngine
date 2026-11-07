@@ -15,101 +15,138 @@ using Serilog;
 namespace DraftEngine.App.ViewModels;
 
 /// <summary>
-/// View model for the clause manager page: lists user-owned clauses and lets the user
-/// create, edit, duplicate and archive them. Clauses are scoped to a contract type.
+/// View model for the clause manager page: lists system and user clauses and allows
+/// user clauses to be created, edited, duplicated and archived.
 /// </summary>
-public partial class ClauseManagerViewModel : ObservableObject
+public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
 {
     private const int CurrentUserId = 1;
-    private const string DefaultContractType = ContractTypeRegistry.MutualNdaId;
-
+    private const string AllFilter = "All";
     private readonly IClauseManagementService _clauseService;
+    private readonly List<Clause> _allClauses = new();
+    private int _loadVersion;
 
-    /// <summary>The page title shown in the view header.</summary>
     public string PageTitle => "Clause Manager";
-
-    /// <summary>User-owned clauses for the selected contract type.</summary>
     public ObservableCollection<Clause> Clauses { get; } = new();
+    public ObservableCollection<string> ContractTypes { get; } =
+        new(ContractTypeRegistry.All.Select(type => type.DisplayName));
+    public ObservableCollection<string> CategoryFilters { get; } = new() { AllFilter };
+    public ObservableCollection<string> SourceFilters { get; } = new() { AllFilter, "System", "User" };
 
-    /// <summary>The clause currently being edited (null when creating a new clause).</summary>
+    [ObservableProperty]
+    private string selectedContractType = ContractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId).DisplayName;
+
+    [ObservableProperty]
+    private string selectedCategoryFilter = AllFilter;
+
+    [ObservableProperty]
+    private string selectedSourceFilter = AllFilter;
+
     [ObservableProperty]
     private Clause? selectedClause;
 
-    /// <summary>True when the edit form is in edit/save mode rather than new-clause mode.</summary>
     [ObservableProperty]
     private bool isEditMode;
 
-    partial void OnSelectedClauseChanged(Clause? value) => OnPropertyChanged(nameof(CanSave));
-
-    /// <summary>True when a clause is selected/being edited and can be saved.</summary>
-    public bool CanSave => SelectedClause is not null;
-
-    /// <summary>True while clauses are being loaded or saved.</summary>
     [ObservableProperty]
     private bool isLoading;
 
-    /// <summary>Friendly error message shown in the error banner; null when there is no error.</summary>
     [ObservableProperty]
     private string? errorMessage;
 
-    /// <summary>Clauses filtered to non-archived user clauses.</summary>
+    [ObservableProperty]
+    private string? placeholderWarning;
+
+    public bool CanSave => IsEditMode && SelectedClause is { Source: "User" };
+    public bool CanEditSelected => SelectedClause is { Source: "User" } && !SelectedClause.IsArchived;
+    public bool CanDuplicateSelected => SelectedClause is not null;
+    public bool CanArchiveSelected => SelectedClause is { Source: "User", IsArchived: false };
     public bool HasError => ErrorMessage is not null;
-
-    /// <summary>True when there are no clauses to display.</summary>
     public bool HasNoClauses => Clauses.Count == 0;
+    public bool HasPlaceholderWarning => PlaceholderWarning is not null;
 
-    /// <summary>Creates the clause manager view model.</summary>
     public ClauseManagerViewModel(IClauseManagementService clauseService)
     {
         _clauseService = clauseService ?? throw new ArgumentNullException(nameof(clauseService));
+    }
+
+    public void OnNavigatedTo(object? parameter) => _ = LoadAsync();
+
+    partial void OnSelectedContractTypeChanged(string value)
+    {
+        SelectedCategoryFilter = AllFilter;
         _ = LoadAsync();
     }
 
-    /// <summary>Loads the user's clauses for the default contract type.</summary>
+    partial void OnSelectedCategoryFilterChanged(string value) => RefreshVisibleClauses();
+
+    partial void OnSelectedSourceFilterChanged(string value) => RefreshVisibleClauses();
+
+    partial void OnSelectedClauseChanged(Clause? value)
+    {
+        OnPropertyChanged(nameof(CanSave));
+        OnPropertyChanged(nameof(CanEditSelected));
+        OnPropertyChanged(nameof(CanDuplicateSelected));
+        OnPropertyChanged(nameof(CanArchiveSelected));
+    }
+
+    partial void OnIsEditModeChanged(bool value) => OnPropertyChanged(nameof(CanSave));
+
+    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+
+    partial void OnPlaceholderWarningChanged(string? value) => OnPropertyChanged(nameof(HasPlaceholderWarning));
+
     [RelayCommand]
     private async Task LoadAsync()
     {
-        if (IsLoading) return;
-
+        var loadVersion = ++_loadVersion;
         IsLoading = true;
         ErrorMessage = null;
         try
         {
-            var clauses = await _clauseService.GetUserClausesAsync(DefaultContractType) ?? new List<Clause>();
-            Clauses.Clear();
-            foreach (var clause in clauses.OrderBy(c => c.SortOrder))
-                Clauses.Add(clause);
-            OnPropertyChanged(nameof(HasNoClauses));
+            var clauses = await _clauseService.GetClausesAsync(SelectedContractType) ?? new List<Clause>();
+            if (loadVersion != _loadVersion) return;
+            _allClauses.Clear();
+            _allClauses.AddRange(clauses.OrderBy(clause => clause.SortOrder));
+            UpdateCategoryFilters();
+            RefreshVisibleClauses();
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load clauses.");
-            ErrorMessage = "We couldn't load your clauses. Please try again.";
+            ErrorMessage = "We couldn't load clauses. Please try again.";
         }
         finally
         {
-            IsLoading = false;
+            if (loadVersion == _loadVersion)
+                IsLoading = false;
         }
     }
 
-    /// <summary>Prepares the form for creating a new clause.</summary>
     [RelayCommand]
     private void NewClause()
     {
-        SelectedClause = new Clause { ContractType = DefaultContractType, Source = "User", OwnerUserId = CurrentUserId };
+        SelectedClause = new Clause
+        {
+            ContractType = ContractTypeRegistry.GetByDisplayName(SelectedContractType).Id,
+            Source = "User",
+            OwnerUserId = CurrentUserId,
+            IsSystem = false,
+            IsUserDefined = true
+        };
+        PlaceholderWarning = null;
         IsEditMode = true;
     }
 
-    /// <summary>Opens the selected clause for editing.</summary>
     [RelayCommand]
     private void EditClause(Clause? clause)
     {
-        if (clause is null) return;
+        if (clause is not { Source: "User", IsArchived: false }) return;
         SelectedClause = clause.Clone();
+        PlaceholderWarning = null;
         IsEditMode = true;
     }
 
-    /// <summary>Duplicates the selected clause.</summary>
     [RelayCommand]
     private async Task DuplicateClauseAsync(Clause? clause)
     {
@@ -119,7 +156,10 @@ public partial class ClauseManagerViewModel : ObservableObject
         {
             IsLoading = true;
             ErrorMessage = null;
-            await _clauseService.DuplicateClauseAsync(clause.Id, DefaultContractType);
+            await _clauseService.DuplicateClauseAsync(
+                clause.Id, ContractTypeRegistry.GetByDisplayName(SelectedContractType).Id);
+            SelectedClause = null;
+            IsEditMode = false;
             await LoadAsync();
         }
         catch (Exception ex)
@@ -133,11 +173,10 @@ public partial class ClauseManagerViewModel : ObservableObject
         }
     }
 
-    /// <summary>Archives the selected clause after user confirmation.</summary>
     [RelayCommand]
     private async Task ArchiveClauseAsync(Clause? clause)
     {
-        if (clause is null) return;
+        if (clause is not { Source: "User", IsArchived: false }) return;
 
         var confirm = MessageBox.Show(
             $"Archive \"{clause.Title}\"?\n\nThis hides it from clause selection.",
@@ -151,6 +190,7 @@ public partial class ClauseManagerViewModel : ObservableObject
             IsLoading = true;
             ErrorMessage = null;
             await _clauseService.ArchiveUserClauseAsync(clause.Id);
+            SelectedClause = null;
             await LoadAsync();
         }
         catch (Exception ex)
@@ -164,35 +204,34 @@ public partial class ClauseManagerViewModel : ObservableObject
         }
     }
 
-    /// <summary>Validates placeholders and saves the edited/new clause.</summary>
     [RelayCommand]
     private async Task SaveAsync()
     {
         var clause = SelectedClause;
-        if (clause is null) return;
+        if (clause is null || !CanSave) return;
 
-        if (string.IsNullOrWhiteSpace(clause.Title))
+        if (string.IsNullOrWhiteSpace(clause.Title) || string.IsNullOrWhiteSpace(clause.BodyTemplate))
         {
-            MessageBox.Show("Please enter a clause title.", "Clause Manager",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(clause.BodyTemplate))
-        {
-            MessageBox.Show("Please enter the clause body template.", "Clause Manager",
+            MessageBox.Show("Please enter a clause title and body template.", "Clause Manager",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
-        // Validate placeholders before saving; warn but do not block on unknown keys.
         var (isValid, unknownKeys) = await _clauseService.ValidatePlaceholdersAsync(clause.BodyTemplate);
         if (!isValid)
         {
-            var warning = $"Unknown placeholder(s): {string.Join(", ", unknownKeys)}.\n\n" +
-                "These won't be resolved when drafting. Continue anyway?";
-            var proceed = MessageBox.Show(warning, "Unknown placeholders",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            PlaceholderWarning = $"Unknown placeholder(s): {string.Join(", ", unknownKeys)}. " +
+                "These won't be resolved when drafting.";
+            var proceed = MessageBox.Show(
+                $"{PlaceholderWarning}\n\nContinue anyway?",
+                "Unknown placeholders",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
             if (proceed != MessageBoxResult.Yes) return;
+        }
+        else
+        {
+            PlaceholderWarning = null;
         }
 
         try
@@ -200,13 +239,11 @@ public partial class ClauseManagerViewModel : ObservableObject
             IsLoading = true;
             ErrorMessage = null;
             if (clause.Id == 0)
-            {
-                await _clauseService.CreateUserClauseAsync(DefaultContractType, clause);
-            }
+                await _clauseService.CreateUserClauseAsync(
+                    ContractTypeRegistry.GetByDisplayName(SelectedContractType).Id, clause);
             else
-            {
                 await _clauseService.UpdateUserClauseAsync(clause.Id, clause);
-            }
+
             SelectedClause = null;
             IsEditMode = false;
             await LoadAsync();
@@ -222,13 +259,42 @@ public partial class ClauseManagerViewModel : ObservableObject
         }
     }
 
-    /// <summary>Cancels editing and clears the form.</summary>
     [RelayCommand]
     private void CancelEdit()
     {
         SelectedClause = null;
         IsEditMode = false;
+        PlaceholderWarning = null;
         ErrorMessage = null;
+    }
+
+    private void UpdateCategoryFilters()
+    {
+        var selected = SelectedCategoryFilter;
+        CategoryFilters.Clear();
+        CategoryFilters.Add(AllFilter);
+        foreach (var category in _allClauses.Select(clause => clause.Category)
+                     .Where(category => !string.IsNullOrWhiteSpace(category))
+                     .Distinct(StringComparer.OrdinalIgnoreCase)
+                     .OrderBy(category => category, StringComparer.OrdinalIgnoreCase))
+        {
+            CategoryFilters.Add(category);
+        }
+
+        SelectedCategoryFilter = CategoryFilters.Contains(selected) ? selected : AllFilter;
+    }
+
+    private void RefreshVisibleClauses()
+    {
+        var visible = _allClauses.Where(clause =>
+            (SelectedCategoryFilter == AllFilter ||
+             string.Equals(clause.Category, SelectedCategoryFilter, StringComparison.OrdinalIgnoreCase)) &&
+            (SelectedSourceFilter == AllFilter ||
+             string.Equals(clause.Source, SelectedSourceFilter, StringComparison.OrdinalIgnoreCase)));
+        Clauses.Clear();
+        foreach (var clause in visible)
+            Clauses.Add(clause);
+        OnPropertyChanged(nameof(HasNoClauses));
     }
 }
 
@@ -248,6 +314,7 @@ public static class ClauseExtensions
         Source = source.Source,
         OwnerUserId = source.OwnerUserId,
         IsArchived = source.IsArchived,
-        IsSystem = source.IsSystem
+        IsSystem = source.IsSystem,
+        IsUserDefined = source.IsUserDefined
     };
 }

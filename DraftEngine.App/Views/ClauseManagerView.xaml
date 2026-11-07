@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -40,7 +41,22 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <ComboBox Width="180" Margin="0,0,8,0"
+                                      ItemsSource="{Binding ContractTypes}"
+                                      SelectedItem="{Binding SelectedContractType, UpdateSourceTrigger=PropertyChanged}"
+                                      AutomationProperties.Name="Filter clauses by contract type" />
+                            <ComboBox Width="150" Margin="0,0,8,0"
+                                      ItemsSource="{Binding CategoryFilters}"
+                                      SelectedItem="{Binding SelectedCategoryFilter}"
+                                      AutomationProperties.Name="Filter clauses by category" />
+                            <ComboBox Width="120"
+                                      ItemsSource="{Binding SourceFilters}"
+                                      SelectedItem="{Binding SelectedSourceFilter}"
+                                      AutomationProperties.Name="Filter clauses by source" />
+                        </StackPanel>
                         <Button Grid.Column="1" Content="+ New" Margin="8,0,0,0" Padding="12,0"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 AutomationProperties.Name="Create a new clause"
@@ -48,12 +64,19 @@
                         <Button Grid.Column="2" Content="Edit" Margin="8,0,0,0" Padding="12,0"
                                 AutomationProperties.Name="Edit the selected clause"
                                 Command="{Binding EditClauseCommand}"
-                                CommandParameter="{Binding SelectedClause}" />
-                        <Button Grid.Column="3" Content="Archive" Margin="8,0,0,0" Padding="12,0"
+                                CommandParameter="{Binding SelectedClause}"
+                                IsEnabled="{Binding CanEditSelected}" />
+                        <Button Grid.Column="3" Content="Duplicate" Margin="8,0,0,0" Padding="12,0"
+                                AutomationProperties.Name="Duplicate the selected clause"
+                                Command="{Binding DuplicateClauseCommand}"
+                                CommandParameter="{Binding SelectedClause}"
+                                IsEnabled="{Binding CanDuplicateSelected}" />
+                        <Button Grid.Column="4" Content="Archive" Margin="8,0,0,0" Padding="12,0"
                                 Foreground="{StaticResource DangerBrush}"
                                 AutomationProperties.Name="Archive the selected clause"
                                 Command="{Binding ArchiveClauseCommand}"
-                                CommandParameter="{Binding SelectedClause}" />
+                                CommandParameter="{Binding SelectedClause}"
+                                IsEnabled="{Binding CanArchiveSelected}" />
                     </Grid>
                 </Border>
 
@@ -83,18 +106,8 @@
                                 <TextBlock Grid.Column="1" Text="{Binding Category}"
                                            VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}"
                                            TextTrimming="CharacterEllipsis" />
-                                <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="Active">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsArchived}" Value="True">
-                                                    <Setter Property="Text" Value="Archived" />
-                                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                <TextBlock Grid.Column="2" Text="{Binding Source}"
+                                           VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" />
                                 <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="8,0,0,0"
                                            Style="{StaticResource SecondaryTextStyle}" FontSize="11">
                                     <Run Text="{Binding SortOrder}" />
@@ -129,6 +142,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -158,8 +172,13 @@
                           IsChecked="{Binding SelectedClause.IsOptional}"
                           Content="Optional clause" AutomationProperties.Name="Mark clause as optional" />
 
+                <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Margin="0,0,0,8"
+                           Text="{Binding PlaceholderWarning}" Foreground="{StaticResource DangerBrush}"
+                           TextWrapping="Wrap"
+                           Visibility="{Binding HasPlaceholderWarning, Converter={StaticResource BoolToVis}}" />
+
                 <!-- Action bar -->
-                <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Cancel" Margin="8,0,0,0" Padding="12,0"
                             AutomationProperties.Name="Discard changes"
                             Command="{Binding CancelEditCommand}" />

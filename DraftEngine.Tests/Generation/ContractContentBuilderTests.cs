@@ -10,6 +10,9 @@ namespace DraftEngine.Tests.Generation;
 /// </summary>
 public class ContractContentBuilderTests
 {
+    public static IEnumerable<object[]> ContractTypes =>
+        ContractTypeRegistry.All.Select(definition => new object[] { definition.Id });
+
     private static Dictionary<string, string> MutualValues() => new(StringComparer.OrdinalIgnoreCase)
     {
         ["Party1"] = "Acme Corp",
@@ -80,6 +83,40 @@ public class ContractContentBuilderTests
         var title = ContractContentBuilder.BuildTitle(definition, new Dictionary<string, string>());
 
         Assert.Equal("Consulting Agreement", title);
+    }
+
+    [Theory]
+    [MemberData(nameof(ContractTypes))]
+    public void BuildTitleAndSummary_AllTypes_UseRegistryFieldsAndOmitBlankOptionalFields(string contractTypeId)
+    {
+        var definition = ContractTypeRegistry.GetById(contractTypeId);
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var field in definition.IntakeFields)
+        {
+            if (string.Equals(field.Key, definition.FirstPartyNameKey, StringComparison.OrdinalIgnoreCase))
+            {
+                values[field.Key] = "Acme Corp";
+            }
+            else if (string.Equals(field.Key, definition.SecondPartyNameKey, StringComparison.OrdinalIgnoreCase))
+            {
+                values[field.Key] = "Globex Ltd";
+            }
+            else
+            {
+                values[field.Key] = field.Required ? $"Value for {field.Key}" : string.Empty;
+            }
+        }
+
+        var title = ContractContentBuilder.BuildTitle(definition, values);
+        var summary = ContractContentBuilder.BuildSummary(definition, values);
+        var requiredFields = definition.IntakeFields.Where(field => field.Required).ToArray();
+
+        Assert.Contains(definition.DisplayName, title, StringComparison.Ordinal);
+        Assert.Contains("Acme Corp", title, StringComparison.Ordinal);
+        Assert.Contains("Globex Ltd", title, StringComparison.Ordinal);
+        Assert.Equal(requiredFields.Length, summary.Count);
+        Assert.Equal(requiredFields.Select(field => field.Label), summary.Select(row => row.Label));
+        Assert.All(summary, row => Assert.False(string.IsNullOrWhiteSpace(row.Value)));
     }
 
     [Fact]

@@ -64,6 +64,54 @@ public class DataServicesTests : IDisposable
     }
 
     [Fact]
+    public async Task ClauseService_IncludesMatchingUserClausesAndExcludesArchivedOrOtherTypes()
+    {
+        _dbContext.Clauses.AddRange(
+            new Clause
+            {
+                ContractType = "MutualNda",
+                Category = "Custom",
+                Title = "User clause",
+                BodyTemplate = "User text",
+                IsSystem = false,
+                IsUserDefined = true,
+                Source = "User",
+                SortOrder = 100
+            },
+            new Clause
+            {
+                ContractType = "MutualNda",
+                Category = "Custom",
+                Title = "Archived user clause",
+                BodyTemplate = "Archived text",
+                IsSystem = false,
+                IsUserDefined = true,
+                IsArchived = true,
+                Source = "User",
+                SortOrder = 101
+            },
+            new Clause
+            {
+                ContractType = "OneWayNda",
+                Category = "Custom",
+                Title = "Other type user clause",
+                BodyTemplate = "Other type text",
+                IsSystem = false,
+                IsUserDefined = true,
+                Source = "User",
+                SortOrder = 102
+            });
+        await _dbContext.SaveChangesAsync();
+
+        var service = new ClauseService(_databaseFactory);
+        var clauses = await service.GetClausesByContractTypeAsync("MutualNda");
+
+        Assert.Contains(clauses, clause => clause.Title == "User clause");
+        Assert.DoesNotContain(clauses, clause => clause.Title == "Archived user clause");
+        Assert.DoesNotContain(clauses, clause => clause.Title == "Other type user clause");
+    }
+
+    [Fact]
     public async Task ClauseService_DefaultSelection_FiltersOnIsDefaultSelected()
     {
         _dbContext.Clauses.Add(new Clause

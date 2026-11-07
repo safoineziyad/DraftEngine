@@ -1,6 +1,6 @@
 ## Prompt 1..5 status
 - Prompt 1: Complete. Registry, canonical contract-type IDs, intake/placeholder alignment, schema migrations, and placeholder audit are in place.
-- Prompt 2: Complete. Type-aware composition, registry-driven wizard, offline generation/export tests, and a Mutual NDA snapshot are in place.
+- Prompt 2: Automated implementation and verification complete. Registry-driven intake/summary, type-aware composition, custom-clause selection, offline generation/export tests, and a Mutual NDA snapshot are in place. Manual WPF click-through remains pending.
 - Prompt 3: Not started.
 - Prompt 4: Not started.
 - Prompt 5: Not started.
@@ -22,12 +22,12 @@
 - Upgrade path: run `dotnet ef database update` (or start the app) against an existing database; both migrations are idempotent at the SQL level.
 
 ## Verification
-- `dotnet build -c Release`: succeeded, 0 errors (pre-existing nullable warnings remain in unrelated files).
-- `dotnet test -c Release`: 185 total, 185 passed, 0 failed, 0 skipped.
+- `dotnet build -c Release`: succeeded, 0 errors, 0 warnings.
+- `dotnet test -c Release`: 190 total, 190 passed, 0 failed, 0 skipped.
 - Test coverage added: registry definitions/aliases, placeholder alignment for every type (fails if a seeded clause uses an unknown or uncollected key), offline generation per type, DOCX (opens via Open XML) and PDF (page count > 0) export per type, title/summary incl. blank optional fields, and a Mutual NDA assembled-text snapshot.
 
 ## Manual click-through (WPF UI)
-The UI cannot be launched in this environment, so these steps remain manual verification:
+The Release app was launched and remained responsive (`DraftEngine` window). Interactive workflow verification remains manual:
 1. Launch the app, open New Contract, and confirm all four type cards are selectable and show registry descriptions.
 2. Select each type and confirm step 2 shows only that type's fields with the expected labels.
 3. Leave an optional field blank and confirm step 4 omits it from the summary without breaking layout.
@@ -37,10 +37,11 @@ The UI cannot be launched in this environment, so these steps remain manual veri
 7. Open an existing pre-upgrade contract and confirm it loads and exports normally after migration.
 
 ## Open issues
-- Manual UI click-through above is still pending; automated coverage exercises the Core/Documents layers only.
-- A concurrent process modified App view models, tests and migrations during this work. Files were re-checked before editing, but a fresh `dotnet build`/`dotnet test` on the final tree is the authoritative gate (it passed: 185/185).
+- Manual UI click-through above is still pending; automated coverage exercises registry/Core/Data/Documents paths but cannot validate visual layout or end-user navigation.
+- The Release WPF app is currently open for the user to click through.
 
 ## Test counts
 - Pre-Prompt 1 baseline: 168 total, 168 passed, 0 failed.
 - After Prompt 1: 171 total, 171 passed, 0 failed.
-- After Prompt 2: 185 total, 185 passed, 0 failed, 0 skipped.
+- Prompt 2 before this verification pass: 185 total, 185 passed, 0 failed, 0 skipped.
+- Prompt 2 current: 190 total, 190 passed, 0 failed, 0 skipped.

@@ -125,6 +125,22 @@ public class MultiTypeGenerationTests : IDisposable
         Assert.Equal(clauseIds.Count, CountNumberedHeadingsInText(text));
         Assert.Equal(1, CountOccurrences(text, "IN WITNESS WHEREOF"));
 
+        var preamble = Normalize(text).Split("\n\n", StringSplitOptions.None)[1];
+        var expectedPreamble = definition.Id switch
+        {
+            ContractTypeRegistry.MutualNdaId => "This Mutual Non-Disclosure Agreement",
+            ContractTypeRegistry.OneWayNdaId => "This Non-Disclosure Agreement",
+            ContractTypeRegistry.ContractorAgreementId => "This Independent Contractor Agreement",
+            ContractTypeRegistry.ConsultingAgreementId => "This Consulting Agreement",
+            _ => throw new InvalidOperationException($"Unexpected contract type '{definition.Id}'.")
+        };
+        Assert.StartsWith(expectedPreamble, preamble, StringComparison.Ordinal);
+        if (definition.Id is ContractTypeRegistry.ContractorAgreementId or ContractTypeRegistry.ConsultingAgreementId)
+        {
+            Assert.DoesNotContain("confidential information", preamble, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("exchange and protect", preamble, StringComparison.OrdinalIgnoreCase);
+        }
+
         var firstParty = values[definition.FirstPartyNameKey];
         var secondParty = values[definition.SecondPartyNameKey];
         Assert.Contains(firstParty, text, StringComparison.Ordinal);
@@ -282,6 +298,7 @@ public class MultiTypeGenerationTests : IDisposable
         Assert.Equal(1, CountOccurrences(innerText, "IN WITNESS WHEREOF"));
         Assert.Contains(firstParty, innerText, StringComparison.Ordinal);
         Assert.Contains(secondParty, innerText, StringComparison.Ordinal);
+        Assert.DoesNotContain("{{", innerText, StringComparison.Ordinal);
         // InnerText concatenates runs without line breaks, so headings must be counted
         // paragraph by paragraph rather than with a multiline regex over the whole body.
         Assert.Equal(expectedClauses, CountNumberedHeadingParagraphs(body!));

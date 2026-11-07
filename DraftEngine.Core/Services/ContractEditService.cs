@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DraftEngine.Core.Enums;
@@ -61,6 +62,16 @@ public class ContractEditService : IContractEditService
         return copy;
     }
 
+    public async Task<List<Contract>> GetArchivedContractsAsync(int userId)
+    {
+        using var database = _databaseFactory.CreateContext();
+        return await database.Set<Contract>()
+            .AsNoTracking()
+            .Where(contract => contract.UserId == userId && contract.IsArchived)
+            .OrderByDescending(contract => contract.CreatedAt)
+            .ToListAsync();
+    }
+
     public async Task ArchiveContractAsync(int contractId)
     {
         using var database = _databaseFactory.CreateContext();
@@ -85,8 +96,20 @@ public class ContractEditService : IContractEditService
     public async Task PermanentDeleteContractAsync(int contractId)
     {
         using var database = _databaseFactory.CreateContext();
-        var c = await database.Set<Contract>().FirstOrDefaultAsync(x => x.Id == contractId);
+        var c = await database.Set<Contract>()
+            .Include(contract => contract.ContractClauses)
+            .Include(contract => contract.ContractFields)
+            .Include(contract => contract.ChatMessages)
+            .Include(contract => contract.GeneratedDocuments)
+            .Include(contract => contract.Versions)
+            .FirstOrDefaultAsync(contract => contract.Id == contractId);
         if (c is null) return;
+
+        database.Set<ContractClause>().RemoveRange(c.ContractClauses);
+        database.Set<ContractField>().RemoveRange(c.ContractFields);
+        database.Set<ChatMessage>().RemoveRange(c.ChatMessages);
+        database.Set<GeneratedDocument>().RemoveRange(c.GeneratedDocuments);
+        database.Set<ContractVersion>().RemoveRange(c.Versions);
         database.Set<Contract>().Remove(c);
         await database.SaveChangesAsync();
     }

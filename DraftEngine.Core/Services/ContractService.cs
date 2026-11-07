@@ -111,7 +111,7 @@ public class ContractService : IContractService
 
         return await database.Set<Contract>()
             .AsNoTracking()
-            .Where(contract => contract.UserId == userId)
+            .Where(contract => contract.UserId == userId && !contract.IsArchived)
             .OrderByDescending(contract => contract.CreatedAt)
             .ToListAsync();
     }

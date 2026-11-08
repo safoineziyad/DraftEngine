@@ -1,26 +1,32 @@
-## Prompt status
+# DraftEngine 0.4.0 — Progress
 
-- Prompt 1: Complete. Registry, canonical contract-type IDs, intake/placeholder alignment, schema migrations, placeholder audit.
-- Prompt 2: Complete. Registry-driven intake/summary, type-aware composition, custom-clause selection, offline generation/export tests, Mutual NDA snapshot.
-- Prompt 3: Complete. Clause Manager, AI consent/redaction/custom endpoint, editable contracts, duplicate and archive.
-- Prompt 4: Complete. Wizard drafts, export history, AI diff preview with Accept/Reject, onboarding and About/Help.
-- Prompt 5: Complete. Offline licensing behind a flag, notify-only update check, signing hooks, docs and 0.3.0 release metadata.
+## Stage status
+
+| Stage | Status | Notes |
+|---|---|---|
+| 0 — Vision + startup safety net | Complete | `docs/VISION.md`; `DraftEngine.App.Tests` resolves all page VMs/services, checks every navigation key has a DataTemplate, and loads every page against empty and seeded SQLite DBs. |
+| 1 — Data safety + polish | In progress | Backup/restore, data export, reusable templates, letterhead, search/shortcuts/diagnostics, theme. |
+| 2 — Analysis engine | Not started | UI-agnostic `DraftEngine.Analysis`. |
+| 3 — Analyze UI + exports | Not started | |
+| 4 — Web readiness | Not started | |
+| 5 — Audit + release candidate | Not started | |
+
+## Test counts
+
+- Start of v0.4.0: 222 (`DraftEngine.Tests`).
+- After Stage 0: 254 total — 222 Core/Data/Documents/App-VM tests + 32 App startup tests.
 
 ## Decisions
 
-- Canonical registry IDs (`MutualNda`, `OneWayNda`, `IndependentContractorAgreement`, `ConsultingAgreement`)
-  are stored in `Contract.ContractType` and `Clause.ContractType`; legacy display names/aliases
-  are normalized through `ContractTypeRegistry.TryGetByDisplayName`.
-- `ContractContentBuilder` (Core) owns pure title/summary/preamble/signature logic.
-- AI edits are preview-first: `PreviewChatEditAsync` validates without writing;
-  `ApplyChatEditPreviewAsync` snapshots and stores only after the user accepts.
-- Redaction removes configured party names, addresses and e-mails before the AI call and
-  restores the tokens in the reply.
-- All commercial features default to off, so an upgraded install behaves exactly as before.
+- The App test project targets `net8.0-windows` with `UseWPF`, but the startup tests avoid
+  instantiating visual elements: they parse the linked `App.xaml` markup for DataTemplates and
+  resolve the real DI graph against a temporary SQLite file. This keeps them fast and headless.
+- `NavigationService.Pages` is exposed read-only so the startup test can assert that every key
+  maps to a view template; the registry remains private otherwise.
+- Stage 1's theme toggle is deferred to the dedicated i18n/theme work so there is one theme
+  implementation, not two.
 
-## Verification
+## Prior release
 
-- `dotnet build DraftEngine.sln -c Debug`: succeeded, 0 errors.
-- `dotnet test DraftEngine.sln -c Debug`: 222 passed, 0 failed, 0 skipped.
-- New coverage: diff computation, real-value redaction, preview non-destructiveness,
-  accept snapshotting, onboarding flow, export history, license verification, update check.
+- v0.3.0 complete: 222 tests passing, multi-type generation, clause manager, drafts, archive,
+  AI diff/redaction, onboarding, About, licensing behind a flag.

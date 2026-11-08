@@ -22,6 +22,12 @@ public class NavigationService : INavigationService
         ["about"] = typeof(AboutViewModel),
     };
 
+    /// <summary>
+    /// The page keys and their view model types. Exposed read-only so startup tests can
+    /// assert every key has a view mapping.
+    /// </summary>
+    public static IReadOnlyDictionary<string, Type> Pages => PageRegistry;
+
     private readonly IServiceProvider _services;
 
     /// <inheritdoc />

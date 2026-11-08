@@ -10,7 +10,7 @@ namespace DraftEngine.Core.Interfaces;
 /// </summary>
 public interface IContractEditService
 {
-    Task<Contract> DuplicateContractAsync(int sourceContractId, string newTitle);
+    Task<Contract?> DuplicateContractAsync(int sourceContractId, string newTitle);
 
     /// <summary>Returns archived contracts belonging to the user, newest first.</summary>
     Task<List<Contract>> GetArchivedContractsAsync(int userId);
@@ -23,5 +23,5 @@ public interface IContractEditService
 
     /// <summary>Permanently deletes the contract and its owned data; missing contracts are ignored.</summary>
     Task PermanentDeleteContractAsync(int contractId);
-    Task<Contract> UpdateContractAsync(int contractId, Action<Contract> mutate);
+    Task<Contract?> UpdateContractAsync(int contractId, Action<Contract> mutate);
 }

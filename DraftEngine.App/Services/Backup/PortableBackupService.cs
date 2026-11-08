@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
@@ -57,7 +58,8 @@ public sealed class PortableBackupService : IPortableBackupService
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
     };
 
     private readonly IDatabaseContextFactory _contextFactory;
@@ -130,11 +132,14 @@ public sealed class PortableBackupService : IPortableBackupService
             await preImport.WriteAsync(Encrypt(JsonSerializer.SerializeToUtf8Bytes(current, JsonOptions), password), cancellationToken);
         }
 
-        await ReplaceAllAsync(payload, cancellationToken);
-
-        if (payload.Settings is not null && _settingsService is not null)
+        try
         {
-            await RestoreSettingsAsync(payload.Settings);
+            await ReplaceAllAsync(payload, cancellationToken, payload.Settings);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("Portable backup restore failed ({ExceptionType}).", ex.GetType().Name);
+            throw;
         }
 
         Log.Information(
@@ -312,7 +317,10 @@ public sealed class PortableBackupService : IPortableBackupService
         return payload;
     }
 
-    private async Task ReplaceAllAsync(BackupPayload payload, CancellationToken cancellationToken)
+    private async Task ReplaceAllAsync(
+        BackupPayload payload,
+        CancellationToken cancellationToken,
+        BackupSettings? settingsToRestore)
     {
         await using var context = _contextFactory.CreateContext();
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
@@ -434,6 +442,11 @@ public sealed class PortableBackupService : IPortableBackupService
 
         await context.SaveChangesAsync(cancellationToken);
         await ResetSequencesAsync(context, cancellationToken);
+        if (settingsToRestore is not null && _settingsService is not null)
+        {
+            await RestoreSettingsAsync(settingsToRestore);
+        }
+
         await transaction.CommitAsync(cancellationToken);
     }
 
@@ -441,23 +454,19 @@ public sealed class PortableBackupService : IPortableBackupService
     {
         // Explicit ids were restored, so AUTOINCREMENT counters must catch up or the next
         // insert would collide with a restored row.
-        foreach (var table in new[]
-                 {
-                     "Contracts", "Clauses", "ContractFields", "ContractClauses",
-                     "ChatMessages", "ContractVersions", "GeneratedDocuments"
-                 })
+        var commands = new (string Table, string Sql)[]
         {
-            try
-            {
-                await context.Database.ExecuteSqlRawAsync(
-                    $"UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM {table}) WHERE name = '{table}'",
-                    cancellationToken);
-            }
-            catch (Microsoft.Data.Sqlite.SqliteException)
-            {
-                // sqlite_sequence is created only after the first AUTOINCREMENT insert; a
-                // brand-new database legitimately has no rows to update.
-            }
+            ("Contracts", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM Contracts) WHERE name = {0}"),
+            ("Clauses", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM Clauses) WHERE name = {0}"),
+            ("ContractFields", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractFields) WHERE name = {0}"),
+            ("ContractClauses", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractClauses) WHERE name = {0}"),
+            ("ChatMessages", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ChatMessages) WHERE name = {0}"),
+            ("ContractVersions", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractVersions) WHERE name = {0}"),
+            ("GeneratedDocuments", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM GeneratedDocuments) WHERE name = {0}")
+        };
+        foreach (var (table, sql) in commands)
+        {
+            await context.Database.ExecuteSqlRawAsync(sql, new object[] { table }, cancellationToken);
         }
     }
 
@@ -522,7 +531,7 @@ public sealed class PortableBackupService : IPortableBackupService
             return JsonSerializer.Deserialize<BackupPayload>(plaintext, JsonOptions)
                 ?? throw new BackupFormatException("The backup payload is empty.");
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
             throw new BackupFormatException("The backup payload could not be read.");
         }

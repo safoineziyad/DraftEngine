@@ -149,6 +149,7 @@ public class ContractVersionTests : IDisposable
 
         var duplicate = await new ContractEditService(_databaseFactory)
             .DuplicateContractAsync(source.Id, "Copy of Test NDA");
+        Assert.NotNull(duplicate);
         var storedCopy = await _dbContext.Contracts
             .AsNoTracking()
             .Include(contract => contract.ContractFields)

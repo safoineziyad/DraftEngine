@@ -1,5 +1,9 @@
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Nodes;
+using DraftEngine.App.Services.Settings;
+using DraftEngine.Core.Interfaces;
 using DraftEngine.App.Services.Backup;
 using Microsoft.Extensions.DependencyInjection;
 using DraftEngine.Core.Models;
@@ -136,6 +140,117 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
     }
 
     [Fact]
+    public async Task EncryptedBackupWithUnexpectedSqlIdentifiers_IsRejectedBeforeDatabaseChanges()
+    {
+        Seed();
+        var service = CreateService();
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        using var malicious = RewriteEncryptedBackup(encrypted.ToArray(), payload =>
+        {
+            payload["tableName"] = "Contracts; DROP TABLE Contracts;--";
+            payload["columnName"] = "Title; DROP TABLE Contracts;--";
+        });
+
+        List<(int Id, string Title)> before;
+        using (var context = _fixture.CreateContext())
+        {
+            before = await context.Contracts.AsNoTracking()
+                .OrderBy(contract => contract.Id)
+                .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+                .ToListAsync();
+        }
+
+        var preImportPath = Path.Combine(_fixture.Directory, "malicious-pre-import.debk");
+        await Assert.ThrowsAsync<BackupFormatException>(() =>
+            service.ImportEncryptedAsync(malicious, Password, confirmReplace: true, preImportPath));
+
+        using var verify = _fixture.CreateContext();
+        var after = await verify.Contracts.AsNoTracking()
+            .OrderBy(contract => contract.Id)
+            .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+            .ToListAsync();
+        Assert.Equal(before, after);
+        Assert.False(File.Exists(preImportPath));
+    }
+
+    [Fact]
+    public async Task FailedRestoreStep_RollsBackDatabaseChanges()
+    {
+        Seed();
+        var service = CreateService();
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        using var invalid = RewriteEncryptedBackup(encrypted.ToArray(), payload =>
+        {
+            var contractId = payload["contracts"]![0]!["id"]!.GetValue<int>();
+            payload["contractClauses"]!.AsArray().Add(new JsonObject
+            {
+                ["id"] = 987654321,
+                ["contractId"] = contractId,
+                ["clauseId"] = 987654322,
+                ["selected"] = true,
+                ["customBodyOverride"] = string.Empty
+            });
+        });
+
+        List<(int Id, string Title)> before;
+        using (var context = _fixture.CreateContext())
+        {
+            before = await context.Contracts.AsNoTracking()
+                .OrderBy(contract => contract.Id)
+                .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+                .ToListAsync();
+        }
+
+        await Assert.ThrowsAsync<DbUpdateException>(() =>
+            service.ImportEncryptedAsync(
+                invalid, Password, confirmReplace: true,
+                Path.Combine(_fixture.Directory, "failed-restore-pre-import.debk")));
+
+        using var verify = _fixture.CreateContext();
+        var after = await verify.Contracts.AsNoTracking()
+            .OrderBy(contract => contract.Id)
+            .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+            .ToListAsync();
+        Assert.Equal(before, after);
+    }
+
+    [Fact]
+    public async Task FailedSettingsRestore_RollsBackDatabaseChanges()
+    {
+        Seed();
+        var settings = new FailingSettingsService();
+        var service = new PortableBackupService(
+            _fixture.Provider.GetRequiredService<DraftEngine.Core.Interfaces.IDatabaseContextFactory>(),
+            settings);
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        encrypted.Position = 0;
+
+        List<(int Id, string Title)> before;
+        using (var context = _fixture.CreateContext())
+        {
+            before = await context.Contracts.AsNoTracking()
+                .OrderBy(contract => contract.Id)
+                .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+                .ToListAsync();
+        }
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.ImportEncryptedAsync(
+                encrypted, Password, confirmReplace: true,
+                Path.Combine(_fixture.Directory, "failed-settings-pre-import.debk")));
+
+        using var verify = _fixture.CreateContext();
+        var after = await verify.Contracts.AsNoTracking()
+            .OrderBy(contract => contract.Id)
+            .Select(contract => new ValueTuple<int, string>(contract.Id, contract.Title))
+            .ToListAsync();
+        Assert.Equal(before, after);
+    }
+
+    [Fact]
     public async Task EncryptedBackup_ContainsNoPlaintextContentOrPartyNames()
     {
         Seed();
@@ -179,5 +294,82 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
         Assert.Contains("Title,ContractType,Status", csvText);
         Assert.Contains("Backup Round Trip NDA", csvText);
         Assert.Contains("Acme Secret Holdings", csvText);
+    }
+
+    private static MemoryStream RewriteEncryptedBackup(byte[] container, Action<JsonObject> updatePayload)
+    {
+        const int magicLength = 5;
+        const int saltLength = 16;
+        const int nonceLength = 12;
+        const int tagLength = 16;
+        const int keyLength = 32;
+        const int iterations = 600_000;
+        var offset = magicLength;
+        var salt = container.AsSpan(offset, saltLength).ToArray();
+        offset += saltLength;
+        var nonce = container.AsSpan(offset, nonceLength).ToArray();
+        offset += nonceLength;
+        var tag = container.AsSpan(offset, tagLength).ToArray();
+        offset += tagLength;
+        var ciphertext = container.AsSpan(offset).ToArray();
+        var key = Rfc2898DeriveBytes.Pbkdf2(
+            Password, salt, iterations, HashAlgorithmName.SHA256, keyLength);
+        var plaintext = new byte[ciphertext.Length];
+        using (var aes = new AesGcm(key, tagLength))
+        {
+            aes.Decrypt(nonce, ciphertext, tag, plaintext, "DraftEngine.Backup.v1"u8);
+        }
+
+        CryptographicOperations.ZeroMemory(key);
+        var payload = JsonNode.Parse(plaintext)!.AsObject();
+        updatePayload(payload);
+        var changedPlaintext = Encoding.UTF8.GetBytes(payload.ToJsonString());
+
+        var changedSalt = RandomNumberGenerator.GetBytes(saltLength);
+        var changedNonce = RandomNumberGenerator.GetBytes(nonceLength);
+        var changedKey = Rfc2898DeriveBytes.Pbkdf2(
+            Password, changedSalt, iterations, HashAlgorithmName.SHA256, keyLength);
+        var changedCiphertext = new byte[changedPlaintext.Length];
+        var changedTag = new byte[tagLength];
+        using (var aes = new AesGcm(changedKey, tagLength))
+        {
+            aes.Encrypt(
+                changedNonce, changedPlaintext, changedCiphertext, changedTag,
+                "DraftEngine.Backup.v1"u8);
+        }
+
+        CryptographicOperations.ZeroMemory(changedKey);
+        var result = new byte[magicLength + saltLength + nonceLength + tagLength + changedCiphertext.Length];
+        container.AsSpan(0, magicLength).CopyTo(result);
+        var resultOffset = magicLength;
+        changedSalt.CopyTo(result, resultOffset);
+        resultOffset += saltLength;
+        changedNonce.CopyTo(result, resultOffset);
+        resultOffset += nonceLength;
+        changedTag.CopyTo(result, resultOffset);
+        resultOffset += tagLength;
+        changedCiphertext.CopyTo(result, resultOffset);
+        return new MemoryStream(result);
+    }
+
+    private sealed class FailingSettingsService : IAppSettingsService
+    {
+        public AppSettings Current { get; } = new();
+
+        public event Action? SettingsChanged
+        {
+            add { }
+            remove { }
+        }
+
+        public Task<AppSettings> ReloadAsync() => Task.FromResult(Current);
+
+        public Task SaveAsync(AppSettings settings) =>
+            throw new InvalidOperationException("Settings persistence failed.");
+
+        public Task<IContractAiService?> CreateAiServiceAsync() =>
+            Task.FromResult<IContractAiService?>(null);
+
+        public IContractAiService? CreateAiService(string apiKey, string model) => null;
     }
 }

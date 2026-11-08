@@ -22,7 +22,7 @@ public class ContractEditService : IContractEditService
         _databaseFactory = databaseFactory;
     }
 
-    public async Task<Contract> DuplicateContractAsync(int sourceContractId, string newTitle)
+    public async Task<Contract?> DuplicateContractAsync(int sourceContractId, string newTitle)
     {
         using var database = _databaseFactory.CreateContext();
         var source = await database.Set<Contract>().Include(c => c.ContractClauses).Include(c => c.ContractFields)
@@ -114,7 +114,7 @@ public class ContractEditService : IContractEditService
         await database.SaveChangesAsync();
     }
 
-    public async Task<Contract> UpdateContractAsync(int contractId, Action<Contract> mutate)
+    public async Task<Contract?> UpdateContractAsync(int contractId, Action<Contract> mutate)
     {
         using var database = _databaseFactory.CreateContext();
         var c = await database.Set<Contract>().FirstOrDefaultAsync(x => x.Id == contractId);

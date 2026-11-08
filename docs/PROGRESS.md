@@ -48,12 +48,20 @@ NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, a
 - **Contracts list — Done (not visually verified), 2026-11-08.** The list view and view model use localized labels/status text, with rows and filter labels refreshed on language changes. 11 keys added to EN/FR/AR/ES. Evidence: `ContractsListView.xaml`, `ContractsListViewModel.cs`, `LocalizationTests.ContractsList_RerendersRowsAndFilterLabels_OnLanguageChange`. Full solution build/test passed with 308 tests (222 + 58 + 28).
 - New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
 
-NEXT STEP: Step 3 — migrate the New Contract wizard to `{loc:T}`/GetString, add keys in all four resx, remove its migrated view from `PendingMigration`, build/test/commit.
+### Step 1 — warning fixes (Done, 2026-11-08)
+
+- Portable backup SQL identifiers are fixed literals selected only from a hard-coded list; the table-name predicate is parameterized. Unknown JSON members are rejected during authenticated payload deserialization, before the pre-import snapshot or database access. `PortableBackupTests.EncryptedBackupWithUnexpectedSqlIdentifiers_IsRejectedBeforeDatabaseChanges` uses a correctly re-encrypted malicious payload and confirms unchanged database contents.
+- Restore database changes and settings persistence remain inside one transaction; failed restore steps propagate, trigger rollback, and log only the exception type. The broad SQLite-error swallow during sequence reset was removed. Evidence: `PortableBackupService.ReplaceAllAsync`, `ResetSequencesAsync`, `PortableBackupTests.FailedRestoreStep_RollsBackDatabaseChanges`, `PortableBackupTests.FailedSettingsRestore_RollsBackDatabaseChanges`.
+- `IContractEditService` now explicitly returns nullable contracts for update/duplicate. Existing detail/list callers handle missing contracts; `ContractEditServiceTests` covers both missing-contract paths.
+- `JsonException` no longer binds an unused exception variable. Full solution build/test passed: **313 tests** (224 + 61 + 28); five regression tests added since the 308-test recovery baseline. One unrelated pre-existing `CS8625` warning remains in `DraftEngine.Tests/Commercial/UpdateCheckServiceTests.cs`.
+
+NEXT STEP: Step 2 — migrate the New Contract wizard to `{loc:T}`/GetString, add keys in all four resx, remove its migrated view from `PendingMigration`, build/test/commit.
 
 ### Test counts
 
 - v0.4.0 start: 222.
 - End of Contracts-list recovery batch: **308** (222 `DraftEngine.Tests`, 58 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
+- End of Step 1: **313** (224 `DraftEngine.Tests`, 61 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 
 ### Audit notes (verified in code)
 

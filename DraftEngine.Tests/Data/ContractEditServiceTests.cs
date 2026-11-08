@@ -104,6 +104,25 @@ public sealed class ContractEditServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task DuplicateContractAsync_ReturnsNullWhenSourceContractIsMissing()
+    {
+        var duplicate = await _editService.DuplicateContractAsync(int.MaxValue, "Missing source copy");
+
+        Assert.Null(duplicate);
+        Assert.False(await _dbContext.Contracts.AnyAsync());
+    }
+
+    [Fact]
+    public async Task UpdateContractAsync_ReturnsNullWhenContractIsMissing()
+    {
+        var updated = await _editService.UpdateContractAsync(int.MaxValue, contract =>
+            contract.Title = "Should not be saved");
+
+        Assert.Null(updated);
+        Assert.False(await _dbContext.Contracts.AnyAsync());
+    }
+
+    [Fact]
     public async Task PermanentDeleteContractAsync_RemovesContractAndAllOwnedData_AndIsIdempotent()
     {
         var contract = await CreateContractAsync("owner@example.com", "permanent delete", archived: true);

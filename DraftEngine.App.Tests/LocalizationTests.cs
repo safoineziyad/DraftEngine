@@ -340,8 +340,8 @@ public sealed class LocalizationTests : IDisposable
 
     private sealed class StubContractEditService : DraftEngine.Core.Interfaces.IContractEditService
     {
-        public Task<Contract> DuplicateContractAsync(int sourceContractId, string newTitle) =>
-            Task.FromResult(new Contract { Id = sourceContractId + 1, Title = newTitle });
+        public Task<Contract?> DuplicateContractAsync(int sourceContractId, string newTitle) =>
+            Task.FromResult<Contract?>(new Contract { Id = sourceContractId + 1, Title = newTitle });
 
         public Task<List<Contract>> GetArchivedContractsAsync(int userId) => Task.FromResult(new List<Contract>());
 
@@ -351,7 +351,7 @@ public sealed class LocalizationTests : IDisposable
 
         public Task PermanentDeleteContractAsync(int contractId) => Task.CompletedTask;
 
-        public Task<Contract> UpdateContractAsync(int contractId, Action<Contract> mutate) =>
+        public Task<Contract?> UpdateContractAsync(int contractId, Action<Contract> mutate) =>
             throw new NotSupportedException();
     }
 

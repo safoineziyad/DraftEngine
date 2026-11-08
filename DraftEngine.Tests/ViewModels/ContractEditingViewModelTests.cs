@@ -236,10 +236,10 @@ public class ContractEditingViewModelTests
 
         public (int ContractId, string Title)? DuplicateRequest { get; private set; }
 
-        public Task<Contract> DuplicateContractAsync(int sourceContractId, string newTitle)
+        public Task<Contract?> DuplicateContractAsync(int sourceContractId, string newTitle)
         {
             DuplicateRequest = (sourceContractId, newTitle);
-            return Task.FromResult(new Contract { Id = sourceContractId + 1, Title = newTitle });
+            return Task.FromResult<Contract?>(new Contract { Id = sourceContractId + 1, Title = newTitle });
         }
 
         public Task ArchiveContractAsync(int contractId) => Task.CompletedTask;
@@ -247,11 +247,11 @@ public class ContractEditingViewModelTests
         public Task<bool> RestoreContractAsync(int contractId) => Task.FromResult(false);
         public Task PermanentDeleteContractAsync(int contractId) => Task.CompletedTask;
 
-        public Task<Contract> UpdateContractAsync(int contractId, Action<Contract> mutate)
+        public Task<Contract?> UpdateContractAsync(int contractId, Action<Contract> mutate)
         {
             _calls.Add("metadata");
             mutate(_contract);
-            return Task.FromResult(_contract);
+            return Task.FromResult<Contract?>(_contract);
         }
     }
 

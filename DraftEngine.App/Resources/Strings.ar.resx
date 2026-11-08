@@ -17,6 +17,72 @@
   <data name="Common.Skip" xml:space="preserve"><value>تخطي</value></data>
   <data name="Common.GetStarted" xml:space="preserve"><value>البدء</value></data>
   <data name="Common.Refresh" xml:space="preserve"><value>تحديث</value></data>
+  <data name="Wizard.PageTitle" xml:space="preserve"><value>عقد جديد</value></data>
+  <data name="Wizard.Subtitle" xml:space="preserve"><value>أنشئ مسودة اتفاقية جديدة في أربع خطوات.</value></data>
+  <data name="Wizard.DiscardDraft" xml:space="preserve"><value>تجاهل المسودة</value></data>
+  <data name="Wizard.DiscardDraftConfirm" xml:space="preserve"><value>هل تريد تجاهل مسودة العقد المحفوظة وإعادة تعيين المعالج؟</value></data>
+  <data name="Wizard.DiscardDraftConfirmTitle" xml:space="preserve"><value>تجاهل المسودة</value></data>
+  <data name="Wizard.Step.Type" xml:space="preserve"><value>النوع</value></data>
+  <data name="Wizard.Step.Details" xml:space="preserve"><value>التفاصيل</value></data>
+  <data name="Wizard.Step.Clauses" xml:space="preserve"><value>البنود</value></data>
+  <data name="Wizard.Step.Review" xml:space="preserve"><value>المراجعة</value></data>
+  <data name="Wizard.TypeHeading" xml:space="preserve"><value>اختر نوع العقد</value></data>
+  <data name="Wizard.TypeDescription" xml:space="preserve"><value>جميع أنواع العقود متاحة. اختر الاتفاقية التي تريد إعدادها.</value></data>
+  <data name="Wizard.SelectTypeAutomation" xml:space="preserve"><value>اختيار نوع العقد {0}</value></data>
+  <data name="Wizard.ComingSoon" xml:space="preserve"><value>قريبًا</value></data>
+  <data name="Wizard.DetailsHeading" xml:space="preserve"><value>تفاصيل العقد</value></data>
+  <data name="Wizard.DetailsDescription" xml:space="preserve"><value>أجب عن الأسئلة أدناه. ستُستخدم هذه القيم لملء البنود والمستند النهائي.</value></data>
+  <data name="Wizard.ClausesHeading" xml:space="preserve"><value>اختر البنود</value></data>
+  <data name="Wizard.SelectedClauses.One" xml:space="preserve"><value>تم اختيار بند واحد من {1} ({0})</value></data>
+  <data name="Wizard.SelectedClauses.Other" xml:space="preserve"><value>تم اختيار {0} من أصل {1} بنود</value></data>
+  <data name="Wizard.StandardClauses" xml:space="preserve"><value>تم تحديد البنود القياسية مسبقًا. وسّع أي بند لمعاينة نصه مع إجاباتك.</value></data>
+  <data name="Wizard.LoadingClauses" xml:space="preserve"><value>جارٍ تحميل البنود…</value></data>
+  <data name="Wizard.ClauseCount.One" xml:space="preserve"><value>بند واحد ({0})</value></data>
+  <data name="Wizard.ClauseCount.Other" xml:space="preserve"><value>{0} بنود</value></data>
+  <data name="Wizard.IncludeClauseAutomation" xml:space="preserve"><value>إدراج {0} في العقد</value></data>
+  <data name="Wizard.PreviewClauseAutomation" xml:space="preserve"><value>إظهار معاينة {0} أو إخفاؤها</value></data>
+  <data name="Wizard.Preview" xml:space="preserve"><value>معاينة ▾</value></data>
+  <data name="Wizard.HidePreview" xml:space="preserve"><value>إخفاء المعاينة</value></data>
+  <data name="Wizard.Optional" xml:space="preserve"><value>اختياري</value></data>
+  <data name="Wizard.ReviewHeading" xml:space="preserve"><value>راجع العقد</value></data>
+  <data name="Wizard.ReviewDescription" xml:space="preserve"><value>أكد التفاصيل أدناه، ثم أنشئ المستند.</value></data>
+  <data name="Wizard.SummaryContractType" xml:space="preserve"><value>نوع العقد</value></data>
+  <data name="Wizard.SummaryClausesSelected" xml:space="preserve"><value>البنود المحددة: {0}</value></data>
+  <data name="Wizard.AiPolish" xml:space="preserve"><value>تحسين بالذكاء الاصطناعي (يتطلب مفتاح OpenAI API)</value></data>
+  <data name="Wizard.AiPolishAutomation" xml:space="preserve"><value>تحسين العقد المُنشأ باستخدام الذكاء الاصطناعي</value></data>
+  <data name="Wizard.BackAutomation" xml:space="preserve"><value>العودة إلى الخطوة السابقة</value></data>
+  <data name="Wizard.NextAutomation" xml:space="preserve"><value>المتابعة إلى الخطوة التالية</value></data>
+  <data name="Wizard.Generate" xml:space="preserve"><value>إنشاء العقد</value></data>
+  <data name="Wizard.Generating" xml:space="preserve"><value>جارٍ الإنشاء…</value></data>
+  <data name="Wizard.ErrorClearDraft" xml:space="preserve"><value>تعذر مسح المسودة المحفوظة. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Wizard.ErrorDraftSave" xml:space="preserve"><value>تعذر حفظ أحدث تغييرات المعالج. أبقِ DraftEngine مفتوحًا وحاول مرة أخرى.</value></data>
+  <data name="Wizard.ErrorDraftSaveLeaving" xml:space="preserve"><value>تعذر حفظ مسودة المعالج.</value></data>
+  <data name="Wizard.ErrorClauseLoad" xml:space="preserve"><value>تعذر تحميل مكتبة البنود. ارجع وحاول مرة أخرى أو أعد تشغيل DraftEngine.</value></data>
+  <data name="Wizard.ErrorCreatedDraftClear" xml:space="preserve"><value>تم إنشاء العقد، لكن تعذر مسح مسودة المعالج المحفوظة.</value></data>
+  <data name="Wizard.ErrorGenerate" xml:space="preserve"><value>فشل إنشاء العقد. حاول مرة أخرى. إذا استمرت المشكلة، تحقق من مفتاح API في الإعدادات.</value></data>
+  <data name="Wizard.Type.MutualNda.Name" xml:space="preserve"><value>اتفاقية سرية متبادلة</value></data>
+  <data name="Wizard.Type.MutualNda.Description" xml:space="preserve"><value>اتفاقية سرية متبادلة تحمي كلا الطرفين.</value></data>
+  <data name="Wizard.Type.OneWayNda.Name" xml:space="preserve"><value>اتفاقية سرية أحادية</value></data>
+  <data name="Wizard.Type.OneWayNda.Description" xml:space="preserve"><value>اتفاقية تحمي المعلومات التي يفصح عنها طرف واحد.</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Name" xml:space="preserve"><value>اتفاقية متعاقد مستقل</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Description" xml:space="preserve"><value>تحدد نطاق العمل والرسوم والمخرجات وملكية العمل.</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Name" xml:space="preserve"><value>اتفاقية استشارات</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Description" xml:space="preserve"><value>تحدد شروط علاقة استشارية مستمرة.</value></data>
+  <data name="Wizard.Field.Party1" xml:space="preserve"><value>اسم الطرف الأول</value></data>
+  <data name="Wizard.Field.Party1Address" xml:space="preserve"><value>عنوان الطرف الأول</value></data>
+  <data name="Wizard.Field.Party2" xml:space="preserve"><value>اسم الطرف الثاني</value></data>
+  <data name="Wizard.Field.Party2Address" xml:space="preserve"><value>عنوان الطرف الثاني</value></data>
+  <data name="Wizard.Field.EffectiveDate" xml:space="preserve"><value>تاريخ السريان</value></data>
+  <data name="Wizard.Field.GoverningLaw" xml:space="preserve"><value>القانون الحاكم</value></data>
+  <data name="Wizard.Field.TermMonths" xml:space="preserve"><value>المدة (بالأشهر)</value></data>
+  <data name="Wizard.Field.Purpose" xml:space="preserve"><value>غرض الإفصاح / نطاق العمل</value></data>
+  <data name="Wizard.Field.ClientEmail" xml:space="preserve"><value>البريد الإلكتروني للعميل</value></data>
+  <data name="Wizard.Field.ContractorName" xml:space="preserve"><value>اسم المتعاقد</value></data>
+  <data name="Wizard.Field.ContractorAddress" xml:space="preserve"><value>عنوان المتعاقد</value></data>
+  <data name="Wizard.Field.ClientName" xml:space="preserve"><value>اسم العميل</value></data>
+  <data name="Wizard.Field.ClientAddress" xml:space="preserve"><value>عنوان العميل</value></data>
+  <data name="Wizard.Field.ConsultantName" xml:space="preserve"><value>اسم المستشار</value></data>
+  <data name="Wizard.Field.ConsultantAddress" xml:space="preserve"><value>عنوان المستشار</value></data>
   <data name="Settings.Title" xml:space="preserve"><value>الإعدادات</value></data>
   <data name="Settings.Appearance" xml:space="preserve"><value>المظهر واللغة</value></data>
   <data name="Settings.AppearanceDescription" xml:space="preserve"><value>تُطبَّق التغييرات فوراً. تؤدي العربية إلى تحويل الواجهة من اليمين إلى اليسار.</value></data>

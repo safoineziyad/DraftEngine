@@ -17,6 +17,72 @@
   <data name="Common.Skip" xml:space="preserve"><value>Omitir</value></data>
   <data name="Common.GetStarted" xml:space="preserve"><value>Empezar</value></data>
   <data name="Common.Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Wizard.PageTitle" xml:space="preserve"><value>Nuevo contrato</value></data>
+  <data name="Wizard.Subtitle" xml:space="preserve"><value>Redacta un nuevo acuerdo en cuatro pasos.</value></data>
+  <data name="Wizard.DiscardDraft" xml:space="preserve"><value>Descartar borrador</value></data>
+  <data name="Wizard.DiscardDraftConfirm" xml:space="preserve"><value>¿Descartar el borrador de contrato guardado y borrar el asistente?</value></data>
+  <data name="Wizard.DiscardDraftConfirmTitle" xml:space="preserve"><value>Descartar borrador</value></data>
+  <data name="Wizard.Step.Type" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Wizard.Step.Details" xml:space="preserve"><value>Detalles</value></data>
+  <data name="Wizard.Step.Clauses" xml:space="preserve"><value>Cláusulas</value></data>
+  <data name="Wizard.Step.Review" xml:space="preserve"><value>Revisión</value></data>
+  <data name="Wizard.TypeHeading" xml:space="preserve"><value>Elige un tipo de contrato</value></data>
+  <data name="Wizard.TypeDescription" xml:space="preserve"><value>Todos los tipos de contrato están disponibles. Selecciona el acuerdo que quieres redactar.</value></data>
+  <data name="Wizard.SelectTypeAutomation" xml:space="preserve"><value>Seleccionar tipo de contrato {0}</value></data>
+  <data name="Wizard.ComingSoon" xml:space="preserve"><value>Próximamente</value></data>
+  <data name="Wizard.DetailsHeading" xml:space="preserve"><value>Detalles del contrato</value></data>
+  <data name="Wizard.DetailsDescription" xml:space="preserve"><value>Responde a las preguntas siguientes. Estas respuestas completan las cláusulas y el documento final.</value></data>
+  <data name="Wizard.ClausesHeading" xml:space="preserve"><value>Seleccionar cláusulas</value></data>
+  <data name="Wizard.SelectedClauses.One" xml:space="preserve"><value>{0} de {1} cláusula seleccionada</value></data>
+  <data name="Wizard.SelectedClauses.Other" xml:space="preserve"><value>{0} de {1} cláusulas seleccionadas</value></data>
+  <data name="Wizard.StandardClauses" xml:space="preserve"><value>Las cláusulas estándar están preseleccionadas. Expande una cláusula para ver su texto con tus respuestas.</value></data>
+  <data name="Wizard.LoadingClauses" xml:space="preserve"><value>Cargando cláusulas…</value></data>
+  <data name="Wizard.ClauseCount.One" xml:space="preserve"><value>{0} cláusula</value></data>
+  <data name="Wizard.ClauseCount.Other" xml:space="preserve"><value>{0} cláusulas</value></data>
+  <data name="Wizard.IncludeClauseAutomation" xml:space="preserve"><value>Incluir {0} en el contrato</value></data>
+  <data name="Wizard.PreviewClauseAutomation" xml:space="preserve"><value>Mostrar u ocultar la vista previa de {0}</value></data>
+  <data name="Wizard.Preview" xml:space="preserve"><value>Vista previa ▾</value></data>
+  <data name="Wizard.HidePreview" xml:space="preserve"><value>Ocultar vista previa</value></data>
+  <data name="Wizard.Optional" xml:space="preserve"><value>Opcional</value></data>
+  <data name="Wizard.ReviewHeading" xml:space="preserve"><value>Revisa el contrato</value></data>
+  <data name="Wizard.ReviewDescription" xml:space="preserve"><value>Confirma los detalles y genera el documento.</value></data>
+  <data name="Wizard.SummaryContractType" xml:space="preserve"><value>Tipo de contrato</value></data>
+  <data name="Wizard.SummaryClausesSelected" xml:space="preserve"><value>Cláusulas seleccionadas: {0}</value></data>
+  <data name="Wizard.AiPolish" xml:space="preserve"><value>Mejorar con IA (requiere una clave de API de OpenAI)</value></data>
+  <data name="Wizard.AiPolishAutomation" xml:space="preserve"><value>Mejorar el contrato generado con IA</value></data>
+  <data name="Wizard.BackAutomation" xml:space="preserve"><value>Volver al paso anterior</value></data>
+  <data name="Wizard.NextAutomation" xml:space="preserve"><value>Continuar al paso siguiente</value></data>
+  <data name="Wizard.Generate" xml:space="preserve"><value>Generar contrato</value></data>
+  <data name="Wizard.Generating" xml:space="preserve"><value>Generando…</value></data>
+  <data name="Wizard.ErrorClearDraft" xml:space="preserve"><value>No se pudo borrar el borrador guardado. Inténtalo de nuevo.</value></data>
+  <data name="Wizard.ErrorDraftSave" xml:space="preserve"><value>No se pudieron guardar los últimos cambios del asistente. Mantén DraftEngine abierto e inténtalo de nuevo.</value></data>
+  <data name="Wizard.ErrorDraftSaveLeaving" xml:space="preserve"><value>No se pudo guardar el borrador del asistente.</value></data>
+  <data name="Wizard.ErrorClauseLoad" xml:space="preserve"><value>No se pudo cargar la biblioteca de cláusulas. Vuelve atrás e inténtalo de nuevo, o reinicia DraftEngine.</value></data>
+  <data name="Wizard.ErrorCreatedDraftClear" xml:space="preserve"><value>Se creó el contrato, pero no se pudo borrar el borrador guardado del asistente.</value></data>
+  <data name="Wizard.ErrorGenerate" xml:space="preserve"><value>No se pudo generar el contrato. Inténtalo de nuevo. Si el problema continúa, comprueba la clave de API en Configuración.</value></data>
+  <data name="Wizard.Type.MutualNda.Name" xml:space="preserve"><value>Acuerdo mutuo de confidencialidad</value></data>
+  <data name="Wizard.Type.MutualNda.Description" xml:space="preserve"><value>Acuerdo mutuo de confidencialidad que protege a ambas partes.</value></data>
+  <data name="Wizard.Type.OneWayNda.Name" xml:space="preserve"><value>Acuerdo unilateral de confidencialidad</value></data>
+  <data name="Wizard.Type.OneWayNda.Description" xml:space="preserve"><value>Acuerdo que protege la información divulgada por una sola parte.</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Name" xml:space="preserve"><value>Acuerdo de contratista independiente</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Description" xml:space="preserve"><value>Define el alcance, los honorarios, los entregables y la propiedad del trabajo.</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Name" xml:space="preserve"><value>Acuerdo de consultoría</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Description" xml:space="preserve"><value>Establece las condiciones de una relación de asesoramiento continua.</value></data>
+  <data name="Wizard.Field.Party1" xml:space="preserve"><value>Nombre de la parte 1</value></data>
+  <data name="Wizard.Field.Party1Address" xml:space="preserve"><value>Dirección de la parte 1</value></data>
+  <data name="Wizard.Field.Party2" xml:space="preserve"><value>Nombre de la parte 2</value></data>
+  <data name="Wizard.Field.Party2Address" xml:space="preserve"><value>Dirección de la parte 2</value></data>
+  <data name="Wizard.Field.EffectiveDate" xml:space="preserve"><value>Fecha de entrada en vigor</value></data>
+  <data name="Wizard.Field.GoverningLaw" xml:space="preserve"><value>Ley aplicable</value></data>
+  <data name="Wizard.Field.TermMonths" xml:space="preserve"><value>Duración (meses)</value></data>
+  <data name="Wizard.Field.Purpose" xml:space="preserve"><value>Finalidad de la divulgación / alcance del trabajo</value></data>
+  <data name="Wizard.Field.ClientEmail" xml:space="preserve"><value>Correo electrónico del cliente</value></data>
+  <data name="Wizard.Field.ContractorName" xml:space="preserve"><value>Nombre del contratista</value></data>
+  <data name="Wizard.Field.ContractorAddress" xml:space="preserve"><value>Dirección del contratista</value></data>
+  <data name="Wizard.Field.ClientName" xml:space="preserve"><value>Nombre del cliente</value></data>
+  <data name="Wizard.Field.ClientAddress" xml:space="preserve"><value>Dirección del cliente</value></data>
+  <data name="Wizard.Field.ConsultantName" xml:space="preserve"><value>Nombre del consultor</value></data>
+  <data name="Wizard.Field.ConsultantAddress" xml:space="preserve"><value>Dirección del consultor</value></data>
   <data name="Settings.Title" xml:space="preserve"><value>Configuración</value></data>
   <data name="Settings.Appearance" xml:space="preserve"><value>Apariencia e idioma</value></data>
   <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Los cambios se aplican de inmediato. El árabe cambia la interfaz a derecha a izquierda.</value></data>

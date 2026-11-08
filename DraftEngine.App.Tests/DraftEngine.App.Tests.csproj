@@ -29,6 +29,7 @@
     <None Include="..\DraftEngine.App\MainWindow.xaml" Link="Xaml\MainWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\DraftEngine.App\Views\*.xaml" Link="Xaml\Views\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\DraftEngine.App\Resources\Strings*.resx" Link="Resources\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\docs\i18n-baseline.txt" Link="i18n-baseline.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

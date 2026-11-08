@@ -46,7 +46,8 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - **Onboarding — Done (not visually verified), 2026-11-08.** `OnboardingWindow.xaml` buttons and automation names use `{loc:T}`; `OnboardingViewModel` stores step title/description/bullet keys and resolves them, plus the progress label and primary button, through `GetString`; all are re-raised on `LanguageChanged`. Falls back to a default English service when the shared source is not initialized (keeps the existing unit tests valid). 19 keys added (147 per language). `OnboardingWindow.xaml` removed from `PendingMigration`. Test count 305 → **306** (222 + 56 + 28); build 0 errors. Not visually verified.
 - **Dashboard — Done (not visually verified), 2026-11-08.** `DashboardView.xaml` uses `{loc:T}` for the subtitle, stats, recent-contract header/total, empty state, loading text and New Contract buttons; the row automation name is now computed in the view model. `DashboardViewModel` localizes the page title and load-error banner (stored as a flag, so it re-renders on language change), rebuilds rows on `LanguageChanged`, and passes the service to `ContractRowViewModel`. `ContractRowViewModel` localizes the untitled fallback, status enum, accessible name and a culture-aware date format (`Common.DateTimeFormat`). 17 keys added (164 per language). Test count 306 → **307** (222 + 57 + 28); build 0 errors. Not visually verified.
 - **Contracts list — Done (not visually verified), 2026-11-08.** The list view and view model use localized labels/status text, with rows and filter labels refreshed on language changes. 11 keys added to EN/FR/AR/ES. Evidence: `ContractsListView.xaml`, `ContractsListViewModel.cs`, `LocalizationTests.ContractsList_RerendersRowsAndFilterLabels_OnLanguageChange`. Full solution build/test passed with 308 tests (222 + 58 + 28).
-- New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
+- **New Contract wizard — Done (not visually verified), 2026-11-08.** The view, step labels, contract type cards, intake labels, summary fields, clause counts, accessibility names, confirmations, and error messages use localization keys in EN/FR/AR/ES. Core summary rows now return stable intake field keys. Added 66 keys per language and shrank the XAML literal baseline from 158 to 134. Evidence: `NewContractView.xaml`, `NewContractViewModel*.cs`, `ContractContentBuilderTests.BuildSummary_ReturnsFieldKeysRatherThanDisplayLabels`, `LocalizationTests.NewContractDynamicLabels_RerenderWhenLanguageChanges`, `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline`. Release suite: **318** tests (225 + 65 + 28). Not visually verified.
+- Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
 
 ### Step 1 — warning fixes (Done, 2026-11-08)
 
@@ -62,13 +63,14 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Stage 1 — migrate the New Contract wizard screen by screen; after each batch, build Release, run all tests, update this line, commit, and push.
+NEXT STEP: Stage 1 — migrate Contract detail (diff panel and export history) as its own batch; build Release, run all tests, update this line, commit, and push.
 
 ### Test counts
 
 - v0.4.0 start: 222.
 - End of Contracts-list recovery batch: **308** (222 `DraftEngine.Tests`, 58 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 - End of Step 1: **313** (224 `DraftEngine.Tests`, 61 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
+- End of New Contract wizard batch: **318** (225 `DraftEngine.Tests`, 65 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 
 ### Audit notes (verified in code)
 

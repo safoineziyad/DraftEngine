@@ -115,12 +115,12 @@ public class ContractContentBuilderTests
         Assert.Contains("Acme Corp", title, StringComparison.Ordinal);
         Assert.Contains("Globex Ltd", title, StringComparison.Ordinal);
         Assert.Equal(requiredFields.Length, summary.Count);
-        Assert.Equal(requiredFields.Select(field => field.Label), summary.Select(row => row.Label));
+        Assert.Equal(requiredFields.Select(field => field.Key), summary.Select(row => row.Label));
         Assert.All(summary, row => Assert.False(string.IsNullOrWhiteSpace(row.Value)));
     }
 
     [Fact]
-    public void BuildSummary_UsesRegistryLabelsAndOrder()
+    public void BuildSummary_UsesStableFieldKeysAndRegistryOrder()
     {
         var definition = ContractTypeRegistry.GetById(ContractTypeRegistry.ContractorAgreementId);
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -139,10 +139,28 @@ public class ContractContentBuilderTests
         var rows = ContractContentBuilder.BuildSummary(definition, values);
 
         Assert.Equal(definition.IntakeFields.Count, rows.Count);
-        Assert.Equal(definition.IntakeFields.Select(field => field.Label), rows.Select(row => row.Label));
-        Assert.Contains(rows, row => row.Label == "Contractor name" && row.Value == "Acme Corp");
-        Assert.Contains(rows, row => row.Label == "Client name" && row.Value == "Globex Ltd");
-        Assert.Contains(rows, row => row.Label == "Scope of work" && row.Value == "software development");
+        Assert.Equal(definition.IntakeFields.Select(field => field.Key), rows.Select(row => row.Label));
+        Assert.Contains(rows, row => row.Label == "ContractorName" && row.Value == "Acme Corp");
+        Assert.Contains(rows, row => row.Label == "ClientName" && row.Value == "Globex Ltd");
+        Assert.Contains(rows, row => row.Label == "Purpose" && row.Value == "software development");
+    }
+
+    [Fact]
+    public void BuildSummary_ReturnsFieldKeysRatherThanDisplayLabels()
+    {
+        var definition = ContractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId);
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Party1"] = "Acme Corp",
+            ["Party2"] = "Globex Ltd",
+        };
+
+        var summary = ContractContentBuilder.BuildSummary(definition, values);
+
+        Assert.Equal(
+            new[] { "Party1", "Party1Address", "Party2", "Party2Address", "EffectiveDate", "GoverningLaw", "TermMonths" },
+            summary.Select(row => row.Label));
+        Assert.DoesNotContain(summary, row => row.Label == "Party 1 name");
     }
 
     [Fact]
@@ -163,10 +181,10 @@ public class ContractContentBuilderTests
 
         var rows = ContractContentBuilder.BuildSummary(definition, values);
 
-        Assert.DoesNotContain(rows, row => row.Label == "Purpose of disclosure");
-        Assert.DoesNotContain(rows, row => row.Label == "Client email");
-        Assert.Contains(rows, row => row.Label == "Party 1 name" && row.Value == "Acme Corp");
-        Assert.Contains(rows, row => row.Label == "Governing law" && row.Value == "Delaware");
+        Assert.DoesNotContain(rows, row => row.Label == "Purpose");
+        Assert.DoesNotContain(rows, row => row.Label == "ClientEmail");
+        Assert.Contains(rows, row => row.Label == "Party1" && row.Value == "Acme Corp");
+        Assert.Contains(rows, row => row.Label == "GoverningLaw" && row.Value == "Delaware");
     }
 
     [Fact]
@@ -181,7 +199,7 @@ public class ContractContentBuilderTests
 
         var rows = ContractContentBuilder.BuildSummary(definition, values);
 
-        var addressRow = Assert.Single(rows, row => row.Label == "Disclosing party address");
+        var addressRow = Assert.Single(rows, row => row.Label == "Party1Address");
         Assert.Equal(string.Empty, addressRow.Value);
     }
 }

@@ -16,14 +16,16 @@ public partial class NewContractViewModel
     [RelayCommand(CanExecute = nameof(CanDiscardDraft))]
     private async Task DiscardDraftAsync()
     {
-        if (!_dialogs.Confirm("Discard the saved contract draft and clear the wizard?", "Discard draft"))
+        if (!_dialogs.Confirm(
+                _localization.GetString("Wizard.DiscardDraftConfirm"),
+                _localization.GetString("Wizard.DiscardDraftConfirmTitle")))
         {
             return;
         }
 
         if (!await DeleteSavedDraftAsync())
         {
-            _dialogs.ShowError("The saved draft could not be cleared. Please try again.");
+            _dialogs.ShowError(_localization.GetString("Wizard.ErrorClearDraft"));
             return;
         }
 
@@ -166,7 +168,7 @@ public partial class NewContractViewModel
         {
             // Do not include exceptions or payloads in logs; draft answers may be sensitive.
             Log.Warning("The new-contract draft could not be saved.");
-            DraftErrorMessage = "Your latest wizard changes could not be saved. Please keep DraftEngine open and try again.";
+            DraftErrorMessage = _localization.GetString("Wizard.ErrorDraftSave");
         }
     }
 
@@ -220,7 +222,7 @@ public partial class NewContractViewModel
         catch
         {
             Log.Warning("The new-contract draft could not be saved.");
-            DraftErrorMessage = "Your wizard draft could not be saved.";
+            DraftErrorMessage = _localization.GetString("Wizard.ErrorDraftSaveLeaving");
         }
     }
 

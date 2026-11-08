@@ -17,6 +17,72 @@
   <data name="Common.Skip" xml:space="preserve"><value>Skip</value></data>
   <data name="Common.GetStarted" xml:space="preserve"><value>Get started</value></data>
   <data name="Common.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Wizard.PageTitle" xml:space="preserve"><value>New Contract</value></data>
+  <data name="Wizard.Subtitle" xml:space="preserve"><value>Draft a new agreement in four steps.</value></data>
+  <data name="Wizard.DiscardDraft" xml:space="preserve"><value>Discard draft</value></data>
+  <data name="Wizard.DiscardDraftConfirm" xml:space="preserve"><value>Discard the saved contract draft and clear the wizard?</value></data>
+  <data name="Wizard.DiscardDraftConfirmTitle" xml:space="preserve"><value>Discard draft</value></data>
+  <data name="Wizard.Step.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Wizard.Step.Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Wizard.Step.Clauses" xml:space="preserve"><value>Clauses</value></data>
+  <data name="Wizard.Step.Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Wizard.TypeHeading" xml:space="preserve"><value>Choose a contract type</value></data>
+  <data name="Wizard.TypeDescription" xml:space="preserve"><value>All contract types are available. Select the agreement you want to draft.</value></data>
+  <data name="Wizard.SelectTypeAutomation" xml:space="preserve"><value>Select contract type {0}</value></data>
+  <data name="Wizard.ComingSoon" xml:space="preserve"><value>Coming soon</value></data>
+  <data name="Wizard.DetailsHeading" xml:space="preserve"><value>Contract details</value></data>
+  <data name="Wizard.DetailsDescription" xml:space="preserve"><value>Answer the questions below. These values fill the clauses and the final document.</value></data>
+  <data name="Wizard.ClausesHeading" xml:space="preserve"><value>Select clauses</value></data>
+  <data name="Wizard.SelectedClauses.One" xml:space="preserve"><value>{0} of {1} clause selected</value></data>
+  <data name="Wizard.SelectedClauses.Other" xml:space="preserve"><value>{0} of {1} clauses selected</value></data>
+  <data name="Wizard.StandardClauses" xml:space="preserve"><value>Standard clauses are pre-selected. Expand any clause to preview its text with your answers.</value></data>
+  <data name="Wizard.LoadingClauses" xml:space="preserve"><value>Loading clauses…</value></data>
+  <data name="Wizard.ClauseCount.One" xml:space="preserve"><value>{0} clause</value></data>
+  <data name="Wizard.ClauseCount.Other" xml:space="preserve"><value>{0} clauses</value></data>
+  <data name="Wizard.IncludeClauseAutomation" xml:space="preserve"><value>Include {0} in the contract</value></data>
+  <data name="Wizard.PreviewClauseAutomation" xml:space="preserve"><value>Show or hide the preview of {0}</value></data>
+  <data name="Wizard.Preview" xml:space="preserve"><value>Preview ▾</value></data>
+  <data name="Wizard.HidePreview" xml:space="preserve"><value>Hide preview</value></data>
+  <data name="Wizard.Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="Wizard.ReviewHeading" xml:space="preserve"><value>Review your contract</value></data>
+  <data name="Wizard.ReviewDescription" xml:space="preserve"><value>Confirm the details below, then generate the document.</value></data>
+  <data name="Wizard.SummaryContractType" xml:space="preserve"><value>Contract type</value></data>
+  <data name="Wizard.SummaryClausesSelected" xml:space="preserve"><value>Clauses selected: {0}</value></data>
+  <data name="Wizard.AiPolish" xml:space="preserve"><value>Apply AI polish (requires OpenAI API key)</value></data>
+  <data name="Wizard.AiPolishAutomation" xml:space="preserve"><value>Apply AI polish to the generated contract</value></data>
+  <data name="Wizard.BackAutomation" xml:space="preserve"><value>Go back to the previous step</value></data>
+  <data name="Wizard.NextAutomation" xml:space="preserve"><value>Continue to the next step</value></data>
+  <data name="Wizard.Generate" xml:space="preserve"><value>Generate Contract</value></data>
+  <data name="Wizard.Generating" xml:space="preserve"><value>Generating…</value></data>
+  <data name="Wizard.ErrorClearDraft" xml:space="preserve"><value>The saved draft could not be cleared. Please try again.</value></data>
+  <data name="Wizard.ErrorDraftSave" xml:space="preserve"><value>Your latest wizard changes could not be saved. Please keep DraftEngine open and try again.</value></data>
+  <data name="Wizard.ErrorDraftSaveLeaving" xml:space="preserve"><value>Your wizard draft could not be saved.</value></data>
+  <data name="Wizard.ErrorClauseLoad" xml:space="preserve"><value>The clause library could not be loaded. Please go back and try again, or restart DraftEngine.</value></data>
+  <data name="Wizard.ErrorCreatedDraftClear" xml:space="preserve"><value>The contract was created, but the saved wizard draft could not be cleared.</value></data>
+  <data name="Wizard.ErrorGenerate" xml:space="preserve"><value>Contract generation failed. Please try again. If the problem persists, check your API key in Settings.</value></data>
+  <data name="Wizard.Type.MutualNda.Name" xml:space="preserve"><value>Mutual NDA</value></data>
+  <data name="Wizard.Type.MutualNda.Description" xml:space="preserve"><value>Mutual confidentiality agreement protecting both parties.</value></data>
+  <data name="Wizard.Type.OneWayNda.Name" xml:space="preserve"><value>One-Way NDA</value></data>
+  <data name="Wizard.Type.OneWayNda.Description" xml:space="preserve"><value>One-way confidentiality agreement protecting information disclosed by a single party.</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Name" xml:space="preserve"><value>Independent Contractor Agreement</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Description" xml:space="preserve"><value>Defines scope, fees, deliverables and ownership for contract work.</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Name" xml:space="preserve"><value>Consulting Agreement</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Description" xml:space="preserve"><value>Sets the terms of an ongoing advisory engagement.</value></data>
+  <data name="Wizard.Field.Party1" xml:space="preserve"><value>Party 1 name</value></data>
+  <data name="Wizard.Field.Party1Address" xml:space="preserve"><value>Party 1 address</value></data>
+  <data name="Wizard.Field.Party2" xml:space="preserve"><value>Party 2 name</value></data>
+  <data name="Wizard.Field.Party2Address" xml:space="preserve"><value>Party 2 address</value></data>
+  <data name="Wizard.Field.EffectiveDate" xml:space="preserve"><value>Effective date</value></data>
+  <data name="Wizard.Field.GoverningLaw" xml:space="preserve"><value>Governing law</value></data>
+  <data name="Wizard.Field.TermMonths" xml:space="preserve"><value>Term (months)</value></data>
+  <data name="Wizard.Field.Purpose" xml:space="preserve"><value>Purpose of disclosure / scope of work</value></data>
+  <data name="Wizard.Field.ClientEmail" xml:space="preserve"><value>Client email</value></data>
+  <data name="Wizard.Field.ContractorName" xml:space="preserve"><value>Contractor name</value></data>
+  <data name="Wizard.Field.ContractorAddress" xml:space="preserve"><value>Contractor address</value></data>
+  <data name="Wizard.Field.ClientName" xml:space="preserve"><value>Client name</value></data>
+  <data name="Wizard.Field.ClientAddress" xml:space="preserve"><value>Client address</value></data>
+  <data name="Wizard.Field.ConsultantName" xml:space="preserve"><value>Consultant name</value></data>
+  <data name="Wizard.Field.ConsultantAddress" xml:space="preserve"><value>Consultant address</value></data>
   <data name="Settings.Title" xml:space="preserve"><value>Settings</value></data>
   <data name="Settings.Appearance" xml:space="preserve"><value>Appearance and language</value></data>
   <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Changes apply immediately. Arabic switches the interface to right-to-left.</value></data>

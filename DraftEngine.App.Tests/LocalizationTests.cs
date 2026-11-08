@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using DraftEngine.App.Services.Localization;
 using DraftEngine.App.ViewModels;
+using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Models;
 using Xunit;
@@ -270,6 +271,55 @@ public sealed class LocalizationTests : IDisposable
         Assert.Equal("1 mois", viewModel.Contracts[0].TermMonthsText);
         Assert.Equal("Supprimer le contrat Acme NDA", viewModel.Contracts[0].DeleteAutomationName);
         Assert.Equal("2 janv. 2026", viewModel.Contracts[0].UpdatedDateText);
+    }
+
+    [Fact]
+    public async Task NewContractDynamicLabels_RerenderWhenLanguageChanges()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        var field = new IntakeFieldViewModel(
+            "Party1", "Fallback", IntakeFieldKind.Text, isRequired: true, localization: service);
+        var step = new WizardStepViewModel(1, "Wizard.Step.Type", service);
+
+        Assert.Equal("Party 1 name", field.Label);
+        Assert.Equal("Type", step.Label);
+
+        await service.SetLanguageAsync("fr");
+        field.RefreshLocalization();
+        step.RefreshLocalization();
+
+        Assert.Equal("Nom de la partie 1", field.Label);
+        Assert.Equal("Type", step.Label);
+    }
+
+    [Fact]
+    public async Task NewContractSummaryUsesLocalizedFieldLabels()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        await service.SetLanguageAsync("fr");
+
+        Assert.Equal("Nom de la partie 1", service.GetString("Wizard.Field.Party1"));
+        Assert.Equal("Contrat de prestataire indépendant",
+            service.GetString("Wizard.Type.IndependentContractorAgreement.Name"));
+        await service.SetLanguageAsync("es");
+        Assert.Equal("Nombre de la parte 1", service.GetString("Wizard.Field.Party1"));
+        Assert.Equal("Acuerdo de contratista independiente",
+            service.GetString("Wizard.Type.IndependentContractorAgreement.Name"));
+    }
+
+    [Fact]
+    public void RequiredNumberField_ValidatesInvariantIntegerInput()
+    {
+        var field = new IntakeFieldViewModel(
+            "TermMonths", "Term", IntakeFieldKind.Number, isRequired: true);
+
+        field.Value = "12";
+        Assert.True(field.IsValid);
+
+        field.Value = "١٢";
+        Assert.False(field.IsValid);
     }
 
     private LocalizationService CreateService() =>

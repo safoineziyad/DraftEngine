@@ -22,11 +22,15 @@ public partial class NewContractViewModel
     {
         SummaryItems.Clear();
         var definition = SelectedDefinition;
-        SummaryItems.Add(new SummaryItemViewModel("Contract type", definition.DisplayName));
+        SummaryItems.Add(new SummaryItemViewModel(
+            _localization.GetString("Wizard.SummaryContractType"),
+            _localization.GetString($"Wizard.Type.{definition.Id}.Name")));
 
         foreach (var row in ContractContentBuilder.BuildSummary(definition, GetFieldValues()))
         {
-            SummaryItems.Add(new SummaryItemViewModel(row.Label, row.Value));
+            SummaryItems.Add(new SummaryItemViewModel(
+                _localization.GetString($"Wizard.Field.{row.Label}"),
+                row.Value));
         }
     }
 
@@ -56,7 +60,13 @@ public partial class NewContractViewModel
                 EffectiveDate = IntakeFields
                     .FirstOrDefault(field => field.Kind == IntakeFieldKind.Date)?.DateValue,
                 GoverningLaw = FirstNonEmpty(values, "GoverningLaw"),
-                TermMonths = int.TryParse(FirstNonEmpty(values, "TermMonths"), out var months) ? months : 12
+                TermMonths = int.TryParse(
+                    FirstNonEmpty(values, "TermMonths"),
+                    System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var months)
+                    ? months
+                    : 12
             };
 
             var created = await _contractService.CreateAsync(contract);
@@ -71,15 +81,14 @@ public partial class NewContractViewModel
 
             if (!await DeleteSavedDraftAsync())
             {
-                _dialogs.ShowError("The contract was created, but the saved wizard draft could not be cleared.");
+                _dialogs.ShowError(_localization.GetString("Wizard.ErrorCreatedDraftClear"));
             }
             _navigation.Navigate("contract-detail", created.Id);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Contract generation failed for contract {ContractId}", createdId);
-            _dialogs.ShowError(
-                "Contract generation failed. Please try again. If the problem persists, check your API key in Settings.");
+            _dialogs.ShowError(_localization.GetString("Wizard.ErrorGenerate"));
         }
         finally
         {

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+- New UI-agnostic `DraftEngine.Analysis` engine: DOCX/PDF/TXT import into a normalized document with offsets, clause segmentation, seeded playbooks for all four contract types, deterministic checks (missing clauses, required facts, red flags, placeholders), fact extraction and document comparison.
+- Optional AI review behind consent, using the existing redaction and endpoint; every AI finding must quote the source verbatim or it is discarded, and citation-like text is filtered out.
+- Analyze page with import, severity-grouped findings, click-to-highlight quotes, AI toggle (off by default), encrypted saved analyses with archive, DOCX/PDF review reports and the mandatory "Not legal advice" disclaimer.
+- Tracked-change DOCX redline builder (w:ins/w:del) with tests.
+- Password-encrypted portable backup/restore (AES-256-GCM, PBKDF2, pre-import restore point) and plain JSON/CSV data export, wired into Settings.
+- Contract search now covers body text; content-free diagnostics in About; Ctrl+N / Ctrl+F / Ctrl+K shortcuts.
+- New App startup test project and analysis test project; total test count 291.
+- Version bumped to 0.4.0.
+
 ## 0.3.0
 - Four contract types: Mutual NDA, One-Way NDA, Independent Contractor Agreement, Consulting Agreement.
 - Registry-driven intake, clause defaults, type-aware preamble, recitals and signature blocks.

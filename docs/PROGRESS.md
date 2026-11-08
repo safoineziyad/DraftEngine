@@ -1,32 +1,33 @@
-# DraftEngine 0.4.0 — Progress
+# DraftEngine — Progress
 
-## Stage status
+## v0.4.0 (Phase 2A)
 
 | Stage | Status | Notes |
 |---|---|---|
-| 0 — Vision + startup safety net | Complete | `docs/VISION.md`; `DraftEngine.App.Tests` resolves all page VMs/services, checks every navigation key has a DataTemplate, and loads every page against empty and seeded SQLite DBs. |
-| 1 — Data safety + polish | In progress | Backup/restore, data export, reusable templates, letterhead, search/shortcuts/diagnostics, theme. |
-| 2 — Analysis engine | Not started | UI-agnostic `DraftEngine.Analysis`. |
-| 3 — Analyze UI + exports | Not started | |
-| 4 — Web readiness | Not started | |
-| 5 — Audit + release candidate | Not started | |
+| 0 — Vision + startup safety net | Complete | `docs/VISION.md`; `DraftEngine.App.Tests` (DI, templates, navigation, page loads). |
+| 1 — Data safety + polish | Partial | Backup/restore, JSON/CSV export, body search, shortcuts and diagnostics done. Reusable templates, letterhead and a dedicated dark mode were not built; dark mode is superseded by the i18n/theme work. |
+| 2 — Analysis engine | Complete | DOCX/PDF/TXT import, segmentation, four playbooks, deterministic checks, grounded AI review, comparison, 25 tests including 10 fixtures and precision/recall. |
+| 3 — Analyze UI + exports | Mostly complete | Analyze page, encrypted persistence, archive, report DOCX/PDF, redline builder. No library-clause insertion button and no side-by-side compare page. |
+| 4 — Web readiness | Complete | `docs/WEB-ARCHITECTURE.md` plus coupling audit; Analysis has no UI/EF/DPAPI references. |
+| 5 — Audit + release candidate | Complete with caveats | Version 0.4.0, docs updated, 291 tests. Manual UI/legal/signing steps remain. |
 
-## Test counts
+### Test counts
 
-- Start of v0.4.0: 222 (`DraftEngine.Tests`).
-- After Stage 0: 254 total — 222 Core/Data/Documents/App-VM tests + 32 App startup tests.
+- v0.4.0 start: 222.
+- End: 291 (222 `DraftEngine.Tests`, 41 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 
-## Decisions
+### Audit notes (verified in code)
 
-- The App test project targets `net8.0-windows` with `UseWPF`, but the startup tests avoid
-  instantiating visual elements: they parse the linked `App.xaml` markup for DataTemplates and
-  resolve the real DI graph against a temporary SQLite file. This keeps them fast and headless.
-- `NavigationService.Pages` is exposed read-only so the startup test can assert that every key
-  maps to a view template; the registry remains private otherwise.
-- Stage 1's theme toggle is deferred to the dedicated i18n/theme work so there is one theme
-  implementation, not two.
+- No logging of contract text, intake, chat, keys, AI bodies or analysis content; the only new
+  logs are counts and generic failures.
+- Analysis AI is consent-gated twice (analyzer options and `AppAiReviewer`), uses the existing
+  redaction service, grounds quotes verbatim and strips citation-like text.
+- Deterministic analysis makes zero network calls (no HTTP client in `DraftEngine.Analysis`).
+- New sensitive stores are encrypted: `ContractAnalyses.FileName/ResultJson` (DPAPI) and
+  portable backups (AES-256-GCM). Tests assert no plaintext in the backup container.
+- Existing snapshot-before-destructive-change and navigation-reload invariants are unchanged.
 
-## Prior release
+## v0.3.0
 
-- v0.3.0 complete: 222 tests passing, multi-type generation, clause manager, drafts, archive,
-  AI diff/redaction, onboarding, About, licensing behind a flag.
+Complete: 222 tests, multi-type generation, clause manager, drafts, archive, AI diff/redaction,
+onboarding, About, licensing behind a flag.

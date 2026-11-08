@@ -1,78 +1,74 @@
-# DraftEngine 0.3.0 — Project State
+# DraftEngine 0.4.0 — Project State
 
 ## What it is
 
-A local-first Windows desktop app (WPF, .NET 8, MVVM) for drafting contracts from templates.
+A local-first Windows desktop app (WPF, .NET 8, MVVM) for drafting and reviewing contracts.
 SQLite + EF Core for storage, DPAPI for secrets and contract content, OpenXML for DOCX,
-QuestPDF for PDF. AI editing is optional and never required for generation.
+QuestPDF for PDF. AI editing and AI review are optional and never required.
 
 ## Architecture
 
 | Project | Responsibility |
 | --- | --- |
 | `DraftEngine.Core` | Models, interfaces, registry, field/clause/contract services, licensing verifier, update comparison, text diff, redaction |
-| `DraftEngine.Data` | `DraftEngineDbContext`, model configuration, EF migrations, seeded clause library |
-| `DraftEngine.AI` | OpenAI-compatible chat client (custom base URL supported), retries, typed exceptions |
-| `DraftEngine.Documents` | DOCX and PDF builders (depend on the `"N. Title"` heading convention) |
-| `DraftEngine.App` | WPF shell, views/view models, navigation, DI, DPAPI settings, licensing/update services |
-| `DraftEngine.Tests` | xUnit suite; AI is always faked, no network calls |
+| `DraftEngine.Data` | `DraftEngineDbContext`, model configuration, EF migrations, seeded clause library, DPAPI interceptor |
+| `DraftEngine.AI` | OpenAI-compatible chat client (custom base URL), retries, typed exceptions, free-form prompt support |
+| `DraftEngine.Documents` | DOCX/PDF builders, analysis report export, tracked-change redline builder |
+| `DraftEngine.Analysis` | Standalone net8.0 analysis engine: DOCX/PDF import, clause segmentation, playbooks, deterministic checks, grounded AI review, document comparison. No WPF/EF/DPAPI references. |
+| `DraftEngine.App` | WPF shell, views/view models, navigation, DI, DPAPI settings, licensing/update, backups, analysis persistence |
+| `DraftEngine.Tests` | Existing Core/Data/Documents/VM tests |
+| `DraftEngine.App.Tests` | Startup DI/navigation, backup, analysis persistence and search tests |
+| `DraftEngine.Analysis.Tests` | 10+ synthetic contracts, precision/recall, grounding, citation filtering, exports |
 
 Key design points:
 
-- `ContractTypeRegistry` is the single source of truth for the four contract types and their
-  canonical ids: `MutualNda`, `OneWayNda`, `IndependentContractorAgreement`, `ConsultingAgreement`.
-  Legacy display names are normalized through `TryGetByDisplayName`.
-- `ContractContentBuilder` owns pure title/summary/preamble/signature logic so the wizard and the
-  generation pipeline cannot drift apart.
-- Page view models are singletons and reload state on every navigation.
-- Every destructive text change (AI edit accept, regeneration, revert) stages a version snapshot
-  in the same transaction.
-- Sensitive data is encrypted at rest (contract text, intake, chat, settings, API key, wizard
-  drafts, license file) with Windows DPAPI for the current user.
+- `ContractTypeRegistry` is the single source of truth for the four contract types.
+- Page view models are singletons and reload on navigation.
+- Every destructive text change snapshots first.
+- DPAPI encrypts contract text, intake, chat, versions, analyses and templates; backups are
+  AES-256-GCM with PBKDF2 (600k iterations).
+- Analysis AI findings must quote the source verbatim or they are discarded; citation-like
+  content is stripped from AI explanations/fixes.
 
-## Features in 0.3.0
+## Features in 0.4.0
 
-- Four contract types with type-aware intake, preamble, recitals, role labels and signature blocks.
-- Deterministic offline generation and DOCX/PDF export.
-- Editable contracts after creation (metadata, intake, clause selection) with snapshot + regenerate.
-- Clause Manager: create, edit, duplicate, archive user clauses; seeded clauses are read-only.
-- Wizard draft persistence (encrypted, survives navigation and restart).
-- Contract archive/restore/permanent delete, duplicate ("start from this"), export history.
-- AI edit preview: line diff with Accept/Reject; acceptance snapshots first; consent required.
-- AI privacy: configurable OpenAI-compatible endpoint, party-name/address redaction before send,
-  consent revocation in Settings, no request/response logging.
-- Optional onboarding (3 screens), About & Help page with version, folders, privacy, update check.
-- Offline signed licensing behind `Features:LicensingEnabled=false`.
-- Notify-only update check behind `Features:UpdateCheckEnabled=false`.
-- Optional Authenticode signing in the installer build.
+- All 0.3.0 drafting features (four types, wizard, clause manager, drafts, archive, AI edit
+  preview, export history, onboarding, About, optional licensing/update check).
+- Analyze workspace: import, progress, findings by severity, click-to-highlight quote,
+  deterministic playbooks for the four types, AI toggle (default off, consent-gated), covered
+  by encrypted persistence and archive.
+- Review report export (DOCX/PDF) with the mandatory disclaimer, and tracked-change DOCX
+  redlines.
+- Portable encrypted backup/restore with pre-import restore point, wrong-password and tamper
+  detection, and no plaintext content.
+- Plain JSON and CSV data export with explicit unencrypted warnings.
+- Contract search covers body text, title, client and governing law.
+- Content-free diagnostics copy in About; keyboard shortcuts Ctrl+N (new), Ctrl+F (contracts),
+  Ctrl+K (analyze).
+- Startup safety net: every page/view model/service resolves and every navigation key has a
+  view.
 
 ## Database
 
-Upgrade an existing database by starting the app or running `dotnet ef database update`.
-The v0.3.0 migrations:
-
-- Add `Clauses.IsUserDefined` / `Clauses.IsArchived`, `Contracts.IsArchived` / `ArchivedAt`,
-  and the `WizardDrafts` table.
-- Canonicalize contract-type strings and align clause placeholder keys.
-- Seed clauses 13–42 for the additional contract types.
-
-`DraftEngine.Tests/Data/MigrationClauseSeedTests.cs` builds a database at the previous migration
-and applies the new ones, asserting the columns, table and clauses exist.
+v0.4.0 adds `ContractAnalyses` (encrypted file name + result JSON). Upgrade by starting the
+app; existing data is untouched. The analysis table is created by the
+`AddContractAnalyses` migration.
 
 ## Constraints preserved
 
-- Template generation works fully offline; no key or network needed.
-- No telemetry. Network only for user-triggered AI calls, the configured AI endpoint, and the
-  optional update check.
-- `CurrentUserId = 1` remains the single-user assumption.
-- The `"N. Title"` heading convention is unchanged.
+- Deterministic review and drafting work fully offline.
+- No telemetry; network only for user-triggered AI calls and the optional update check.
+- No generated or displayed legal citations.
+- Machine-translated legal text would never be presented as vetted (see i18n work).
+- DPAPI at rest, snapshots before destructive changes, singleton page VMs reload on navigation.
 
 ## Known gaps / manual work
 
-- The seeded clause wording is a drafting baseline and needs review by a qualified attorney.
-- WPF visual layout and full click-through are verified manually; automated tests cover
-  Core/Data/Documents/ViewModels but not rendered pixels.
-- A real code-signing certificate must be purchased; the build signs only when
-  `DRAFTENGINE_SIGN_CERT` is provided.
-- Payments/subscription fulfilment are intentionally out of scope; licensing is offline keys only.
-- AI features require the user's own API key or a local OpenAI-compatible server.
+- Reusable contract templates, letterhead/branding in exports, and a playbook editor UI are
+  specified for 0.4.0 but not implemented in this build.
+- The Analyze page can copy a suggested fix but cannot yet insert a clause from the library.
+- Redline generation is implemented and tested, but there is no side-by-side "compare two
+  versions" page yet.
+- OCR for scanned PDFs is detected and reported, not supported.
+- Seeded clause wording and playbooks need review by a qualified attorney.
+- WPF layout and click-through are not covered by automated tests.

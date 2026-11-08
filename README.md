@@ -13,6 +13,8 @@ DraftEngine is a native Windows desktop application for drafting contracts, aime
 - **Contract detail view**: edit metadata, intake answers and clause selection after creation (with a version snapshot before every regeneration), then read and export the assembled contract.
 - **AI edit preview**: every proposed AI edit is shown as a line diff and must be Accepted or Rejected; the previous text is snapshotted first. Requires an OpenAI API key.
 - **Export to DOCX and PDF** from the contract detail page, with per-contract export history.
+- **Analyze**: import a DOCX or text-based PDF, segment it into clauses, run an offline playbook review (missing clauses, risky terms, blanks, placeholders), optionally add a consent-gated AI review with verbatim-quote grounding, then export a review report or a tracked-changes redline. Every result says "Not legal advice. Review by a licensed attorney required."
+- **Portable backups**: password-encrypted AES-256-GCM export/restore of contracts, intake, clauses, versions, chat and settings, plus plain JSON/CSV "export my data".
 - **Archive and duplicate**: archive contracts into a separate view (restore or permanently delete from there) and start a copy from any existing contract.
 - **Contracts list** with search by title/client, contract-type filter and sorting.
 - **Dashboard** with contract counts and recently updated contracts.
@@ -73,7 +75,7 @@ Enter the key under **Settings → OpenAI → API key**, then **Save**. Key reso
 dotnet test DraftEngine.sln
 ```
 
-xUnit tests (222 as of v0.3.0 — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
+xUnit tests (291 as of v0.4.0 — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
 
 ## Installer
 
@@ -93,8 +95,11 @@ See [installer/README.md](installer/README.md) for prerequisites, options, and t
 | `DraftEngine.Core` | Domain models, interfaces and core services (fields, contracts, clauses, chat, export) |
 | `DraftEngine.Data` | EF Core + SQLite: DbContext, migrations, seeded clause library |
 | `DraftEngine.AI` | OpenAI client used for chat editing and the connection test |
-| `DraftEngine.Documents` | DOCX (Open XML) and PDF (QuestPDF) document builders |
-| `DraftEngine.Tests` | xUnit test suite (mocked, offline) |
+| `DraftEngine.Documents` | DOCX (Open XML) and PDF (QuestPDF) document builders, report export, tracked-change redlines |
+| `DraftEngine.Analysis` | UI-agnostic document import, clause segmentation, playbooks, deterministic + grounded AI review, comparison |
+| `DraftEngine.Tests` | Core/data/documents view-model tests (mocked, offline) |
+| `DraftEngine.App.Tests` | Startup DI/navigation and WPF App service tests |
+| `DraftEngine.Analysis.Tests` | Importers, analysis precision/recall, grounding and export tests |
 
 ## License
 

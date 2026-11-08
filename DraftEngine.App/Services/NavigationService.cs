@@ -18,6 +18,7 @@ public class NavigationService : INavigationService
         ["contract-detail"] = typeof(ContractDetailViewModel),
         ["settings"] = typeof(SettingsViewModel),
         ["clause-management"] = typeof(ClauseManagerViewModel),
+        ["archived-contracts"] = typeof(ArchivedContractsViewModel),
     };
 
     private readonly IServiceProvider _services;

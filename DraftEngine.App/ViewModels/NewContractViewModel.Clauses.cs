@@ -82,6 +82,7 @@ public partial class NewContractViewModel
         if (e.PropertyName == nameof(ClauseOptionViewModel.IsSelected))
         {
             UpdateSelectedClauseCount();
+            QueueDraftSave();
         }
     }
 

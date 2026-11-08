@@ -72,6 +72,10 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     /// <summary>Whether AI polish should be applied during generation.</summary>
     [ObservableProperty] private bool _useAiPolish;
 
+    /// <summary>Non-sensitive status text when draft persistence fails.</summary>
+    [ObservableProperty] private string? _draftErrorMessage;
+    public bool HasDraftError => !string.IsNullOrWhiteSpace(DraftErrorMessage);
+
     /// <summary>The contract type cards shown on step 1.</summary>
     public ObservableCollection<ContractTypeOptionViewModel> ContractTypes { get; } = new();
 
@@ -205,19 +209,25 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         NextCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
         GenerateCommand.NotifyCanExecuteChanged();
+        DiscardDraftCommand.NotifyCanExecuteChanged();
     }
 
     /// <inheritdoc cref="INavigationAware" />
     public void OnNavigatedTo(object? parameter)
     {
-        ResetWizard();
+        ActivateWizard();
     }
 
     private void OnPageChanged(object? viewModel)
     {
         if (ReferenceEquals(viewModel, this))
         {
-            ResetWizard();
+            ActivateWizard();
+        }
+        else if (_isActive)
+        {
+            _isActive = false;
+            _ = SaveDraftWhenLeavingAsync();
         }
     }
 
@@ -338,7 +348,11 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         return preferred;
     }
 
-    private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e) => RefreshCommands();
+    private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        RefreshCommands();
+        QueueDraftSave();
+    }
 
     /// <summary>The intake answers keyed by stable field key (used for ContractField rows and placeholder substitution).</summary>
     internal Dictionary<string, string> GetFieldValues() =>
@@ -373,6 +387,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         UpdateStepVisibility();
         UpdateStepIndicators();
         RefreshCommands();
+        QueueDraftSave();
     }
 
     partial void OnSelectedContractTypeChanged(ContractTypeOptionViewModel? value)
@@ -380,6 +395,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // Rebuild intake fields when contract type changes (before moving to step 2)
         BuildIntakeFields();
         RefreshCommands();
+        QueueDraftSave();
     }
 
     partial void OnSelectedClauseCountChanged(int value) => RefreshCommands();
@@ -389,4 +405,6 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         RefreshCommands();
         OnPropertyChanged(nameof(GenerateButtonText));
     }
+
+    partial void OnDraftErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasDraftError));
 }

@@ -37,14 +37,15 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Regenerate" Padding="14,0" Height="34"
-                        AutomationProperties.Name="Regenerate contract from clauses"
-                        AutomationProperties.HelpText="Rebuilds the document from the selected clauses and intake answers."
+                <Button Content="Save &amp; regenerate" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        AutomationProperties.Name="Save contract changes and regenerate"
+                        AutomationProperties.HelpText="Saves edited metadata, intake answers and clauses before rebuilding the document."
                         Command="{Binding RegenerateCommand}"
-                        IsEnabled="{Binding HasDocument}" />
+                        IsEnabled="{Binding CanSaveAndRegenerate}" />
                 <CheckBox Margin="12,0,0,0" VerticalAlignment="Center"
                           Content="AI polish"
                           IsChecked="{Binding UseAiPolish}"
+                          IsEnabled="{Binding CanEditContract}"
                           AutomationProperties.Name="Apply AI polish when regenerating"
                           Foreground="{StaticResource TextPrimaryBrush}" />
                 <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
@@ -86,17 +87,88 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <TextBlock Text="Contract document" FontWeight="SemiBold" />
-                        <TextBlock Text="  (read-only — use the assistant or Regenerate to change it)"
+                        <TextBlock Text="  (the assembled text changes only when you save and regenerate)"
                                    Style="{StaticResource SecondaryTextStyle}" />
                     </StackPanel>
 
+                    <!-- Edit staged metadata, registry-defined intake and clause selection. -->
+                    <Expander Grid.Row="1" Margin="0,0,0,10" IsExpanded="True"
+                              IsEnabled="{Binding CanEditContract}"
+                              AutomationProperties.Name="Edit contract details and clauses">
+                        <Expander.Header>
+                            <TextBlock Text="Edit details and clauses" FontWeight="SemiBold" />
+                        </Expander.Header>
+                        <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Contract title" FontWeight="SemiBold" Margin="0,0,0,4" />
+                                <TextBox Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Contract title" Margin="0,0,0,10" />
+                                <Button Content="Duplicate contract" Padding="12,0" Height="30"
+                                        HorizontalAlignment="Left" Margin="0,0,0,12"
+                                        AutomationProperties.Name="Duplicate contract"
+                                        Command="{Binding DuplicateContractCommand}" />
+
+                                <ItemsControl ItemsSource="{Binding IntakeFields}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                                                           TextWrapping="Wrap" Margin="0,0,10,0" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                         Visibility="{Binding IsTextInput, Converter={StaticResource BoolToVis}}"
+                                                         AutomationProperties.Name="{Binding Label}" />
+                                                <DatePicker Grid.Column="1"
+                                                            SelectedDate="{Binding DateValue, UpdateSourceTrigger=PropertyChanged}"
+                                                            Visibility="{Binding IsDateInput, Converter={StaticResource BoolToVis}}"
+                                                            AutomationProperties.Name="{Binding Label}" />
+                                                <ComboBox Grid.Column="1" ItemsSource="{Binding Choices}"
+                                                          SelectedItem="{Binding SelectedChoice, UpdateSourceTrigger=PropertyChanged}"
+                                                          Visibility="{Binding IsChoiceInput, Converter={StaticResource BoolToVis}}"
+                                                          AutomationProperties.Name="{Binding Label}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock Text="{Binding SelectedClauseCount, StringFormat=Selected clauses: {0}}"
+                                           FontWeight="SemiBold" Margin="0,4,0,6" />
+                                <ItemsControl ItemsSource="{Binding ClauseGroups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,6">
+                                                <TextBlock Text="{Binding Category}" FontWeight="SemiBold"
+                                                           Style="{StaticResource SecondaryTextStyle}" />
+                                                <ItemsControl ItemsSource="{Binding Clauses}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox Content="{Binding Title}"
+                                                                      IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                                                      ToolTip="{Binding PreviewText}"
+                                                                      AutomationProperties.Name="{Binding Title}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+
                     <!-- Version history: snapshots taken automatically before AI edits and regenerations -->
-                    <Expander Grid.Row="1" Margin="0,0,0,10"
+                    <Expander Grid.Row="2" Margin="0,0,0,10"
                               IsExpanded="{Binding IsHistoryVisible}"
                               AutomationProperties.Name="Version history">
                         <Expander.Header>
@@ -135,11 +207,11 @@
                         </Grid>
                     </Expander>
 
-                    <TextBox Grid.Row="2"
+                    <TextBox Grid.Row="3"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
                              AutomationProperties.Name="Contract document"
-                             AutomationProperties.HelpText="The assembled contract text. Edit it by asking the assistant for changes."
+                             AutomationProperties.HelpText="The assembled contract text. Edit the details and clauses above, then save and regenerate."
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"

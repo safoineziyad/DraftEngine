@@ -69,6 +69,10 @@ public partial class NewContractViewModel
                 .ToList();
             await _contractService.GenerateContractAsync(created.Id, selectedClauseIds, useAiPolish: UseAiPolish);
 
+            if (!await DeleteSavedDraftAsync())
+            {
+                _dialogs.ShowError("The contract was created, but the saved wizard draft could not be cleared.");
+            }
             _navigation.Navigate("contract-detail", created.Id);
         }
         catch (Exception ex)

@@ -55,6 +55,10 @@
                             Content="Clause Manager"
                             AutomationProperties.Name="Go to Clause Manager"
                             Command="{Binding NavigateClauseManagementCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Archived Contracts"
+                            AutomationProperties.Name="Go to Archived Contracts"
+                            Command="{Binding NavigateArchivedContractsCommand}" />
                 </StackPanel>
 
                 <!-- Bottom: version + settings shortcut -->

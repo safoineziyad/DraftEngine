@@ -47,4 +47,8 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Navigates to the clause management page.</summary>
     [RelayCommand]
     private void NavigateClauseManagement() => _navigation.Navigate("clause-management");
+
+    /// <summary>Navigates to archived contracts.</summary>
+    [RelayCommand]
+    private void NavigateArchivedContracts() => _navigation.Navigate("archived-contracts");
 }

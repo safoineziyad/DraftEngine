@@ -47,6 +47,7 @@ public static class ServiceRegistration
 
         // Contract editing, duplicate and archive.
         services.AddTransient<IContractEditService, ContractEditService>();
+        services.AddTransient<IExportHistoryService, ExportHistoryService>();
 
         // Wizard draft persistence, licensing (disabled by default), update check (off by default).
         services.AddTransient<IWizardDraftService, WizardDraftService>();
@@ -60,6 +61,7 @@ public static class ServiceRegistration
         services.AddSingleton<ContractDetailViewModel>();
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<ClauseManagerViewModel>();
+        services.AddSingleton<ArchivedContractsViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Navigation.

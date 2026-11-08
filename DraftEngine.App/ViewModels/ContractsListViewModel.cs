@@ -27,6 +27,7 @@ public partial class ContractsListViewModel : ObservableObject
     private const string SortByCreated = "Date created";
 
     private readonly IContractService _contractService;
+    private readonly IContractEditService _contractEditService;
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogs;
     private List<Contract> _allContracts = new();
@@ -89,9 +90,14 @@ public partial class ContractsListViewModel : ObservableObject
     public bool HasError => ErrorMessage is not null;
 
     /// <summary>Creates the view model and loads the contract list.</summary>
-    public ContractsListViewModel(IContractService contractService, INavigationService navigation, IWizardDialogService dialogs)
+    public ContractsListViewModel(
+        IContractService contractService,
+        IContractEditService contractEditService,
+        INavigationService navigation,
+        IWizardDialogService dialogs)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
+        _contractEditService = contractEditService ?? throw new ArgumentNullException(nameof(contractEditService));
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
 
@@ -138,6 +144,38 @@ public partial class ContractsListViewModel : ObservableObject
     {
         if (contract is null) return;
         _navigation.Navigate("contract-detail", contract.Id);
+    }
+
+    /// <summary>Creates a draft copy of the selected contract and opens it.</summary>
+    [RelayCommand]
+    private async Task DuplicateAsync(Contract? contract)
+    {
+        if (contract is null || IsLoading) return;
+
+        IsLoading = true;
+        ErrorMessage = null;
+        try
+        {
+            var copy = await _contractEditService.DuplicateContractAsync(
+                contract.Id,
+                $"Copy of {contract.Title}");
+            if (copy is null)
+            {
+                ErrorMessage = "We couldn't duplicate this contract because it no longer exists.";
+                return;
+            }
+
+            _navigation.Navigate("contract-detail", copy.Id);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to duplicate contract {ContractId}.", contract.Id);
+            ErrorMessage = "We couldn't duplicate the contract. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     /// <summary>Deletes the selected contract after an explicit confirmation from the user.</summary>

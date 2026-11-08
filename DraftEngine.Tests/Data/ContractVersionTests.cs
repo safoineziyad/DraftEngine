@@ -1,6 +1,7 @@
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
 using DraftEngine.Core.Services;
 using DraftEngine.Data;
 using Microsoft.Data.Sqlite;
@@ -115,6 +116,53 @@ public class ContractVersionTests : IDisposable
         var version = Assert.Single(await _service.GetVersionsAsync(contract.Id));
         Assert.Equal(ContractService.RegenerationReason, version.Reason);
         Assert.Equal("PREVIOUSLY GENERATED", version.Text);
+    }
+
+    [Fact]
+    public async Task DuplicateContractAsync_CopiesAnswersAndClauseSelectionAsAnUnassembledDraft()
+    {
+        var source = await CreateContractAsync();
+        source.AssembledText = "SOURCE DOCUMENT";
+        source.FinalFilePath = "source.docx";
+        var clause = new Clause
+        {
+            ContractType = ContractTypeRegistry.MutualNdaId,
+            Category = "Terms",
+            Title = "Confidentiality",
+            BodyTemplate = "Keep information confidential."
+        };
+        _dbContext.Clauses.Add(clause);
+        await _dbContext.SaveChangesAsync();
+        _dbContext.ContractFields.Add(new ContractField
+        {
+            ContractId = source.Id,
+            Key = "Purpose",
+            Value = "Evaluate a partnership"
+        });
+        _dbContext.ContractClauses.Add(new ContractClause
+        {
+            ContractId = source.Id,
+            ClauseId = clause.Id,
+            Selected = true
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var duplicate = await new ContractEditService(_databaseFactory)
+            .DuplicateContractAsync(source.Id, "Copy of Test NDA");
+        var storedCopy = await _dbContext.Contracts
+            .AsNoTracking()
+            .Include(contract => contract.ContractFields)
+            .Include(contract => contract.ContractClauses)
+            .SingleAsync(contract => contract.Id == duplicate.Id);
+
+        Assert.Equal("Copy of Test NDA", storedCopy.Title);
+        Assert.Equal(ContractStatus.Draft, storedCopy.Status);
+        Assert.Empty(storedCopy.AssembledText);
+        Assert.Empty(storedCopy.FinalFilePath);
+        Assert.Contains(storedCopy.ContractFields, field =>
+            field.Key == "Purpose" && field.Value == "Evaluate a partnership");
+        Assert.Contains(storedCopy.ContractClauses, selection =>
+            selection.ClauseId == clause.Id && selection.Selected);
     }
 
     // ------------------------------------------------------------------ revert

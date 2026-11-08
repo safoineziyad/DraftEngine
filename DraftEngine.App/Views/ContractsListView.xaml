@@ -120,7 +120,7 @@
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColEffective" />
                                 <ColumnDefinition Width="90" SharedSizeGroup="ColTerm" />
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColUpdated" />
-                                <ColumnDefinition Width="150" SharedSizeGroup="ColActions" />
+                                <ColumnDefinition Width="220" SharedSizeGroup="ColActions" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Title" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock Grid.Column="1" Text="Contract type" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
@@ -146,7 +146,7 @@
                                             <ColumnDefinition Width="120" SharedSizeGroup="ColEffective" />
                                             <ColumnDefinition Width="90" SharedSizeGroup="ColTerm" />
                                             <ColumnDefinition Width="120" SharedSizeGroup="ColUpdated" />
-                                            <ColumnDefinition Width="150" SharedSizeGroup="ColActions" />
+                                            <ColumnDefinition Width="220" SharedSizeGroup="ColActions" />
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis"
@@ -202,8 +202,14 @@
                                                     Command="{Binding DataContext.OpenContractCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                     CommandParameter="{Binding}" />
+                                            <Button Content="Duplicate" Padding="10,0" Height="30" FontSize="12"
+                                                    Margin="6,0,0,0"
+                                                    AutomationProperties.Name="{Binding Title, StringFormat=Duplicate contract {0}}"
+                                                    Command="{Binding DataContext.DuplicateCommand,
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}" />
                                             <Button Content="Delete" Padding="12,0" Height="30" FontSize="12"
-                                                    Margin="8,0,0,0"
+                                                    Margin="6,0,0,0"
                                                     Foreground="{StaticResource DangerBrush}"
                                                     AutomationProperties.Name="{Binding Title, StringFormat=Delete contract {0}}"
                                                     Command="{Binding DataContext.DeleteCommand,

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -132,4 +132,23 @@
   <data name="Settings.ErrorTermRange" xml:space="preserve"><value>Term must be between 1 and 120 months.</value></data>
   <data name="Settings.Saved" xml:space="preserve"><value>Settings saved.</value></data>
   <data name="Settings.ErrorSave" xml:space="preserve"><value>We couldn&apos;t save your settings. Please try again.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>Step {0} of {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>Welcome to DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>Draft polished contracts from a guided intake instead of starting from a blank page.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>Choose a contract type and answer a short set of questions.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>Review the suggested clauses before anything is generated.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>Export the finished contract as DOCX or PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>How a contract comes together</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>The wizard walks you through the same steps every time, so nothing important is skipped.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>Pick the contract type that matches the deal.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>Fill in the parties, dates and commercial terms.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>Deselect optional clauses, then generate and export.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>Your data stays local</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>Contracts, intake answers and chat history are stored on this computer, encrypted with your Windows user profile.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>AI editing only sends text to your configured AI provider when you use it.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>There is no telemetry, account sync or background upload.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>Export important contracts before changing Windows users or computers.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Skip onboarding</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Go back</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continue onboarding</value></data>
 </root>

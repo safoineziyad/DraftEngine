@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -132,4 +132,23 @@
   <data name="Settings.ErrorTermRange" xml:space="preserve"><value>El plazo debe estar entre 1 y 120 meses.</value></data>
   <data name="Settings.Saved" xml:space="preserve"><value>Configuración guardada.</value></data>
   <data name="Settings.ErrorSave" xml:space="preserve"><value>No pudimos guardar su configuración. Inténtelo de nuevo.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>Paso {0} de {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>Te damos la bienvenida a DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>Redacta contratos cuidados a partir de un cuestionario guiado en lugar de empezar con una página en blanco.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>Elige un tipo de contrato y responde a una breve serie de preguntas.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>Revisa las cláusulas sugeridas antes de que se genere nada.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>Exporta el contrato finalizado como DOCX o PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>Cómo se arma un contrato</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>El asistente te guía por los mismos pasos cada vez, para que no se omita nada importante.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>Selecciona el tipo de contrato que corresponda a la operación.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>Completa las partes, las fechas y las condiciones comerciales.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>Desmarca las cláusulas opcionales y, después, genera y exporta.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>Tus datos permanecen locales</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>Los contratos, las respuestas del cuestionario y el historial del chat se guardan en este equipo, cifrados con tu perfil de usuario de Windows.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>La edición con IA solo envía texto a tu proveedor de IA configurado cuando la usas.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>No hay telemetría, sincronización de cuentas ni carga en segundo plano.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>Exporta los contratos importantes antes de cambiar de usuario de Windows o de equipo.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Saltar la introducción</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Volver</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continuar la introducción</value></data>
 </root>

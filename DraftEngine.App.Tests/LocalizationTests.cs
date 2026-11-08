@@ -181,6 +181,25 @@ public sealed class LocalizationTests : IDisposable
         Assert.Equal("Afficher", viewModel.ShowHideKeyText);
     }
 
+    [Fact]
+    public async Task OnboardingViewModel_RerendersStepContent_OnLanguageChange()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        var viewModel = new OnboardingViewModel(service);
+
+        Assert.Equal("Step 1 of 3", viewModel.StepLabel);
+        Assert.Equal("Welcome to DraftEngine", viewModel.StepTitle);
+        Assert.Equal("Next", viewModel.PrimaryButtonText);
+
+        await service.SetLanguageAsync("fr");
+
+        Assert.Equal("Étape 1 sur 3", viewModel.StepLabel);
+        Assert.Equal("Bienvenue dans DraftEngine", viewModel.StepTitle);
+        Assert.Equal("Suivant", viewModel.PrimaryButtonText);
+        Assert.Contains("contrat", viewModel.StepDescription);
+    }
+
     private LocalizationService CreateService() =>
         new(_store, () => CultureInfo.GetCultureInfo("en-US"));
 

@@ -89,17 +89,17 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="Skip"
+                        Content="{loc:T Common.Skip}"
                         Style="{StaticResource QuietButtonStyle}"
                         HorizontalAlignment="Left"
-                        AutomationProperties.Name="Skip onboarding"
+                        AutomationProperties.Name="{loc:T Onboarding.SkipAutomation}"
                         Command="{Binding SkipCommand}" />
 
                 <Button Grid.Column="1"
-                        Content="Back"
+                        Content="{loc:T Common.Back}"
                         Style="{StaticResource QuietButtonStyle}"
                         Margin="0,0,10,0"
-                        AutomationProperties.Name="Go back"
+                        AutomationProperties.Name="{loc:T Onboarding.BackAutomation}"
                         Visibility="{Binding IsNotFirst, Converter={StaticResource BoolToVis}}"
                         Command="{Binding BackCommand}" />
 
@@ -107,7 +107,7 @@
                         Content="{Binding PrimaryButtonText}"
                         Style="{StaticResource PrimaryButtonStyle}"
                         MinWidth="120"
-                        AutomationProperties.Name="Continue onboarding"
+                        AutomationProperties.Name="{loc:T Onboarding.ContinueAutomation}"
                         Command="{Binding NextCommand}" />
             </Grid>
         </DockPanel>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -132,4 +132,23 @@
   <data name="Settings.ErrorTermRange" xml:space="preserve"><value>يجب أن تكون المدة بين 1 و120 شهرًا.</value></data>
   <data name="Settings.Saved" xml:space="preserve"><value>حُفظت الإعدادات.</value></data>
   <data name="Settings.ErrorSave" xml:space="preserve"><value>تعذّر حفظ إعداداتك. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>الخطوة {0} من {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>مرحبًا بك في DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>أعدّ عقودًا مصقولة من خلال استبيان موجَّه بدلًا من البدء بصفحة فارغة.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>اختر نوع العقد وأجب عن مجموعة قصيرة من الأسئلة.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>راجع البنود المقترحة قبل إنشاء أي شيء.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>صدّر العقد النهائي بصيغة DOCX أو PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>كيف يتكامل العقد</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>يرشدك المعالج عبر الخطوات نفسها في كل مرة، حتى لا يُغفل أي أمر مهم.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>اختر نوع العقد الذي يطابق الصفقة.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>أدخل الأطراف والتواريخ والشروط التجارية.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>أزل تحديد البنود الاختيارية، ثم أنشئ العقد وصدّره.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>تبقى بياناتك محلية</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>تُخزَّن العقود وإجابات الاستبيان وسجل المحادثة على هذا الكمبيوتر، مشفَّرة باستخدام ملف تعريف مستخدم Windows الخاص بك.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>لا يرسل التحرير بالذكاء الاصطناعي النص إلى مزوّد الذكاء الاصطناعي المُهيأ إلا عند استخدامك له.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>لا توجد أي قياسات عن بُعد أو مزامنة حسابات أو رفع في الخلفية.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>صدّر العقود المهمة قبل تغيير مستخدم Windows أو الكمبيوتر.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>تخطي التعريف</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>الرجوع</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>متابعة التعريف</value></data>
 </root>

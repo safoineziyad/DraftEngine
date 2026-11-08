@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services.Localization;
@@ -12,25 +13,23 @@ namespace DraftEngine.App.ViewModels;
 /// </summary>
 public partial class OnboardingViewModel : ObservableObject
 {
-    private readonly ILocalizationService? _localization;
+    private readonly ILocalizationService _localization;
     private bool _isApplyingLanguage;
 
     /// <summary>Creates the onboarding view model, optionally with localization.</summary>
     public OnboardingViewModel(ILocalizationService? localization = null)
     {
-        _localization = localization ?? LocalizationSource.Current.Service;
-        if (_localization is not null)
-        {
-            _localization.LanguageChanged += OnLanguageChanged;
-            _isApplyingLanguage = true;
-            SelectedLanguage = _localization.CurrentLanguage;
-            _isApplyingLanguage = false;
-        }
+        // Fall back to a default English service when the app has not initialized the
+        // shared source (e.g. design-time or a unit test); never render raw keys.
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
+        _localization.LanguageChanged += OnLanguageChanged;
+        _isApplyingLanguage = true;
+        SelectedLanguage = _localization.CurrentLanguage;
+        _isApplyingLanguage = false;
     }
 
     /// <summary>Languages offered on the first onboarding screen.</summary>
-    public IReadOnlyList<SupportedLanguage> SupportedLanguages =>
-        _localization?.SupportedLanguages ?? Array.Empty<SupportedLanguage>();
+    public IReadOnlyList<SupportedLanguage> SupportedLanguages => _localization.SupportedLanguages;
 
     /// <summary>Language code selected in the first-screen picker.</summary>
     [ObservableProperty]
@@ -39,28 +38,28 @@ public partial class OnboardingViewModel : ObservableObject
     private static readonly OnboardingStep[] Steps =
     [
         new(
-            "Welcome to DraftEngine",
-            "Draft polished contracts from a guided intake instead of starting from a blank page.",
+            "Onboarding.Step1.Title",
+            "Onboarding.Step1.Description",
             [
-                "Choose a contract type and answer a short set of questions.",
-                "Review the suggested clauses before anything is generated.",
-                "Export the finished contract as DOCX or PDF.",
+                "Onboarding.Step1.Bullet1",
+                "Onboarding.Step1.Bullet2",
+                "Onboarding.Step1.Bullet3",
             ]),
         new(
-            "How a contract comes together",
-            "The wizard walks you through the same steps every time, so nothing important is skipped.",
+            "Onboarding.Step2.Title",
+            "Onboarding.Step2.Description",
             [
-                "Pick the contract type that matches the deal.",
-                "Fill in the parties, dates and commercial terms.",
-                "Deselect optional clauses, then generate and export.",
+                "Onboarding.Step2.Bullet1",
+                "Onboarding.Step2.Bullet2",
+                "Onboarding.Step2.Bullet3",
             ]),
         new(
-            "Your data stays local",
-            "Contracts, intake answers and chat history are stored on this computer, encrypted with your Windows user profile.",
+            "Onboarding.Step3.Title",
+            "Onboarding.Step3.Description",
             [
-                "AI editing only sends text to your configured AI provider when you use it.",
-                "There is no telemetry, account sync or background upload.",
-                "Export important contracts before changing Windows users or computers.",
+                "Onboarding.Step3.Bullet1",
+                "Onboarding.Step3.Bullet2",
+                "Onboarding.Step3.Bullet3",
             ]),
     ];
 
@@ -74,16 +73,17 @@ public partial class OnboardingViewModel : ObservableObject
     public int StepCount => Steps.Length;
 
     /// <summary>Human-readable progress label, e.g. "Step 1 of 3".</summary>
-    public string StepLabel => $"Step {StepIndex + 1} of {StepCount}";
+    public string StepLabel => _localization.GetString("Onboarding.StepLabel", StepIndex + 1, StepCount);
 
     /// <summary>The current screen's title.</summary>
-    public string StepTitle => Steps[StepIndex].Title;
+    public string StepTitle => _localization.GetString(Steps[StepIndex].TitleKey);
 
     /// <summary>The current screen's introductory paragraph.</summary>
-    public string StepDescription => Steps[StepIndex].Description;
+    public string StepDescription => _localization.GetString(Steps[StepIndex].DescriptionKey);
 
     /// <summary>The current screen's short bullet list.</summary>
-    public IReadOnlyList<string> StepBullets => Steps[StepIndex].Bullets;
+    public IReadOnlyList<string> StepBullets =>
+        Steps[StepIndex].BulletKeys.Select(_localization.GetString).ToArray();
 
     /// <summary>True on the first screen (the Back button is hidden).</summary>
     public bool IsFirst => StepIndex == 0;
@@ -95,7 +95,8 @@ public partial class OnboardingViewModel : ObservableObject
     public bool IsNotFirst => !IsFirst;
 
     /// <summary>The primary button label for the current screen.</summary>
-    public string PrimaryButtonText => IsLast ? "Get started" : "Next";
+    public string PrimaryButtonText =>
+        _localization.GetString(IsLast ? "Common.GetStarted" : "Common.Next");
 
     /// <summary>Moves to the next screen, or finishes on the last screen.</summary>
     [RelayCommand]
@@ -138,7 +139,7 @@ public partial class OnboardingViewModel : ObservableObject
 
     partial void OnSelectedLanguageChanged(string value)
     {
-        if (_isApplyingLanguage || _localization is null || string.IsNullOrWhiteSpace(value))
+        if (_isApplyingLanguage || string.IsNullOrWhiteSpace(value))
         {
             return;
         }
@@ -149,9 +150,13 @@ public partial class OnboardingViewModel : ObservableObject
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(SupportedLanguages));
+        OnPropertyChanged(nameof(StepLabel));
+        OnPropertyChanged(nameof(StepTitle));
+        OnPropertyChanged(nameof(StepDescription));
+        OnPropertyChanged(nameof(StepBullets));
+        OnPropertyChanged(nameof(PrimaryButtonText));
 
-        if (_localization is not null &&
-            !string.Equals(SelectedLanguage, _localization.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(SelectedLanguage, _localization.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
         {
             _isApplyingLanguage = true;
             SelectedLanguage = _localization.CurrentLanguage;
@@ -159,5 +164,8 @@ public partial class OnboardingViewModel : ObservableObject
         }
     }
 
-    private sealed record OnboardingStep(string Title, string Description, IReadOnlyList<string> Bullets);
+    private sealed record OnboardingStep(
+        string TitleKey,
+        string DescriptionKey,
+        IReadOnlyList<string> BulletKeys);
 }

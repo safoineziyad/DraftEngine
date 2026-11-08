@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -132,4 +132,23 @@
   <data name="Settings.ErrorTermRange" xml:space="preserve"><value>La durée doit être comprise entre 1 et 120 mois.</value></data>
   <data name="Settings.Saved" xml:space="preserve"><value>Paramètres enregistrés.</value></data>
   <data name="Settings.ErrorSave" xml:space="preserve"><value>Nous n&apos;avons pas pu enregistrer vos paramètres. Veuillez réessayer.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>Étape {0} sur {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>Bienvenue dans DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>Rédigez des contrats soignés à partir d&apos;un questionnaire guidé au lieu de partir d&apos;une page blanche.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>Choisissez un type de contrat et répondez à une courte série de questions.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>Examinez les clauses proposées avant que quoi que ce soit ne soit généré.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>Exportez le contrat finalisé au format DOCX ou PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>Comment un contrat prend forme</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>L&apos;assistant vous guide à travers les mêmes étapes à chaque fois, afin que rien d&apos;important ne soit oublié.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>Sélectionnez le type de contrat qui correspond à l&apos;opération.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>Renseignez les parties, les dates et les conditions commerciales.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>Désélectionnez les clauses facultatives, puis générez et exportez.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>Vos données restent locales</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>Les contrats, les réponses du questionnaire et l&apos;historique du chat sont stockés sur cet ordinateur, chiffrés avec votre profil utilisateur Windows.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>La modification par IA n&apos;envoie du texte à votre fournisseur d&apos;IA configuré que lorsque vous l&apos;utilisez.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>Aucune télémétrie, synchronisation de compte ni téléversement en arrière-plan.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>Exportez les contrats importants avant de changer d&apos;utilisateur Windows ou d&apos;ordinateur.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Passer l&apos;accueil</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Revenir en arrière</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continuer l&apos;accueil</value></data>
 </root>

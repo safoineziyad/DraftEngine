@@ -4,12 +4,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Interfaces;
+using DraftEngine.Core.Models.ContractTypes;
 
 namespace DraftEngine.App.ViewModels;
 
@@ -17,13 +20,17 @@ namespace DraftEngine.App.ViewModels;
 /// View model for the 4-step New Contract wizard: contract type, intake form,
 /// clause selection and review/generate.
 /// </summary>
-public partial class NewContractViewModel : ObservableObject
+public partial class NewContractViewModel : ObservableObject, INavigationAware
 {
-    /// <summary>The only contract type currently implemented.</summary>
-    internal const string MutualNdaType = "Mutual NDA";
+    /// <summary>The registry definition for the current selection (Mutual NDA before step 1).</summary>
+    private ContractTypeDefinition SelectedDefinition =>
+        SelectedContractType?.Definition ?? _contractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId);
 
     // The local user id used until authentication is available (single-user desktop app).
     private const int CurrentUserId = 1;
+
+    // Draft key used to persist the in-progress wizard across navigation.
+    private const string NewContractDraftKey = "new-contract";
 
     // Default governing law offered on step 2. (Hook up to the Settings page when it
     // exposes a user preference; "California" is the built-in fallback.)
@@ -35,6 +42,8 @@ public partial class NewContractViewModel : ObservableObject
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogs;
     private readonly IAppSettingsService _appSettings;
+    private readonly IWizardDraftService _drafts;
+    private readonly IContractTypeRegistry _contractTypeRegistry;
 
     private bool _clausesLoaded;
 
@@ -58,6 +67,13 @@ public partial class NewContractViewModel : ObservableObject
 
     /// <summary>How many clauses were offered on step 3.</summary>
     [ObservableProperty] private int _totalClauseCount;
+
+    /// <summary>Whether AI polish should be applied during generation.</summary>
+    [ObservableProperty] private bool _useAiPolish;
+
+    /// <summary>Non-sensitive status text when draft persistence fails.</summary>
+    [ObservableProperty] private string? _draftErrorMessage;
+    public bool HasDraftError => !string.IsNullOrWhiteSpace(DraftErrorMessage);
 
     /// <summary>The contract type cards shown on step 1.</summary>
     public ObservableCollection<ContractTypeOptionViewModel> ContractTypes { get; } = new();
@@ -105,7 +121,9 @@ public partial class NewContractViewModel : ObservableObject
         IFieldService fieldService,
         INavigationService navigation,
         IWizardDialogService dialogs,
-        IAppSettingsService appSettings)
+        IAppSettingsService appSettings,
+        IWizardDraftService drafts,
+        IContractTypeRegistry? contractTypeRegistry = null)
     {
         _contractService = contractService;
         _clauseService = clauseService;
@@ -113,6 +131,8 @@ public partial class NewContractViewModel : ObservableObject
         _navigation = navigation;
         _dialogs = dialogs;
         _appSettings = appSettings;
+        _drafts = drafts ?? throw new ArgumentNullException(nameof(drafts));
+        _contractTypeRegistry = contractTypeRegistry ?? ContractTypeRegistry.Instance;
 
         Steps.Add(new WizardStepViewModel(1, "Type"));
         Steps.Add(new WizardStepViewModel(2, "Details"));
@@ -124,7 +144,8 @@ public partial class NewContractViewModel : ObservableObject
         UpdateStepVisibility();
         UpdateStepIndicators();
 
-        // The wizard is a singleton page: start fresh every time it is opened.
+        // The wizard is a singleton page: when navigated away, persist the draft;
+        // when navigated to, load the saved draft instead of always resetting.
         _navigation.CurrentViewModelChanged += OnPageChanged;
     }
 
@@ -187,13 +208,25 @@ public partial class NewContractViewModel : ObservableObject
         NextCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
         GenerateCommand.NotifyCanExecuteChanged();
+        DiscardDraftCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <inheritdoc cref="INavigationAware" />
+    public void OnNavigatedTo(object? parameter)
+    {
+        ActivateWizard();
     }
 
     private void OnPageChanged(object? viewModel)
     {
         if (ReferenceEquals(viewModel, this))
         {
-            ResetWizard();
+            ActivateWizard();
+        }
+        else if (_isActive)
+        {
+            _isActive = false;
+            _ = SaveDraftWhenLeavingAsync();
         }
     }
 
@@ -214,27 +247,16 @@ public partial class NewContractViewModel : ObservableObject
         _clausesLoaded = false;
         SelectedClauseCount = 0;
         TotalClauseCount = 0;
+        UseAiPolish = false;
     }
 
     private void BuildContractTypes()
     {
         ContractTypes.Clear();
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Mutual NDA",
-            "Two-way confidentiality agreement between parties sharing sensitive information.",
-            isAvailable: true));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Non-Disclosure Agreement (One-Way)",
-            "Protects information disclosed by a single party.",
-            isAvailable: false));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Independent Contractor Agreement",
-            "Defines scope, fees and ownership for contract work.",
-            isAvailable: false));
-        ContractTypes.Add(new ContractTypeOptionViewModel(
-            "Consulting Agreement",
-            "Sets the terms of an ongoing advisory engagement.",
-            isAvailable: false));
+        foreach (var definition in _contractTypeRegistry.All)
+        {
+            ContractTypes.Add(new ContractTypeOptionViewModel(definition, isAvailable: true));
+        }
     }
 
     private void BuildIntakeFields()
@@ -246,27 +268,54 @@ public partial class NewContractViewModel : ObservableObject
         // defaults are applied every time the wizard opens (A3).
         var governingLaw = ResolveDefaultGoverningLaw(out var governingLawChoices);
         var termMonths = _appSettings.Current.DefaultTermMonths.ToString(CultureInfo.InvariantCulture);
+        var definition = SelectedDefinition;
 
-        var fields = new[]
+        // The registry is the single source of truth for which fields a type asks for and
+        // which placeholder keys they map to; the wizard only adapts them to input kinds.
+        foreach (var intake in definition.IntakeFields)
         {
-            NewField("Party1", "Party 1 name"),
-            NewField("Party1Address", "Party 1 address"),
-            NewField("Party2", "Party 2 name"),
-            NewField("Party2Address", "Party 2 address"),
-            NewField("ClientName", "Client name"),
-            NewField("ClientEmail", "Client email"),
-            NewField("EffectiveDate", "Effective date", IntakeFieldKind.Date, defaultDate: DateTime.Today),
-            NewField("GoverningLaw", "Governing law", IntakeFieldKind.Choice,
-                choices: governingLawChoices, defaultValue: governingLaw),
-            NewField("TermMonths", "Term (months)", IntakeFieldKind.Number, defaultValue: termMonths),
-            NewField("Purpose", "Purpose of disclosure"),
-        };
-
-        foreach (var field in fields)
-        {
+            var field = BuildIntakeField(intake, governingLaw, governingLawChoices, termMonths);
             field.PropertyChanged += OnIntakeFieldChanged;
             IntakeFields.Add(field);
         }
+    }
+
+    private static IntakeFieldViewModel BuildIntakeField(
+        ContractTypeIntakeField intake,
+        string governingLaw,
+        string[] governingLawChoices,
+        string termMonths)
+    {
+        var kind = intake.Kind switch
+        {
+            "Date" => IntakeFieldKind.Date,
+            "Choice" => IntakeFieldKind.Choice,
+            "Number" => IntakeFieldKind.Number,
+            _ => IntakeFieldKind.Text
+        };
+
+        var choices = intake.Choices;
+        var defaultValue = intake.DefaultValue;
+        var defaultDate = kind == IntakeFieldKind.Date ? DateTime.Today : (DateTime?)null;
+
+        if (string.Equals(intake.DefaultValueKey, "DefaultGoverningLaw", StringComparison.OrdinalIgnoreCase))
+        {
+            choices = governingLawChoices;
+            defaultValue = governingLaw;
+        }
+        else if (string.Equals(intake.DefaultValueKey, "DefaultTermMonths", StringComparison.OrdinalIgnoreCase))
+        {
+            defaultValue = termMonths;
+        }
+
+        return new IntakeFieldViewModel(
+            intake.Key,
+            intake.Label,
+            kind,
+            intake.Required,
+            choices,
+            defaultValue,
+            defaultDate);
     }
 
     /// <summary>
@@ -298,16 +347,11 @@ public partial class NewContractViewModel : ObservableObject
         return preferred;
     }
 
-    private static IntakeFieldViewModel NewField(
-        string key,
-        string label,
-        IntakeFieldKind kind = IntakeFieldKind.Text,
-        string[]? choices = null,
-        string? defaultValue = null,
-        DateTime? defaultDate = null) =>
-        new(key, label, kind, isRequired: true, choices, defaultValue, defaultDate);
-
-    private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e) => RefreshCommands();
+    private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        RefreshCommands();
+        QueueDraftSave();
+    }
 
     /// <summary>The intake answers keyed by stable field key (used for ContractField rows and placeholder substitution).</summary>
     internal Dictionary<string, string> GetFieldValues() =>
@@ -342,9 +386,16 @@ public partial class NewContractViewModel : ObservableObject
         UpdateStepVisibility();
         UpdateStepIndicators();
         RefreshCommands();
+        QueueDraftSave();
     }
 
-    partial void OnSelectedContractTypeChanged(ContractTypeOptionViewModel? value) => RefreshCommands();
+    partial void OnSelectedContractTypeChanged(ContractTypeOptionViewModel? value)
+    {
+        // Rebuild intake fields when contract type changes (before moving to step 2)
+        BuildIntakeFields();
+        RefreshCommands();
+        QueueDraftSave();
+    }
 
     partial void OnSelectedClauseCountChanged(int value) => RefreshCommands();
 
@@ -353,4 +404,6 @@ public partial class NewContractViewModel : ObservableObject
         RefreshCommands();
         OnPropertyChanged(nameof(GenerateButtonText));
     }
+
+    partial void OnDraftErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasDraftError));
 }

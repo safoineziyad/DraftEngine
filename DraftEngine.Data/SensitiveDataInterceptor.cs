@@ -57,6 +57,11 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
             [typeof(ContractField)] = new[] { nameof(ContractField.Value) },
             [typeof(ChatMessage)] = new[] { nameof(ChatMessage.Content) },
             [typeof(ContractVersion)] = new[] { nameof(ContractVersion.Text) },
+            [typeof(ContractAnalysis)] = new[]
+            {
+                nameof(ContractAnalysis.FileName),
+                nameof(ContractAnalysis.ResultJson),
+            },
         };
 
     private readonly ILogger<SensitiveDataInterceptor>? _logger;

@@ -17,7 +17,17 @@ public class NavigationService : INavigationService
         ["contracts"] = typeof(ContractsListViewModel),
         ["contract-detail"] = typeof(ContractDetailViewModel),
         ["settings"] = typeof(SettingsViewModel),
+        ["clause-management"] = typeof(ClauseManagerViewModel),
+        ["archived-contracts"] = typeof(ArchivedContractsViewModel),
+        ["about"] = typeof(AboutViewModel),
+        ["analyze"] = typeof(AnalyzeViewModel),
     };
+
+    /// <summary>
+    /// The page keys and their view model types. Exposed read-only so startup tests can
+    /// assert every key has a view mapping.
+    /// </summary>
+    public static IReadOnlyDictionary<string, Type> Pages => PageRegistry;
 
     private readonly IServiceProvider _services;
 

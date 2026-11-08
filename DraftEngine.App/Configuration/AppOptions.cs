@@ -20,6 +20,9 @@ public sealed class AppOptions
     /// <summary>Gets the file logging settings.</summary>
     public SerilogOptions Serilog { get; } = new();
 
+    /// <summary>Gets the commercial-readiness feature switches (all off by default).</summary>
+    public FeatureOptions Features { get; } = new();
+
     /// <summary>
     /// Loads the options from configuration and applies environment-variable overrides.
     /// The <c>OPENAI_API_KEY</c> environment variable wins over <c>OpenAI:ApiKey</c> so a
@@ -34,8 +37,23 @@ public sealed class AppOptions
         options.App.DisplayName = configuration["App:DisplayName"] ?? options.App.DisplayName;
         options.OpenAi.ApiKey = configuration["OpenAI:ApiKey"] ?? options.OpenAi.ApiKey;
         options.OpenAi.Model = configuration["OpenAI:Model"] ?? options.OpenAi.Model;
+        options.OpenAi.BaseUrl = configuration["OpenAI:BaseUrl"] ?? options.OpenAi.BaseUrl;
+        if (bool.TryParse(configuration["OpenAI:UseCustomEndpoint"], out var useCustom))
+        {
+            options.OpenAi.UseCustomEndpoint = useCustom;
+        }
         options.Data.ConnectionString = configuration["Data:ConnectionString"] ?? options.Data.ConnectionString;
         options.Serilog.FilePath = configuration["Serilog:FilePath"] ?? options.Serilog.FilePath;
+
+        // Every commercial feature is opt-in: a missing or unparsable value stays false so
+        // an existing installation keeps the exact same behaviour after upgrading.
+        options.Features.LicensingEnabled = ReadBool(configuration, "Features:LicensingEnabled");
+        options.Features.LicenseGracePeriodDays = ReadNonNegativeInt(
+            configuration, "Features:LicenseGracePeriodDays", options.Features.LicenseGracePeriodDays);
+        options.Features.UpdateCheckEnabled = ReadBool(configuration, "Features:UpdateCheckEnabled");
+        options.Features.UpdateManifestUrl = configuration["Features:UpdateManifestUrl"] ?? options.Features.UpdateManifestUrl;
+        options.Features.OnboardingEnabled = ReadBool(configuration, "Features:OnboardingEnabled");
+        options.Features.AboutEnabled = ReadBool(configuration, "Features:AboutEnabled");
 
         // Environment variable override: OPENAI_API_KEY always wins over appsettings.json.
         var envApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -43,9 +61,21 @@ public sealed class AppOptions
         {
             options.OpenAi.ApiKey = envApiKey.Trim();
         }
+        var envBaseUrl = Environment.GetEnvironmentVariable("OPENAI_BASE_URL");
+        if (!string.IsNullOrWhiteSpace(envBaseUrl))
+        {
+            options.OpenAi.BaseUrl = envBaseUrl.Trim();
+            options.OpenAi.UseCustomEndpoint = true;
+        }
 
         return options;
     }
+
+    private static bool ReadBool(IConfiguration configuration, string key) =>
+        bool.TryParse(configuration[key], out var value) && value;
+
+    private static int ReadNonNegativeInt(IConfiguration configuration, string key, int fallback) =>
+        int.TryParse(configuration[key], out var value) && value >= 0 ? value : fallback;
 }
 
 /// <summary>Display settings.</summary>
@@ -65,6 +95,12 @@ public sealed class OpenAiOptions
 
     /// <summary>Gets or sets the chat model id.</summary>
     public string Model { get; set; } = "gpt-4o-mini";
+
+    /// <summary>Gets or sets the API base URL. Defaults to OpenAI's endpoint; can be set to any OpenAI-compatible server.</summary>
+    public string BaseUrl { get; set; } = "https://api.openai.com/v1/";
+
+    /// <summary>Gets or sets whether to use a custom endpoint.</summary>
+    public bool UseCustomEndpoint { get; set; } = false;
 }
 
 /// <summary>Database settings.</summary>
@@ -81,4 +117,29 @@ public sealed class SerilogOptions
     /// <summary>Gets or sets the rolling log file path. Environment variables
     /// (e.g. <c>%APPDATA%</c>) are expanded at startup.</summary>
     public string FilePath { get; set; } = "%APPDATA%\\DraftEngine\\logs\\app-.log";
+}
+
+/// <summary>
+/// Commercial-readiness switches. Every flag defaults to <c>false</c>; with the defaults
+/// the application behaves exactly as it did before these features existed.
+/// </summary>
+public sealed class FeatureOptions
+{
+    /// <summary>Gets or sets whether the offline license check/activation screen is enabled.</summary>
+    public bool LicensingEnabled { get; set; }
+
+    /// <summary>Gets or sets how many days after expiry the app keeps working offline.</summary>
+    public int LicenseGracePeriodDays { get; set; } = 14;
+
+    /// <summary>Gets or sets whether the notify-only update check runs at startup.</summary>
+    public bool UpdateCheckEnabled { get; set; }
+
+    /// <summary>Gets or sets the HTTPS URL of the static update manifest.</summary>
+    public string UpdateManifestUrl { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets whether the first-run onboarding dialog is shown.</summary>
+    public bool OnboardingEnabled { get; set; }
+
+    /// <summary>Gets or sets whether the About/Help navigation entry is shown.</summary>
+    public bool AboutEnabled { get; set; }
 }

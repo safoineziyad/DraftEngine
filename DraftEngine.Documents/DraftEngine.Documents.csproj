@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DraftEngine.Core\DraftEngine.Core.csproj" />
+    <ProjectReference Include="..\DraftEngine.Analysis\DraftEngine.Analysis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

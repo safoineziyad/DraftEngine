@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>Panel</value></data>
+  <data name="Nav.NewContract" xml:space="preserve"><value>Nuevo contrato</value></data>
+  <data name="Nav.Contracts" xml:space="preserve"><value>Contratos</value></data>
+  <data name="Nav.Analyze" xml:space="preserve"><value>Analizar</value></data>
+  <data name="Nav.Settings" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Nav.ClauseManager" xml:space="preserve"><value>Gestor de cláusulas</value></data>
+  <data name="Nav.Archived" xml:space="preserve"><value>Contratos archivados</value></data>
+  <data name="Nav.About" xml:space="preserve"><value>Acerca de y ayuda</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>Siguiente</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Atrás</value></data>
+  <data name="Common.Skip" xml:space="preserve"><value>Omitir</value></data>
+  <data name="Common.GetStarted" xml:space="preserve"><value>Empezar</value></data>
+  <data name="Common.Refresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Settings.Title" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Settings.Appearance" xml:space="preserve"><value>Apariencia e idioma</value></data>
+  <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Los cambios se aplican de inmediato. El árabe cambia la interfaz a derecha a izquierda.</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Settings.Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Theme.Light" xml:space="preserve"><value>Claro</value></data>
+  <data name="Theme.Dark" xml:space="preserve"><value>Oscuro</value></data>
+  <data name="Theme.System" xml:space="preserve"><value>Seguir Windows</value></data>
+  <data name="Language.System" xml:space="preserve"><value>Sistema</value></data>
+  <data name="Analyze.Title" xml:space="preserve"><value>Analizar</value></data>
+  <data name="Analyze.Subtitle" xml:space="preserve"><value>Revise un contrato con una guía. Las comprobaciones deterministas funcionan sin conexión; la revisión con IA es opcional y requiere consentimiento.</value></data>
+  <data name="Analyze.Disclaimer" xml:space="preserve"><value>Esto no es asesoramiento jurídico. Se requiere la revisión de un abogado con licencia.</value></data>
+  <data name="Analyze.ChooseFile" xml:space="preserve"><value>Elegir archivo...</value></data>
+  <data name="Settings.PageTitle" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Settings.LanguageDescription" xml:space="preserve"><value>Elija el idioma que se usa en DraftEngine. Los cambios se aplican de inmediato.</value></data>
+  <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Bienvenido a DraftEngine</value></data>
+  <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Elija su idioma</value></data>
+  <data name="Common.Version" xml:space="preserve"><value>Versión {0}</value></data>
+  <data name="Common.VersionLabel" xml:space="preserve"><value>Versión </value></data>
+  <data name="Main.VersionAutomation" xml:space="preserve"><value>Versión de la aplicación</value></data>
+  <data name="Nav.DashboardAutomation" xml:space="preserve"><value>Ir al panel</value></data>
+  <data name="Nav.NewContractAutomation" xml:space="preserve"><value>Iniciar un contrato nuevo</value></data>
+  <data name="Nav.ContractsAutomation" xml:space="preserve"><value>Ir a la lista de contratos</value></data>
+  <data name="Nav.SettingsAutomation" xml:space="preserve"><value>Ir a la configuración</value></data>
+  <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analizar un contrato</value></data>
+  <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Ir al gestor de cláusulas</value></data>
+  <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Ir a los contratos archivados</value></data>
+  <data name="Nav.AboutAutomation" xml:space="preserve"><value>Ir a Acerca de y ayuda</value></data>
+  <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Abrir configuración</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Conecte DraftEngine con OpenAI y elija los valores predeterminados para los contratos nuevos.</value></data>
+  <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Los datos de los contratos se cifran con su perfil de usuario de Windows. No restablezca su contraseña de Windows ni copie la base de datos a otra cuenta de Windows: los datos quedarían ilegibles. Si planea cambiar de usuario de Windows, exporte primero todos los contratos a DOCX/PDF.</value></data>
+  <data name="Settings.DataHandling" xml:space="preserve"><value>Cómo se tratan sus datos: cuando usa funciones de IA (ediciones por chat y pulido con IA), el texto del contrato, sus instrucciones y las respuestas del cuestionario se transmiten a OpenAI para su procesamiento. El contenido del contrato y el historial del chat se almacenan cifrados en este equipo. No use funciones de IA con material privilegiado o confidencial de clientes que no esté autorizado a compartir con un servicio de terceros.</value></data>
+  <data name="Settings.ApiKey" xml:space="preserve"><value>Clave API</value></data>
+  <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>Clave API de OpenAI</value></data>
+  <data name="Settings.ApiKeyShowHideAutomation" xml:space="preserve"><value>Mostrar u ocultar la clave API</value></data>
+  <data name="Settings.TestConnection" xml:space="preserve"><value>Probar conexión</value></data>
+  <data name="Settings.TestConnectionAutomation" xml:space="preserve"><value>Probar la conexión con OpenAI</value></data>
+  <data name="Settings.Model" xml:space="preserve"><value>Modelo</value></data>
+  <data name="Settings.ModelAutomation" xml:space="preserve"><value>Modelo de OpenAI</value></data>
+  <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini es más rápido y económico; gpt-4o es más capaz.</value></data>
+  <data name="Settings.PrivacySection" xml:space="preserve"><value>Privacidad y punto de conexión de IA</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Permanece en este equipo: contratos, respuestas del cuestionario, selecciones de cláusulas, historial del chat, configuración y clave API (todo cifrado con su perfil de usuario de Windows). Se envía al proveedor de IA solo cuando usa una función de IA: el texto del contrato actual, su instrucción y el nombre del modelo. No se recopila telemetría.</value></data>
+  <data name="Settings.HidePartyNames" xml:space="preserve"><value>Ocultar nombres y direcciones de las partes a la IA</value></data>
+  <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>Cuando está activado, los nombres, direcciones y direcciones de correo electrónico reales de las partes se sustituyen por tokens antes de cada solicitud de IA y se restauran en la respuesta.</value></data>
+  <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Usar un punto de conexión personalizado compatible con OpenAI</value></data>
+  <data name="Settings.CustomEndpointAutomation" xml:space="preserve"><value>Usar un punto de conexión de IA personalizado</value></data>
+  <data name="Settings.CustomEndpointDescription" xml:space="preserve"><value>URL base, por ejemplo https://your-resource.openai.azure.com/openai/deployments/… , una puerta de enlace, o http://localhost:11434/v1/ para Ollama o LM Studio.</value></data>
+  <data name="Settings.CustomBaseUrlAutomation" xml:space="preserve"><value>URL base de IA personalizada</value></data>
+  <data name="Settings.CustomBaseUrlTooltip" xml:space="preserve"><value>URL base personalizada compatible con OpenAI</value></data>
+  <data name="Settings.AiConsentGranted" xml:space="preserve"><value>Consentimiento para compartir datos con la IA: concedido</value></data>
+  <data name="Settings.AiConsentNotGranted" xml:space="preserve"><value>Consentimiento para compartir datos con la IA: no concedido</value></data>
+  <data name="Settings.RevokeConsent" xml:space="preserve"><value>Revocar consentimiento de IA</value></data>
+  <data name="Settings.RevokeConsentAutomation" xml:space="preserve"><value>Revocar el consentimiento para compartir datos con la IA</value></data>
+  <data name="Settings.ContractDefaults" xml:space="preserve"><value>Valores predeterminados de contratos</value></data>
+  <data name="Settings.ContractDefaultsDescription" xml:space="preserve"><value>Estos valores rellenan previamente el formulario de contrato nuevo. Puede cambiarlos por contrato.</value></data>
+  <data name="Settings.DefaultGoverningLaw" xml:space="preserve"><value>Ley aplicable predeterminada</value></data>
+  <data name="Settings.DefaultGoverningLawAutomation" xml:space="preserve"><value>Ley aplicable predeterminada</value></data>
+  <data name="Settings.DefaultTermMonths" xml:space="preserve"><value>Plazo predeterminado (meses)</value></data>
+  <data name="Settings.DefaultTermMonthsAutomation" xml:space="preserve"><value>Plazo predeterminado del contrato en meses</value></data>
+  <data name="Settings.DefaultTermMonthsTooltip" xml:space="preserve"><value>Plazo del contrato en meses (1–120)</value></data>
+  <data name="Settings.DefaultTermMonthsDescription" xml:space="preserve"><value>Número entero de meses, entre 1 y 120.</value></data>
+  <data name="Settings.BackupSection" xml:space="preserve"><value>Copia de seguridad y exportación de datos</value></data>
+  <data name="Settings.BackupDescription" xml:space="preserve"><value>Una copia de seguridad portátil contiene contratos, respuestas del cuestionario, cláusulas, versiones, historial del chat y configuración no secreta en un único archivo cifrado con contraseña (AES-256-GCM). Se puede restaurar en otro PC con Windows. La contraseña nunca se almacena; si la pierde, no se podrá abrir la copia. La clave API de OpenAI no se incluye.</value></data>
+  <data name="Settings.BackupPassword" xml:space="preserve"><value>Contraseña de copia de seguridad (al menos 8 caracteres)</value></data>
+  <data name="Settings.BackupPasswordAutomation" xml:space="preserve"><value>Contraseña de copia de seguridad</value></data>
+  <data name="Settings.BackupPasswordTooltip" xml:space="preserve"><value>Se usa solo para esta exportación o restauración</value></data>
+  <data name="Settings.ExportBackup" xml:space="preserve"><value>Exportar copia de seguridad cifrada</value></data>
+  <data name="Settings.ExportBackupAutomation" xml:space="preserve"><value>Exportar copia de seguridad cifrada</value></data>
+  <data name="Settings.RestoreBackup" xml:space="preserve"><value>Restaurar copia de seguridad...</value></data>
+  <data name="Settings.RestoreBackupAutomation" xml:space="preserve"><value>Restaurar copia de seguridad cifrada</value></data>
+  <data name="Settings.ExportData" xml:space="preserve"><value>Exportar mis datos</value></data>
+  <data name="Settings.ExportDataDescription" xml:space="preserve"><value>Una copia legible y SIN CIFRAR para sus propios registros u otra herramienta. Incluye el texto de los contratos y las respuestas del cuestionario; guárdela en un lugar protegido. La clave API nunca se incluye.</value></data>
+  <data name="Settings.ExportJson" xml:space="preserve"><value>Exportar JSON...</value></data>
+  <data name="Settings.ExportJsonAutomation" xml:space="preserve"><value>Exportar datos como JSON</value></data>
+  <data name="Settings.ExportCsv" xml:space="preserve"><value>Exportar CSV...</value></data>
+  <data name="Settings.ExportCsvAutomation" xml:space="preserve"><value>Exportar datos como CSV</value></data>
+  <data name="Settings.UnsavedChanges" xml:space="preserve"><value>Cambios sin guardar</value></data>
+  <data name="Settings.Save" xml:space="preserve"><value>Guardar configuración</value></data>
+  <data name="Settings.SaveAutomation" xml:space="preserve"><value>Guardar configuración</value></data>
+  <data name="Settings.ApiKeyNotConfigured" xml:space="preserve"><value>No hay clave API configurada</value></data>
+  <data name="Settings.ApiKeyConfigured" xml:space="preserve"><value>Clave API configurada</value></data>
+  <data name="Settings.ApiKeyConfiguredMasked" xml:space="preserve"><value>Clave API configurada ({0}...{1})</value></data>
+  <data name="Settings.Show" xml:space="preserve"><value>Mostrar</value></data>
+  <data name="Settings.Hide" xml:space="preserve"><value>Ocultar</value></data>
+  <data name="Settings.ErrorBackupPasswordShort" xml:space="preserve"><value>Elija una contraseña de copia de seguridad de al menos 8 caracteres.</value></data>
+  <data name="Settings.ExportBackupTitle" xml:space="preserve"><value>Exportar copia de seguridad cifrada</value></data>
+  <data name="Settings.BackupFilter" xml:space="preserve"><value>Copia de seguridad de DraftEngine (*.debk)|*.debk</value></data>
+  <data name="Settings.BackupSaved" xml:space="preserve"><value>Copia de seguridad cifrada guardada: {0} contratos, {1} cláusulas. Guarde la contraseña en un lugar seguro; no se puede recuperar.</value></data>
+  <data name="Settings.ErrorBackupWrite" xml:space="preserve"><value>No se pudo escribir la copia de seguridad. Compruebe el destino e inténtelo de nuevo.</value></data>
+  <data name="Settings.RestoreBackupTitle" xml:space="preserve"><value>Restaurar copia de seguridad cifrada</value></data>
+  <data name="Settings.BackupOpenFilter" xml:space="preserve"><value>Copia de seguridad de DraftEngine (*.debk)|*.debk|Todos los archivos (*.*)|*.*</value></data>
+  <data name="Settings.RestoreConfirm" xml:space="preserve"><value>La restauración reemplaza todos los contratos, cláusulas, respuestas del cuestionario, historial del chat y versiones actuales de este equipo. Primero se escribe una copia de seguridad previa a la importación. ¿Continuar?</value></data>
+  <data name="Settings.RestoreConfirmTitle" xml:space="preserve"><value>Restaurar copia de seguridad</value></data>
+  <data name="Settings.ErrorRestorePassword" xml:space="preserve"><value>Introduzca la contraseña usada al crear la copia de seguridad.</value></data>
+  <data name="Settings.RestoreDone" xml:space="preserve"><value>Copia de seguridad restaurada: {0} contratos, {1} cláusulas. Reinicie la aplicación si alguna página sigue mostrando datos antiguos.</value></data>
+  <data name="Settings.ErrorWrongPassword" xml:space="preserve"><value>Contraseña incorrecta o el archivo de copia de seguridad fue modificado. No se cambió nada.</value></data>
+  <data name="Settings.ErrorRestore" xml:space="preserve"><value>No se pudo restaurar la copia de seguridad. No se cambió nada.</value></data>
+  <data name="Settings.CsvWarning" xml:space="preserve"><value>Esta exportación CSV NO está cifrada e incluye títulos de contratos, partes y respuestas del cuestionario. Guárdela en un lugar protegido. ¿Continuar?</value></data>
+  <data name="Settings.JsonWarning" xml:space="preserve"><value>Esta exportación JSON NO está cifrada e incluye el texto de los contratos, las respuestas del cuestionario y el historial del chat. Guárdela en un lugar protegido. ¿Continuar?</value></data>
+  <data name="Settings.ExportDataTitle" xml:space="preserve"><value>Exportar mis datos</value></data>
+  <data name="Settings.CsvFilter" xml:space="preserve"><value>CSV (*.csv)|*.csv</value></data>
+  <data name="Settings.JsonFilter" xml:space="preserve"><value>JSON (*.json)|*.json</value></data>
+  <data name="Settings.ExportDone" xml:space="preserve"><value>Datos exportados. El archivo no está cifrado; protéjalo o elimínelo cuando termine.</value></data>
+  <data name="Settings.ErrorExport" xml:space="preserve"><value>No se pudo escribir la exportación.</value></data>
+  <data name="Settings.ConsentRevoked" xml:space="preserve"><value>Consentimiento de IA revocado. La edición con IA está ahora bloqueada.</value></data>
+  <data name="Settings.ErrorConsentRevoke" xml:space="preserve"><value>No pudimos actualizar el ajuste de consentimiento de IA. Inténtelo de nuevo.</value></data>
+  <data name="Settings.ErrorApiKeyMissing" xml:space="preserve"><value>Pegue primero su clave API de OpenAI.</value></data>
+  <data name="Settings.Connecting" xml:space="preserve"><value>Conectando…</value></data>
+  <data name="Settings.Connected" xml:space="preserve"><value>Conexión con OpenAI correcta.</value></data>
+  <data name="Settings.ErrorConnect" xml:space="preserve"><value>No se pudo conectar con OpenAI. Inténtelo de nuevo.</value></data>
+  <data name="Settings.ErrorConnectionTest" xml:space="preserve"><value>Algo salió mal al probar la conexión. Inténtelo de nuevo.</value></data>
+  <data name="Settings.ErrorTermRange" xml:space="preserve"><value>El plazo debe estar entre 1 y 120 meses.</value></data>
+  <data name="Settings.Saved" xml:space="preserve"><value>Configuración guardada.</value></data>
+  <data name="Settings.ErrorSave" xml:space="preserve"><value>No pudimos guardar su configuración. Inténtelo de nuevo.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>Paso {0} de {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>Te damos la bienvenida a DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>Redacta contratos cuidados a partir de un cuestionario guiado en lugar de empezar con una página en blanco.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>Elige un tipo de contrato y responde a una breve serie de preguntas.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>Revisa las cláusulas sugeridas antes de que se genere nada.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>Exporta el contrato finalizado como DOCX o PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>Cómo se arma un contrato</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>El asistente te guía por los mismos pasos cada vez, para que no se omita nada importante.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>Selecciona el tipo de contrato que corresponda a la operación.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>Completa las partes, las fechas y las condiciones comerciales.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>Desmarca las cláusulas opcionales y, después, genera y exporta.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>Tus datos permanecen locales</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>Los contratos, las respuestas del cuestionario y el historial del chat se guardan en este equipo, cifrados con tu perfil de usuario de Windows.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>La edición con IA solo envía texto a tu proveedor de IA configurado cuando la usas.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>No hay telemetría, sincronización de cuentas ni carga en segundo plano.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>Exporta los contratos importantes antes de cambiar de usuario de Windows o de equipo.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Saltar la introducción</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Volver</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continuar la introducción</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>Tus acuerdos y tu actividad de redacción de un vistazo.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>Contratos creados</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>Tiempo estimado ahorrado</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>h</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>Contratos recientes</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>en total</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>Abrir el contrato {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>Aún no hay contratos.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>Crea tu primer acuerdo con el botón Nuevo contrato de arriba: solo tarda unos minutos.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>Cargando contratos…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>No pudimos cargar tus contratos. Inténtalo de nuevo.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>Contrato sin título</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>Borrador</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>Generado</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>Exportado</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;a las&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
+  <data name="Contracts.Subtitle" xml:space="preserve"><value>Busca, revisa y gestiona tus contratos guardados.</value></data>
+  <data name="Contracts.NewContractPlus" xml:space="preserve"><value>+ Nuevo contrato</value></data>
+  <data name="Contracts.SearchAutomation" xml:space="preserve"><value>Buscar contratos por título o cliente</value></data>
+  <data name="Contracts.SearchPlaceholder" xml:space="preserve"><value>Buscar por título o cliente…</value></data>
+  <data name="Contracts.Type" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Contracts.FilterTypeAutomation" xml:space="preserve"><value>Filtrar por tipo de contrato</value></data>
+  <data name="Contracts.Sort" xml:space="preserve"><value>Ordenar</value></data>
+  <data name="Contracts.SortAutomation" xml:space="preserve"><value>Ordenar contratos</value></data>
+  <data name="Contracts.ClearFilters" xml:space="preserve"><value>Borrar filtros</value></data>
+  <data name="Contracts.ClearFiltersAutomation" xml:space="preserve"><value>Borrar todos los filtros y la ordenación</value></data>
+  <data name="Contracts.ClearFiltersTooltip" xml:space="preserve"><value>Restablecer la búsqueda, el filtro de tipo y la ordenación</value></data>
+  <data name="Contracts.ColumnTitle" xml:space="preserve"><value>Título</value></data>
+  <data name="Contracts.ColumnType" xml:space="preserve"><value>Tipo de contrato</value></data>
+  <data name="Contracts.ColumnStatus" xml:space="preserve"><value>Estado</value></data>
+  <data name="Contracts.ColumnEffective" xml:space="preserve"><value>Fecha de entrada en vigor</value></data>
+  <data name="Contracts.ColumnTerm" xml:space="preserve"><value>Plazo</value></data>
+  <data name="Contracts.ColumnUpdated" xml:space="preserve"><value>Actualizado</value></data>
+  <data name="Contracts.Loading" xml:space="preserve"><value>Cargando contratos…</value></data>
+  <data name="Contracts.TryAgain" xml:space="preserve"><value>Reintentar</value></data>
+  <data name="Contracts.RetryAutomation" xml:space="preserve"><value>Reintentar la carga de contratos</value></data>
+  <data name="Contracts.Empty" xml:space="preserve"><value>Aún no hay contratos: crea el primero.</value></data>
+  <data name="Contracts.NoMatch" xml:space="preserve"><value>Ningún contrato coincide con tu búsqueda.</value></data>
+  <data name="Contracts.NoMatchHint" xml:space="preserve"><value>Prueba otro término de búsqueda o selecciona otro tipo de contrato.</value></data>
+  <data name="Contracts.AllTypes" xml:space="preserve"><value>Todos</value></data>
+  <data name="Contracts.SortUpdated" xml:space="preserve"><value>Actualizados recientemente</value></data>
+  <data name="Contracts.SortCreated" xml:space="preserve"><value>Fecha de creación</value></data>
+  <data name="Contracts.DuplicateTitle" xml:space="preserve"><value>Copia de {0}</value></data>
+  <data name="Contracts.DeleteConfirm" xml:space="preserve"><value>¿Eliminar «{0}»?`n`nEsta acción no se puede deshacer.</value></data>
+  <data name="Contracts.DeleteConfirmTitle" xml:space="preserve"><value>Eliminar contrato</value></data>
+  <data name="Contracts.ErrorLoad" xml:space="preserve"><value>No pudimos cargar tus contratos. Inténtalo de nuevo.</value></data>
+  <data name="Contracts.ErrorDuplicateMissing" xml:space="preserve"><value>No pudimos duplicar este contrato porque ya no existe.</value></data>
+  <data name="Contracts.ErrorDuplicate" xml:space="preserve"><value>No pudimos duplicar el contrato. Inténtalo de nuevo.</value></data>
+  <data name="Contracts.ErrorDelete" xml:space="preserve"><value>No pudimos eliminar el contrato. Inténtalo de nuevo.</value></data>
+  <data name="Contracts.OpenAutomation" xml:space="preserve"><value>Abrir el contrato {0}</value></data>
+  <data name="Contracts.DuplicateAutomation" xml:space="preserve"><value>Duplicar el contrato {0}</value></data>
+  <data name="Contracts.DeleteAutomation" xml:space="preserve"><value>Eliminar el contrato {0}</value></data>
+  <data name="Contract.TermMonthsOne" xml:space="preserve"><value>{0} mes</value></data>
+  <data name="Contract.TermMonthsMany" xml:space="preserve"><value>{0} meses</value></data>
+  <data name="Common.DateFormat" xml:space="preserve"><value>d MMM yyyy</value></data>
+  <data name="Common.NotSet" xml:space="preserve"><value>—</value></data>
+  <data name="Common.Open" xml:space="preserve"><value>Abrir</value></data>
+  <data name="Common.Duplicate" xml:space="preserve"><value>Duplicar</value></data>
+  <data name="Common.Delete" xml:space="preserve"><value>Eliminar</value></data>
+</root>

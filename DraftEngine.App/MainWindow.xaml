@@ -4,29 +4,51 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:app="clr-namespace:DraftEngine.App"
+        xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
         mc:Ignorable="d"
         Title="{Binding Title}"
+        Style="{StaticResource LocalizedWindowStyle}"
         Height="820" Width="1280"
         MinHeight="700" MinWidth="1100"
         WindowState="Maximized"
-        Background="{StaticResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
         FontFamily="{StaticResource UiFontFamily}"
         FontSize="13">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="{Binding NavigateNewContractCommand}" />
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding NavigateContractsCommand}" />
+        <KeyBinding Key="K" Modifiers="Control" Command="{Binding NavigateAnalyzeCommand}" />
+    </Window.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left sidebar -->
+        <!-- Left sidebar (mirrors to the right in RTL via FlowDirection) -->
         <Border Grid.Column="0"
-                Background="{StaticResource PanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="0,0,1,0">
+                Background="{DynamicResource PanelBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderThickness" Value="0,0,1,0" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Source={x:Static loc:LocalizationSource.Current}, Path=IsRtl}"
+                                     Value="True">
+                            <Setter Property="BorderThickness" Value="1,0,0,0" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <DockPanel LastChildFill="True">
 
                 <!-- App title with deep blue accent bar -->
-                <Border DockPanel.Dock="Top" Background="{StaticResource AccentBrush}" Padding="16,18">
+                <Border DockPanel.Dock="Top" Background="{DynamicResource AccentBrush}" Padding="16,18">
                     <TextBlock Text="DraftEngine"
                                Foreground="White"
                                FontSize="16"
@@ -36,37 +58,54 @@
                 <!-- Navigation menu -->
                 <StackPanel DockPanel.Dock="Top" Margin="8,12">
                     <Button Style="{StaticResource NavButtonStyle}"
-                            Content="Dashboard"
-                            AutomationProperties.Name="Go to Dashboard"
+                            Content="{loc:T Nav.Dashboard}"
+                            AutomationProperties.Name="{loc:T Nav.DashboardAutomation}"
                             Command="{Binding NavigateDashboardCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
-                            Content="New Contract"
-                            AutomationProperties.Name="Start a new contract"
+                            Content="{loc:T Nav.NewContract}"
+                            AutomationProperties.Name="{loc:T Nav.NewContractAutomation}"
                             Command="{Binding NavigateNewContractCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
-                            Content="Contracts"
-                            AutomationProperties.Name="Go to Contracts list"
+                            Content="{loc:T Nav.Contracts}"
+                            AutomationProperties.Name="{loc:T Nav.ContractsAutomation}"
                             Command="{Binding NavigateContractsCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
-                            Content="Settings"
-                            AutomationProperties.Name="Go to Settings"
+                            Content="{loc:T Nav.Settings}"
+                            AutomationProperties.Name="{loc:T Nav.SettingsAutomation}"
                             Command="{Binding NavigateSettingsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="{loc:T Nav.Analyze}"
+                            AutomationProperties.Name="{loc:T Nav.AnalyzeAutomation}"
+                            Command="{Binding NavigateAnalyzeCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="{loc:T Nav.ClauseManager}"
+                            AutomationProperties.Name="{loc:T Nav.ClauseManagerAutomation}"
+                            Command="{Binding NavigateClauseManagementCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="{loc:T Nav.Archived}"
+                            AutomationProperties.Name="{loc:T Nav.ArchivedAutomation}"
+                            Command="{Binding NavigateArchivedContractsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="{loc:T Nav.About}"
+                            AutomationProperties.Name="{loc:T Nav.AboutAutomation}"
+                            Command="{Binding NavigateAboutCommand}"
+                            Visibility="{Binding AboutEnabled, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
 
                 <!-- Bottom: version + settings shortcut -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="16,8,16,16">
                     <Separator Margin="0,0,0,8"
-                               Background="{StaticResource BorderSubtleBrush}"
-                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                               Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
                     <!-- Version comes from the csproj <Version> via AppVersion.Display: one source of truth. -->
                     <TextBlock Style="{StaticResource SecondaryTextStyle}"
-                               Margin="4,0,0,8"
-                               AutomationProperties.Name="Application version">
-                        <Run Text="Version " /><Run Text="{x:Static app:AppVersion.Display}" />
+                               Margin="0,0,0,8"
+                               AutomationProperties.Name="{loc:T Main.VersionAutomation}">
+                        <Run Text="{loc:T Common.VersionLabel}" /><Run Text="{x:Static app:AppVersion.Display}" />
                     </TextBlock>
                     <Button Style="{StaticResource NavButtonStyle}"
-                            Content="Settings"
-                            AutomationProperties.Name="Open Settings"
+                            Content="{loc:T Nav.Settings}"
+                            AutomationProperties.Name="{loc:T Nav.OpenSettingsAutomation}"
                             Command="{Binding NavigateSettingsCommand}" />
                 </StackPanel>
 

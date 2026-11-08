@@ -1,9 +1,15 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels;
+using DraftEngine.App.Views;
+using DraftEngine.Core.Interfaces;
 using DraftEngine.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,12 +82,66 @@ public partial class App : Application
             // InvalidOperationException which is surfaced below instead of an opaque crash.
             DatabaseService.EnsureDatabaseCreated(_host.Services);
 
+            // Wire up localization before any window is created: load the saved/Windows
+            // language, expose a bindable source for {loc:T Key}, and set the WPF text
+            // language so shaping and digit substitution use the right culture.
+            var locService = _host.Services.GetRequiredService<ILocalizationService>();
+            locService.InitializeAsync().GetAwaiter().GetResult();
+            LocalizationSource.Initialize(locService);
+            Application.Current.Resources["LocalizationService"] = locService;
+            ApplyWpfLanguage(locService.Culture);
+
+            // Keep the in-memory redaction switch aligned with the saved privacy setting
+            // from the very first AI request.
+            var settingsService = _host.Services.GetRequiredService<IAppSettingsService>();
+            var redactionService = _host.Services.GetService<IAiRedactionService>();
+            if (redactionService is not null)
+            {
+                redactionService.IsEnabled = settingsService.Current.HidePartyNamesFromAi;
+            }
+
+            // Offline license gate (only when Features:LicensingEnabled is on). With the
+            // default configuration this block is skipped entirely and startup is unchanged.
+            if (_appOptions.Features.LicensingEnabled)
+            {
+                var licenseService = _host.Services.GetRequiredService<
+                    DraftEngine.App.Services.Licensing.ILicenseService>();
+                var evaluation = licenseService.LoadAsync().GetAwaiter().GetResult();
+                if (!evaluation.IsUsable)
+                {
+                    var activation = new LicenseActivationWindow(licenseService);
+                    if (activation.ShowDialog() != true)
+                    {
+                        Shutdown();
+                        return;
+                    }
+                }
+            }
+
             var mainWindow = new MainWindow
             {
                 DataContext = _host.Services.GetRequiredService<MainViewModel>()
             };
             MainWindow = mainWindow;
             mainWindow.Show();
+
+            // First-run onboarding is opt-in (Features:OnboardingEnabled). Dismissing the
+            // dialog counts as skipping, so it is only ever shown once.
+            if (_appOptions.Features.OnboardingEnabled && !settingsService.Current.OnboardingCompleted)
+            {
+                try
+                {
+                    new OnboardingWindow(locService) { Owner = mainWindow }.ShowDialog();
+                    var updated = settingsService.Current;
+                    updated.OnboardingCompleted = true;
+                    settingsService.SaveAsync(updated).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    // Onboarding is a courtesy, never a startup blocker.
+                    Log.Warning(ex, "First-run onboarding could not be shown.");
+                }
+            }
 
             Log.Information("DraftEngine started.");
         }
@@ -102,6 +162,21 @@ public partial class App : Application
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(-1);
+        }
+    }
+
+    /// <summary>Applies the active culture to WPF text shaping and number substitution.</summary>
+    private static void ApplyWpfLanguage(CultureInfo culture)
+    {
+        try
+        {
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
+        }
+        catch (InvalidOperationException)
+        {
+            // Metadata already sealed (designer/host). The window style still binds Language.
         }
     }
 

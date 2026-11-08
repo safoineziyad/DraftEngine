@@ -5,14 +5,21 @@ DraftEngine is a native Windows desktop application for drafting contracts, aime
 ## Features
 
 - **Four-step drafting wizard**: contract type → details (intake form) → clauses → review & generate.
-- **Mutual NDA at launch.** One-Way NDA, Independent Contractor Agreement and Consulting Agreement are shown as *Coming soon*.
-- **Clause library**: 12 Mutual NDA clauses are seeded on first run, grouped by category with live previews; core clauses are pre-selected and a few are optional.
+- **Resumable wizard drafts**: an in-progress draft is encrypted and restored after navigation or a restart.
+- **Clause Manager**: create, edit, duplicate and archive your own clauses alongside the read-only seeded library.
+- **Multiple contract types**: Mutual NDA, Non-Disclosure Agreement (One-Way), Independent Contractor Agreement, Consulting Agreement.
+- **Clause library**: Seeded clauses per contract type, grouped by category with live previews; core clauses are pre-selected and some are optional.
 - **Deterministic, template-first generation**: `{{Placeholder}}` substitution from your intake answers (see `DraftEngine.Core/Services/FieldService.cs`). Works fully offline, **no API key required**.
-- **Contract detail view**: read the assembled contract and edit it through natural-language **chat instructions** (requires an OpenAI API key).
-- **Export to DOCX and PDF** from the contract detail page.
+- **Contract detail view**: edit metadata, intake answers and clause selection after creation (with a version snapshot before every regeneration), then read and export the assembled contract.
+- **AI edit preview**: every proposed AI edit is shown as a line diff and must be Accepted or Rejected; the previous text is snapshotted first. Requires an OpenAI API key.
+- **Export to DOCX and PDF** from the contract detail page, with per-contract export history.
+- **Analyze**: import a DOCX or text-based PDF, segment it into clauses, run an offline playbook review (missing clauses, risky terms, blanks, placeholders), optionally add a consent-gated AI review with verbatim-quote grounding, then export a review report or a tracked-changes redline. Every result says "Not legal advice. Review by a licensed attorney required."
+- **Portable backups**: password-encrypted AES-256-GCM export/restore of contracts, intake, clauses, versions, chat and settings, plus plain JSON/CSV "export my data".
+- **Archive and duplicate**: archive contracts into a separate view (restore or permanently delete from there) and start a copy from any existing contract.
 - **Contracts list** with search by title/client, contract-type filter and sorting.
 - **Dashboard** with contract counts and recently updated contracts.
-- **Settings**: OpenAI key and model, plus defaults that pre-fill the new contract form (governing law, term in months).
+- **Settings**: OpenAI key and model, a custom OpenAI-compatible endpoint (Azure OpenAI, gateways, Ollama/LM Studio), party-name redaction for AI requests, AI consent revocation, plus defaults that pre-fill the new contract form (governing law, term in months).
+- **Onboarding and About**: optional three-screen first-run guide, plus an About & Help page with version, log/data folder, privacy summary, notify-only update check and offline license status.
 - **Local logging**: rolling Serilog files in `%APPDATA%\DraftEngine\logs`.
 
 ## Tech stack
@@ -45,7 +52,7 @@ dotnet run --project DraftEngine.App
 
 ### First run
 
-On first launch, DraftEngine creates `%APPDATA%\DraftEngine\` if needed, applies its pending EF Core migrations to create `draftengine.db`, and seeds 12 Mutual NDA clauses into it. Logs are written to `%APPDATA%\DraftEngine\logs\`. No configuration is required to draft a contract.
+On first launch, DraftEngine creates `%APPDATA%\DraftEngine\` if needed, applies its pending EF Core migrations to create `draftengine.db`, and seeds clauses for all supported contract types. Logs are written to `%APPDATA%\DraftEngine\logs\`. No configuration is required to draft a contract.
 
 ## Settings & OpenAI key
 
@@ -68,7 +75,7 @@ Enter the key under **Settings → OpenAI → API key**, then **Save**. Key reso
 dotnet test DraftEngine.sln
 ```
 
-xUnit tests (46+ as of this writing — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
+xUnit tests (291 as of v0.4.0 — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
 
 ## Installer
 
@@ -78,7 +85,7 @@ A per-user Windows installer (Inno Setup 6, no admin/UAC prompt) is built with o
 powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
 ```
 
-See [installer/README.md](installer/README.md) for prerequisites, options, and the output location (`installer\Output\DraftEngine-Setup-1.0.0.exe`).
+See [installer/README.md](installer/README.md) for prerequisites, options, and the output location (`installer\Output\DraftEngine-Setup-<version>.exe`). Authenticode signing is optional: set `DRAFTENGINE_SIGN_CERT` (and `DRAFTENGINE_SIGN_PASSWORD`) before building to sign the application binary, installer and uninstaller; without them the build proceeds unsigned. See [docs/RELEASE.md](docs/RELEASE.md).
 
 ## Repository structure
 
@@ -88,8 +95,11 @@ See [installer/README.md](installer/README.md) for prerequisites, options, and t
 | `DraftEngine.Core` | Domain models, interfaces and core services (fields, contracts, clauses, chat, export) |
 | `DraftEngine.Data` | EF Core + SQLite: DbContext, migrations, seeded clause library |
 | `DraftEngine.AI` | OpenAI client used for chat editing and the connection test |
-| `DraftEngine.Documents` | DOCX (Open XML) and PDF (QuestPDF) document builders |
-| `DraftEngine.Tests` | xUnit test suite (mocked, offline) |
+| `DraftEngine.Documents` | DOCX (Open XML) and PDF (QuestPDF) document builders, report export, tracked-change redlines |
+| `DraftEngine.Analysis` | UI-agnostic document import, clause segmentation, playbooks, deterministic + grounded AI review, comparison |
+| `DraftEngine.Tests` | Core/data/documents view-model tests (mocked, offline) |
+| `DraftEngine.App.Tests` | Startup DI/navigation and WPF App service tests |
+| `DraftEngine.Analysis.Tests` | Importers, analysis precision/recall, grounding and export tests |
 
 ## License
 

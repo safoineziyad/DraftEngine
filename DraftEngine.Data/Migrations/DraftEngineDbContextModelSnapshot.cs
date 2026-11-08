@@ -63,14 +63,35 @@ namespace DraftEngine.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsDefaultSelected")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsOptional")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUserDefined")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("OwnerUserId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -80,6 +101,8 @@ namespace DraftEngine.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ContractType");
+
+                    b.HasIndex("OwnerUserId");
 
                     b.HasIndex("SortOrder");
 
@@ -91,10 +114,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 1,
                             BodyTemplate = "The parties agree to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
                             Category = "Confidentiality",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 1,
+                            Source = "System",
                             Title = "Confidentiality"
                         },
                         new
@@ -102,10 +129,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 2,
                             BodyTemplate = "Confidential Information means any non-public information disclosed by {{Party1}} or {{Party2}} that is marked confidential or would reasonably be considered confidential.",
                             Category = "Definitions",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 2,
+                            Source = "System",
                             Title = "Definition of Confidential Information"
                         },
                         new
@@ -113,10 +144,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 3,
                             BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
                             Category = "Exclusions",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 3,
+                            Source = "System",
                             Title = "Exclusions"
                         },
                         new
@@ -124,10 +159,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 4,
                             BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}).",
                             Category = "Term",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 4,
+                            Source = "System",
                             Title = "Term"
                         },
                         new
@@ -135,10 +174,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 5,
                             BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
                             Category = "Governing Law",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 5,
+                            Source = "System",
                             Title = "Governing Law"
                         },
                         new
@@ -146,10 +189,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 6,
                             BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 6,
+                            Source = "System",
                             Title = "Entire Agreement"
                         },
                         new
@@ -157,10 +204,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 7,
                             BodyTemplate = "Nothing in this Agreement grants any license or rights to the other party's intellectual property.",
                             Category = "Intellectual Property",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 7,
+                            Source = "System",
                             Title = "No License"
                         },
                         new
@@ -168,10 +219,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 8,
                             BodyTemplate = "Upon termination, each party shall return or destroy all Confidential Information received from the other party.",
                             Category = "Return of Materials",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 8,
+                            Source = "System",
                             Title = "Return of Materials"
                         },
                         new
@@ -179,10 +234,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 9,
                             BodyTemplate = "Each party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
                             Category = "Remedies",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 9,
+                            Source = "System",
                             Title = "Remedies"
                         },
                         new
@@ -190,10 +249,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 10,
                             BodyTemplate = "Neither party may assign this Agreement without the prior written consent of the other party.",
                             Category = "Assignment",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 10,
+                            Source = "System",
                             Title = "Assignment"
                         },
                         new
@@ -201,10 +264,14 @@ namespace DraftEngine.Data.Migrations
                             Id = 11,
                             BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 11,
+                            Source = "System",
                             Title = "Severability"
                         },
                         new
@@ -212,11 +279,465 @@ namespace DraftEngine.Data.Migrations
                             Id = 12,
                             BodyTemplate = "This Agreement may be executed in counterparts, each of which shall be deemed an original.",
                             Category = "Miscellaneous",
-                            ContractType = "Mutual NDA",
+                            ContractType = "MutualNda",
+                            IsArchived = false,
                             IsDefaultSelected = true,
                             IsOptional = true,
+                            IsSystem = true,
+                            IsUserDefined = false,
                             SortOrder = 12,
+                            Source = "System",
                             Title = "Counterparts"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BodyTemplate = "The Receiving Party agrees to keep all {{ConfidentialInformation}} confidential and not disclose it to third parties except as permitted by this Agreement.",
+                            Category = "Confidentiality",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 1,
+                            Source = "System",
+                            Title = "Confidentiality"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BodyTemplate = "Confidential Information means any non-public information disclosed by the Disclosing Party that is marked confidential or would reasonably be considered confidential.",
+                            Category = "Definitions",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 2,
+                            Source = "System",
+                            Title = "Definition of Confidential Information"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BodyTemplate = "Confidential Information does not include information that is public, already known, independently developed, or rightfully received from third parties.",
+                            Category = "Exclusions",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 3,
+                            Source = "System",
+                            Title = "Exclusions"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BodyTemplate = "The Receiving Party shall use {{ConfidentialInformation}} solely for the purpose of evaluating the relationship between {{Party1}} and {{Party2}} and shall take reasonable precautions to protect it.",
+                            Category = "Obligations",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 4,
+                            Source = "System",
+                            Title = "Obligations of Receiving Party"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BodyTemplate = "This Agreement shall remain in effect for {{TermMonths}} months from the Effective Date ({{EffectiveDate}}). The obligations of confidentiality shall survive termination.",
+                            Category = "Term",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 5,
+                            Source = "System",
+                            Title = "Term / Duration"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BodyTemplate = "Upon request or termination, the Receiving Party shall return or destroy all Confidential Information received from the Disclosing Party.",
+                            Category = "Return of Materials",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 6,
+                            Source = "System",
+                            Title = "Return or Destruction of Information"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            Category = "Governing Law",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 7,
+                            Source = "System",
+                            Title = "Governing Law"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BodyTemplate = "The Disclosing Party acknowledges that breach may cause irreparable harm and monetary damages may be inadequate.",
+                            Category = "Remedies",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 8,
+                            Source = "System",
+                            Title = "Remedies"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            BodyTemplate = "This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.",
+                            Category = "Miscellaneous",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 9,
+                            Source = "System",
+                            Title = "Entire Agreement"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BodyTemplate = "If any provision is found invalid, the remainder shall remain in full force and effect.",
+                            Category = "Miscellaneous",
+                            ContractType = "OneWayNda",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = true,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 10,
+                            Source = "System",
+                            Title = "Severability"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            BodyTemplate = "{{ClientName}} engages {{ContractorName}} as an independent contractor to perform the services described under the scope of {{Purpose}}.",
+                            Category = "Engagement",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 1,
+                            Source = "System",
+                            Title = "Engagement / Scope of Work"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            BodyTemplate = "{{ContractorName}} is an independent contractor and not an employee of {{ClientName}}. {{ContractorName}} shall be responsible for taxes, insurance, and benefits.",
+                            Category = "Status",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 2,
+                            Source = "System",
+                            Title = "Independent Contractor Status"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            BodyTemplate = "{{ClientName}} shall pay {{ContractorName}} for services rendered as agreed. Payment terms shall be as specified in the engagement details.",
+                            Category = "Compensation",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 3,
+                            Source = "System",
+                            Title = "Fees and Payment"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
+                            Category = "Term",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 4,
+                            Source = "System",
+                            Title = "Term and Termination"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            BodyTemplate = "All work product created by {{ContractorName}} under this Agreement shall be assigned to {{ClientName}} unless otherwise agreed in writing.",
+                            Category = "Intellectual Property",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 5,
+                            Source = "System",
+                            Title = "Intellectual Property Rights"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            BodyTemplate = "{{ContractorName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties.",
+                            Category = "Confidentiality",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 6,
+                            Source = "System",
+                            Title = "Confidentiality"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
+                            Category = "Liability",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 7,
+                            Source = "System",
+                            Title = "Limitation of Liability"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            BodyTemplate = "{{ContractorName}} agrees to indemnify and hold harmless {{ClientName}} from claims arising from {{ContractorName}}'s negligence or willful misconduct.",
+                            Category = "Indemnification",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 8,
+                            Source = "System",
+                            Title = "Indemnification"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            Category = "Governing Law",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 9,
+                            Source = "System",
+                            Title = "Governing Law"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            BodyTemplate = "This Agreement constitutes the entire agreement between the parties. If any provision is found invalid, the remainder shall remain in full force and effect.",
+                            Category = "Miscellaneous",
+                            ContractType = "IndependentContractorAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 10,
+                            Source = "System",
+                            Title = "Entire Agreement / Severability"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            BodyTemplate = "{{ConsultantName}} agrees to provide consulting services to {{ClientName}} in connection with {{Purpose}} as described herein.",
+                            Category = "Services",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 1,
+                            Source = "System",
+                            Title = "Services"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            BodyTemplate = "{{ClientName}} shall pay {{ConsultantName}} consulting fees as agreed. Reasonable expenses may be reimbursed with prior approval.",
+                            Category = "Compensation",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 2,
+                            Source = "System",
+                            Title = "Fees and Expenses"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            BodyTemplate = "This Agreement shall commence on {{EffectiveDate}} and continue for {{TermMonths}} months unless terminated earlier by either party with written notice.",
+                            Category = "Term",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 3,
+                            Source = "System",
+                            Title = "Term and Termination"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            BodyTemplate = "{{ConsultantName}} is an independent contractor and not an employee of {{ClientName}}. {{ConsultantName}} shall have no authority to bind {{ClientName}}.",
+                            Category = "Status",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 4,
+                            Source = "System",
+                            Title = "Independent Contractor Relationship"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            BodyTemplate = "{{ConsultantName}} agrees to keep all {{ConfidentialInformation}} of {{ClientName}} confidential and not disclose it to third parties except as required by law.",
+                            Category = "Confidentiality",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 5,
+                            Source = "System",
+                            Title = "Confidentiality"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            BodyTemplate = "All deliverables and work product created by {{ConsultantName}} under this Agreement shall be owned by {{ClientName}} upon full payment.",
+                            Category = "Intellectual Property",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 6,
+                            Source = "System",
+                            Title = "Intellectual Property"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            BodyTemplate = "During the term and for one year thereafter, {{ConsultantName}} shall not solicit {{ClientName}}'s employees or clients.",
+                            Category = "Non-Solicitation",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = false,
+                            IsOptional = true,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 7,
+                            Source = "System",
+                            Title = "Non-Solicitation"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            BodyTemplate = "Neither party shall be liable for indirect, incidental, or consequential damages arising out of this Agreement.",
+                            Category = "Liability",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 8,
+                            Source = "System",
+                            Title = "Limitation of Liability"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            Category = "Governing Law",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 9,
+                            Source = "System",
+                            Title = "Governing Law"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            BodyTemplate = "This Agreement constitutes the entire agreement between the parties. Any amendments must be in writing and signed by both parties.",
+                            Category = "Miscellaneous",
+                            ContractType = "ConsultingAgreement",
+                            IsArchived = false,
+                            IsDefaultSelected = true,
+                            IsOptional = false,
+                            IsSystem = true,
+                            IsUserDefined = false,
+                            SortOrder = 10,
+                            Source = "System",
+                            Title = "Miscellaneous"
                         });
                 });
 
@@ -225,6 +746,9 @@ namespace DraftEngine.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AssembledText")
                         .IsRequired()
@@ -248,6 +772,9 @@ namespace DraftEngine.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("EffectiveDate")
                         .HasColumnType("TEXT");
 
@@ -260,6 +787,16 @@ namespace DraftEngine.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime?>("LastGeneratedAt")
                         .HasColumnType("TEXT");
@@ -291,11 +828,53 @@ namespace DraftEngine.Data.Migrations
 
                     b.HasIndex("CreatedAt");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("Title");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Contracts", (string)null);
+                });
+
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractAnalysis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ContractId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContractType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ResultJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("ContractAnalyses");
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.ContractClause", b =>
@@ -466,6 +1045,24 @@ namespace DraftEngine.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DraftEngine.Core.Models.WizardDraft", b =>
+                {
+                    b.Property<string>("DraftKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EncryptedPayload")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DraftKey");
+
+                    b.ToTable("WizardDrafts", (string)null);
+                });
+
             modelBuilder.Entity("DraftEngine.Core.Models.ChatMessage", b =>
                 {
                     b.HasOne("DraftEngine.Core.Models.Contract", "Contract")
@@ -477,6 +1074,16 @@ namespace DraftEngine.Data.Migrations
                     b.Navigation("Contract");
                 });
 
+            modelBuilder.Entity("DraftEngine.Core.Models.Clause", b =>
+                {
+                    b.HasOne("DraftEngine.Core.Models.User", "OwnerUser")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("OwnerUser");
+                });
+
             modelBuilder.Entity("DraftEngine.Core.Models.Contract", b =>
                 {
                     b.HasOne("DraftEngine.Core.Models.User", "User")
@@ -486,6 +1093,15 @@ namespace DraftEngine.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractAnalysis", b =>
+                {
+                    b.HasOne("DraftEngine.Core.Models.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId");
+
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.ContractClause", b =>

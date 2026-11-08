@@ -38,7 +38,8 @@ public static class ServiceCollectionExtensions
             provider.GetRequiredService<IDatabaseContextFactory>(),
             provider.GetRequiredService<IFieldService>(),
             provider.GetService<IContractAiService>(),
-            provider.GetService<ILogger<ContractService>>()));
+            provider.GetService<ILogger<ContractService>>(),
+            provider.GetService<IAiRedactionService>()));
 
         services.AddTransient<IChatService>(provider =>
             new ChatService(provider.GetRequiredService<IDatabaseContextFactory>()));

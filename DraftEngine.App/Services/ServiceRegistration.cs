@@ -1,7 +1,10 @@
 using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
+using DraftEngine.App.Services.Backup;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
+using DraftEngine.Core.Models.ContractTypes;
 using DraftEngine.Core.Services;
 using DraftEngine.Data;
 using DraftEngine.Documents.Builders;
@@ -34,6 +37,48 @@ public static class ServiceRegistration
 
         // DbContext-backed application services (contract, clause, field, chat, export).
         services.AddContractServices();
+        services.AddSingleton<IContractTypeRegistry>(ContractTypeRegistry.Instance);
+
+        // Clause management (user-owned clauses).
+        services.AddTransient<IClauseManagementService, ClauseManagementService>();
+
+        // AI privacy (consent, configurable endpoint, redaction).
+        services.AddSingleton<IAiConsentService, AiConsentService>();
+        services.AddSingleton<IAiEndpointSettings, AiEndpointSettings>();
+        services.AddSingleton<IAiRedactionService, AiRedactionService>();
+
+        // Contract editing, duplicate and archive.
+        services.AddTransient<IContractEditService, ContractEditService>();
+        services.AddTransient<IExportHistoryService, ExportHistoryService>();
+
+        // Contract analysis: deterministic always; AI review uses consent + redaction.
+        services.AddSingleton<DraftEngine.Analysis.IAiReviewer, DraftEngine.App.Services.Analysis.AppAiReviewer>();
+        services.AddSingleton<DraftEngine.App.Services.Analysis.IAnalysisService>(provider =>
+            new DraftEngine.App.Services.Analysis.AnalysisService(
+                provider.GetRequiredService<IDatabaseContextFactory>(),
+                provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>(),
+                provider.GetRequiredService<DraftEngine.Analysis.IAiReviewer>()));
+
+        // Portable encrypted backup/restore and plain data export.
+        services.AddSingleton<IPortableBackupService>(provider => new PortableBackupService(
+            provider.GetRequiredService<IDatabaseContextFactory>(),
+            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>()));
+
+        // Wizard draft persistence, licensing (disabled by default), update check (off by default).
+        services.AddTransient<IWizardDraftService, WizardDraftService>();
+        services.AddSingleton<
+            DraftEngine.App.Services.Licensing.ILicenseVerifier,
+            DraftEngine.App.Services.Licensing.EmbeddedLicenseVerifier>();
+        services.AddSingleton<
+            DraftEngine.App.Services.Licensing.ILicenseService,
+            DraftEngine.App.Services.Licensing.LicenseService>();
+        services.AddSingleton<
+            DraftEngine.App.Services.Updates.IUpdateCheckService,
+            DraftEngine.App.Services.Updates.UpdateCheckService>();
+
+        // Localization: resx-backed strings, live language switching and persistence.
+        services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
 
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
@@ -41,6 +86,10 @@ public static class ServiceRegistration
         services.AddSingleton<ContractsListViewModel>();
         services.AddSingleton<ContractDetailViewModel>();
         services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<ClauseManagerViewModel>();
+        services.AddSingleton<ArchivedContractsViewModel>();
+        services.AddSingleton<AboutViewModel>();
+        services.AddSingleton<AnalyzeViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Navigation.
@@ -61,6 +110,12 @@ public static class ServiceRegistration
         services.AddSingleton<IDocxBuilder, DocxBuilder>();
         services.AddSingleton<IPdfBuilder, PdfBuilder>();
         services.AddSingleton<IDocumentBuilder, DocumentBuilder>();
+
+        // Document export recording.
+        // Document export recording (UI depends on Core.Interfaces.IDocumentExportService;
+        // the EF implementation implements Core.Services.IDocumentExportService).
+        services.AddTransient<DraftEngine.Core.Interfaces.IDocumentExportService>(sp =>
+            new DocumentExportServiceAdapter(sp.GetRequiredService<DraftEngine.Core.Services.IDocumentExportService>()));
 
         return services;
     }

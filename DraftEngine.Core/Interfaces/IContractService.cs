@@ -40,6 +40,21 @@ public interface IContractService
     Task<string> ApplyChatEditAsync(int contractId, string userInstruction);
 
     /// <summary>
+    /// Sends a natural-language edit to the AI and validates the reply <em>without</em>
+    /// storing anything, so the caller can present a diff and ask the user to accept or
+    /// reject it. Throws an InvalidOperationException with a user-friendly message on failure.
+    /// </summary>
+    Task<AiEditPreview> PreviewChatEditAsync(int contractId, string userInstruction) =>
+        throw new NotSupportedException("This contract service does not support AI edit previews.");
+
+    /// <summary>
+    /// Applies a previously previewed AI edit: snapshots the current text, stores the new
+    /// text and records the chat exchange. Throws on validation failure.
+    /// </summary>
+    Task<string> ApplyChatEditPreviewAsync(int contractId, string userInstruction, string updatedText) =>
+        throw new NotSupportedException("This contract service does not support AI edit previews.");
+
+    /// <summary>
     /// Returns the version history of a contract (automatic snapshots taken before AI edits,
     /// regenerations and reverts), oldest first. Missing contracts yield an empty list.
     /// </summary>

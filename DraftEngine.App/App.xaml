@@ -3,14 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:DraftEngine.App.ViewModels"
              xmlns:views="clr-namespace:DraftEngine.App.Views"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/Colors.xaml" />
+                <ResourceDictionary Source="Themes/Light.xaml" />
                 <ResourceDictionary Source="Themes/Typography.xaml" />
                 <ResourceDictionary Source="Themes/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Every window applies this style: live FlowDirection/language from the
+                 localization source, plus European digits for Arabic readability. -->
+            <Style x:Key="LocalizedWindowStyle" TargetType="Window">
+                <Setter Property="FlowDirection"
+                        Value="{Binding Source={x:Static loc:LocalizationSource.Current}, Path=FlowDirection}" />
+                <Setter Property="Language"
+                        Value="{Binding Source={x:Static loc:LocalizationSource.Current}, Path=Language}" />
+                <Setter Property="NumberSubstitution.Substitution" Value="European" />
+            </Style>
 
             <!-- Page view model -> view mappings for the ContentControl in MainWindow.
                  WPF instantiates the view with its parameterless constructor; the
@@ -29,6 +40,18 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                 <views:SettingsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ClauseManagerViewModel}">
+                <views:ClauseManagerView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ArchivedContractsViewModel}">
+                <views:ArchivedContractsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AboutViewModel}">
+                <views:AboutView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AnalyzeViewModel}">
+                <views:AnalyzeView />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

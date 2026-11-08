@@ -34,7 +34,9 @@ public class DocxBuilder : IDocxBuilder
         }
 
         var title = DocumentDefaults.NormalizeTitle(contract.Title);
-        var segments = ContractTextParser.Parse(fullContractText);
+        // The assembled text ends with the registry signature block. Strip it here because the
+        // builder renders its own role-labelled signature block after the clauses.
+        var segments = ContractTextParser.ParseBody(fullContractText);
         var parties = ContractParties.ToDisplayText(contract.PartiesJson);
         var signatures = ContractParties.GetSignatureNames(contract);
 
@@ -103,7 +105,7 @@ public class DocxBuilder : IDocxBuilder
         AppendDetail(body, "Effective Date", DocumentDefaults.FormatEffectiveDate(contract.EffectiveDate));
         AppendDetail(body, "Governing Law", DocumentDefaults.OrNotApplicable(contract.GoverningLaw));
         AppendDetail(body, "Term", DocumentDefaults.FormatTerm(contract.TermMonths));
-        AppendDetail(body, "Contract Type", DocumentDefaults.OrNotApplicable(contract.ContractType));
+        AppendDetail(body, "Contract Type", DocumentDefaults.FormatContractType(contract.ContractType));
     }
 
     private static void AppendDetail(Body body, string label, string value)

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:settings="clr-namespace:DraftEngine.App.Services.Settings"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -15,34 +16,45 @@
 
             <!-- Header -->
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-            <TextBlock Text="Connect DraftEngine to OpenAI and choose the defaults used for new contracts."
+            <TextBlock Text="{loc:T Settings.Subtitle}"
                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,20" />
+
+            <!-- Language: applies immediately and is persisted. -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.Language}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.LanguageDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                    <ComboBox ItemsSource="{Binding SupportedLanguages}"
+                              DisplayMemberPath="NativeName"
+                              SelectedValuePath="Code"
+                              SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.Language}"
+                              HorizontalAlignment="Left"
+                              Width="240" />
+                </StackPanel>
+            </Border>
 
             <!-- OpenAI section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="OpenAI" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
-                    <TextBlock Text="Contract data is encrypted with your Windows user profile. Do not reset your Windows password or copy the database to another Windows account — the data will be unreadable. If you plan to change Windows users, export all contracts to DOCX/PDF first."
+                    <TextBlock Text="{loc:T Settings.OpenAiSection}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.EncryptionWarning}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
-                    <TextBlock Text="How your data is handled: when you use AI features (chat edits and AI polish), the contract text, "
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
-                    <TextBlock Text="your instructions and the intake answers are transmitted to OpenAI for processing. Contract content and "
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
-                    <TextBlock Text="chat history are stored encrypted on this computer. Do not use AI features for privileged or confidential "
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,0" />
-                    <TextBlock Text="client material you are not permitted to share with a third-party service."
+                    <TextBlock Text="{loc:T Settings.DataHandling}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,16" />
 
                     <!-- API key -->
-                    <TextBlock Text="API key" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4" />
+                    <TextBlock Text="{loc:T Settings.ApiKey}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4" />
                     <TextBlock Text="{Binding ApiKeyStatusText}" Margin="0,0,0,6">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
-                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasApiKey}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -58,8 +70,8 @@
                         <!-- Masked entry (hidden while the key is shown) -->
                         <PasswordBox Grid.Column="0"
                                      settings:PasswordBoxHelper.BoundPassword="{Binding OpenAiApiKey, UpdateSourceTrigger=PropertyChanged}"
-                                     AutomationProperties.Name="OpenAI API key"
-                                     ToolTip="OpenAI API key">
+                                     AutomationProperties.Name="{loc:T Settings.ApiKeyTooltip}"
+                                     ToolTip="{loc:T Settings.ApiKeyTooltip}">
                             <PasswordBox.Style>
                                 <Style TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
                                     <Setter Property="Visibility" Value="Visible" />
@@ -74,15 +86,15 @@
                         <!-- Plain-text entry (Show mode) -->
                         <TextBox Grid.Column="0"
                                  Text="{Binding OpenAiApiKey, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.Name="OpenAI API key"
+                                 AutomationProperties.Name="{loc:T Settings.ApiKeyTooltip}"
                                  Visibility="{Binding IsKeyVisible, Converter={StaticResource BoolToVis}}"
-                                 ToolTip="OpenAI API key" />
+                                 ToolTip="{loc:T Settings.ApiKeyTooltip}" />
 
                         <Button Grid.Column="1" Content="{Binding ShowHideKeyText}" Margin="8,0"
-                                AutomationProperties.Name="Show or hide the API key"
+                                AutomationProperties.Name="{loc:T Settings.ApiKeyShowHideAutomation}"
                                 Command="{Binding ToggleKeyVisibilityCommand}" />
-                        <Button Grid.Column="2" Content="Test Connection"
-                                AutomationProperties.Name="Test the OpenAI connection"
+                        <Button Grid.Column="2" Content="{loc:T Settings.TestConnection}"
+                                AutomationProperties.Name="{loc:T Settings.TestConnectionAutomation}"
                                 Command="{Binding TestConnectionCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource QuietButtonStyle}">
@@ -105,10 +117,10 @@
                         <TextBlock Text="{Binding TestStatusMessage}" TextWrapping="Wrap" Margin="8,0,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsTestSuccessful}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -116,26 +128,65 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <Separator Margin="0,20,0,16" Background="{StaticResource BorderSubtleBrush}"
-                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <Separator Margin="0,20,0,16" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
 
                     <!-- Model selection -->
-                    <TextBlock Text="Model" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <TextBlock Text="{loc:T Settings.Model}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                     <ComboBox ItemsSource="{Binding ModelOptions}"
                               SelectedItem="{Binding SelectedModel}"
-                              AutomationProperties.Name="OpenAI model"
+                              AutomationProperties.Name="{loc:T Settings.ModelAutomation}"
                               HorizontalAlignment="Left" Width="240" />
-                    <TextBlock Text="gpt-4o-mini is faster and cheaper; gpt-4o is more capable."
+                    <TextBlock Text="{loc:T Settings.ModelDescription}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Privacy section -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.PrivacySection}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.PrivacyDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
+
+                    <CheckBox Content="{loc:T Settings.HidePartyNames}"
+                              IsChecked="{Binding HidePartyNamesFromAi}"
+                              AutomationProperties.Name="{loc:T Settings.HidePartyNames}"
+                              Margin="0,0,0,4" />
+                    <TextBlock Text="{loc:T Settings.HidePartyNamesDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                    <CheckBox Content="{loc:T Settings.CustomEndpoint}"
+                              IsChecked="{Binding UseCustomOpenAiEndpoint}"
+                              AutomationProperties.Name="{loc:T Settings.CustomEndpointAutomation}"
+                              Margin="0,0,0,4" />
+                    <TextBlock Text="{loc:T Settings.CustomEndpointDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <TextBox Text="{Binding OpenAiBaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding UseCustomOpenAiEndpoint}"
+                             AutomationProperties.Name="{loc:T Settings.CustomBaseUrlAutomation}"
+                             ToolTip="{loc:T Settings.CustomBaseUrlTooltip}" />
+
+                    <Separator Margin="0,16,0,12" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
+
+                    <TextBlock Text="{Binding AiConsentStatusText}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,6" />
+                    <Button Content="{loc:T Settings.RevokeConsent}" Padding="12,0" Height="30"
+                            HorizontalAlignment="Left"
+                            AutomationProperties.Name="{loc:T Settings.RevokeConsentAutomation}"
+                            Command="{Binding RevokeAiConsentCommand}"
+                            IsEnabled="{Binding AiConsentGranted}" />
                 </StackPanel>
             </Border>
 
             <!-- Contract defaults section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="Contract defaults" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
-                    <TextBlock Text="These values pre-fill the new contract form. You can still change them per contract."
+                    <TextBlock Text="{loc:T Settings.ContractDefaults}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.ContractDefaultsDescription}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,16" />
 
                     <Grid>
@@ -147,25 +198,74 @@
 
                         <!-- Governing law -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Default governing law" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                            <TextBlock Text="{loc:T Settings.DefaultGoverningLaw}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                             <ComboBox ItemsSource="{Binding GoverningLawOptions}"
                                       SelectedItem="{Binding SelectedGoverningLaw}"
-                                      AutomationProperties.Name="Default governing law" />
+                                      AutomationProperties.Name="{loc:T Settings.DefaultGoverningLawAutomation}" />
                         </StackPanel>
 
                         <!-- Term months -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Default term (months)" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                            <TextBlock Text="{loc:T Settings.DefaultTermMonths}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                             <TextBox Text="{Binding DefaultTermMonths, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                                     AutomationProperties.Name="Default contract term in months"
-                                     ToolTip="Contract term in months (1–120)" />
-                            <TextBlock Text="{Binding TermMonthsError}" Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"
+                                     AutomationProperties.Name="{loc:T Settings.DefaultTermMonthsAutomation}"
+                                     ToolTip="{loc:T Settings.DefaultTermMonthsTooltip}" />
+                            <TextBlock Text="{Binding TermMonthsError}" Foreground="{DynamicResource DangerBrush}" Margin="0,4,0,0"
                                        TextWrapping="Wrap"
                                        Visibility="{Binding HasTermMonthsError, Converter={StaticResource BoolToVis}}" />
-                            <TextBlock Text="Whole number of months, between 1 and 120."
+                            <TextBlock Text="{loc:T Settings.DefaultTermMonthsDescription}"
                                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
                         </StackPanel>
                     </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Data safety: portable backup/restore and plain export -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.BackupSection}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.BackupDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
+
+                    <TextBlock Text="{loc:T Settings.BackupPassword}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <PasswordBox settings:PasswordBoxHelper.BoundPassword="{Binding BackupPassword, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="{loc:T Settings.BackupPasswordAutomation}"
+                                 ToolTip="{loc:T Settings.BackupPasswordTooltip}" />
+
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Content="{loc:T Settings.ExportBackup}" Padding="12,0" Height="30"
+                                AutomationProperties.Name="{loc:T Settings.ExportBackupAutomation}"
+                                Command="{Binding ExportBackupCommand}"
+                                IsEnabled="{Binding CanUseBackup}" />
+                        <Button Content="{loc:T Settings.RestoreBackup}" Padding="12,0" Height="30" Margin="8,0,0,0"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="{loc:T Settings.RestoreBackupAutomation}"
+                                Command="{Binding RestoreBackupCommand}"
+                                IsEnabled="{Binding CanUseBackup}" />
+                    </WrapPanel>
+
+                    <Separator Margin="0,16,0,12" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
+                    <TextBlock Text="{loc:T Settings.ExportData}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <TextBlock Text="{loc:T Settings.ExportDataDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <WrapPanel>
+                        <Button Content="{loc:T Settings.ExportJson}" Padding="12,0" Height="30"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="{loc:T Settings.ExportJsonAutomation}"
+                                Command="{Binding ExportDataCommand}" CommandParameter="json"
+                                IsEnabled="{Binding CanUseBackup}" />
+                        <Button Content="{loc:T Settings.ExportCsv}" Padding="12,0" Height="30" Margin="8,0,0,0"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="{loc:T Settings.ExportCsvAutomation}"
+                                Command="{Binding ExportDataCommand}" CommandParameter="csv"
+                                IsEnabled="{Binding CanUseBackup}" />
+                    </WrapPanel>
+
+                    <TextBlock Text="{Binding BackupStatusMessage}" TextWrapping="Wrap" Margin="0,10,0,0"
+                               Style="{StaticResource SecondaryTextStyle}"
+                               Visibility="{Binding HasBackupStatus, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
             </Border>
 
@@ -181,8 +281,8 @@
                     <!-- Unsaved changes indicator -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
                                 Visibility="{Binding IsDirty, Converter={StaticResource BoolToVis}}">
-                        <Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource AccentBrush}" />
-                        <TextBlock Text="Unsaved changes" Style="{StaticResource SecondaryTextStyle}" Margin="8,0,0,0" />
+                        <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource AccentBrush}" />
+                        <TextBlock Text="{loc:T Settings.UnsavedChanges}" Style="{StaticResource SecondaryTextStyle}" Margin="8,0,0,0" />
                     </StackPanel>
 
                     <!-- Save status -->
@@ -190,9 +290,9 @@
                                VerticalAlignment="Center" Margin="0,0,16,0"
                                Style="{StaticResource SecondaryTextStyle}" />
 
-                    <Button Grid.Column="2" Content="Save settings"
+                    <Button Grid.Column="2" Content="{loc:T Settings.Save}"
                             Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="Save settings"
+                            AutomationProperties.Name="{loc:T Settings.SaveAutomation}"
                             Command="{Binding SaveCommand}" VerticalAlignment="Center"
                             IsEnabled="{Binding CanSave}" />
                 </Grid>

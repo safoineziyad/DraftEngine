@@ -2,17 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Settings;
+using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using ContractTextDiff = DraftEngine.Core.Services.ContractTextDiff;
+using DiffLine = DraftEngine.Core.Services.DiffLine;
+using DiffLineKind = DraftEngine.Core.Services.DiffLineKind;
+using DraftEngine.Core.Models.ContractTypes;
 using Microsoft.Win32;
 using Serilog;
 
@@ -26,6 +33,10 @@ namespace DraftEngine.App.ViewModels;
 public partial class ContractDetailViewModel : ObservableObject, INavigationAware
 {
     private readonly IContractService _contractService;
+    private readonly IContractEditService _contractEditService;
+    private readonly IFieldService _fieldService;
+    private readonly IClauseService _clauseService;
+    private readonly IContractTypeRegistry _contractTypeRegistry;
     private readonly IChatService _chatService;
     private readonly IDocxBuilder _docxBuilder;
     private readonly IPdfBuilder _pdfBuilder;
@@ -33,6 +44,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogService;
     private readonly IAppSettingsService _settingsService;
+    private readonly IExportHistoryService? _exportHistoryService;
 
     /// <summary>
     /// Contract id requested while an operation was still running; loaded as soon as the
@@ -40,9 +52,41 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     /// </summary>
     private int? _pendingContractId;
 
+    /// <summary>The instruction that produced <see cref="PendingAiEdit"/>.</summary>
+    private string? _pendingInstruction;
+
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
     private string pageTitle = "Contract Detail";
+
+    /// <summary>The editable title staged until the user saves and regenerates.</summary>
+    [ObservableProperty]
+    private string editTitle = string.Empty;
+
+    /// <summary>Registry-defined intake values for this contract type.</summary>
+    public ObservableCollection<IntakeFieldViewModel> IntakeFields { get; } = new();
+
+    /// <summary>Available and currently selected clauses for this contract type.</summary>
+    public ObservableCollection<ClauseCategoryGroupViewModel> ClauseGroups { get; } = new();
+
+    /// <summary>Number of clauses selected for the next regeneration.</summary>
+    [ObservableProperty]
+    private int selectedClauseCount;
+
+    /// <summary>Whether template output should be polished with AI during regeneration.</summary>
+    [ObservableProperty]
+    private bool useAiPolish;
+
+    /// <summary>Whether the current metadata, intake and clause selection can be saved.</summary>
+    public bool CanSaveAndRegenerate =>
+        Contract is not null &&
+        !IsBusy &&
+        SelectedClauseCount > 0 &&
+        IntakeFields.All(field => field.IsValid) &&
+        !string.IsNullOrWhiteSpace(EditTitle);
+
+    /// <summary>Whether staged contract settings can currently be changed.</summary>
+    public bool CanEditContract => Contract is not null && !IsBusy;
 
     /// <summary>The loaded contract, or null when it could not be loaded.</summary>
     [ObservableProperty]
@@ -57,6 +101,39 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 
     /// <summary>Version history rows (newest first) shown in the document panel.</summary>
     public ObservableCollection<ContractVersionRowViewModel> Versions { get; } = new();
+
+    /// <summary>Export history rows (newest first) read from GeneratedDocument.</summary>
+    public ObservableCollection<ExportHistoryRowViewModel> ExportHistory { get; } = new();
+
+    /// <summary>True when the export history panel is expanded.</summary>
+    [ObservableProperty]
+    private bool isExportHistoryVisible;
+
+    /// <summary>Header text of the export history panel.</summary>
+    public string ExportHistoryHeader =>
+        ExportHistory.Count == 0 ? "Export history" : $"Export history ({ExportHistory.Count})";
+
+    /// <summary>True when no exports have been recorded yet.</summary>
+    public bool IsExportHistoryEmpty => ExportHistory.Count == 0;
+
+    /// <summary>The AI edit awaiting the user's Accept/Reject decision.</summary>
+    [ObservableProperty]
+    private AiEditPreview? pendingAiEdit;
+
+    /// <summary>The line diff for <see cref="PendingAiEdit"/>.</summary>
+    public ObservableCollection<DiffLineRowViewModel> DiffLines { get; } = new();
+
+    /// <summary>True while a proposed AI edit is waiting for review.</summary>
+    public bool HasPendingAiEdit => PendingAiEdit is not null;
+
+    /// <summary>True when the pending edit can be accepted or rejected right now.</summary>
+    public bool CanReviewAiEdit => PendingAiEdit is not null && !IsBusy;
+
+    /// <summary>Summary line shown above the diff.</summary>
+    public string PendingAiEditSummary => PendingAiEdit is null
+        ? string.Empty
+        : $"Proposed change: {DiffLines.Count(line => line.Kind != DiffLineKind.Unchanged)} changed " +
+          $"line(s). Nothing has been saved yet.";
 
     /// <summary>True when the version history panel is expanded.</summary>
     [ObservableProperty]
@@ -117,15 +194,24 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     /// <summary>Creates the view model.</summary>
     public ContractDetailViewModel(
         IContractService contractService,
+        IContractEditService contractEditService,
+        IFieldService fieldService,
+        IClauseService clauseService,
+        IContractTypeRegistry contractTypeRegistry,
         IChatService chatService,
         IDocxBuilder docxBuilder,
         IPdfBuilder pdfBuilder,
         IDocumentExportService exportService,
         INavigationService navigation,
         IWizardDialogService dialogService,
-        IAppSettingsService settingsService)
+        IAppSettingsService settingsService,
+        IExportHistoryService? exportHistoryService = null)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
+        _contractEditService = contractEditService ?? throw new ArgumentNullException(nameof(contractEditService));
+        _fieldService = fieldService ?? throw new ArgumentNullException(nameof(fieldService));
+        _clauseService = clauseService ?? throw new ArgumentNullException(nameof(clauseService));
+        _contractTypeRegistry = contractTypeRegistry ?? throw new ArgumentNullException(nameof(contractTypeRegistry));
         _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         _docxBuilder = docxBuilder ?? throw new ArgumentNullException(nameof(docxBuilder));
         _pdfBuilder = pdfBuilder ?? throw new ArgumentNullException(nameof(pdfBuilder));
@@ -133,6 +219,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+        _exportHistoryService = exportHistoryService;
     }
 
     /// <inheritdoc cref="INavigationAware" />
@@ -178,6 +265,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         IsBusy = true;
         ErrorMessage = null;
         InfoMessage = null;
+        Contract = null;
+        ResetEditor();
         try
         {
             var contract = await _contractService.GetByIdAsync(contractId);
@@ -190,9 +279,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             LoadFailed = false;
             Contract = contract;
             PageTitle = contract.Title;
+            EditTitle = contract.Title;
             DocumentText = contract.AssembledText ?? string.Empty;
+            await LoadEditorAsync(contract);
             await ReloadChatAsync(contractId);
             await ReloadVersionsAsync(contractId);
+            await ReloadExportHistoryAsync(contractId);
         }
         catch (Exception ex)
         {
@@ -205,33 +297,86 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
     }
 
-    /// <summary>Regenerates the document from the stored clause selection and intake fields (template-based; no AI).</summary>
+    /// <summary>Persists edited metadata, intake answers and clause selection, then regenerates the document.</summary>
     [RelayCommand]
     private async Task RegenerateAsync()
     {
-        if (IsBusy || Contract is null) return;
+        if (!CanSaveAndRegenerate || Contract is null) return;
 
         IsBusy = true;
         ErrorMessage = null;
         InfoMessage = null;
         try
         {
-            // Empty clause ids keep the stored selection; AI polish is disabled because
-            // there is currently no UI path that uses it (the caller must opt in explicitly).
-            var text = await _contractService.GenerateContractAsync(Contract.Id, new List<int>(), useAiPolish: false);
+            var contractId = Contract.Id;
+            var title = EditTitle.Trim();
+            var useAiPolish = UseAiPolish;
+            var values = GetIntakeValues();
+            var definition = _contractTypeRegistry.TryGetByDisplayName(Contract.ContractType);
+            if (definition is null)
+            {
+                ErrorMessage = "This contract type is no longer available for editing.";
+                return;
+            }
+
+            var selectedClauseIds = ClauseGroups
+                .SelectMany(group => group.Clauses)
+                .Where(clause => clause.IsSelected)
+                .Select(clause => clause.Id)
+                .Distinct()
+                .ToList();
+            if (selectedClauseIds.Count == 0)
+            {
+                ErrorMessage = "Select at least one clause before regenerating.";
+                return;
+            }
+
+            var updated = await _contractEditService.UpdateContractAsync(contractId, current =>
+            {
+                current.Title = title;
+                current.ClientName = GetMetadataValue(values, "ClientName", definition.SecondPartyNameKey, current.ClientName);
+                if (values.TryGetValue("ClientEmail", out var clientEmail))
+                {
+                    current.ClientEmail = clientEmail.Trim();
+                }
+
+                current.EffectiveDate = GetEffectiveDate(values, definition, current.EffectiveDate);
+                current.GoverningLaw = GetMetadataValue(values, "GoverningLaw", fallback: current.GoverningLaw);
+
+                var termMonths = GetMetadataValue(values, "TermMonths", fallback: string.Empty);
+                if (int.TryParse(termMonths, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedTerm) &&
+                    parsedTerm > 0)
+                {
+                    current.TermMonths = parsedTerm;
+                }
+
+                current.PartiesJson = BuildPartiesJson(definition, values);
+            });
+            if (updated is null)
+            {
+                MarkAsUnloaded("This contract no longer exists. It may have been deleted.");
+                return;
+            }
+
+            await _fieldService.MapFieldsAsync(contractId, values);
+            var text = await _contractService.GenerateContractAsync(
+                contractId,
+                selectedClauseIds,
+                useAiPolish: useAiPolish);
             DocumentText = text;
 
-            var refreshed = await _contractService.GetByIdAsync(Contract.Id);
+            var refreshed = await _contractService.GetByIdAsync(contractId);
             if (refreshed is not null)
             {
                 Contract = refreshed;
+                PageTitle = refreshed.Title;
             }
 
-            await ReloadVersionsAsync(Contract.Id);
+            await ReloadVersionsAsync(contractId);
             InfoMessage = HasUnresolvedPlaceholders(text)
                 ? "The contract was regenerated, but some placeholders could not be filled and " +
                   "are still visible as {{...}} in the document. Use the assistant to complete them."
-                : "The contract was regenerated from its clauses and intake answers.";
+                : "Your changes were saved and the contract was regenerated.";
         }
         catch (InvalidOperationException ex)
         {
@@ -247,6 +392,335 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         {
             IsBusy = false;
         }
+    }
+
+    /// <summary>Creates a draft copy of the current contract and opens it.</summary>
+    [RelayCommand]
+    private async Task DuplicateContractAsync()
+    {
+        if (IsBusy || Contract is null) return;
+
+        IsBusy = true;
+        ErrorMessage = null;
+        InfoMessage = null;
+        try
+        {
+            var copy = await _contractEditService.DuplicateContractAsync(
+                Contract.Id,
+                $"Copy of {Contract.Title}");
+            if (copy is null)
+            {
+                ErrorMessage = "We couldn't duplicate this contract because it no longer exists.";
+                return;
+            }
+
+            _navigation.Navigate("contract-detail", copy.Id);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to duplicate contract {ContractId}.", Contract.Id);
+            ErrorMessage = "We couldn't duplicate the contract. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task LoadEditorAsync(Contract contract)
+    {
+        ResetEditor();
+        EditTitle = contract.Title;
+
+        var definition = _contractTypeRegistry.TryGetByDisplayName(contract.ContractType);
+        if (definition is null)
+        {
+            return;
+        }
+
+        var storedValues = contract.ContractFields
+            .Where(field => !string.IsNullOrWhiteSpace(field.Key))
+            .GroupBy(field => field.Key, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.Last().Value ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+        var partyValues = ReadPartyValues(contract.PartiesJson);
+        foreach (var intake in definition.IntakeFields)
+        {
+            var kind = intake.Kind switch
+            {
+                "Date" => IntakeFieldKind.Date,
+                "Choice" => IntakeFieldKind.Choice,
+                "Number" => IntakeFieldKind.Number,
+                _ => IntakeFieldKind.Text
+            };
+            var initial = GetInitialFieldValue(intake.Key, storedValues, partyValues, contract, definition);
+            var choices = intake.Choices ?? Array.Empty<string>();
+            if (kind == IntakeFieldKind.Choice &&
+                !string.IsNullOrWhiteSpace(initial) &&
+                !choices.Contains(initial, StringComparer.OrdinalIgnoreCase))
+            {
+                choices = choices.Append(initial).ToArray();
+            }
+
+            var field = new IntakeFieldViewModel(
+                intake.Key,
+                intake.Label,
+                kind,
+                intake.Required,
+                choices,
+                kind == IntakeFieldKind.Choice ? initial : null,
+                kind == IntakeFieldKind.Date && DateTime.TryParse(initial, CultureInfo.CurrentCulture, DateTimeStyles.None, out var date)
+                    ? date
+                    : null);
+            if (kind is IntakeFieldKind.Text or IntakeFieldKind.Number)
+            {
+                field.Value = initial;
+            }
+
+            field.PropertyChanged += OnEditorFieldChanged;
+            IntakeFields.Add(field);
+        }
+
+        var clauses = await _clauseService.GetClausesByContractTypeAsync(definition.Id);
+        var storedSelections = contract.ContractClauses
+            .GroupBy(selection => selection.ClauseId)
+            .ToDictionary(group => group.Key, group => group.Last().Selected);
+        var availableIds = clauses.Select(clause => clause.Id).ToHashSet();
+        foreach (var selection in contract.ContractClauses)
+        {
+            if (selection.Clause is not null && availableIds.Add(selection.ClauseId))
+            {
+                clauses.Add(selection.Clause);
+            }
+        }
+
+        var values = GetIntakeValues();
+        foreach (var group in clauses
+            .GroupBy(clause => clause.Category)
+            .OrderBy(group => group.Min(clause => clause.SortOrder)))
+        {
+            var groupViewModel = new ClauseCategoryGroupViewModel(group.Key);
+            foreach (var clause in group.OrderBy(clause => clause.SortOrder))
+            {
+                var option = new ClauseOptionViewModel(
+                    clause.Id,
+                    clause.Title,
+                    clause.BodyTemplate,
+                    clause.IsOptional,
+                    storedSelections.TryGetValue(clause.Id, out var selected) ? selected : clause.IsDefaultSelected,
+                    _fieldService.ReplacePlaceholders(clause.BodyTemplate, values));
+                option.PropertyChanged += OnClauseOptionChanged;
+                groupViewModel.Clauses.Add(option);
+            }
+
+            ClauseGroups.Add(groupViewModel);
+        }
+
+        UpdateSelectedClauseCount();
+    }
+
+    private void ResetEditor()
+    {
+        foreach (var field in IntakeFields)
+        {
+            field.PropertyChanged -= OnEditorFieldChanged;
+        }
+
+        foreach (var clause in ClauseGroups.SelectMany(group => group.Clauses))
+        {
+            clause.PropertyChanged -= OnClauseOptionChanged;
+        }
+
+        IntakeFields.Clear();
+        ClauseGroups.Clear();
+        SelectedClauseCount = 0;
+        EditTitle = string.Empty;
+        UseAiPolish = false;
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+    }
+
+    private Dictionary<string, string> GetIntakeValues() =>
+        IntakeFields.ToDictionary(field => field.Key, field => field.EffectiveValue, StringComparer.OrdinalIgnoreCase);
+
+    private void OnEditorFieldChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+        RegenerateCommand.NotifyCanExecuteChanged();
+    }
+
+    private void OnClauseOptionChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ClauseOptionViewModel.IsSelected))
+        {
+            UpdateSelectedClauseCount();
+        }
+    }
+
+    private void UpdateSelectedClauseCount()
+    {
+        SelectedClauseCount = ClauseGroups.SelectMany(group => group.Clauses).Count(clause => clause.IsSelected);
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+        RegenerateCommand.NotifyCanExecuteChanged();
+    }
+
+    private static string GetInitialFieldValue(
+        string key,
+        IReadOnlyDictionary<string, string> storedValues,
+        IReadOnlyList<(string Name, string Address)> parties,
+        Contract contract,
+        ContractTypeDefinition definition)
+    {
+        if (storedValues.TryGetValue(key, out var storedValue))
+        {
+            return storedValue;
+        }
+
+        if (string.Equals(key, definition.FirstPartyNameKey, StringComparison.OrdinalIgnoreCase))
+        {
+            return parties.ElementAtOrDefault(0).Name ?? string.Empty;
+        }
+
+        if (string.Equals(key, definition.FirstPartyAddressKey, StringComparison.OrdinalIgnoreCase))
+        {
+            return parties.ElementAtOrDefault(0).Address ?? string.Empty;
+        }
+
+        if (string.Equals(key, definition.SecondPartyNameKey, StringComparison.OrdinalIgnoreCase))
+        {
+            return parties.ElementAtOrDefault(1).Name ?? contract.ClientName;
+        }
+
+        if (string.Equals(key, definition.SecondPartyAddressKey, StringComparison.OrdinalIgnoreCase))
+        {
+            return parties.ElementAtOrDefault(1).Address ?? string.Empty;
+        }
+
+        return key switch
+        {
+            "ClientName" => contract.ClientName,
+            "ClientEmail" => contract.ClientEmail,
+            "EffectiveDate" => contract.EffectiveDate?.ToString("MMMM d, yyyy", CultureInfo.CurrentCulture) ?? string.Empty,
+            "GoverningLaw" => contract.GoverningLaw,
+            "TermMonths" => contract.TermMonths.ToString(CultureInfo.InvariantCulture),
+            _ => string.Empty
+        };
+    }
+
+    private static string GetMetadataValue(
+        IReadOnlyDictionary<string, string> values,
+        string key,
+        string? fallbackKey = null,
+        string fallback = "")
+    {
+        if (values.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
+        {
+            return value.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(fallbackKey) &&
+            values.TryGetValue(fallbackKey, out value) &&
+            !string.IsNullOrWhiteSpace(value))
+        {
+            return value.Trim();
+        }
+
+        return fallback;
+    }
+
+    private static DateTime? GetEffectiveDate(
+        IReadOnlyDictionary<string, string> values,
+        ContractTypeDefinition definition,
+        DateTime? fallback)
+    {
+        var dateField = definition.IntakeFields.FirstOrDefault(field =>
+            string.Equals(field.Key, "EffectiveDate", StringComparison.OrdinalIgnoreCase));
+        var value = dateField is null ? null : values.GetValueOrDefault(dateField.Key);
+        if (dateField is null)
+        {
+            return fallback;
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.None, out var parsed)
+            ? parsed
+            : fallback;
+    }
+
+    private static string BuildPartiesJson(
+        ContractTypeDefinition definition,
+        IReadOnlyDictionary<string, string> values)
+    {
+        var parties = new List<Dictionary<string, string>>();
+        AddParty(parties, values, definition.FirstPartyNameKey, definition.FirstPartyAddressKey, "Party1", "Party1Address");
+        AddParty(parties, values, definition.SecondPartyNameKey, definition.SecondPartyAddressKey, "Party2", "Party2Address");
+        return JsonSerializer.Serialize(parties);
+    }
+
+    private static void AddParty(
+        ICollection<Dictionary<string, string>> parties,
+        IReadOnlyDictionary<string, string> values,
+        string nameKey,
+        string addressKey,
+        string fallbackNameKey,
+        string fallbackAddressKey)
+    {
+        var name = GetMetadataValue(values, nameKey, fallbackNameKey);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        parties.Add(new Dictionary<string, string>
+        {
+            ["name"] = name,
+            ["address"] = GetMetadataValue(values, addressKey, fallbackAddressKey)
+        });
+    }
+
+    private static IReadOnlyList<(string Name, string Address)> ReadPartyValues(string? partiesJson)
+    {
+        if (string.IsNullOrWhiteSpace(partiesJson))
+        {
+            return Array.Empty<(string, string)>();
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(partiesJson);
+            if (document.RootElement.ValueKind != JsonValueKind.Array)
+            {
+                return Array.Empty<(string, string)>();
+            }
+
+            return document.RootElement.EnumerateArray()
+                .Where(party => party.ValueKind == JsonValueKind.Object)
+                .Select(party => (
+                    Name: ReadJsonProperty(party, "name"),
+                    Address: ReadJsonProperty(party, "address")))
+                .ToList();
+        }
+        catch (JsonException)
+        {
+            return Array.Empty<(string, string)>();
+        }
+    }
+
+    private static string ReadJsonProperty(JsonElement element, string propertyName)
+    {
+        foreach (var property in element.EnumerateObject())
+        {
+            if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return property.Value.ValueKind == JsonValueKind.String
+                    ? property.Value.GetString() ?? string.Empty
+                    : string.Empty;
+            }
+        }
+
+        return string.Empty;
     }
 
     /// <summary>Sends the current instruction to the AI assistant and applies the edit to the document.</summary>
@@ -277,18 +751,15 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         InfoMessage = null;
         try
         {
-            var updatedText = await _contractService.ApplyChatEditAsync(Contract.Id, instruction);
-            DocumentText = updatedText;
+            // Preview only: the proposed text is validated but not stored. The user sees a
+            // diff and must Accept before anything replaces the contract.
+            var preview = await _contractService.PreviewChatEditAsync(Contract.Id, instruction);
+            _pendingInstruction = instruction;
+            PendingAiEdit = preview;
             ChatInput = string.Empty;
-            Contract!.AssembledText = updatedText;
-            await ReloadChatAsync(Contract.Id);
-            await ReloadVersionsAsync(Contract.Id);
 
-            if (HasUnresolvedPlaceholders(updatedText))
-            {
-                InfoMessage = "Some placeholders are still visible as {{...}} in the document — " +
-                              "ask the assistant to fill them in.";
-            }
+            ShowDiff(preview);
+            InfoMessage = "Review the proposed change below, then Accept or Reject it.";
         }
         catch (InvalidOperationException ex)
         {
@@ -306,6 +777,81 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         {
             IsBusy = false;
         }
+    }
+
+    /// <summary>Applies the pending AI edit; a version snapshot is taken first.</summary>
+    [RelayCommand]
+    private async Task AcceptAiEditAsync()
+    {
+        if (IsBusy || Contract is null || PendingAiEdit is null) return;
+
+        var pending = PendingAiEdit;
+        var instruction = _pendingInstruction ?? string.Empty;
+        IsBusy = true;
+        ErrorMessage = null;
+        InfoMessage = null;
+        try
+        {
+            var updatedText = await _contractService.ApplyChatEditPreviewAsync(
+                Contract.Id, instruction, pending.UpdatedText);
+            DocumentText = updatedText;
+            Contract.AssembledText = updatedText;
+            PendingAiEdit = null;
+            _pendingInstruction = null;
+            DiffLines.Clear();
+
+            await ReloadChatAsync(Contract.Id);
+            await ReloadVersionsAsync(Contract.Id);
+
+            InfoMessage = HasUnresolvedPlaceholders(updatedText)
+                ? "The edit was applied. Some placeholders are still visible as {{...}} — ask the assistant to fill them in."
+                : "The edit was applied. The previous text is saved in version history.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            Log.Warning(ex, "AI edit apply rejected for contract {ContractId}.", Contract.Id);
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to apply the previewed AI edit for contract {ContractId}.", Contract.Id);
+            ErrorMessage = "The assistant's edit could not be applied. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Discards the pending AI edit without changing the contract.</summary>
+    [RelayCommand]
+    private void RejectAiEdit()
+    {
+        if (PendingAiEdit is null) return;
+
+        PendingAiEdit = null;
+        _pendingInstruction = null;
+        DiffLines.Clear();
+        InfoMessage = "The proposed edit was discarded. Nothing was changed.";
+    }
+
+    /// <summary>Builds the reviewable line diff for a proposed edit.</summary>
+    private void ShowDiff(AiEditPreview preview)
+    {
+        DiffLines.Clear();
+        foreach (var line in ContractTextDiff.Compute(preview.OriginalText, preview.UpdatedText))
+        {
+            DiffLines.Add(new DiffLineRowViewModel(line));
+        }
+
+        OnPropertyChanged(nameof(PendingAiEditSummary));
+    }
+
+    partial void OnPendingAiEditChanged(AiEditPreview? value)
+    {
+        OnPropertyChanged(nameof(HasPendingAiEdit));
+        OnPropertyChanged(nameof(CanReviewAiEdit));
+        OnPropertyChanged(nameof(PendingAiEditSummary));
     }
 
     /// <summary>
@@ -404,6 +950,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 : await _docxBuilder.BuildDocxAsync(Contract!, DocumentText, targetPath);
 
             await _exportService.RecordExportAsync(Contract!.Id, finalPath, fileType);
+            await ReloadExportHistoryAsync(Contract!.Id);
 
             var refreshed = await _contractService.GetByIdAsync(Contract.Id);
             if (refreshed is not null)
@@ -484,15 +1031,50 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
     }
 
+    /// <summary>Reloads the export history; failures never block the page.</summary>
+    private async Task ReloadExportHistoryAsync(int contractId)
+    {
+        if (_exportHistoryService is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var documents = await _exportHistoryService.GetHistoryAsync(contractId);
+            ExportHistory.Clear();
+            foreach (var document in documents)
+            {
+                ExportHistory.Add(new ExportHistoryRowViewModel(
+                    document,
+                    _exportHistoryService.GetFileStatus(document)));
+            }
+
+            OnPropertyChanged(nameof(ExportHistoryHeader));
+            OnPropertyChanged(nameof(IsExportHistoryEmpty));
+        }
+        catch (Exception ex)
+        {
+            // Supporting context only: an unreadable history must not break the contract page.
+            Log.Warning(ex, "Failed to load the export history for contract {ContractId}.", contractId);
+        }
+    }
+
     private void MarkAsUnloaded(string message)
     {
         LoadFailed = true;
         LoadFailedMessage = message;
         Contract = null;
+        ResetEditor();
         DocumentText = string.Empty;
         PageTitle = "Contract Detail";
         ChatMessages.Clear();
+        ExportHistory.Clear();
+        DiffLines.Clear();
+        PendingAiEdit = null;
         OnPropertyChanged(nameof(IsChatEmpty));
+        OnPropertyChanged(nameof(ExportHistoryHeader));
+        OnPropertyChanged(nameof(IsExportHistoryEmpty));
     }
 
     private static string BuildDefaultFileName(Contract contract, string extension)
@@ -597,6 +1179,18 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         OnPropertyChanged(nameof(ShowApiKeyWarning));
     }
 
+    partial void OnContractChanged(Contract? value)
+    {
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+        OnPropertyChanged(nameof(CanEditContract));
+    }
+
+    partial void OnEditTitleChanged(string value)
+    {
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+        RegenerateCommand.NotifyCanExecuteChanged();
+    }
+
     partial void OnIsHistoryVisibleChanged(bool value)
     {
         // The Toolkit-generated property-changed hook cannot be awaited; invoke safely
@@ -641,6 +1235,11 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     {
         RaiseChatAvailability();
         OnPropertyChanged(nameof(ShowApiKeyWarning));
+        OnPropertyChanged(nameof(CanSaveAndRegenerate));
+        OnPropertyChanged(nameof(CanEditContract));
+        OnPropertyChanged(nameof(CanReviewAiEdit));
+        AcceptAiEditCommand.NotifyCanExecuteChanged();
+        RegenerateCommand.NotifyCanExecuteChanged();
 
         if (!value)
         {
@@ -713,6 +1312,78 @@ public partial class ChatMessageRowViewModel : ObservableObject
 
     /// <summary>The local creation time, shown as HH:mm.</summary>
     public string TimeLabel { get; }
+}
+
+/// <summary>Display row for one line of an AI edit diff.</summary>
+public sealed class DiffLineRowViewModel
+{
+    /// <summary>Creates the row from a computed diff line.</summary>
+    public DiffLineRowViewModel(DiffLine line)
+    {
+        ArgumentNullException.ThrowIfNull(line);
+        Kind = line.Kind;
+        Text = line.Text;
+        Prefix = line.Kind switch
+        {
+            DiffLineKind.Added => "+ ",
+            DiffLineKind.Removed => "- ",
+            _ => "  ",
+        };
+    }
+
+    /// <summary>The diff kind, used by the view for colour.</summary>
+    public DiffLineKind Kind { get; }
+
+    /// <summary>Line text without the marker.</summary>
+    public string Text { get; }
+
+    /// <summary>Marker shown before the line.</summary>
+    public string Prefix { get; }
+
+    /// <summary>True for added lines.</summary>
+    public bool IsAdded => Kind == DiffLineKind.Added;
+
+    /// <summary>True for removed lines.</summary>
+    public bool IsRemoved => Kind == DiffLineKind.Removed;
+}
+
+/// <summary>Display row for one recorded export (GeneratedDocument).</summary>
+public sealed class ExportHistoryRowViewModel
+{
+    /// <summary>Creates the row from a persisted export and its file status.</summary>
+    public ExportHistoryRowViewModel(GeneratedDocument document, ExportFileStatus status)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        FileName = Path.GetFileName(document.FilePath);
+        FilePath = document.FilePath;
+        TypeLabel = document.FileType == FileType.Pdf ? "PDF" : "DOCX";
+        ExportedLabel = document.GeneratedAt.ToLocalTime().ToString("g");
+        StatusLabel = status switch
+        {
+            ExportFileStatus.Available => "File available",
+            ExportFileStatus.Missing => "File moved or deleted",
+            _ => "Invalid path",
+        };
+        IsAvailable = status == ExportFileStatus.Available;
+    }
+
+    /// <summary>The exported file name.</summary>
+    public string FileName { get; }
+
+    /// <summary>The full path (shown as a tooltip, never logged).</summary>
+    public string FilePath { get; }
+
+    /// <summary>DOCX or PDF.</summary>
+    public string TypeLabel { get; }
+
+    /// <summary>Local export timestamp.</summary>
+    public string ExportedLabel { get; }
+
+    /// <summary>Whether the recorded file still exists.</summary>
+    public string StatusLabel { get; }
+
+    /// <summary>True when the file is still on disk.</summary>
+    public bool IsAvailable { get; }
 }
 
 /// <summary>

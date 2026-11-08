@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.Core.Interfaces;
 using Serilog;
 
@@ -25,9 +27,11 @@ public partial class DashboardViewModel : ObservableObject
 
     private readonly IContractService _contractService;
     private readonly INavigationService _navigation;
+    private readonly ILocalizationService _localization;
+    private bool _hasLoadError;
 
     /// <summary>The page title shown in the view header.</summary>
-    public string PageTitle => "Dashboard";
+    public string PageTitle => _localization.GetString("Nav.Dashboard");
 
     /// <summary>The contracts of the current user, most recent first.</summary>
     public ObservableCollection<ContractRowViewModel> RecentContracts { get; } = new();
@@ -57,11 +61,16 @@ public partial class DashboardViewModel : ObservableObject
     public bool ShowEmptyState => !HasContracts && !IsLoading && !HasError;
 
     /// <summary>Creates the dashboard view model and loads the recent contracts.</summary>
-    public DashboardViewModel(IContractService contractService, INavigationService navigation)
+    public DashboardViewModel(
+        IContractService contractService,
+        INavigationService navigation,
+        ILocalizationService? localization = null)
     {
         _contractService = contractService;
         _navigation = navigation;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
         _navigation.CurrentViewModelChanged += OnPageChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
     }
 
     /// <summary>Navigates to the new contract wizard.</summary>
@@ -95,6 +104,7 @@ public partial class DashboardViewModel : ObservableObject
     {
         IsLoading = true;
         ErrorMessage = null;
+        _hasLoadError = false;
         try
         {
             var contracts = await _contractService.GetAllAsync(CurrentUserId);
@@ -102,7 +112,7 @@ public partial class DashboardViewModel : ObservableObject
             RecentContracts.Clear();
             foreach (var contract in contracts)
             {
-                RecentContracts.Add(new ContractRowViewModel(contract));
+                RecentContracts.Add(new ContractRowViewModel(contract, _localization));
             }
 
             ContractCount = RecentContracts.Count;
@@ -116,7 +126,8 @@ public partial class DashboardViewModel : ObservableObject
             RecentContracts.Clear();
             ContractCount = 0;
             HoursSavedEstimate = 0;
-            ErrorMessage = "We couldn't load your contracts. Please try again.";
+            _hasLoadError = true;
+            ErrorMessage = _localization.GetString("Dashboard.ErrorLoad");
         }
         finally
         {
@@ -127,6 +138,28 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     partial void OnIsLoadingChanged(bool value) => OnPropertyChanged(nameof(ShowEmptyState));
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(PageTitle));
+
+        // Contract rows derive their status, title fallback and date text from the
+        // active language, so rebuild them from the same contracts.
+        var contracts = RecentContracts.Select(row => row.Contract).ToList();
+        RecentContracts.Clear();
+        foreach (var contract in contracts)
+        {
+            RecentContracts.Add(new ContractRowViewModel(contract, _localization));
+        }
+
+        OnPropertyChanged(nameof(HasContracts));
+        OnPropertyChanged(nameof(ShowEmptyState));
+
+        if (_hasLoadError)
+        {
+            ErrorMessage = _localization.GetString("Dashboard.ErrorLoad");
+        }
+    }
 
     partial void OnErrorMessageChanged(string? value)
     {

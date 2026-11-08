@@ -25,13 +25,13 @@
             <Setter Property="Width" Value="10" />
             <Setter Property="Height" Value="10" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Fill" Value="{StaticResource BorderSubtleBrush}" />
+            <Setter Property="Fill" Value="{DynamicResource BorderSubtleBrush}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                    <Setter Property="Fill" Value="{StaticResource AccentLightBrush}" />
+                    <Setter Property="Fill" Value="{DynamicResource AccentLightBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                    <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+                    <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -41,10 +41,10 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="7,0,22,0" />
-            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                     <Setter Property="FontWeight" Value="SemiBold" />
                 </DataTrigger>
             </Style.Triggers>
@@ -54,7 +54,7 @@
         <Style x:Key="GhostToggleStyle" TargetType="ToggleButton">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Padding" Value="10,4" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -69,11 +69,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ToggleRoot" Property="Background" Value="{StaticResource PanelBrush}" />
+                                <Setter TargetName="ToggleRoot" Property="Background" Value="{DynamicResource PanelBrush}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="ToggleRoot" Property="Background" Value="{StaticResource AccentLightBrush}" />
-                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="ToggleRoot" Property="Background" Value="{DynamicResource AccentLightBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -99,7 +99,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="CardRoot"
                                 Background="{TemplateBinding Background}"
-                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderBrush="{DynamicResource BorderSubtleBrush}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="20">
@@ -107,13 +107,13 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="CardRoot" Property="Background" Value="{StaticResource PanelBrush}" />
+                                <Setter TargetName="CardRoot" Property="Background" Value="{DynamicResource PanelBrush}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="CardRoot" Property="Opacity" Value="0.55" />
                             </Trigger>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="CardRoot" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="CardRoot" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                 <Setter TargetName="CardRoot" Property="BorderThickness" Value="2" />
                                 <Setter TargetName="CardRoot" Property="Padding" Value="19" />
                             </DataTrigger>
@@ -127,6 +127,7 @@
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -137,11 +138,19 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-                <TextBlock Text="Draft a new agreement in four steps."
-                           Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
+                    <TextBlock Text="Draft a new agreement in four steps."
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Discard draft" Padding="14,0" Height="34"
+                        Command="{Binding DiscardDraftCommand}" VerticalAlignment="Center" />
+            </Grid>
             <ItemsControl Grid.Row="1" ItemsSource="{Binding Steps}" Margin="0,16,0,0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -159,18 +168,22 @@
             </ItemsControl>
         </Grid>
 
+        <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
+                Padding="12" Margin="0,0,0,12"
+                Visibility="{Binding HasDraftError, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding DraftErrorMessage}" Foreground="White" TextWrapping="Wrap" />
+        </Border>
+
         <!-- Wizard content -->
-        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="24">
+        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24">
             <Grid>
 
                 <!-- ======================= STEP 1: contract type ======================= -->
                 <StackPanel Visibility="{Binding IsStep1Visible, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Choose a contract type" FontSize="15" FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
-                    <TextBlock Text="Only Mutual NDA is currently available. Other contract types are shown for preview only and cannot be selected."
-                               Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,8" TextWrapping="Wrap" />
-                    <TextBlock Text="Select the agreement you want to draft."
-                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,16" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="All contract types are available. Select the agreement you want to draft."
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,16" TextWrapping="Wrap" />
                     <ItemsControl ItemsSource="{Binding ContractTypes}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -198,14 +211,14 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="{Binding Name}"
                                                        FontSize="14" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        TextWrapping="Wrap" VerticalAlignment="Center" />
                                             <Border Grid.Column="1" CornerRadius="6" Padding="8,3"
-                                                    Background="{StaticResource PanelBrush}"
+                                                    Background="{DynamicResource PanelBrush}"
                                                     Margin="8,0,0,0" VerticalAlignment="Top"
                                                     Visibility="{Binding IsComingSoon, Converter={StaticResource BoolToVis}}">
                                                 <TextBlock Text="Coming soon" FontSize="11"
-                                                           Foreground="{StaticResource TextSecondaryBrush}" />
+                                                           Foreground="{DynamicResource TextSecondaryBrush}" />
                                             </Border>
                                         </Grid>
                                         <TextBlock Grid.Row="1" Text="{Binding Description}"
@@ -223,7 +236,7 @@
                               VerticalScrollBarVisibility="Auto" Background="Transparent">
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Contract details" FontSize="15" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Text="Answer the questions below. These values fill the clauses and the final document."
                                    Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,16"
                                    TextWrapping="Wrap" />
@@ -236,15 +249,15 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource Card}" Padding="16"
-                                            Background="{StaticResource PanelBrush}"
+                                            Background="{DynamicResource PanelBrush}"
                                             Margin="0,0,12,12" VerticalAlignment="Top">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Label}" FontSize="13"
                                                            FontWeight="SemiBold"
-                                                           Foreground="{StaticResource TextPrimaryBrush}" />
+                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
                                                 <TextBlock Text="*" FontSize="13" FontWeight="SemiBold"
-                                                           Foreground="{StaticResource DangerBrush}"
+                                                           Foreground="{DynamicResource DangerBrush}"
                                                            Visibility="{Binding IsRequired, Converter={StaticResource BoolToVis}}" />
                                             </StackPanel>
                                             <TextBox Margin="0,8,0,0"
@@ -274,7 +287,7 @@
                     <StackPanel Margin="0,0,8,0">
                         <Grid>
                             <TextBlock Text="Select clauses" FontSize="15" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
                                        Style="{StaticResource SecondaryTextStyle}">
                                 <Run Text="{Binding SelectedClauseCount, Mode=OneWay}" />
@@ -297,9 +310,9 @@
                                         <Grid Margin="4,0,4,8">
                                             <TextBlock Text="{Binding Category}" FontSize="12"
                                                        FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextSecondaryBrush}" />
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
                                             <TextBlock HorizontalAlignment="Right" FontSize="12"
-                                                       Foreground="{StaticResource TextSecondaryBrush}">
+                                                       Foreground="{DynamicResource TextSecondaryBrush}">
                                                 <Run Text="{Binding Clauses.Count, Mode=OneWay}" />
                                                 <Run Text="clauses" />
                                             </TextBlock>
@@ -328,13 +341,13 @@
                                                                             Margin="10,0,0,0"
                                                                             VerticalAlignment="Center">
                                                                     <TextBlock Text="{Binding Title}" FontSize="14"
-                                                                               Foreground="{StaticResource TextPrimaryBrush}" />
+                                                                               Foreground="{DynamicResource TextPrimaryBrush}" />
                                                                     <Border CornerRadius="6" Padding="8,2"
-                                                                            Background="{StaticResource PanelBrush}"
+                                                                            Background="{DynamicResource PanelBrush}"
                                                                             Margin="8,0,0,0"
                                                                             Visibility="{Binding IsOptional, Converter={StaticResource BoolToVis}}">
                                                                         <TextBlock Text="Optional" FontSize="11"
-                                                                                   Foreground="{StaticResource TextSecondaryBrush}" />
+                                                                                   Foreground="{DynamicResource TextSecondaryBrush}" />
                                                                     </Border>
                                                                 </StackPanel>
                                                                 <ToggleButton Grid.Column="2"
@@ -343,14 +356,14 @@
                                                                               IsChecked="{Binding IsExpanded}" />
                                                             </Grid>
                                                             <Border Grid.Row="1" Margin="0,12,0,0"
-                                                                    Background="{StaticResource PanelBrush}"
-                                                                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                                                                    Background="{DynamicResource PanelBrush}"
+                                                                    BorderBrush="{DynamicResource BorderSubtleBrush}"
                                                                     BorderThickness="1" CornerRadius="6" Padding="14"
                                                                     Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
                                                                 <TextBlock Text="{Binding PreviewText}"
                                                                            FontFamily="{StaticResource DocumentFontFamily}"
                                                                            FontSize="12.5" LineHeight="20"
-                                                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                                                           Foreground="{DynamicResource TextPrimaryBrush}"
                                                                            TextWrapping="Wrap" />
                                                             </Border>
                                                         </Grid>
@@ -370,7 +383,7 @@
                               VerticalScrollBarVisibility="Auto" Background="Transparent">
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Review your contract" FontSize="15" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Text="Confirm the details below, then generate the document."
                                    Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,16" />
                         <Border Style="{StaticResource Card}" Padding="0">
@@ -387,7 +400,7 @@
                                                        VerticalAlignment="Top" />
                                             <TextBlock Grid.Column="1" Text="{Binding Value}"
                                                        FontSize="13"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </DataTemplate>
@@ -396,10 +409,15 @@
                         </Border>
                         <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                             <TextBlock Text="Clauses selected:" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
                             <TextBlock Text="{Binding SelectedClauseCount}" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="6,0,0,0" />
+                                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="6,0,0,0" />
                         </StackPanel>
+                        <CheckBox Margin="0,16,0,0"
+                                  Content="Apply AI polish (requires OpenAI API key)"
+                                  IsChecked="{Binding UseAiPolish}"
+                                  AutomationProperties.Name="Apply AI polish to the generated contract"
+                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                 </ScrollViewer>
 
@@ -407,14 +425,14 @@
         </Border>
 
         <!-- Footer: Back / Next / Generate -->
-        <Grid Grid.Row="2" Margin="0,16,0,0">
+        <Grid Grid.Row="3" Margin="0,16,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ProgressBar Grid.Row="0" Height="3" BorderThickness="0"
-                         Foreground="{StaticResource AccentBrush}"
-                         Background="{StaticResource BorderSubtleBrush}"
+                         Foreground="{DynamicResource AccentBrush}"
+                         Background="{DynamicResource BorderSubtleBrush}"
                          IsIndeterminate="True" Margin="0,0,0,12"
                          Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
             <Grid Grid.Row="1">

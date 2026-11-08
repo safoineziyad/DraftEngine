@@ -5,6 +5,7 @@
     <ProjectReference Include="..\DraftEngine.Data\DraftEngine.Data.csproj" />
     <ProjectReference Include="..\DraftEngine.AI\DraftEngine.AI.csproj" />
     <ProjectReference Include="..\DraftEngine.Documents\DraftEngine.Documents.csproj" />
+    <ProjectReference Include="..\DraftEngine.Analysis\DraftEngine.Analysis.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,9 +29,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <!-- Release version: stamped into the assembly and displayed by the UI via AppVersion.Display. -->
-    <Version>0.2.2</Version>
-    <AssemblyVersion>0.2.2.0</AssemblyVersion>
-    <FileVersion>0.2.2.0</FileVersion>
+    <Version>0.4.0</Version>
+    <AssemblyVersion>0.4.0.0</AssemblyVersion>
+    <FileVersion>0.4.0.0</FileVersion>
     <Product>DraftEngine</Product>
     <AssemblyTitle>DraftEngine</AssemblyTitle>
   </PropertyGroup>

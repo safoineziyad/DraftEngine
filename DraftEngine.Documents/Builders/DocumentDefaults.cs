@@ -1,3 +1,5 @@
+using DraftEngine.Core.Models.ContractTypes;
+
 namespace DraftEngine.Documents.Builders;
 
 /// <summary>
@@ -29,6 +31,16 @@ internal static class DocumentDefaults
     /// <summary>Trims an optional value and falls back to <see cref="NotApplicable"/> when blank.</summary>
     internal static string OrNotApplicable(string? value) =>
         string.IsNullOrWhiteSpace(value) ? NotApplicable : value.Trim();
+
+    /// <summary>
+    /// Renders the contract type's human-readable name on the title page. Stored values may be
+    /// the canonical registry id ("MutualNda") or a legacy display name, so resolve through the
+    /// registry instead of printing the raw key.
+    /// </summary>
+    internal static string FormatContractType(string? contractType) =>
+        string.IsNullOrWhiteSpace(contractType)
+            ? NotApplicable
+            : ContractTypeRegistry.GetByDisplayName(contractType).DisplayName;
 
     /// <summary>Formats the effective date, or <see cref="NotApplicable"/> when it is unset.</summary>
     internal static string FormatEffectiveDate(DateTime? effectiveDate) =>

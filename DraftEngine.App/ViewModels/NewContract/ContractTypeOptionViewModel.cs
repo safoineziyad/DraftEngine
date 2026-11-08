@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using DraftEngine.Core.Models.ContractTypes;
 
 namespace DraftEngine.App.ViewModels.NewContract;
 
@@ -10,11 +11,17 @@ public partial class ContractTypeOptionViewModel : ObservableObject
 {
     [ObservableProperty] private bool _isSelected;
 
-    /// <summary>The display name of the contract type (also persisted as <c>Contract.ContractType</c>).</summary>
-    public string Name { get; }
+    /// <summary>The registry definition backing this card, including its canonical id.</summary>
+    public ContractTypeDefinition Definition { get; }
+
+    /// <summary>The canonical registry id (e.g. <c>MutualNda</c>).</summary>
+    public string Id => Definition.Id;
+
+    /// <summary>The display name of the contract type shown on the card.</summary>
+    public string Name => Definition.DisplayName;
 
     /// <summary>A short one-line description shown on the card.</summary>
-    public string Description { get; }
+    public string Description => Definition.Description;
 
     /// <summary>Whether the user can select this contract type. False shows the "Coming soon" badge.</summary>
     public bool IsAvailable { get; }
@@ -22,11 +29,10 @@ public partial class ContractTypeOptionViewModel : ObservableObject
     /// <summary>Whether the card is visibly marked "Coming soon" (inverse of <see cref="IsAvailable"/>).</summary>
     public bool IsComingSoon => !IsAvailable;
 
-    /// <summary>Creates a contract type card option.</summary>
-    public ContractTypeOptionViewModel(string name, string description, bool isAvailable)
+    /// <summary>Creates a contract type card option from a registry definition.</summary>
+    public ContractTypeOptionViewModel(ContractTypeDefinition definition, bool isAvailable)
     {
-        Name = name;
-        Description = description;
+        Definition = definition ?? throw new System.ArgumentNullException(nameof(definition));
         IsAvailable = isAvailable;
     }
 }

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="Nav.NewContract" xml:space="preserve"><value>عقد جديد</value></data>
+  <data name="Nav.Contracts" xml:space="preserve"><value>العقود</value></data>
+  <data name="Nav.Analyze" xml:space="preserve"><value>تحليل</value></data>
+  <data name="Nav.Settings" xml:space="preserve"><value>الإعدادات</value></data>
+  <data name="Nav.ClauseManager" xml:space="preserve"><value>إدارة البنود</value></data>
+  <data name="Nav.Archived" xml:space="preserve"><value>العقود المؤرشفة</value></data>
+  <data name="Nav.About" xml:space="preserve"><value>حول والمساعدة</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>التالي</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>رجوع</value></data>
+  <data name="Common.Skip" xml:space="preserve"><value>تخطي</value></data>
+  <data name="Common.GetStarted" xml:space="preserve"><value>البدء</value></data>
+  <data name="Common.Refresh" xml:space="preserve"><value>تحديث</value></data>
+  <data name="Settings.Title" xml:space="preserve"><value>الإعدادات</value></data>
+  <data name="Settings.Appearance" xml:space="preserve"><value>المظهر واللغة</value></data>
+  <data name="Settings.AppearanceDescription" xml:space="preserve"><value>تُطبَّق التغييرات فوراً. تؤدي العربية إلى تحويل الواجهة من اليمين إلى اليسار.</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>اللغة</value></data>
+  <data name="Settings.Theme" xml:space="preserve"><value>السمة</value></data>
+  <data name="Theme.Light" xml:space="preserve"><value>فاتح</value></data>
+  <data name="Theme.Dark" xml:space="preserve"><value>داكن</value></data>
+  <data name="Theme.System" xml:space="preserve"><value>اتبع Windows</value></data>
+  <data name="Language.System" xml:space="preserve"><value>النظام</value></data>
+  <data name="Analyze.Title" xml:space="preserve"><value>تحليل</value></data>
+  <data name="Analyze.Subtitle" xml:space="preserve"><value>راجع العقد وفق دليل مراجعة. تعمل الفحوص الحتمية دون اتصال؛ ومراجعة الذكاء الاصطناعي اختيارية وتتطلب الموافقة.</value></data>
+  <data name="Analyze.Disclaimer" xml:space="preserve"><value>هذا ليس رأياً قانونياً. يلزم مراجعة من محامٍ مرخّص.</value></data>
+  <data name="Analyze.ChooseFile" xml:space="preserve"><value>اختيار ملف...</value></data>
+  <data name="Settings.PageTitle" xml:space="preserve"><value>الإعدادات</value></data>
+  <data name="Settings.LanguageDescription" xml:space="preserve"><value>اختر اللغة المستخدمة في DraftEngine. تُطبَّق التغييرات فورًا.</value></data>
+  <data name="Onboarding.WindowTitle" xml:space="preserve"><value>مرحبًا بك في DraftEngine</value></data>
+  <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>اختر لغتك</value></data>
+  <data name="Common.Version" xml:space="preserve"><value>الإصدار {0}</value></data>
+  <data name="Common.VersionLabel" xml:space="preserve"><value>الإصدار </value></data>
+  <data name="Main.VersionAutomation" xml:space="preserve"><value>إصدار التطبيق</value></data>
+  <data name="Nav.DashboardAutomation" xml:space="preserve"><value>الانتقال إلى لوحة التحكم</value></data>
+  <data name="Nav.NewContractAutomation" xml:space="preserve"><value>بدء عقد جديد</value></data>
+  <data name="Nav.ContractsAutomation" xml:space="preserve"><value>الانتقال إلى قائمة العقود</value></data>
+  <data name="Nav.SettingsAutomation" xml:space="preserve"><value>الانتقال إلى الإعدادات</value></data>
+  <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>تحليل عقد</value></data>
+  <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>الانتقال إلى مدير البنود</value></data>
+  <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>الانتقال إلى العقود المؤرشفة</value></data>
+  <data name="Nav.AboutAutomation" xml:space="preserve"><value>الانتقال إلى حول والمساعدة</value></data>
+  <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>فتح الإعدادات</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>اربط DraftEngine بـ OpenAI واختر الإعدادات الافتراضية المستخدمة للعقود الجديدة.</value></data>
+  <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Settings.EncryptionWarning" xml:space="preserve"><value>تُشفَّر بيانات العقود باستخدام ملف تعريف مستخدم Windows الخاص بك. لا تُعِد تعيين كلمة مرور Windows ولا تنسخ قاعدة البيانات إلى حساب Windows آخر — ستصبح البيانات غير قابلة للقراءة. إذا كنت تخطط لتغيير مستخدم Windows، فصدّر جميع العقود إلى DOCX/PDF أولًا.</value></data>
+  <data name="Settings.DataHandling" xml:space="preserve"><value>كيفية معالجة بياناتك: عند استخدام ميزات الذكاء الاصطناعي (تعديلات المحادثة والتحسين بالذكاء الاصطناعي)، يُرسَل نص العقد وتعليماتك وإجابات الاستبيان إلى OpenAI للمعالجة. يُخزَّن محتوى العقد وسجل المحادثة مشفَّرين على هذا الكمبيوتر. لا تستخدم ميزات الذكاء الاصطناعي لمواد عملاء محمية أو سرية غير مسموح لك بمشاركتها مع خدمة طرف ثالث.</value></data>
+  <data name="Settings.ApiKey" xml:space="preserve"><value>مفتاح API</value></data>
+  <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>مفتاح OpenAI API</value></data>
+  <data name="Settings.ApiKeyShowHideAutomation" xml:space="preserve"><value>إظهار أو إخفاء مفتاح API</value></data>
+  <data name="Settings.TestConnection" xml:space="preserve"><value>اختبار الاتصال</value></data>
+  <data name="Settings.TestConnectionAutomation" xml:space="preserve"><value>اختبار الاتصال بـ OpenAI</value></data>
+  <data name="Settings.Model" xml:space="preserve"><value>النموذج</value></data>
+  <data name="Settings.ModelAutomation" xml:space="preserve"><value>نموذج OpenAI</value></data>
+  <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini أسرع وأقل تكلفة؛ gpt-4o أكثر قدرة.</value></data>
+  <data name="Settings.PrivacySection" xml:space="preserve"><value>الخصوصية ونقطة اتصال الذكاء الاصطناعي</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>يبقى على هذا الكمبيوتر: العقود وإجابات الاستبيان واختيارات البنود وسجل المحادثة والإعدادات ومفتاح API (جميعها مشفَّرة بملف تعريف مستخدم Windows). تُرسَل إلى مزوّد الذكاء الاصطناعي فقط عند استخدام ميزة ذكاء اصطناعي: نص العقد الحالي وتعليمك واسم النموذج. لا تُجمَع أي بيانات تتبع.</value></data>
+  <data name="Settings.HidePartyNames" xml:space="preserve"><value>إخفاء أسماء وعناوين الأطراف عن الذكاء الاصطناعي</value></data>
+  <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>عند التفعيل، تُستبدَل أسماء الأطراف وعناوينها وعناوين بريدها الإلكتروني برموز قبل كل طلب ذكاء اصطناعي وتُستعاد في الرد.</value></data>
+  <data name="Settings.CustomEndpoint" xml:space="preserve"><value>استخدام نقطة اتصال مخصصة متوافقة مع OpenAI</value></data>
+  <data name="Settings.CustomEndpointAutomation" xml:space="preserve"><value>استخدام نقطة اتصال ذكاء اصطناعي مخصصة</value></data>
+  <data name="Settings.CustomEndpointDescription" xml:space="preserve"><value>عنوان URL الأساسي، مثل https://your-resource.openai.azure.com/openai/deployments/… أو بوابة أو http://localhost:11434/v1/ لـ Ollama أو LM Studio.</value></data>
+  <data name="Settings.CustomBaseUrlAutomation" xml:space="preserve"><value>عنوان URL أساسي مخصص للذكاء الاصطناعي</value></data>
+  <data name="Settings.CustomBaseUrlTooltip" xml:space="preserve"><value>عنوان URL أساسي مخصص متوافق مع OpenAI</value></data>
+  <data name="Settings.AiConsentGranted" xml:space="preserve"><value>الموافقة على مشاركة البيانات مع الذكاء الاصطناعي: ممنوحة</value></data>
+  <data name="Settings.AiConsentNotGranted" xml:space="preserve"><value>الموافقة على مشاركة البيانات مع الذكاء الاصطناعي: غير ممنوحة</value></data>
+  <data name="Settings.RevokeConsent" xml:space="preserve"><value>إلغاء موافقة الذكاء الاصطناعي</value></data>
+  <data name="Settings.RevokeConsentAutomation" xml:space="preserve"><value>إلغاء الموافقة على مشاركة البيانات مع الذكاء الاصطناعي</value></data>
+  <data name="Settings.ContractDefaults" xml:space="preserve"><value>الإعدادات الافتراضية للعقود</value></data>
+  <data name="Settings.ContractDefaultsDescription" xml:space="preserve"><value>تملأ هذه القيم نموذج العقد الجديد مسبقًا. يمكنك تغييرها لكل عقد على حدة.</value></data>
+  <data name="Settings.DefaultGoverningLaw" xml:space="preserve"><value>القانون الحاكم الافتراضي</value></data>
+  <data name="Settings.DefaultGoverningLawAutomation" xml:space="preserve"><value>القانون الحاكم الافتراضي</value></data>
+  <data name="Settings.DefaultTermMonths" xml:space="preserve"><value>المدة الافتراضية (بالأشهر)</value></data>
+  <data name="Settings.DefaultTermMonthsAutomation" xml:space="preserve"><value>مدة العقد الافتراضية بالأشهر</value></data>
+  <data name="Settings.DefaultTermMonthsTooltip" xml:space="preserve"><value>مدة العقد بالأشهر (1–120)</value></data>
+  <data name="Settings.DefaultTermMonthsDescription" xml:space="preserve"><value>عدد صحيح من الأشهر، بين 1 و120.</value></data>
+  <data name="Settings.BackupSection" xml:space="preserve"><value>النسخ الاحتياطي وتصدير البيانات</value></data>
+  <data name="Settings.BackupDescription" xml:space="preserve"><value>تحتوي النسخة الاحتياطية المحمولة على العقود وإجابات الاستبيان والبنود والإصدارات وسجل المحادثة والإعدادات غير السرية في ملف واحد مشفَّر بكلمة مرور (AES-256-GCM). يمكن استعادتها على كمبيوتر Windows آخر. لا تُخزَّن كلمة المرور أبدًا؛ وإذا فقدتها فلا يمكن فتح النسخة الاحتياطية. لا يُضمَّن مفتاح OpenAI API.</value></data>
+  <data name="Settings.BackupPassword" xml:space="preserve"><value>كلمة مرور النسخ الاحتياطي (8 أحرف على الأقل)</value></data>
+  <data name="Settings.BackupPasswordAutomation" xml:space="preserve"><value>كلمة مرور النسخ الاحتياطي</value></data>
+  <data name="Settings.BackupPasswordTooltip" xml:space="preserve"><value>يُستخدم فقط لهذا التصدير أو الاستعادة</value></data>
+  <data name="Settings.ExportBackup" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.ExportBackupAutomation" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.RestoreBackup" xml:space="preserve"><value>استعادة نسخة احتياطية...</value></data>
+  <data name="Settings.RestoreBackupAutomation" xml:space="preserve"><value>استعادة نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.ExportData" xml:space="preserve"><value>تصدير بياناتي</value></data>
+  <data name="Settings.ExportDataDescription" xml:space="preserve"><value>نسخة مقروءة وغير مشفَّرة لسجلاتك أو لأداة أخرى. تتضمن نص العقود وإجابات الاستبيان؛ خزّنها في مكان محمي. لا يُضمَّن مفتاح API أبدًا.</value></data>
+  <data name="Settings.ExportJson" xml:space="preserve"><value>تصدير JSON...</value></data>
+  <data name="Settings.ExportJsonAutomation" xml:space="preserve"><value>تصدير البيانات بصيغة JSON</value></data>
+  <data name="Settings.ExportCsv" xml:space="preserve"><value>تصدير CSV...</value></data>
+  <data name="Settings.ExportCsvAutomation" xml:space="preserve"><value>تصدير البيانات بصيغة CSV</value></data>
+  <data name="Settings.UnsavedChanges" xml:space="preserve"><value>تغييرات غير محفوظة</value></data>
+  <data name="Settings.Save" xml:space="preserve"><value>حفظ الإعدادات</value></data>
+  <data name="Settings.SaveAutomation" xml:space="preserve"><value>حفظ الإعدادات</value></data>
+  <data name="Settings.ApiKeyNotConfigured" xml:space="preserve"><value>لم يُضبط مفتاح API</value></data>
+  <data name="Settings.ApiKeyConfigured" xml:space="preserve"><value>مفتاح API مضبوط</value></data>
+  <data name="Settings.ApiKeyConfiguredMasked" xml:space="preserve"><value>مفتاح API مضبوط ({0}...{1})</value></data>
+  <data name="Settings.Show" xml:space="preserve"><value>إظهار</value></data>
+  <data name="Settings.Hide" xml:space="preserve"><value>إخفاء</value></data>
+  <data name="Settings.ErrorBackupPasswordShort" xml:space="preserve"><value>اختر كلمة مرور للنسخ الاحتياطي من 8 أحرف على الأقل.</value></data>
+  <data name="Settings.ExportBackupTitle" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.BackupFilter" xml:space="preserve"><value>نسخة احتياطية DraftEngine (*.debk)|*.debk</value></data>
+  <data name="Settings.BackupSaved" xml:space="preserve"><value>حُفظت النسخة الاحتياطية المشفَّرة: {0} عقدًا و{1} بندًا. احتفظ بكلمة المرور في مكان آمن؛ لا يمكن استعادتها.</value></data>
+  <data name="Settings.ErrorBackupWrite" xml:space="preserve"><value>تعذّر كتابة النسخة الاحتياطية. تحقّق من الوجهة وحاول مرة أخرى.</value></data>
+  <data name="Settings.RestoreBackupTitle" xml:space="preserve"><value>استعادة نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.BackupOpenFilter" xml:space="preserve"><value>نسخة احتياطية DraftEngine (*.debk)|*.debk|كل الملفات (*.*)|*.*</value></data>
+  <data name="Settings.RestoreConfirm" xml:space="preserve"><value>تستبدل الاستعادة جميع العقود والبنود وإجابات الاستبيان وسجل المحادثة والإصدارات الحالية على هذا الكمبيوتر. تُكتب نسخة احتياطية قبل الاستيراد أولًا. هل تريد المتابعة؟</value></data>
+  <data name="Settings.RestoreConfirmTitle" xml:space="preserve"><value>استعادة النسخة الاحتياطية</value></data>
+  <data name="Settings.ErrorRestorePassword" xml:space="preserve"><value>أدخل كلمة المرور المستخدمة عند إنشاء النسخة الاحتياطية.</value></data>
+  <data name="Settings.RestoreDone" xml:space="preserve"><value>استُعيدت النسخة الاحتياطية: {0} عقدًا و{1} بندًا. أعد تشغيل التطبيق إذا كانت إحدى الصفحات تعرض بيانات قديمة.</value></data>
+  <data name="Settings.ErrorWrongPassword" xml:space="preserve"><value>كلمة مرور خاطئة أو تم تعديل ملف النسخة الاحتياطية. لم يتغير شيء.</value></data>
+  <data name="Settings.ErrorRestore" xml:space="preserve"><value>تعذّرت استعادة النسخة الاحتياطية. لم يتغير شيء.</value></data>
+  <data name="Settings.CsvWarning" xml:space="preserve"><value>تصدير CSV هذا غير مشفَّر ويتضمن عناوين العقود والأطراف وإجابات الاستبيان. خزّنه في مكان محمي. هل تريد المتابعة؟</value></data>
+  <data name="Settings.JsonWarning" xml:space="preserve"><value>تصدير JSON هذا غير مشفَّر ويتضمن نص العقود وإجابات الاستبيان وسجل المحادثة. خزّنه في مكان محمي. هل تريد المتابعة؟</value></data>
+  <data name="Settings.ExportDataTitle" xml:space="preserve"><value>تصدير بياناتي</value></data>
+  <data name="Settings.CsvFilter" xml:space="preserve"><value>CSV (*.csv)|*.csv</value></data>
+  <data name="Settings.JsonFilter" xml:space="preserve"><value>JSON (*.json)|*.json</value></data>
+  <data name="Settings.ExportDone" xml:space="preserve"><value>صُدّرت البيانات. الملف غير مشفَّر؛ احمِه أو احذفه عند الانتهاء.</value></data>
+  <data name="Settings.ErrorExport" xml:space="preserve"><value>تعذّرت كتابة التصدير.</value></data>
+  <data name="Settings.ConsentRevoked" xml:space="preserve"><value>أُلغيت موافقة الذكاء الاصطناعي. أصبح التعديل بالذكاء الاصطناعي محظورًا.</value></data>
+  <data name="Settings.ErrorConsentRevoke" xml:space="preserve"><value>تعذّر تحديث إعداد موافقة الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorApiKeyMissing" xml:space="preserve"><value>يرجى لصق مفتاح OpenAI API أولًا.</value></data>
+  <data name="Settings.Connecting" xml:space="preserve"><value>جارٍ الاتصال…</value></data>
+  <data name="Settings.Connected" xml:space="preserve"><value>تم الاتصال بـ OpenAI بنجاح.</value></data>
+  <data name="Settings.ErrorConnect" xml:space="preserve"><value>تعذّر الاتصال بـ OpenAI. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorConnectionTest" xml:space="preserve"><value>حدث خطأ أثناء اختبار الاتصال. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorTermRange" xml:space="preserve"><value>يجب أن تكون المدة بين 1 و120 شهرًا.</value></data>
+  <data name="Settings.Saved" xml:space="preserve"><value>حُفظت الإعدادات.</value></data>
+  <data name="Settings.ErrorSave" xml:space="preserve"><value>تعذّر حفظ إعداداتك. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Onboarding.StepLabel" xml:space="preserve"><value>الخطوة {0} من {1}</value></data>
+  <data name="Onboarding.Step1.Title" xml:space="preserve"><value>مرحبًا بك في DraftEngine</value></data>
+  <data name="Onboarding.Step1.Description" xml:space="preserve"><value>أعدّ عقودًا مصقولة من خلال استبيان موجَّه بدلًا من البدء بصفحة فارغة.</value></data>
+  <data name="Onboarding.Step1.Bullet1" xml:space="preserve"><value>اختر نوع العقد وأجب عن مجموعة قصيرة من الأسئلة.</value></data>
+  <data name="Onboarding.Step1.Bullet2" xml:space="preserve"><value>راجع البنود المقترحة قبل إنشاء أي شيء.</value></data>
+  <data name="Onboarding.Step1.Bullet3" xml:space="preserve"><value>صدّر العقد النهائي بصيغة DOCX أو PDF.</value></data>
+  <data name="Onboarding.Step2.Title" xml:space="preserve"><value>كيف يتكامل العقد</value></data>
+  <data name="Onboarding.Step2.Description" xml:space="preserve"><value>يرشدك المعالج عبر الخطوات نفسها في كل مرة، حتى لا يُغفل أي أمر مهم.</value></data>
+  <data name="Onboarding.Step2.Bullet1" xml:space="preserve"><value>اختر نوع العقد الذي يطابق الصفقة.</value></data>
+  <data name="Onboarding.Step2.Bullet2" xml:space="preserve"><value>أدخل الأطراف والتواريخ والشروط التجارية.</value></data>
+  <data name="Onboarding.Step2.Bullet3" xml:space="preserve"><value>أزل تحديد البنود الاختيارية، ثم أنشئ العقد وصدّره.</value></data>
+  <data name="Onboarding.Step3.Title" xml:space="preserve"><value>تبقى بياناتك محلية</value></data>
+  <data name="Onboarding.Step3.Description" xml:space="preserve"><value>تُخزَّن العقود وإجابات الاستبيان وسجل المحادثة على هذا الكمبيوتر، مشفَّرة باستخدام ملف تعريف مستخدم Windows الخاص بك.</value></data>
+  <data name="Onboarding.Step3.Bullet1" xml:space="preserve"><value>لا يرسل التحرير بالذكاء الاصطناعي النص إلى مزوّد الذكاء الاصطناعي المُهيأ إلا عند استخدامك له.</value></data>
+  <data name="Onboarding.Step3.Bullet2" xml:space="preserve"><value>لا توجد أي قياسات عن بُعد أو مزامنة حسابات أو رفع في الخلفية.</value></data>
+  <data name="Onboarding.Step3.Bullet3" xml:space="preserve"><value>صدّر العقود المهمة قبل تغيير مستخدم Windows أو الكمبيوتر.</value></data>
+  <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>تخطي التعريف</value></data>
+  <data name="Onboarding.BackAutomation" xml:space="preserve"><value>الرجوع</value></data>
+  <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>متابعة التعريف</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>اتفاقياتك ونشاط الصياغة الخاص بك في لمحة.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>العقود المُنشأة</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>الوقت المقدَّر الذي وفّرته</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>س</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>العقود الأخيرة</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>الإجمالي</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>فتح العقد {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>لا توجد عقود بعد.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>أنشئ اتفاقيتك الأولى باستخدام زر «عقد جديد» أعلاه — لا يستغرق الأمر سوى بضع دقائق.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>جارٍ تحميل العقود…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>تعذّر تحميل عقودك. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>عقد بلا عنوان</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>مسودة</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>مُنشأ</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>مُصدَّر</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;الساعة&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
+  <data name="Contracts.Subtitle" xml:space="preserve"><value>ابحث في عقودك المحفوظة وراجعها وأدرها.</value></data>
+  <data name="Contracts.NewContractPlus" xml:space="preserve"><value>+ عقد جديد</value></data>
+  <data name="Contracts.SearchAutomation" xml:space="preserve"><value>البحث في العقود حسب العنوان أو العميل</value></data>
+  <data name="Contracts.SearchPlaceholder" xml:space="preserve"><value>ابحث حسب العنوان أو العميل…</value></data>
+  <data name="Contracts.Type" xml:space="preserve"><value>النوع</value></data>
+  <data name="Contracts.FilterTypeAutomation" xml:space="preserve"><value>التصفية حسب نوع العقد</value></data>
+  <data name="Contracts.Sort" xml:space="preserve"><value>الفرز</value></data>
+  <data name="Contracts.SortAutomation" xml:space="preserve"><value>فرز العقود</value></data>
+  <data name="Contracts.ClearFilters" xml:space="preserve"><value>مسح عوامل التصفية</value></data>
+  <data name="Contracts.ClearFiltersAutomation" xml:space="preserve"><value>مسح جميع عوامل التصفية والفرز</value></data>
+  <data name="Contracts.ClearFiltersTooltip" xml:space="preserve"><value>إعادة البحث وتصفية النوع والفرز إلى الإعدادات الافتراضية</value></data>
+  <data name="Contracts.ColumnTitle" xml:space="preserve"><value>العنوان</value></data>
+  <data name="Contracts.ColumnType" xml:space="preserve"><value>نوع العقد</value></data>
+  <data name="Contracts.ColumnStatus" xml:space="preserve"><value>الحالة</value></data>
+  <data name="Contracts.ColumnEffective" xml:space="preserve"><value>تاريخ السريان</value></data>
+  <data name="Contracts.ColumnTerm" xml:space="preserve"><value>المدة</value></data>
+  <data name="Contracts.ColumnUpdated" xml:space="preserve"><value>آخر تحديث</value></data>
+  <data name="Contracts.Loading" xml:space="preserve"><value>جارٍ تحميل العقود…</value></data>
+  <data name="Contracts.TryAgain" xml:space="preserve"><value>إعادة المحاولة</value></data>
+  <data name="Contracts.RetryAutomation" xml:space="preserve"><value>إعادة محاولة تحميل العقود</value></data>
+  <data name="Contracts.Empty" xml:space="preserve"><value>لا توجد عقود بعد — أنشئ عقدك الأول.</value></data>
+  <data name="Contracts.NoMatch" xml:space="preserve"><value>لا توجد عقود تطابق بحثك.</value></data>
+  <data name="Contracts.NoMatchHint" xml:space="preserve"><value>جرّب كلمة بحث أخرى أو اختر نوع عقد آخر.</value></data>
+  <data name="Contracts.AllTypes" xml:space="preserve"><value>الكل</value></data>
+  <data name="Contracts.SortUpdated" xml:space="preserve"><value>الأحدث تحديثًا</value></data>
+  <data name="Contracts.SortCreated" xml:space="preserve"><value>تاريخ الإنشاء</value></data>
+  <data name="Contracts.DuplicateTitle" xml:space="preserve"><value>نسخة من {0}</value></data>
+  <data name="Contracts.DeleteConfirm" xml:space="preserve"><value>هل تريد حذف «{0}»؟`n`nلا يمكن التراجع عن هذا الإجراء.</value></data>
+  <data name="Contracts.DeleteConfirmTitle" xml:space="preserve"><value>حذف العقد</value></data>
+  <data name="Contracts.ErrorLoad" xml:space="preserve"><value>تعذّر تحميل عقودك. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Contracts.ErrorDuplicateMissing" xml:space="preserve"><value>تعذّر نسخ هذا العقد لأنه لم يعد موجودًا.</value></data>
+  <data name="Contracts.ErrorDuplicate" xml:space="preserve"><value>تعذّر نسخ العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Contracts.ErrorDelete" xml:space="preserve"><value>تعذّر حذف العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Contracts.OpenAutomation" xml:space="preserve"><value>فتح العقد {0}</value></data>
+  <data name="Contracts.DuplicateAutomation" xml:space="preserve"><value>نسخ العقد {0}</value></data>
+  <data name="Contracts.DeleteAutomation" xml:space="preserve"><value>حذف العقد {0}</value></data>
+  <data name="Contract.TermMonthsOne" xml:space="preserve"><value>{0} شهر</value></data>
+  <data name="Contract.TermMonthsMany" xml:space="preserve"><value>{0} أشهر</value></data>
+  <data name="Common.DateFormat" xml:space="preserve"><value>d MMM yyyy</value></data>
+  <data name="Common.NotSet" xml:space="preserve"><value>—</value></data>
+  <data name="Common.Open" xml:space="preserve"><value>فتح</value></data>
+  <data name="Common.Duplicate" xml:space="preserve"><value>نسخ</value></data>
+  <data name="Common.Delete" xml:space="preserve"><value>حذف</value></data>
+</root>

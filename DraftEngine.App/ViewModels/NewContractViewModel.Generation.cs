@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Models;
+using DraftEngine.Core.Models.ContractTypes;
+using DraftEngine.Core.Services;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -15,26 +17,18 @@ namespace DraftEngine.App.ViewModels;
 /// </summary>
 public partial class NewContractViewModel
 {
-    /// <summary>Builds the step 4 summary rows from the current intake values.</summary>
+    /// <summary>Builds the step 4 summary rows from the registry intake fields and current values.</summary>
     private void BuildSummary()
     {
         SummaryItems.Clear();
-        SummaryItems.Add(new SummaryItemViewModel(
-            "Contract type", SelectedContractType?.Name ?? MutualNdaType));
-        AddSummaryRow("Party 1", "Party1");
-        AddSummaryRow("Party 1 address", "Party1Address");
-        AddSummaryRow("Party 2", "Party2");
-        AddSummaryRow("Party 2 address", "Party2Address");
-        AddSummaryRow("Client", "ClientName");
-        AddSummaryRow("Client email", "ClientEmail");
-        AddSummaryRow("Effective date", "EffectiveDate");
-        AddSummaryRow("Governing law", "GoverningLaw");
-        AddSummaryRow("Term (months)", "TermMonths");
-        AddSummaryRow("Purpose of disclosure", "Purpose");
-    }
+        var definition = SelectedDefinition;
+        SummaryItems.Add(new SummaryItemViewModel("Contract type", definition.DisplayName));
 
-    private void AddSummaryRow(string label, string fieldKey) =>
-        SummaryItems.Add(new SummaryItemViewModel(label, FieldValue(fieldKey)));
+        foreach (var row in ContractContentBuilder.BuildSummary(definition, GetFieldValues()))
+        {
+            SummaryItems.Add(new SummaryItemViewModel(row.Label, row.Value));
+        }
+    }
 
     /// <summary>Creates the contract, saves the intake fields, generates the document text and opens the detail page.</summary>
     [RelayCommand(CanExecute = nameof(CanGenerate))]
@@ -50,18 +44,19 @@ public partial class NewContractViewModel
         try
         {
             var values = GetFieldValues();
+            var definition = SelectedDefinition;
             var contract = new Contract
             {
                 UserId = CurrentUserId,
-                Title = BuildTitle(values),
-                ContractType = SelectedContractType?.Name ?? MutualNdaType,
-                ClientName = values.GetValueOrDefault("ClientName", string.Empty),
-                ClientEmail = values.GetValueOrDefault("ClientEmail", string.Empty),
-                PartiesJson = BuildPartiesJson(values),
+                Title = ContractContentBuilder.BuildTitle(definition, values),
+                ContractType = definition.Id,
+                ClientName = FirstNonEmpty(values, "ClientName", definition.SecondPartyNameKey),
+                ClientEmail = FirstNonEmpty(values, "ClientEmail"),
+                PartiesJson = BuildPartiesJson(definition, values), // array of {"name","address"}
                 EffectiveDate = IntakeFields
-                    .FirstOrDefault(field => field.Key == "EffectiveDate")?.DateValue,
-                GoverningLaw = values.GetValueOrDefault("GoverningLaw", string.Empty),
-                TermMonths = int.TryParse(values.GetValueOrDefault("TermMonths"), out var months) ? months : 12
+                    .FirstOrDefault(field => field.Kind == IntakeFieldKind.Date)?.DateValue,
+                GoverningLaw = FirstNonEmpty(values, "GoverningLaw"),
+                TermMonths = int.TryParse(FirstNonEmpty(values, "TermMonths"), out var months) ? months : 12
             };
 
             var created = await _contractService.CreateAsync(contract);
@@ -72,8 +67,12 @@ public partial class NewContractViewModel
                 .Where(option => option.IsSelected)
                 .Select(option => option.Id)
                 .ToList();
-            await _contractService.GenerateContractAsync(created.Id, selectedClauseIds);
+            await _contractService.GenerateContractAsync(created.Id, selectedClauseIds, useAiPolish: UseAiPolish);
 
+            if (!await DeleteSavedDraftAsync())
+            {
+                _dialogs.ShowError("The contract was created, but the saved wizard draft could not be cleared.");
+            }
             _navigation.Navigate("contract-detail", created.Id);
         }
         catch (Exception ex)
@@ -90,22 +89,6 @@ public partial class NewContractViewModel
 
     private bool CanGenerate() => !IsBusy && SelectedClauseCount > 0;
 
-    private string BuildTitle(IReadOnlyDictionary<string, string> values)
-    {
-        var party1 = values.GetValueOrDefault("Party1", string.Empty)?.Trim();
-        var party2 = values.GetValueOrDefault("Party2", string.Empty)?.Trim();
-
-        // Join only the parties that were actually entered: a single party must not
-        // leave a dangling " & " in the title ("Mutual NDA – Acme &").
-        var parties = string.Join(
-            " & ",
-            new[] { party1, party2 }.Where(name => !string.IsNullOrWhiteSpace(name)));
-
-        return string.IsNullOrWhiteSpace(parties)
-            ? MutualNdaType
-            : $"{MutualNdaType} \u2013 {parties}";
-    }
-
     /// <summary>
     /// Builds the <c>PartiesJson</c> payload stored on the contract.
     /// </summary>
@@ -120,30 +103,70 @@ public partial class NewContractViewModel
     /// separately as a <c>ContractField</c> row and is not part of the parties payload.
     /// </para>
     /// </remarks>
-    private static string BuildPartiesJson(IReadOnlyDictionary<string, string> values)
+    private static string BuildPartiesJson(
+        ContractTypeDefinition definition,
+        IReadOnlyDictionary<string, string> values)
     {
         var parties = new List<Dictionary<string, string>>();
 
-        var party1 = values.GetValueOrDefault("Party1", string.Empty);
-        if (!string.IsNullOrWhiteSpace(party1))
-        {
-            parties.Add(new Dictionary<string, string>
-            {
-                ["name"] = party1,
-                ["address"] = values.GetValueOrDefault("Party1Address", string.Empty)
-            });
-        }
-
-        var party2 = values.GetValueOrDefault("Party2", string.Empty);
-        if (!string.IsNullOrWhiteSpace(party2))
-        {
-            parties.Add(new Dictionary<string, string>
-            {
-                ["name"] = party2,
-                ["address"] = values.GetValueOrDefault("Party2Address", string.Empty)
-            });
-        }
+        AddParty(
+            parties,
+            values,
+            definition.FirstPartyNameKey,
+            definition.FirstPartyAddressKey,
+            "Party1",
+            "Party1Address");
+        AddParty(
+            parties,
+            values,
+            definition.SecondPartyNameKey,
+            definition.SecondPartyAddressKey,
+            "Party2",
+            "Party2Address");
 
         return JsonSerializer.Serialize(parties);
+    }
+
+    private static void AddParty(
+        List<Dictionary<string, string>> parties,
+        IReadOnlyDictionary<string, string> values,
+        string nameKey,
+        string addressKey,
+        string fallbackNameKey,
+        string fallbackAddressKey)
+    {
+        var name = FirstNonEmpty(values, nameKey, fallbackNameKey);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        parties.Add(new Dictionary<string, string>
+        {
+            ["name"] = name,
+            ["address"] = FirstNonEmpty(values, addressKey, fallbackAddressKey)
+        });
+    }
+
+    private static string FirstNonEmpty(IReadOnlyDictionary<string, string> values, params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                continue;
+            }
+
+            foreach (var pair in values)
+            {
+                if (string.Equals(pair.Key, key, StringComparison.OrdinalIgnoreCase) &&
+                    !string.IsNullOrWhiteSpace(pair.Value))
+                {
+                    return pair.Value.Trim();
+                }
+            }
+        }
+
+        return string.Empty;
     }
 }

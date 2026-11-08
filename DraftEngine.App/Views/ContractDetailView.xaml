@@ -37,11 +37,17 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Regenerate" Padding="14,0" Height="34"
-                        AutomationProperties.Name="Regenerate contract from clauses"
-                        AutomationProperties.HelpText="Rebuilds the document from the selected clauses and intake answers."
+                <Button Content="Save &amp; regenerate" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        AutomationProperties.Name="Save contract changes and regenerate"
+                        AutomationProperties.HelpText="Saves edited metadata, intake answers and clauses before rebuilding the document."
                         Command="{Binding RegenerateCommand}"
-                        IsEnabled="{Binding HasDocument}" />
+                        IsEnabled="{Binding CanSaveAndRegenerate}" />
+                <CheckBox Margin="12,0,0,0" VerticalAlignment="Center"
+                          Content="AI polish"
+                          IsChecked="{Binding UseAiPolish}"
+                          IsEnabled="{Binding CanEditContract}"
+                          AutomationProperties.Name="Apply AI polish when regenerating"
+                          Foreground="{DynamicResource TextPrimaryBrush}" />
                 <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
                         AutomationProperties.Name="Export contract as DOCX"
                         Command="{Binding ExportDocxCommand}"
@@ -55,14 +61,14 @@
         </Grid>
 
         <!-- Error banner -->
-        <Border Grid.Row="1" Background="{StaticResource DangerBrush}" CornerRadius="6"
+        <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
             <TextBlock Text="{Binding ErrorMessage}" Foreground="White" TextWrapping="Wrap" />
         </Border>
 
         <!-- Success banner -->
-        <Border Grid.Row="2" Background="{StaticResource SuccessBrush}" CornerRadius="6"
+        <Border Grid.Row="2" Background="{DynamicResource SuccessBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
             <TextBlock Text="{Binding InfoMessage}" Foreground="White" TextWrapping="Wrap" />
@@ -81,17 +87,89 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                         <TextBlock Text="Contract document" FontWeight="SemiBold" />
-                        <TextBlock Text="  (read-only — use the assistant or Regenerate to change it)"
+                        <TextBlock Text="  (the assembled text changes only when you save and regenerate)"
                                    Style="{StaticResource SecondaryTextStyle}" />
                     </StackPanel>
 
+                    <!-- Edit staged metadata, registry-defined intake and clause selection. -->
+                    <Expander Grid.Row="1" Margin="0,0,0,10" IsExpanded="True"
+                              IsEnabled="{Binding CanEditContract}"
+                              AutomationProperties.Name="Edit contract details and clauses">
+                        <Expander.Header>
+                            <TextBlock Text="Edit details and clauses" FontWeight="SemiBold" />
+                        </Expander.Header>
+                        <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Contract title" FontWeight="SemiBold" Margin="0,0,0,4" />
+                                <TextBox Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}"
+                                         AutomationProperties.Name="Contract title" Margin="0,0,0,10" />
+                                <Button Content="Duplicate contract" Padding="12,0" Height="30"
+                                        HorizontalAlignment="Left" Margin="0,0,0,12"
+                                        AutomationProperties.Name="Duplicate contract"
+                                        Command="{Binding DuplicateContractCommand}" />
+
+                                <ItemsControl ItemsSource="{Binding IntakeFields}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+                                                           TextWrapping="Wrap" Margin="0,0,10,0" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                         Visibility="{Binding IsTextInput, Converter={StaticResource BoolToVis}}"
+                                                         AutomationProperties.Name="{Binding Label}" />
+                                                <DatePicker Grid.Column="1"
+                                                            SelectedDate="{Binding DateValue, UpdateSourceTrigger=PropertyChanged}"
+                                                            Visibility="{Binding IsDateInput, Converter={StaticResource BoolToVis}}"
+                                                            AutomationProperties.Name="{Binding Label}" />
+                                                <ComboBox Grid.Column="1" ItemsSource="{Binding Choices}"
+                                                          SelectedItem="{Binding SelectedChoice, UpdateSourceTrigger=PropertyChanged}"
+                                                          Visibility="{Binding IsChoiceInput, Converter={StaticResource BoolToVis}}"
+                                                          AutomationProperties.Name="{Binding Label}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBlock Text="{Binding SelectedClauseCount, StringFormat=Selected clauses: {0}}"
+                                           FontWeight="SemiBold" Margin="0,4,0,6" />
+                                <ItemsControl ItemsSource="{Binding ClauseGroups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,6">
+                                                <TextBlock Text="{Binding Category}" FontWeight="SemiBold"
+                                                           Style="{StaticResource SecondaryTextStyle}" />
+                                                <ItemsControl ItemsSource="{Binding Clauses}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox Content="{Binding Title}"
+                                                                      IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                                                      ToolTip="{Binding PreviewText}"
+                                                                      AutomationProperties.Name="{Binding Title}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Expander>
+
                     <!-- Version history: snapshots taken automatically before AI edits and regenerations -->
-                    <Expander Grid.Row="1" Margin="0,0,0,10"
+                    <Expander Grid.Row="2" Margin="0,0,0,10"
                               IsExpanded="{Binding IsHistoryVisible}"
                               AutomationProperties.Name="Version history">
                         <Expander.Header>
@@ -130,11 +208,54 @@
                         </Grid>
                     </Expander>
 
-                    <TextBox Grid.Row="2"
+                    <!-- Export history: every recorded DOCX/PDF export for this contract -->
+                    <Expander Grid.Row="3" Margin="0,0,0,10"
+                              IsExpanded="{Binding IsExportHistoryVisible}"
+                              AutomationProperties.Name="Export history">
+                        <Expander.Header>
+                            <TextBlock Text="{Binding ExportHistoryHeader}" FontWeight="SemiBold" />
+                        </Expander.Header>
+                        <Grid Margin="0,6,0,2">
+                            <TextBlock Text="No exports yet — use Export DOCX or Export PDF above."
+                                       Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap"
+                                       Visibility="{Binding IsExportHistoryEmpty, Converter={StaticResource BoolToVis}}" />
+                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                                          Visibility="{Binding IsExportHistoryEmpty, Converter={StaticResource BoolToVisInverse}}">
+                                <ItemsControl ItemsSource="{Binding ExportHistory}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2" ToolTip="{Binding FilePath}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding TypeLabel}" FontWeight="SemiBold"
+                                                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="1" Text="{Binding FileName}"
+                                                           Style="{StaticResource SecondaryTextStyle}"
+                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+                                                    <TextBlock Text="{Binding ExportedLabel}"
+                                                               Style="{StaticResource SecondaryTextStyle}"
+                                                               VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding StatusLabel}"
+                                                               Style="{StaticResource SecondaryTextStyle}"
+                                                               VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Expander>
+
+                    <TextBox Grid.Row="4"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
                              AutomationProperties.Name="Contract document"
-                             AutomationProperties.HelpText="The assembled contract text. Edit it by asking the assistant for changes."
+                             AutomationProperties.HelpText="The assembled contract text. Edit the details and clauses above, then save and regenerate."
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
@@ -161,6 +282,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="0,0,0,12">
@@ -184,13 +306,13 @@
                                         <Grid Margin="0,4">
                                             <Border CornerRadius="10" Padding="12,8" MaxWidth="280"
                                                     HorizontalAlignment="Left"
-                                                    Background="{StaticResource PanelBrush}">
+                                                    Background="{DynamicResource PanelBrush}">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                 <Setter Property="HorizontalAlignment" Value="Right" />
-                                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -199,7 +321,7 @@
                                                     <TextBlock Text="{Binding Content}" TextWrapping="Wrap">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                         <Setter Property="Foreground" Value="White" />
@@ -211,7 +333,7 @@
                                                     <TextBlock Text="{Binding TimeLabel}" FontSize="10" Margin="0,4,0,0">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                         <Setter Property="Foreground" Value="#DCE7FF" />
@@ -229,8 +351,58 @@
                         </StackPanel>
                     </ScrollViewer>
 
+                    <!-- AI edit diff: Accept/Reject before anything is stored -->
+                    <Border Grid.Row="2" Margin="0,8,0,8" Padding="10" CornerRadius="6"
+                            Background="{DynamicResource PanelBrush}"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1"
+                            Visibility="{Binding HasPendingAiEdit, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="Proposed AI edit" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding PendingAiEditSummary}"
+                                       Style="{StaticResource SecondaryTextStyle}"
+                                       TextWrapping="Wrap" Margin="0,2,0,6" />
+                            <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding DiffLines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Prefix}" FontFamily="Consolas" FontSize="11" />
+                                                <TextBlock Text="{Binding Text}" FontFamily="Consolas" FontSize="11"
+                                                           TextWrapping="Wrap" MaxWidth="310">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsAdded}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#1B5E20" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsRemoved}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#B71C1C" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Content="Accept" Style="{StaticResource PrimaryButtonStyle}"
+                                        Padding="14,4" MinWidth="80"
+                                        AutomationProperties.Name="Accept the proposed AI edit"
+                                        Command="{Binding AcceptAiEditCommand}"
+                                        IsEnabled="{Binding CanReviewAiEdit}" />
+                                <Button Content="Reject" Padding="14,4" MinWidth="80" Margin="8,0,0,0"
+                                        AutomationProperties.Name="Reject the proposed AI edit"
+                                        Command="{Binding RejectAiEditCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                     <!-- API key warning -->
-                    <Border Grid.Row="2" Margin="0,8,0,8" Padding="10,8"
+                    <Border Grid.Row="3" Margin="0,8,0,8" Padding="10,8"
                             Background="#FFF4E5" CornerRadius="6" BorderBrush="#FFB74D" BorderThickness="1"
                             Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
@@ -242,7 +414,7 @@
                     </Border>
 
                     <!-- Input -->
-                    <Grid Grid.Row="3" Margin="0,4,0,0">
+                    <Grid Grid.Row="4" Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -262,7 +434,7 @@
                                 <Style TargetType="TextBox">
                                     <Style.Triggers>
                                         <Trigger Property="IsKeyboardFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>

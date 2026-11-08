@@ -21,6 +21,8 @@ public partial class DraftEngineDbContext : DbContext
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<GeneratedDocument> GeneratedDocuments => Set<GeneratedDocument>();
     public DbSet<ContractVersion> ContractVersions => Set<ContractVersion>();
+    public DbSet<WizardDraft> WizardDrafts => Set<WizardDraft>();
+    public DbSet<ContractAnalysis> ContractAnalyses => Set<ContractAnalysis>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,5 +63,4 @@ public partial class DraftEngineDbContext : DbContext
             SubscriptionTier = "Free",
             SubscriptionExpiresAt = null
         });
-    }
-}
+    }}

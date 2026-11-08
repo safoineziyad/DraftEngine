@@ -24,20 +24,34 @@ public class FieldService : IFieldService
     /// Defaults for the supported placeholder keys, so a contract never contains a raw {{...}}.
     /// </summary>
     private static readonly IReadOnlyDictionary<string, string> SupportedKeyDefaults =
-        new Dictionary<string, string>(StringComparer.Ordinal)
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["Party1"] = "the Disclosing Party",
             ["Party2"] = "the Receiving Party",
             ["Party1Address"] = "N/A",
             ["Party2Address"] = "N/A",
+            ["ContractorName"] = "the Contractor",
+            ["ContractorAddress"] = "N/A",
+            ["ConsultantName"] = "the Consultant",
+            ["ConsultantAddress"] = "N/A",
             ["ClientName"] = "the Client",
+            ["ClientAddress"] = "N/A",
             ["ClientEmail"] = "N/A",
             ["EffectiveDate"] = "the date of this Agreement",
             ["GoverningLaw"] = "the applicable jurisdiction",
             ["TermMonths"] = "12",
             ["Purpose"] = "the purpose of evaluating a potential business relationship",
+            ["Scope"] = "the scope described herein",
+            ["Services"] = "the services described herein",
             ["ConfidentialInformation"] = "non-public information disclosed by either party under this Agreement",
         };
+
+    /// <summary>
+    /// Read-only view of the supported placeholder keys and their fallback values. Tests and
+    /// tooling use this to prove that every seeded template placeholder is either collected
+    /// by the intake form or safely defaulted here.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> Defaults => SupportedKeyDefaults;
 
     private readonly IDatabaseContextFactory? _databaseFactory;
     private readonly ILogger<FieldService>? _logger;

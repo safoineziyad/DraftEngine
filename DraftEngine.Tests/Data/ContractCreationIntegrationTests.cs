@@ -61,7 +61,7 @@ public class ContractCreationIntegrationTests : IDisposable
             Assert.Equal(1, ownerId);
 
             clauseIds = await context.Clauses
-                .Where(clause => clause.ContractType == "Mutual NDA")
+                .Where(clause => clause.ContractType == "MutualNda")
                 .OrderBy(clause => clause.SortOrder)
                 .Select(clause => clause.Id)
                 .ToListAsync();

@@ -1,0 +1,38 @@
+<Window x:Class="DraftEngine.App.Views.LicenseActivationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Activate DraftEngine"
+        Style="{StaticResource LocalizedWindowStyle}"
+        Width="560" Height="320"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        FontFamily="{StaticResource UiFontFamily}"
+        FontSize="13">
+    <Border Padding="28">
+        <StackPanel>
+            <TextBlock Text="Activate DraftEngine" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="Paste the signed license key you received. Activation is verified offline on this computer; no account or network connection is needed."
+                       Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,8,0,16" />
+
+            <TextBlock Text="License key" FontWeight="SemiBold" Margin="0,0,0,6" />
+            <TextBox x:Name="LicenseKeyBox"
+                     AcceptsReturn="True" TextWrapping="Wrap" Height="80"
+                     VerticalContentAlignment="Top" Padding="8"
+                     AutomationProperties.Name="License key" />
+
+            <TextBlock x:Name="StatusText" Foreground="{DynamicResource DangerBrush}"
+                       TextWrapping="Wrap" Margin="0,8,0,0" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button Content="Quit" Padding="16,4" MinWidth="90"
+                        AutomationProperties.Name="Quit DraftEngine"
+                        Click="OnQuitClick" />
+                <Button Content="Activate" Padding="16,4" MinWidth="110" Margin="8,0,0,0"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        AutomationProperties.Name="Activate license"
+                        Click="OnActivateClick" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

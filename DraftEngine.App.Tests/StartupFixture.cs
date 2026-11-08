@@ -22,8 +22,9 @@ public sealed class StartupFixture : IDisposable
 
         Options = new AppOptions();
         Options.Data.ConnectionString = $"Data Source={Path.Combine(Directory, "test.db")}";
-        // Keep every optional/commercial feature off, exactly as a default installation.
+        // Disable network/commercial features so tests never contact external services.
         Options.Features.LicensingEnabled = false;
+        Options.Features.AutoUpdateEnabled = false;
         Options.Features.UpdateCheckEnabled = false;
         Options.Features.OnboardingEnabled = false;
         Options.Features.AboutEnabled = true;

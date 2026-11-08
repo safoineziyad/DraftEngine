@@ -15,6 +15,8 @@
     <SolidColorBrush x:Key="BorderSubtleBrush" Color="#E5E7EB" />
     <SolidColorBrush x:Key="PanelBrush" Color="#F9FAFB" />
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#1E3A8A" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
     <SolidColorBrush x:Key="AccentLightBrush" Color="{StaticResource AccentLightColor}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />

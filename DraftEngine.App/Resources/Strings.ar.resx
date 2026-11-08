@@ -277,4 +277,10 @@
   <data name="Common.Open" xml:space="preserve"><value>فتح</value></data>
   <data name="Common.Duplicate" xml:space="preserve"><value>نسخ</value></data>
   <data name="Common.Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="Update.Available" xml:space="preserve"><value>يتوفر إصدار جديد ({0})!</value></data>
+  <data name="Update.Now" xml:space="preserve"><value>حدّث الآن</value></data>
+  <data name="Update.Downloading" xml:space="preserve"><value>جارٍ التنزيل...</value></data>
+  <data name="Update.Dismiss" xml:space="preserve"><value>X</value></data>
+  <data name="Update.DismissAutomation" xml:space="preserve"><value>إخفاء إشعار التحديث</value></data>
+  <data name="Update.InstallFailed" xml:space="preserve"><value>تعذّر تثبيت التحديث: {0}</value></data>
 </root>

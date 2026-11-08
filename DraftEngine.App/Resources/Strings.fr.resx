@@ -277,4 +277,10 @@
   <data name="Common.Open" xml:space="preserve"><value>Ouvrir</value></data>
   <data name="Common.Duplicate" xml:space="preserve"><value>Dupliquer</value></data>
   <data name="Common.Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Update.Available" xml:space="preserve"><value>Une nouvelle version ({0}) est disponible !</value></data>
+  <data name="Update.Now" xml:space="preserve"><value>Mettre à jour</value></data>
+  <data name="Update.Downloading" xml:space="preserve"><value>Téléchargement...</value></data>
+  <data name="Update.Dismiss" xml:space="preserve"><value>X</value></data>
+  <data name="Update.DismissAutomation" xml:space="preserve"><value>Masquer la notification de mise à jour</value></data>
+  <data name="Update.InstallFailed" xml:space="preserve"><value>Impossible d&apos;installer la mise à jour : {0}</value></data>
 </root>

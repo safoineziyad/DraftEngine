@@ -64,6 +64,7 @@ WizardStyle=modern
 Compression=lzma2
 SolidCompression=yes
 CloseApplications=yes
+RestartApplications=yes
 
 ; --- Optional Authenticode signing -------------------------------------------
 ; Set DRAFTENGINE_SIGN_CERT (path to a .pfx) and DRAFTENGINE_SIGN_PASSWORD before
@@ -96,7 +97,9 @@ Name: "{group}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename: "{ap
 Name: "{autodesktop}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\{#AppExeName}"; Comment: "AI contract drafting assistant"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\DraftEngine.App.exe"; Flags: nowait postinstall skipifsilent
+; The interactive entry skips silent mode; this entry relaunches after a silent update.
+Filename: "{app}\DraftEngine.App.exe"; Flags: nowait; Check: WizardSilent
 
 [Code]
 // ---------------------------------------------------------------------------

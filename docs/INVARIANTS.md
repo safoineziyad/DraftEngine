@@ -6,5 +6,5 @@
 6. Any seed change needs an EF migration.
 7. CurrentUserId = 1 remains the single-user assumption.
 8. All existing tests keep passing; every new feature ships with tests.
-9. No telemetry. Network calls only: OpenAI/user-configured AI endpoint and the optional update check (off by default).
+9. No telemetry. Network calls only: OpenAI/user-configured AI endpoint and the GitHub update check (enabled by default, configurable off).
 10. Do not rebuild anything that already works.

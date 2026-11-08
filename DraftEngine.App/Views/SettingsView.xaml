@@ -208,6 +208,55 @@
                 </StackPanel>
             </Border>
 
+            <!-- Data safety: portable backup/restore and plain export -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Backup and data export" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                    <TextBlock Text="A portable backup contains contracts, intake answers, clauses, versions, chat history and non-secret settings in one password-encrypted file (AES-256-GCM). It can be restored on another Windows PC. The password is never stored; if you lose it the backup cannot be opened. The OpenAI API key is not included."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
+
+                    <TextBlock Text="Backup password (at least 8 characters)" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <PasswordBox settings:PasswordBoxHelper.BoundPassword="{Binding BackupPassword, UpdateSourceTrigger=PropertyChanged}"
+                                 AutomationProperties.Name="Backup password"
+                                 ToolTip="Used only for this export or restore" />
+
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Content="Export encrypted backup" Padding="12,0" Height="30"
+                                AutomationProperties.Name="Export encrypted backup"
+                                Command="{Binding ExportBackupCommand}"
+                                IsEnabled="{Binding CanUseBackup}" />
+                        <Button Content="Restore backup..." Padding="12,0" Height="30" Margin="8,0,0,0"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="Restore encrypted backup"
+                                Command="{Binding RestoreBackupCommand}"
+                                IsEnabled="{Binding CanUseBackup}" />
+                    </WrapPanel>
+
+                    <Separator Margin="0,16,0,12" Background="{StaticResource BorderSubtleBrush}"
+                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <TextBlock Text="Export my data" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
+                    <TextBlock Text="A readable, UNENCRYPTED copy for your own records or another tool. It includes contract text and intake answers; store it somewhere protected. The API key is never included."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <WrapPanel>
+                        <Button Content="Export JSON..." Padding="12,0" Height="30"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="Export data as JSON"
+                                Command="{Binding ExportDataCommand}" CommandParameter="json"
+                                IsEnabled="{Binding CanUseBackup}" />
+                        <Button Content="Export CSV..." Padding="12,0" Height="30" Margin="8,0,0,0"
+                                Style="{StaticResource QuietButtonStyle}"
+                                AutomationProperties.Name="Export data as CSV"
+                                Command="{Binding ExportDataCommand}" CommandParameter="csv"
+                                IsEnabled="{Binding CanUseBackup}" />
+                    </WrapPanel>
+
+                    <TextBlock Text="{Binding BackupStatusMessage}" TextWrapping="Wrap" Margin="0,10,0,0"
+                               Style="{StaticResource SecondaryTextStyle}"
+                               Visibility="{Binding HasBackupStatus, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+            </Border>
+
             <!-- Save bar -->
             <Border Style="{StaticResource Card}">
                 <Grid>

@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.Core.Interfaces;
 using Serilog;
@@ -18,6 +21,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IAppSettingsService _settingsService;
     private readonly IAiRedactionService? _redactionService;
+    private readonly IPortableBackupService? _backupService;
     private bool _isLoading;
 
     /// <summary>The page title shown in the view header.</summary>
@@ -113,12 +117,200 @@ public partial class SettingsViewModel : ObservableObject
     public bool HasSaveStatus => SaveStatusMessage is not null;
 
     /// <summary>Creates the settings view model and loads the saved settings.</summary>
-    public SettingsViewModel(IAppSettingsService settingsService, IAiRedactionService? redactionService = null)
+    public SettingsViewModel(
+        IAppSettingsService settingsService,
+        IAiRedactionService? redactionService = null,
+        IPortableBackupService? backupService = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
+        _backupService = backupService;
         _settingsService.SettingsChanged += OnSettingsChanged;
         ApplyFromCurrentSettings();
+    }
+
+    /// <summary>Password used for encrypted backup export/restore (never persisted, never logged).</summary>
+    [ObservableProperty]
+    private string backupPassword = string.Empty;
+
+    /// <summary>True while a backup export/restore is running.</summary>
+    [ObservableProperty]
+    private bool isBackupBusy;
+
+    /// <summary>Friendly result text for the last backup operation.</summary>
+    [ObservableProperty]
+    private string? backupStatusMessage;
+
+    /// <summary>True when a backup status message should be shown.</summary>
+    public bool HasBackupStatus => !string.IsNullOrEmpty(BackupStatusMessage);
+
+    /// <summary>False while a backup operation is running.</summary>
+    public bool CanUseBackup => !IsBackupBusy;
+
+    partial void OnIsBackupBusyChanged(bool value) => OnPropertyChanged(nameof(CanUseBackup));
+
+    /// <summary>Writes a password-encrypted portable backup of all local data.</summary>
+    [RelayCommand]
+    private async Task ExportBackupAsync()
+    {
+        if (_backupService is null)
+        {
+            return;
+        }
+
+        if (BackupPassword.Length < 8)
+        {
+            BackupStatusMessage = "Choose a backup password of at least 8 characters.";
+            return;
+        }
+
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Export encrypted backup",
+            Filter = "DraftEngine backup (*.debk)|*.debk",
+            DefaultExt = ".debk",
+            FileName = $"DraftEngine-backup-{DateTime.Now:yyyyMMdd}.debk"
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        IsBackupBusy = true;
+        try
+        {
+            await using var stream = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+            var summary = await _backupService.ExportEncryptedAsync(stream, BackupPassword, includeApiKey: false);
+            BackupStatusMessage = $"Encrypted backup saved: {summary.Contracts} contracts, {summary.Clauses} clauses. Keep the password safe; it cannot be recovered.";
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Portable backup export failed.");
+            BackupStatusMessage = "The backup could not be written. Check the destination and try again.";
+        }
+        finally
+        {
+            IsBackupBusy = false;
+        }
+    }
+
+    /// <summary>Restores a portable backup after an explicit confirmation.</summary>
+    [RelayCommand]
+    private async Task RestoreBackupAsync()
+    {
+        if (_backupService is null)
+        {
+            return;
+        }
+
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Restore encrypted backup",
+            Filter = "DraftEngine backup (*.debk)|*.debk|All files (*.*)|*.*",
+            CheckFileExists = true
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var confirmed = MessageBox.Show(
+            "Restoring replaces all current contracts, clauses, intake answers, chat history and versions on this computer. A pre-import backup is written first. Continue?",
+            "Restore backup",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+        if (confirmed != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        if (BackupPassword.Length < 8)
+        {
+            BackupStatusMessage = "Enter the password used when the backup was created.";
+            return;
+        }
+
+        IsBackupBusy = true;
+        try
+        {
+            await using var stream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var summary = await _backupService.ImportEncryptedAsync(stream, BackupPassword, confirmReplace: true);
+            BackupStatusMessage = $"Backup restored: {summary.Contracts} contracts, {summary.Clauses} clauses. Restart the app if a page still shows old data.";
+        }
+        catch (BackupPasswordException)
+        {
+            BackupStatusMessage = "Wrong password, or the backup file was modified. Nothing was changed.";
+        }
+        catch (BackupFormatException ex)
+        {
+            BackupStatusMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Portable backup import failed.");
+            BackupStatusMessage = "The backup could not be restored. Nothing was changed.";
+        }
+        finally
+        {
+            IsBackupBusy = false;
+        }
+    }
+
+    /// <summary>Writes a readable JSON export after an unencrypted-file warning.</summary>
+    [RelayCommand]
+    private async Task ExportDataAsync(string? format)
+    {
+        if (_backupService is null)
+        {
+            return;
+        }
+
+        var isCsv = string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase);
+        var warning = isCsv
+            ? "This CSV export is NOT encrypted and includes contract titles, parties and intake answers. Store it somewhere protected. Continue?"
+            : "This JSON export is NOT encrypted and includes contract text, intake answers and chat history. Store it somewhere protected. Continue?";
+        if (MessageBox.Show(warning, "Export my data", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Export my data",
+            Filter = isCsv ? "CSV (*.csv)|*.csv" : "JSON (*.json)|*.json",
+            DefaultExt = isCsv ? ".csv" : ".json",
+            FileName = $"DraftEngine-data-{DateTime.Now:yyyyMMdd}.{(isCsv ? "csv" : "json")}"
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        IsBackupBusy = true;
+        try
+        {
+            await using var stream = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+            if (isCsv)
+            {
+                await _backupService.WriteCsvAsync(stream);
+            }
+            else
+            {
+                await _backupService.WriteJsonAsync(stream, includeApiKey: false);
+            }
+
+            BackupStatusMessage = "Data exported. The file is unencrypted; protect it or delete it when done.";
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Plain data export failed.");
+            BackupStatusMessage = "The export could not be written.";
+        }
+        finally
+        {
+            IsBackupBusy = false;
+        }
     }
 
     /// <summary>Masks or reveals the API key.</summary>

@@ -1,5 +1,6 @@
 using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
+using DraftEngine.App.Services.Backup;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models.ContractTypes;
@@ -48,6 +49,11 @@ public static class ServiceRegistration
         // Contract editing, duplicate and archive.
         services.AddTransient<IContractEditService, ContractEditService>();
         services.AddTransient<IExportHistoryService, ExportHistoryService>();
+
+        // Portable encrypted backup/restore and plain data export.
+        services.AddSingleton<IPortableBackupService>(provider => new PortableBackupService(
+            provider.GetRequiredService<IDatabaseContextFactory>(),
+            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>()));
 
         // Wizard draft persistence, licensing (disabled by default), update check (off by default).
         services.AddTransient<IWizardDraftService, WizardDraftService>();

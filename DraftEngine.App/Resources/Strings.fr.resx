@@ -30,4 +30,9 @@
   <data name="Analyze.Subtitle" xml:space="preserve"><value>Vérifiez un contrat par rapport à un guide. Les contrôles déterministes fonctionnent hors ligne ; la revue par IA est facultative et soumise au consentement.</value></data>
   <data name="Analyze.Disclaimer" xml:space="preserve"><value>Ceci n'est pas un avis juridique. Une relecture par un avocat habilité est requise.</value></data>
   <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choisir un fichier...</value></data>
+  <data name="Settings.PageTitle" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Settings.LanguageDescription" xml:space="preserve"><value>Choisissez la langue utilisée dans DraftEngine. Les modifications s'appliquent immédiatement.</value></data>
+  <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Bienvenue dans DraftEngine</value></data>
+  <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Choisissez votre langue</value></data>
+  <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>
 </root>

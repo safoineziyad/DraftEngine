@@ -7,6 +7,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services.Backup;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.Core.Interfaces;
 using Serilog;
@@ -22,10 +23,15 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAppSettingsService _settingsService;
     private readonly IAiRedactionService? _redactionService;
     private readonly IPortableBackupService? _backupService;
+    private readonly ILocalizationService _localization;
     private bool _isLoading;
+    private bool _isApplyingLanguage;
 
-    /// <summary>The page title shown in the view header.</summary>
-    public string PageTitle => "Settings";
+    /// <summary>The page title shown in the view header (recomputed on language change).</summary>
+    public string PageTitle => _localization.GetString("Settings.PageTitle");
+
+    /// <summary>Languages offered in the picker, each shown in its own name.</summary>
+    public IReadOnlyList<SupportedLanguage> SupportedLanguages => _localization.SupportedLanguages;
 
     /// <summary>OpenAI chat model choices.</summary>
     public IReadOnlyList<string> ModelOptions { get; } = new[] { "gpt-4o-mini", "gpt-4o" };
@@ -40,6 +46,10 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>True when the API key is shown as plain text instead of masked.</summary>
     [ObservableProperty]
     private bool isKeyVisible;
+
+    /// <summary>Language code selected in the picker (e.g. "en", "fr", "ar", "es").</summary>
+    [ObservableProperty]
+    private string selectedLanguage = "en";
 
     /// <summary>The selected OpenAI chat model.</summary>
     [ObservableProperty]
@@ -120,12 +130,19 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(
         IAppSettingsService settingsService,
         IAiRedactionService? redactionService = null,
-        IPortableBackupService? backupService = null)
+        IPortableBackupService? backupService = null,
+        ILocalizationService? localization = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
         _backupService = backupService;
+        _localization = localization ?? LocalizationSource.Current.Service
+            ?? throw new ArgumentNullException(nameof(localization));
         _settingsService.SettingsChanged += OnSettingsChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
+        _isApplyingLanguage = true;
+        SelectedLanguage = _localization.CurrentLanguage;
+        _isApplyingLanguage = false;
         ApplyFromCurrentSettings();
     }
 
@@ -458,6 +475,31 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     partial void OnIsKeyVisibleChanged(bool value) => OnPropertyChanged(nameof(ShowHideKeyText));
+
+    partial void OnSelectedLanguageChanged(string value)
+    {
+        if (_isApplyingLanguage || string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        // Fire-and-forget is safe: SetLanguageAsync persists and raises LanguageChanged,
+        // which refreshes PageTitle and every live {loc:T} binding.
+        _ = _localization.SetLanguageAsync(value);
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(PageTitle));
+        OnPropertyChanged(nameof(SupportedLanguages));
+
+        if (!string.Equals(SelectedLanguage, _localization.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
+        {
+            _isApplyingLanguage = true;
+            SelectedLanguage = _localization.CurrentLanguage;
+            _isApplyingLanguage = false;
+        }
+    }
 
     partial void OnTermMonthsErrorChanged(string? value)
     {

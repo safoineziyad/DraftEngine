@@ -23,6 +23,20 @@ Verified baseline 2026-11-08 on `feature/i18n-theme`:
 
 NEXT STEP: Step 2a — implement live localization (`LocalizationSource` with `this[string]`, `{loc:T}` binding) and a test proving a language switch updates a bound value.
 
+### Step 2 — live localization (Done, 2026-11-08, not visually verified)
+
+Build 0 errors, **299 tests** (222 + 49 + 28) — up from 291.
+
+- **2a Live binding — Done.** `LocalizationSource` (singleton, `this[string]`, raises `Item[]`) + `TExtension` (`{loc:T Key}`) returns a `Binding` to the source; `LocalizedFormatConverter` applies `{0}` args. Evidence: `DraftEngine.App/Services/Localization/LocalizationExtension.cs`, `LocalizationTests.SetLanguage_RaisesEvent_AndUpdatesLiveSource`.
+- **2b ViewModels — Partial.** `SettingsViewModel.PageTitle` now comes from `GetString("Settings.PageTitle")` and is re-raised on `LanguageChanged`; other page titles are still hardcoded and migrate in Step 3.
+- **2c Culture/digits — Done.** `SetLanguageAsync` sets `CurrentCulture`/`CurrentUICulture` (synchronous so it reaches the caller) and every window style sets `NumberSubstitution.Substitution=European`; startup overrides `FrameworkElement.LanguageProperty` metadata. Evidence: `LocalizationTests.SetLanguage_UpdatesCurrentCultureAndUiCulture`, `Arabic_IsRightToLeft_AndUsesEuropeanDigits`.
+- **2d RTL — Done (logic), not visually verified.** `LocalizedWindowStyle` binds `FlowDirection`/`Language` on MainWindow, OnboardingWindow and LicenseActivationWindow; sidebar divider flips `IsRtl`. Evidence: `App.xaml`, window roots; RTL test above.
+- **2e Font fallback — Done (declared).** `UiFontFamily = Segoe UI, Tahoma, Arial, Traditional Arabic`; rendering not visually verified.
+- **2f Pickers — Done.** Settings card and first onboarding screen list English/Français/العربية/Español, apply immediately, persist via `RegistryLanguagePreferenceStore`; default is Windows language if supported else English. Evidence: `SettingsView.xaml`, `OnboardingWindow.xaml`, `OnboardingViewModel`, `LocalizationTests.LanguageChoice_PersistsAndReloads`, `Initialize_UsesWindowsLanguage_WhenSupported_ElseEnglish`.
+- **2g Tests — Done.** 8 new tests cover live switch notification, RTL/LTR, European digits, culture, persistence round trip, Windows/default fallback, English fallback, missing-key `[Key]` (Debug), and format args.
+
+NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, add EN/FR/AR/ES keys, keep tests green, commit.
+
 ### Test counts
 
 - v0.4.0 start: 222.

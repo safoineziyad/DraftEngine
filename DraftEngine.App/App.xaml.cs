@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels;
 using DraftEngine.App.Views;
@@ -79,6 +82,15 @@ public partial class App : Application
             // InvalidOperationException which is surfaced below instead of an opaque crash.
             DatabaseService.EnsureDatabaseCreated(_host.Services);
 
+            // Wire up localization before any window is created: load the saved/Windows
+            // language, expose a bindable source for {loc:T Key}, and set the WPF text
+            // language so shaping and digit substitution use the right culture.
+            var locService = _host.Services.GetRequiredService<ILocalizationService>();
+            locService.InitializeAsync().GetAwaiter().GetResult();
+            LocalizationSource.Initialize(locService);
+            Application.Current.Resources["LocalizationService"] = locService;
+            ApplyWpfLanguage(locService.Culture);
+
             // Keep the in-memory redaction switch aligned with the saved privacy setting
             // from the very first AI request.
             var settingsService = _host.Services.GetRequiredService<IAppSettingsService>();
@@ -119,7 +131,7 @@ public partial class App : Application
             {
                 try
                 {
-                    new OnboardingWindow { Owner = mainWindow }.ShowDialog();
+                    new OnboardingWindow(locService) { Owner = mainWindow }.ShowDialog();
                     var updated = settingsService.Current;
                     updated.OnboardingCompleted = true;
                     settingsService.SaveAsync(updated).GetAwaiter().GetResult();
@@ -150,6 +162,21 @@ public partial class App : Application
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(-1);
+        }
+    }
+
+    /// <summary>Applies the active culture to WPF text shaping and number substitution.</summary>
+    private static void ApplyWpfLanguage(CultureInfo culture)
+    {
+        try
+        {
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
+        }
+        catch (InvalidOperationException)
+        {
+            // Metadata already sealed (designer/host). The window style still binds Language.
         }
     }
 

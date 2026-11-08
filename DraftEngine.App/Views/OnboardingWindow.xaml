@@ -3,8 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
         mc:Ignorable="d"
-        Title="Welcome to DraftEngine"
+        Title="{loc:T Onboarding.WindowTitle}"
+        Style="{StaticResource LocalizedWindowStyle}"
         Width="720" Height="520"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -33,6 +35,20 @@
 
             <!-- Body -->
             <StackPanel Margin="0,32,0,0" VerticalAlignment="Top">
+                <!-- Language picker lives on the first screen only. -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,22"
+                            Visibility="{Binding IsFirst, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{loc:T Onboarding.LanguagePrompt}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <ComboBox ItemsSource="{Binding SupportedLanguages}"
+                              DisplayMemberPath="NativeName"
+                              SelectedValuePath="Code"
+                              SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Onboarding.LanguagePrompt}"
+                              Width="200" Margin="12,0,0,0" />
+                </StackPanel>
+
                 <TextBlock Text="{Binding StepTitle}"
                            Style="{StaticResource PageTitleStyle}"
                            TextWrapping="Wrap" />

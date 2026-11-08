@@ -1,4 +1,5 @@
 using System.Windows;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.ViewModels;
 
 namespace DraftEngine.App.Views;
@@ -7,10 +8,10 @@ namespace DraftEngine.App.Views;
 public partial class OnboardingWindow : Window
 {
     /// <summary>Initializes the dialog and wires its completion event to the window result.</summary>
-    public OnboardingWindow()
+    public OnboardingWindow(ILocalizationService? localization = null)
     {
         InitializeComponent();
-        DataContext = new OnboardingViewModel();
+        DataContext = new OnboardingViewModel(localization);
 
         if (DataContext is OnboardingViewModel viewModel)
         {

@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:app="clr-namespace:DraftEngine.App"
+        xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
         mc:Ignorable="d"
         Title="{Binding Title}"
+        Style="{StaticResource LocalizedWindowStyle}"
         Height="820" Width="1280"
         MinHeight="700" MinWidth="1100"
         WindowState="Maximized"
@@ -28,11 +30,21 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left sidebar -->
+        <!-- Left sidebar (mirrors to the right in RTL via FlowDirection) -->
         <Border Grid.Column="0"
                 Background="{DynamicResource PanelBrush}"
-                BorderBrush="{DynamicResource BorderSubtleBrush}"
-                BorderThickness="0,0,1,0">
+                BorderBrush="{DynamicResource BorderSubtleBrush}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderThickness" Value="0,0,1,0" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Source={x:Static loc:LocalizationSource.Current}, Path=IsRtl}"
+                                     Value="True">
+                            <Setter Property="BorderThickness" Value="1,0,0,0" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <DockPanel LastChildFill="True">
 
                 <!-- App title with deep blue accent bar -->
@@ -87,7 +99,7 @@
                                BorderBrush="{DynamicResource BorderSubtleBrush}" />
                     <!-- Version comes from the csproj <Version> via AppVersion.Display: one source of truth. -->
                     <TextBlock Style="{StaticResource SecondaryTextStyle}"
-                               Margin="4,0,0,8"
+                               Margin="0,0,0,8"
                                AutomationProperties.Name="Application version">
                         <Run Text="Version " /><Run Text="{x:Static app:AppVersion.Display}" />
                     </TextBlock>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:settings="clr-namespace:DraftEngine.App.Services.Settings"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -17,6 +18,23 @@
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
             <TextBlock Text="Connect DraftEngine to OpenAI and choose the defaults used for new contracts."
                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,20" />
+
+            <!-- Language: applies immediately and is persisted. -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.Language}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.LanguageDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                    <ComboBox ItemsSource="{Binding SupportedLanguages}"
+                              DisplayMemberPath="NativeName"
+                              SelectedValuePath="Code"
+                              SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.Language}"
+                              HorizontalAlignment="Left"
+                              Width="240" />
+                </StackPanel>
+            </Border>
 
             <!-- OpenAI section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">

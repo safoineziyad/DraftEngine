@@ -30,4 +30,9 @@
   <data name="Analyze.Subtitle" xml:space="preserve"><value>راجع العقد وفق دليل مراجعة. تعمل الفحوص الحتمية دون اتصال؛ ومراجعة الذكاء الاصطناعي اختيارية وتتطلب الموافقة.</value></data>
   <data name="Analyze.Disclaimer" xml:space="preserve"><value>هذا ليس رأياً قانونياً. يلزم مراجعة من محامٍ مرخّص.</value></data>
   <data name="Analyze.ChooseFile" xml:space="preserve"><value>اختيار ملف...</value></data>
+  <data name="Settings.PageTitle" xml:space="preserve"><value>الإعدادات</value></data>
+  <data name="Settings.LanguageDescription" xml:space="preserve"><value>اختر اللغة المستخدمة في DraftEngine. تُطبَّق التغييرات فورًا.</value></data>
+  <data name="Onboarding.WindowTitle" xml:space="preserve"><value>مرحبًا بك في DraftEngine</value></data>
+  <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>اختر لغتك</value></data>
+  <data name="Common.Version" xml:space="preserve"><value>الإصدار {0}</value></data>
 </root>

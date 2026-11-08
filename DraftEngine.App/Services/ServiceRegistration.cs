@@ -1,6 +1,7 @@
 using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services.Backup;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models.ContractTypes;
@@ -74,6 +75,10 @@ public static class ServiceRegistration
         services.AddSingleton<
             DraftEngine.App.Services.Updates.IUpdateCheckService,
             DraftEngine.App.Services.Updates.UpdateCheckService>();
+
+        // Localization: resx-backed strings, live language switching and persistence.
+        services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
 
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();

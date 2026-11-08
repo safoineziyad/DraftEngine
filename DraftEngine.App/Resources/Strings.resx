@@ -30,4 +30,9 @@
   <data name="Analyze.Subtitle" xml:space="preserve"><value>Review a contract against a playbook. Deterministic checks work offline; AI review is optional and consent-gated.</value></data>
   <data name="Analyze.Disclaimer" xml:space="preserve"><value>Not legal advice. Review by a licensed attorney required.</value></data>
   <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choose file...</value></data>
+  <data name="Settings.PageTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings.LanguageDescription" xml:space="preserve"><value>Choose the language used throughout DraftEngine. Changes apply immediately.</value></data>
+  <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Welcome to DraftEngine</value></data>
+  <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Choose your language</value></data>
+  <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>
 </root>

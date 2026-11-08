@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DraftEngine.App.Services.Localization;
 
 namespace DraftEngine.App.ViewModels;
 
@@ -11,6 +12,30 @@ namespace DraftEngine.App.ViewModels;
 /// </summary>
 public partial class OnboardingViewModel : ObservableObject
 {
+    private readonly ILocalizationService? _localization;
+    private bool _isApplyingLanguage;
+
+    /// <summary>Creates the onboarding view model, optionally with localization.</summary>
+    public OnboardingViewModel(ILocalizationService? localization = null)
+    {
+        _localization = localization ?? LocalizationSource.Current.Service;
+        if (_localization is not null)
+        {
+            _localization.LanguageChanged += OnLanguageChanged;
+            _isApplyingLanguage = true;
+            SelectedLanguage = _localization.CurrentLanguage;
+            _isApplyingLanguage = false;
+        }
+    }
+
+    /// <summary>Languages offered on the first onboarding screen.</summary>
+    public IReadOnlyList<SupportedLanguage> SupportedLanguages =>
+        _localization?.SupportedLanguages ?? Array.Empty<SupportedLanguage>();
+
+    /// <summary>Language code selected in the first-screen picker.</summary>
+    [ObservableProperty]
+    private string selectedLanguage = "en";
+
     private static readonly OnboardingStep[] Steps =
     [
         new(
@@ -109,6 +134,29 @@ public partial class OnboardingViewModel : ObservableObject
         OnPropertyChanged(nameof(IsLast));
         OnPropertyChanged(nameof(IsNotFirst));
         OnPropertyChanged(nameof(PrimaryButtonText));
+    }
+
+    partial void OnSelectedLanguageChanged(string value)
+    {
+        if (_isApplyingLanguage || _localization is null || string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        _ = _localization.SetLanguageAsync(value);
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(SupportedLanguages));
+
+        if (_localization is not null &&
+            !string.Equals(SelectedLanguage, _localization.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
+        {
+            _isApplyingLanguage = true;
+            SelectedLanguage = _localization.CurrentLanguage;
+            _isApplyingLanguage = false;
+        }
     }
 
     private sealed record OnboardingStep(string Title, string Description, IReadOnlyList<string> Bullets);

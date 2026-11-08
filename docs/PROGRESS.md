@@ -45,14 +45,15 @@ NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, a
 - **Partial:** provider-supplied connection failure text (`result.Message`) is displayed as received and is not translated; WPF rendering/layout of the migrated Settings screen was not visually verified.
 - **Onboarding — Done (not visually verified), 2026-11-08.** `OnboardingWindow.xaml` buttons and automation names use `{loc:T}`; `OnboardingViewModel` stores step title/description/bullet keys and resolves them, plus the progress label and primary button, through `GetString`; all are re-raised on `LanguageChanged`. Falls back to a default English service when the shared source is not initialized (keeps the existing unit tests valid). 19 keys added (147 per language). `OnboardingWindow.xaml` removed from `PendingMigration`. Test count 305 → **306** (222 + 56 + 28); build 0 errors. Not visually verified.
 - **Dashboard — Done (not visually verified), 2026-11-08.** `DashboardView.xaml` uses `{loc:T}` for the subtitle, stats, recent-contract header/total, empty state, loading text and New Contract buttons; the row automation name is now computed in the view model. `DashboardViewModel` localizes the page title and load-error banner (stored as a flag, so it re-renders on language change), rebuilds rows on `LanguageChanged`, and passes the service to `ContractRowViewModel`. `ContractRowViewModel` localizes the untitled fallback, status enum, accessible name and a culture-aware date format (`Common.DateTimeFormat`). 17 keys added (164 per language). Test count 306 → **307** (222 + 57 + 28); build 0 errors. Not visually verified.
-- Contracts list, New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
+- **Contracts list — Done (not visually verified), 2026-11-08.** The list view and view model use localized labels/status text, with rows and filter labels refreshed on language changes. 11 keys added to EN/FR/AR/ES. Evidence: `ContractsListView.xaml`, `ContractsListViewModel.cs`, `LocalizationTests.ContractsList_RerendersRowsAndFilterLabels_OnLanguageChange`. Full solution build/test passed with 308 tests (222 + 58 + 28).
+- New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
 
-NEXT STEP: Step 3 — migrate Contracts list (ContractsListView.xaml + ContractsListViewModel) to `{loc:T}`/GetString, add keys in all four resx, remove `ContractsListView.xaml` from `PendingMigration`, build/test/commit.
+NEXT STEP: Step 3 — migrate the New Contract wizard to `{loc:T}`/GetString, add keys in all four resx, remove its migrated view from `PendingMigration`, build/test/commit.
 
 ### Test counts
 
 - v0.4.0 start: 222.
-- End: 291 (222 `DraftEngine.Tests`, 41 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
+- End of Contracts-list recovery batch: **308** (222 `DraftEngine.Tests`, 58 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 
 ### Audit notes (verified in code)
 

@@ -168,4 +168,47 @@
   <data name="Status.Exported" xml:space="preserve"><value>Exporté</value></data>
   <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;à&apos; HH:mm</value></data>
   <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
+  <data name="Contracts.Subtitle" xml:space="preserve"><value>Recherchez, examinez et gérez vos contrats enregistrés.</value></data>
+  <data name="Contracts.NewContractPlus" xml:space="preserve"><value>+ Nouveau contrat</value></data>
+  <data name="Contracts.SearchAutomation" xml:space="preserve"><value>Rechercher des contrats par titre ou par client</value></data>
+  <data name="Contracts.SearchPlaceholder" xml:space="preserve"><value>Rechercher par titre ou par client…</value></data>
+  <data name="Contracts.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Contracts.FilterTypeAutomation" xml:space="preserve"><value>Filtrer par type de contrat</value></data>
+  <data name="Contracts.Sort" xml:space="preserve"><value>Trier</value></data>
+  <data name="Contracts.SortAutomation" xml:space="preserve"><value>Trier les contrats</value></data>
+  <data name="Contracts.ClearFilters" xml:space="preserve"><value>Effacer les filtres</value></data>
+  <data name="Contracts.ClearFiltersAutomation" xml:space="preserve"><value>Effacer tous les filtres et le tri</value></data>
+  <data name="Contracts.ClearFiltersTooltip" xml:space="preserve"><value>Réinitialiser la recherche, le filtre de type et le tri</value></data>
+  <data name="Contracts.ColumnTitle" xml:space="preserve"><value>Titre</value></data>
+  <data name="Contracts.ColumnType" xml:space="preserve"><value>Type de contrat</value></data>
+  <data name="Contracts.ColumnStatus" xml:space="preserve"><value>Statut</value></data>
+  <data name="Contracts.ColumnEffective" xml:space="preserve"><value>Date d&apos;effet</value></data>
+  <data name="Contracts.ColumnTerm" xml:space="preserve"><value>Durée</value></data>
+  <data name="Contracts.ColumnUpdated" xml:space="preserve"><value>Mise à jour</value></data>
+  <data name="Contracts.Loading" xml:space="preserve"><value>Chargement des contrats…</value></data>
+  <data name="Contracts.TryAgain" xml:space="preserve"><value>Réessayer</value></data>
+  <data name="Contracts.RetryAutomation" xml:space="preserve"><value>Réessayer de charger les contrats</value></data>
+  <data name="Contracts.Empty" xml:space="preserve"><value>Aucun contrat pour l&apos;instant — créez le premier.</value></data>
+  <data name="Contracts.NoMatch" xml:space="preserve"><value>Aucun contrat ne correspond à votre recherche.</value></data>
+  <data name="Contracts.NoMatchHint" xml:space="preserve"><value>Essayez un autre terme de recherche ou sélectionnez un autre type de contrat.</value></data>
+  <data name="Contracts.AllTypes" xml:space="preserve"><value>Tous</value></data>
+  <data name="Contracts.SortUpdated" xml:space="preserve"><value>Récemment mis à jour</value></data>
+  <data name="Contracts.SortCreated" xml:space="preserve"><value>Date de création</value></data>
+  <data name="Contracts.DuplicateTitle" xml:space="preserve"><value>Copie de {0}</value></data>
+  <data name="Contracts.DeleteConfirm" xml:space="preserve"><value>Supprimer « {0} » ?`n`nCette action est irréversible.</value></data>
+  <data name="Contracts.DeleteConfirmTitle" xml:space="preserve"><value>Supprimer le contrat</value></data>
+  <data name="Contracts.ErrorLoad" xml:space="preserve"><value>Nous n&apos;avons pas pu charger vos contrats. Veuillez réessayer.</value></data>
+  <data name="Contracts.ErrorDuplicateMissing" xml:space="preserve"><value>Nous n&apos;avons pas pu dupliquer ce contrat car il n&apos;existe plus.</value></data>
+  <data name="Contracts.ErrorDuplicate" xml:space="preserve"><value>Nous n&apos;avons pas pu dupliquer le contrat. Veuillez réessayer.</value></data>
+  <data name="Contracts.ErrorDelete" xml:space="preserve"><value>Nous n&apos;avons pas pu supprimer le contrat. Veuillez réessayer.</value></data>
+  <data name="Contracts.OpenAutomation" xml:space="preserve"><value>Ouvrir le contrat {0}</value></data>
+  <data name="Contracts.DuplicateAutomation" xml:space="preserve"><value>Dupliquer le contrat {0}</value></data>
+  <data name="Contracts.DeleteAutomation" xml:space="preserve"><value>Supprimer le contrat {0}</value></data>
+  <data name="Contract.TermMonthsOne" xml:space="preserve"><value>{0} mois</value></data>
+  <data name="Contract.TermMonthsMany" xml:space="preserve"><value>{0} mois</value></data>
+  <data name="Common.DateFormat" xml:space="preserve"><value>d MMM yyyy</value></data>
+  <data name="Common.NotSet" xml:space="preserve"><value>—</value></data>
+  <data name="Common.Open" xml:space="preserve"><value>Ouvrir</value></data>
+  <data name="Common.Duplicate" xml:space="preserve"><value>Dupliquer</value></data>
+  <data name="Common.Delete" xml:space="preserve"><value>Supprimer</value></data>
 </root>

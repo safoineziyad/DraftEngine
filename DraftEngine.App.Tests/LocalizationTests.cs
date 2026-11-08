@@ -228,6 +228,50 @@ public sealed class LocalizationTests : IDisposable
         Assert.Contains("à", french.UpdatedAtText);
     }
 
+    [Fact]
+    public async Task ContractsList_RerendersRowsAndFilterLabels_OnLanguageChange()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        var contract = new Contract
+        {
+            Id = 1,
+            Title = "Acme NDA",
+            ContractType = "Mutual NDA",
+            Status = ContractStatus.Generated,
+            EffectiveDate = DateTime.SpecifyKind(new DateTime(2026, 1, 2), DateTimeKind.Local),
+            UpdatedAt = DateTime.SpecifyKind(new DateTime(2026, 1, 2), DateTimeKind.Local),
+            TermMonths = 1
+        };
+
+        var viewModel = new ContractsListViewModel(
+            new StubContractListService(contract),
+            new StubContractEditService(),
+            new StubNavigationService(),
+            new StubDialogService(),
+            service);
+
+        Assert.Equal("Contracts", viewModel.PageTitle);
+        Assert.Equal("All", viewModel.TypeFilters[0].DisplayName);
+        Assert.Equal("Recently updated", viewModel.SortOptions[0].DisplayName);
+        Assert.Single(viewModel.Contracts);
+        Assert.Equal("Generated", viewModel.Contracts[0].StatusText);
+        Assert.Equal("1 month", viewModel.Contracts[0].TermMonthsText);
+        Assert.Equal("Jan 2, 2026", viewModel.Contracts[0].UpdatedDateText);
+        Assert.Equal("Open contract Acme NDA", viewModel.Contracts[0].OpenAutomationName);
+
+        await service.SetLanguageAsync("fr");
+
+        Assert.Equal("Contrats", viewModel.PageTitle);
+        Assert.Equal("Tous", viewModel.TypeFilters[0].DisplayName);
+        Assert.Equal("Récemment mis à jour", viewModel.SortOptions[0].DisplayName);
+        Assert.Single(viewModel.Contracts);
+        Assert.Equal("Généré", viewModel.Contracts[0].StatusText);
+        Assert.Equal("1 mois", viewModel.Contracts[0].TermMonthsText);
+        Assert.Equal("Supprimer le contrat Acme NDA", viewModel.Contracts[0].DeleteAutomationName);
+        Assert.Equal("2 janv. 2026", viewModel.Contracts[0].UpdatedDateText);
+    }
+
     private LocalizationService CreateService() =>
         new(_store, () => CultureInfo.GetCultureInfo("en-US"));
 
@@ -257,6 +301,85 @@ public sealed class LocalizationTests : IDisposable
             Task.FromResult<DraftEngine.Core.Interfaces.IContractAiService?>(null);
 
         public DraftEngine.Core.Interfaces.IContractAiService? CreateAiService(string apiKey, string model) => null;
+    }
+
+    private sealed class StubContractListService : DraftEngine.Core.Interfaces.IContractService
+    {
+        private readonly List<Contract> _contracts;
+
+        public StubContractListService(params Contract[] contracts) => _contracts = contracts.ToList();
+
+        public Task<Contract> CreateAsync(Contract contract) => Task.FromResult(contract);
+
+        public Task<Contract?> GetByIdAsync(int id) =>
+            Task.FromResult(_contracts.FirstOrDefault(contract => contract.Id == id));
+
+        public Task<List<Contract>> GetAllAsync(int userId) => Task.FromResult(_contracts.ToList());
+
+        public Task<Contract?> UpdateAsync(Contract contract) => Task.FromResult<Contract?>(contract);
+
+        public Task DeleteAsync(int id)
+        {
+            _contracts.RemoveAll(contract => contract.Id == id);
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GenerateContractAsync(int contractId, List<int> selectedClauseIds, bool useAiPolish = false) =>
+            Task.FromResult(string.Empty);
+
+        public Task<string> ApplyChatEditAsync(int contractId, string userInstruction) =>
+            Task.FromResult(string.Empty);
+
+        public Task<IReadOnlyList<DraftEngine.Core.Models.ContractVersion>> GetVersionsAsync(int contractId) =>
+            Task.FromResult<IReadOnlyList<DraftEngine.Core.Models.ContractVersion>>(
+                Array.Empty<DraftEngine.Core.Models.ContractVersion>());
+
+        public Task<string> RevertToVersionAsync(int contractId, int versionId) =>
+            Task.FromResult(string.Empty);
+    }
+
+    private sealed class StubContractEditService : DraftEngine.Core.Interfaces.IContractEditService
+    {
+        public Task<Contract> DuplicateContractAsync(int sourceContractId, string newTitle) =>
+            Task.FromResult(new Contract { Id = sourceContractId + 1, Title = newTitle });
+
+        public Task<List<Contract>> GetArchivedContractsAsync(int userId) => Task.FromResult(new List<Contract>());
+
+        public Task ArchiveContractAsync(int contractId) => Task.CompletedTask;
+
+        public Task<bool> RestoreContractAsync(int contractId) => Task.FromResult(false);
+
+        public Task PermanentDeleteContractAsync(int contractId) => Task.CompletedTask;
+
+        public Task<Contract> UpdateContractAsync(int contractId, Action<Contract> mutate) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class StubNavigationService : DraftEngine.App.Services.INavigationService
+    {
+        public event Action<object?>? CurrentViewModelChanged
+        {
+            add { }
+            remove { }
+        }
+
+        public object? CurrentViewModel => null;
+
+        public string CurrentKey => string.Empty;
+
+        public bool Navigate(string key, object? parameter = null) => true;
+    }
+
+    private sealed class StubDialogService : DraftEngine.App.Services.IWizardDialogService
+    {
+        public void ShowError(string message, string title = "DraftEngine")
+        {
+        }
+
+        public bool Confirm(
+            string message,
+            string title = "DraftEngine",
+            MessageBoxImage icon = MessageBoxImage.Warning) => false;
     }
 
     private sealed class MemoryLanguageStore : ILanguagePreferenceStore

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -26,12 +27,12 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-                <TextBlock Text="Search, review and manage your saved contracts."
+                <TextBlock Text="{loc:T Contracts.Subtitle}"
                            Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
             </StackPanel>
-            <Button Grid.Column="1" Content="+ New Contract"
+            <Button Grid.Column="1" Content="{loc:T Contracts.NewContractPlus}"
                     Style="{StaticResource PrimaryButtonStyle}"
-                    AutomationProperties.Name="Start a new contract"
+                    AutomationProperties.Name="{loc:T Nav.NewContractAutomation}"
                     Command="{Binding NewContractCommand}"
                     VerticalAlignment="Center" />
         </Grid>
@@ -47,8 +48,8 @@
                 <Grid Grid.Column="0" Margin="0,0,12,0">
                     <TextBox x:Name="SearchBox"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             AutomationProperties.Name="Search contracts by title or client" />
-                    <TextBlock Text="Search by title or client…"
+                             AutomationProperties.Name="{loc:T Contracts.SearchAutomation}" />
+                    <TextBlock Text="{loc:T Contracts.SearchPlaceholder}"
                                Margin="12,0,0,0" VerticalAlignment="Center"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                IsHitTestVisible="False">
@@ -65,23 +66,27 @@
                     </TextBlock>
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,12,0">
-                    <TextBlock Text="Type" Style="{StaticResource SecondaryTextStyle}"
+                    <TextBlock Text="{loc:T Contracts.Type}" Style="{StaticResource SecondaryTextStyle}"
                                VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox Width="160"
                               ItemsSource="{Binding TypeFilters}"
-                              SelectedItem="{Binding SelectedTypeFilter}"
-                              AutomationProperties.Name="Filter by contract type" />
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="Id"
+                              SelectedValue="{Binding SelectedTypeFilterId}"
+                              AutomationProperties.Name="{loc:T Contracts.FilterTypeAutomation}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Text="Sort" Style="{StaticResource SecondaryTextStyle}"
+                    <TextBlock Text="{loc:T Contracts.Sort}" Style="{StaticResource SecondaryTextStyle}"
                                VerticalAlignment="Center" Margin="0,0,8,0" />
                     <ComboBox Width="160"
                               ItemsSource="{Binding SortOptions}"
-                              SelectedItem="{Binding SelectedSortMode}"
-                              AutomationProperties.Name="Sort contracts" />
-                    <Button Content="Clear filters" Margin="12,0,0,0" Padding="12,0" Height="34"
-                            AutomationProperties.Name="Clear all filters and sorting"
-                            ToolTip="Reset search, type filter and sort to defaults"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="Id"
+                              SelectedValue="{Binding SelectedSortModeId}"
+                              AutomationProperties.Name="{loc:T Contracts.SortAutomation}" />
+                    <Button Content="{loc:T Contracts.ClearFilters}" Margin="12,0,0,0" Padding="12,0" Height="34"
+                            AutomationProperties.Name="{loc:T Contracts.ClearFiltersAutomation}"
+                            ToolTip="{loc:T Contracts.ClearFiltersTooltip}"
                             Command="{Binding ClearFiltersCommand}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -122,12 +127,12 @@
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColUpdated" />
                                 <ColumnDefinition Width="220" SharedSizeGroup="ColActions" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Title" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="1" Text="Contract type" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="2" Text="Status" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="3" Text="Effective date" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="4" Text="Term" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="5" Text="Updated" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Text="{loc:T Contracts.ColumnTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Grid.Column="1" Text="{loc:T Contracts.ColumnType}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Contracts.ColumnStatus}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Contracts.ColumnEffective}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Contracts.ColumnTerm}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Grid.Column="5" Text="{loc:T Contracts.ColumnUpdated}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
                             <TextBlock Grid.Column="6" Text="" />
                         </Grid>
                     </Border>
@@ -173,7 +178,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
-                                            <TextBlock Text="{Binding Status}" FontSize="12" FontWeight="SemiBold">
+                                            <TextBlock Text="{Binding StatusText}" FontSize="12" FontWeight="SemiBold">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
@@ -188,33 +193,33 @@
                                         </Border>
 
                                         <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="0,0,12,0"
-                                                   Text="{Binding EffectiveDate, StringFormat={}{0:MMM d, yyyy}}" />
+                                                   Text="{Binding EffectiveDateText}" />
                                         <TextBlock Grid.Column="4" VerticalAlignment="Center" Margin="0,0,12,0"
-                                                   Text="{Binding TermMonths, StringFormat={}{0} months}" />
+                                                   Text="{Binding TermMonthsText}" />
                                         <TextBlock Grid.Column="5" VerticalAlignment="Center" Margin="0,0,12,0"
                                                    Style="{StaticResource SecondaryTextStyle}"
-                                                   Text="{Binding UpdatedAt, StringFormat={}{0:MMM d, yyyy}}" />
+                                                   Text="{Binding UpdatedDateText}" />
 
                                         <!-- Row actions -->
                                         <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Content="Open" Padding="12,0" Height="30" FontSize="12"
-                                                    AutomationProperties.Name="{Binding Title, StringFormat=Open contract {0}}"
+                                            <Button Content="{loc:T Common.Open}" Padding="12,0" Height="30" FontSize="12"
+                                                    AutomationProperties.Name="{Binding OpenAutomationName}"
                                                     Command="{Binding DataContext.OpenContractCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}" />
-                                            <Button Content="Duplicate" Padding="10,0" Height="30" FontSize="12"
+                                                    CommandParameter="{Binding Contract}" />
+                                            <Button Content="{loc:T Common.Duplicate}" Padding="10,0" Height="30" FontSize="12"
                                                     Margin="6,0,0,0"
-                                                    AutomationProperties.Name="{Binding Title, StringFormat=Duplicate contract {0}}"
+                                                    AutomationProperties.Name="{Binding DuplicateAutomationName}"
                                                     Command="{Binding DataContext.DuplicateCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}" />
-                                            <Button Content="Delete" Padding="12,0" Height="30" FontSize="12"
+                                                    CommandParameter="{Binding Contract}" />
+                                            <Button Content="{loc:T Common.Delete}" Padding="12,0" Height="30" FontSize="12"
                                                     Margin="6,0,0,0"
                                                     Foreground="{DynamicResource DangerBrush}"
-                                                    AutomationProperties.Name="{Binding Title, StringFormat=Delete contract {0}}"
+                                                    AutomationProperties.Name="{Binding DeleteAutomationName}"
                                                     Command="{Binding DataContext.DeleteCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}" />
+                                                    CommandParameter="{Binding Contract}" />
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -227,7 +232,7 @@
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
                     <ProgressBar IsIndeterminate="True" Width="180" Height="4" />
-                    <TextBlock Text="Loading contracts…" Style="{StaticResource SecondaryTextStyle}"
+                    <TextBlock Text="{loc:T Contracts.Loading}" Style="{StaticResource SecondaryTextStyle}"
                                HorizontalAlignment="Center" Margin="0,8,0,0" />
                 </StackPanel>
 
@@ -238,9 +243,9 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
                                        VerticalAlignment="Center" />
-                            <Button Content="Try again" Height="28" Padding="10,0" FontSize="12"
+                            <Button Content="{loc:T Contracts.TryAgain}" Height="28" Padding="10,0" FontSize="12"
                                     Margin="12,0,0,0"
-                                    AutomationProperties.Name="Retry loading contracts"
+                                    AutomationProperties.Name="{loc:T Contracts.RetryAutomation}"
                                     Command="{Binding LoadCommand}" />
                         </StackPanel>
                     </Border>
@@ -249,11 +254,11 @@
                 <!-- Empty state: no contracts at all -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                             Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="No contracts yet — create your first one."
+                    <TextBlock Text="{loc:T Contracts.Empty}"
                                Style="{StaticResource BodyTextStyle}" FontSize="15"
                                HorizontalAlignment="Center" />
-                    <Button Content="+ New Contract" Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="Start a new contract"
+                    <Button Content="{loc:T Contracts.NewContractPlus}" Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="{loc:T Nav.NewContractAutomation}"
                             Command="{Binding NewContractCommand}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>
@@ -261,9 +266,9 @@
                 <!-- Empty state: filters hid everything -->
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                             Visibility="{Binding IsFilteredEmpty, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="No contracts match your search."
+                    <TextBlock Text="{loc:T Contracts.NoMatch}"
                                Style="{StaticResource BodyTextStyle}" FontSize="15" />
-                    <TextBlock Text="Try a different search term or select another contract type."
+                    <TextBlock Text="{loc:T Contracts.NoMatchHint}"
                                Style="{StaticResource SecondaryTextStyle}"
                                HorizontalAlignment="Center" Margin="0,4,0,0" />
                 </StackPanel>

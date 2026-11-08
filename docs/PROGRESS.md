@@ -37,6 +37,14 @@ Build 0 errors, **299 tests** (222 + 49 + 28) — up from 291.
 
 NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, add EN/FR/AR/ES keys, keep tests green, commit.
 
+### Step 3 — screen migration (in progress)
+
+- **MainWindow + sidebar — Done.** All nav labels, AutomationProperties names and the version label now use `{loc:T}`; `MainWindow.xaml` passes the literal guard. Sidebar divider mirrors for RTL. Evidence: `MainWindow.xaml`, `LocalizationResourceTests.MainWindow_HasNoLiteralUserFacingStrings`.
+- **Step 4 guard tests — Done.** `LocalizationResourceTests`: key parity across 4 languages, no empty values, every XAML key exists everywhere, and a shrinking pending-list guard for literal strings. Test count 299 → **304** (222 + 54 + 28).
+- Settings, Onboarding, Dashboard, Contracts list, New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
+
+NEXT STEP: Step 3 — migrate Settings screen (SettingsView.xaml + SettingsViewModel C# strings) to `{loc:T}`/GetString, add keys in all four resx, remove `SettingsView.xaml` from `PendingMigration`, build/test/commit.
+
 ### Test counts
 
 - v0.4.0 start: 222.

@@ -35,4 +35,15 @@
   <data name="Onboarding.WindowTitle" xml:space="preserve"><value>مرحبًا بك في DraftEngine</value></data>
   <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>اختر لغتك</value></data>
   <data name="Common.Version" xml:space="preserve"><value>الإصدار {0}</value></data>
+  <data name="Common.VersionLabel" xml:space="preserve"><value>الإصدار </value></data>
+  <data name="Main.VersionAutomation" xml:space="preserve"><value>إصدار التطبيق</value></data>
+  <data name="Nav.DashboardAutomation" xml:space="preserve"><value>الانتقال إلى لوحة التحكم</value></data>
+  <data name="Nav.NewContractAutomation" xml:space="preserve"><value>بدء عقد جديد</value></data>
+  <data name="Nav.ContractsAutomation" xml:space="preserve"><value>الانتقال إلى قائمة العقود</value></data>
+  <data name="Nav.SettingsAutomation" xml:space="preserve"><value>الانتقال إلى الإعدادات</value></data>
+  <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>تحليل عقد</value></data>
+  <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>الانتقال إلى مدير البنود</value></data>
+  <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>الانتقال إلى العقود المؤرشفة</value></data>
+  <data name="Nav.AboutAutomation" xml:space="preserve"><value>الانتقال إلى حول والمساعدة</value></data>
+  <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>فتح الإعدادات</value></data>
 </root>

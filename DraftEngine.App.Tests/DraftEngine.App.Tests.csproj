@@ -26,6 +26,9 @@
        markup next to the tests for the template/key assertions. -->
   <ItemGroup>
     <None Include="..\DraftEngine.App\App.xaml" Link="App.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\MainWindow.xaml" Link="Xaml\MainWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Views\*.xaml" Link="Xaml\Views\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Resources\Strings*.resx" Link="Resources\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -35,4 +35,15 @@
   <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Bienvenue dans DraftEngine</value></data>
   <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Choisissez votre langue</value></data>
   <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Common.VersionLabel" xml:space="preserve"><value>Version </value></data>
+  <data name="Main.VersionAutomation" xml:space="preserve"><value>Version de l'application</value></data>
+  <data name="Nav.DashboardAutomation" xml:space="preserve"><value>Aller au tableau de bord</value></data>
+  <data name="Nav.NewContractAutomation" xml:space="preserve"><value>Commencer un nouveau contrat</value></data>
+  <data name="Nav.ContractsAutomation" xml:space="preserve"><value>Aller à la liste des contrats</value></data>
+  <data name="Nav.SettingsAutomation" xml:space="preserve"><value>Aller aux paramètres</value></data>
+  <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analyser un contrat</value></data>
+  <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Aller au gestionnaire de clauses</value></data>
+  <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Aller aux contrats archivés</value></data>
+  <data name="Nav.AboutAutomation" xml:space="preserve"><value>Aller à l'aide et à propos</value></data>
+  <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
 </root>

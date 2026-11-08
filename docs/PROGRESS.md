@@ -21,7 +21,7 @@ Verified baseline 2026-11-08 on `feature/i18n-theme`:
 - Hardcoded candidates: **505** (285 XAML, 220 C#) vs **26** resx keys per language — see `docs/I18N-INVENTORY.md`.
 - Reverted broken prior work: `SettingsViewModel` (109-line stub), `DashboardViewModel` (lost navigation reload), `NewContractViewModel` (lost logic), `MainWindow` title regression.
 
-NEXT STEP: Step 2a — implement live localization (`LocalizationSource` with `this[string]`, `{loc:T}` binding) and a test proving a language switch updates a bound value.
+Historical checkpoint next step (superseded): implement live localization.
 
 ### Step 2 — live localization (Done, 2026-11-08, not visually verified)
 
@@ -35,7 +35,7 @@ Build 0 errors, **299 tests** (222 + 49 + 28) — up from 291.
 - **2f Pickers — Done.** Settings card and first onboarding screen list English/Français/العربية/Español, apply immediately, persist via `RegistryLanguagePreferenceStore`; default is Windows language if supported else English. Evidence: `SettingsView.xaml`, `OnboardingWindow.xaml`, `OnboardingViewModel`, `LocalizationTests.LanguageChoice_PersistsAndReloads`, `Initialize_UsesWindowsLanguage_WhenSupported_ElseEnglish`.
 - **2g Tests — Done.** 8 new tests cover live switch notification, RTL/LTR, European digits, culture, persistence round trip, Windows/default fallback, English fallback, missing-key `[Key]` (Debug), and format args.
 
-NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, add EN/FR/AR/ES keys, keep tests green, commit.
+Historical checkpoint next step (superseded): migrate MainWindow and sidebar literals.
 
 ### Step 3 — screen migration (in progress)
 
@@ -55,7 +55,14 @@ NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, a
 - `IContractEditService` now explicitly returns nullable contracts for update/duplicate. Existing detail/list callers handle missing contracts; `ContractEditServiceTests` covers both missing-contract paths.
 - `JsonException` no longer binds an unused exception variable. Full solution build/test passed: **313 tests** (224 + 61 + 28); five regression tests added since the 308-test recovery baseline. One unrelated pre-existing `CS8625` warning remains in `DraftEngine.Tests/Commercial/UpdateCheckServiceTests.cs`.
 
-NEXT STEP: Step 2 — migrate the New Contract wizard to `{loc:T}`/GetString, add keys in all four resx, remove its migrated view from `PendingMigration`, build/test/commit.
+### Stage 0 — status audit (2026-11-08)
+
+- Release build plus all tests passed: **313** (224 `DraftEngine.Tests`, 61 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`). Six warnings remain; three are production nullable warnings in `DraftEngine.Core/Services/UpdateCheckService.cs`.
+- Wrote `docs/STATUS-AUDIT.md` with evidence-based statuses for the requested feature areas and `docs/BUG-LOG.md` with three fixed defects and one open documentation inconsistency.
+- Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
+- Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
+
+NEXT STEP: Stage 1 — migrate the New Contract wizard screen by screen; after each batch, build Release, run all tests, update this line, commit, and push.
 
 ### Test counts
 

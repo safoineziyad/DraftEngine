@@ -47,7 +47,8 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - **Dashboard — Done (not visually verified), 2026-11-08.** `DashboardView.xaml` uses `{loc:T}` for the subtitle, stats, recent-contract header/total, empty state, loading text and New Contract buttons; the row automation name is now computed in the view model. `DashboardViewModel` localizes the page title and load-error banner (stored as a flag, so it re-renders on language change), rebuilds rows on `LanguageChanged`, and passes the service to `ContractRowViewModel`. `ContractRowViewModel` localizes the untitled fallback, status enum, accessible name and a culture-aware date format (`Common.DateTimeFormat`). 17 keys added (164 per language). Test count 306 → **307** (222 + 57 + 28); build 0 errors. Not visually verified.
 - **Contracts list — Done (not visually verified), 2026-11-08.** The list view and view model use localized labels/status text, with rows and filter labels refreshed on language changes. 11 keys added to EN/FR/AR/ES. Evidence: `ContractsListView.xaml`, `ContractsListViewModel.cs`, `LocalizationTests.ContractsList_RerendersRowsAndFilterLabels_OnLanguageChange`. Full solution build/test passed with 308 tests (222 + 58 + 28).
 - **New Contract wizard — Done (not visually verified), 2026-11-08.** The view, step labels, contract type cards, intake labels, summary fields, clause counts, accessibility names, confirmations, and error messages use localization keys in EN/FR/AR/ES. Core summary rows now return stable intake field keys. Added 66 keys per language and shrank the XAML literal baseline from 158 to 134. Evidence: `NewContractView.xaml`, `NewContractViewModel*.cs`, `ContractContentBuilderTests.BuildSummary_ReturnsFieldKeysRatherThanDisplayLabels`, `LocalizationTests.NewContractDynamicLabels_RerenderWhenLanguageChanges`, `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline`. Release suite: **318** tests (225 + 65 + 28). Not visually verified.
-- Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
+- **Contract detail — Done (not visually verified), 2026-11-08.** Labels, automation names, diff summary, export/version history, dialogs, file filters, statuses and screen messages use keys in EN/FR/AR/ES; contract type/status and history rows refresh when language changes. Added 94 keys per language. Removed `ContractDetailView.xaml` from `PendingMigration`; the remaining five pending screens now have 90 literal candidates (down from 134). Evidence: `ContractDetailView.xaml`, `ContractDetailViewModel.cs`, `ContractDetailLocalizationTests.ContractDetailAndHistoryRows_RerenderAfterLanguageChange`, and `LocalizationResourceTests.MigratedScreens_ContainNoLiteralUserFacingStrings`. Release build succeeded in an isolated output directory because the running DraftEngine process locked the normal output. All three Release test assemblies passed individually: **326 total** (225 + 73 + 28). Not visually verified; human translation review remains.
+- Clause Manager, Analyze, About, Archived Contracts and License Activation — pending; migrate one screen per batch.
 
 ### Step 1 — warning fixes (Done, 2026-11-08)
 
@@ -63,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Stage 1 — migrate Contract detail (diff panel and export history) as its own batch; build Release, run all tests, update this line, commit, and push.
+NEXT STEP: Stage 1 — migrate Clause Manager as its own batch; build Release, run all tests, update this line, commit, and push.
 
 ### Test counts
 
@@ -71,6 +72,7 @@ NEXT STEP: Stage 1 — migrate Contract detail (diff panel and export history) a
 - End of Contracts-list recovery batch: **308** (222 `DraftEngine.Tests`, 58 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 - End of Step 1: **313** (224 `DraftEngine.Tests`, 61 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 - End of New Contract wizard batch: **318** (225 `DraftEngine.Tests`, 65 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
+- Current branch after the update-check commit and Contract-detail localization: **326** (225 `DraftEngine.Tests`, 73 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`).
 
 ### Audit notes (verified in code)
 

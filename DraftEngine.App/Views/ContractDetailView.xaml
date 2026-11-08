@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:DraftEngine.App.Converters"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -29,32 +30,32 @@
                 <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}"
                            TextTrimming="CharacterEllipsis" />
                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <TextBlock Text="{Binding Contract.ContractType}" Style="{StaticResource SecondaryTextStyle}" />
-                    <TextBlock Text="  ·  " Style="{StaticResource SecondaryTextStyle}" />
-                    <TextBlock Text="{Binding Contract.Status}" Style="{StaticResource SecondaryTextStyle}" />
-                    <TextBlock Text="  ·  Client: " Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{Binding ContractTypeDisplayName}" Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{loc:T ContractDetail.MetadataSeparator}" Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{Binding ContractStatusDisplayName}" Style="{StaticResource SecondaryTextStyle}" />
+                    <TextBlock Text="{Binding ClientLabel}" Style="{StaticResource SecondaryTextStyle}" />
                     <TextBlock Text="{Binding Contract.ClientName}" Style="{StaticResource SecondaryTextStyle}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Content="Save &amp; regenerate" Padding="14,0" Height="34" Margin="8,0,0,0"
-                        AutomationProperties.Name="Save contract changes and regenerate"
-                        AutomationProperties.HelpText="Saves edited metadata, intake answers and clauses before rebuilding the document."
+                <Button Content="{loc:T ContractDetail.SaveRegenerate}" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        AutomationProperties.Name="{loc:T ContractDetail.SaveRegenerateAutomation}"
+                        AutomationProperties.HelpText="{loc:T ContractDetail.SaveRegenerateHelp}"
                         Command="{Binding RegenerateCommand}"
                         IsEnabled="{Binding CanSaveAndRegenerate}" />
                 <CheckBox Margin="12,0,0,0" VerticalAlignment="Center"
-                          Content="AI polish"
+                          Content="{loc:T ContractDetail.AiPolish}"
                           IsChecked="{Binding UseAiPolish}"
                           IsEnabled="{Binding CanEditContract}"
-                          AutomationProperties.Name="Apply AI polish when regenerating"
+                          AutomationProperties.Name="{loc:T ContractDetail.AiPolishAutomation}"
                           Foreground="{DynamicResource TextPrimaryBrush}" />
-                <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
-                        AutomationProperties.Name="Export contract as DOCX"
+                <Button Content="{loc:T ContractDetail.ExportDocx}" Padding="14,0" Height="34" Margin="8,0,0,0"
+                        AutomationProperties.Name="{loc:T ContractDetail.ExportDocxAutomation}"
                         Command="{Binding ExportDocxCommand}"
                         IsEnabled="{Binding HasDocument}" />
-                <Button Content="Export PDF" Padding="14,0" Height="34" Margin="8,0,0,0"
+                <Button Content="{loc:T ContractDetail.ExportPdf}" Padding="14,0" Height="34" Margin="8,0,0,0"
                         Style="{StaticResource PrimaryButtonStyle}"
-                        AutomationProperties.Name="Export contract as PDF"
+                        AutomationProperties.Name="{loc:T ContractDetail.ExportPdfAutomation}"
                         Command="{Binding ExportPdfCommand}"
                         IsEnabled="{Binding HasDocument}" />
             </StackPanel>
@@ -93,26 +94,26 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                        <TextBlock Text="Contract document" FontWeight="SemiBold" />
-                        <TextBlock Text="  (the assembled text changes only when you save and regenerate)"
+                        <TextBlock Text="{loc:T ContractDetail.DocumentHeading}" FontWeight="SemiBold" />
+                        <TextBlock Text="{loc:T ContractDetail.DocumentHint}"
                                    Style="{StaticResource SecondaryTextStyle}" />
                     </StackPanel>
 
                     <!-- Edit staged metadata, registry-defined intake and clause selection. -->
                     <Expander Grid.Row="1" Margin="0,0,0,10" IsExpanded="True"
                               IsEnabled="{Binding CanEditContract}"
-                              AutomationProperties.Name="Edit contract details and clauses">
+                              AutomationProperties.Name="{loc:T ContractDetail.EditAutomation}">
                         <Expander.Header>
-                            <TextBlock Text="Edit details and clauses" FontWeight="SemiBold" />
+                            <TextBlock Text="{loc:T ContractDetail.EditDetails}" FontWeight="SemiBold" />
                         </Expander.Header>
                         <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
                             <StackPanel>
-                                <TextBlock Text="Contract title" FontWeight="SemiBold" Margin="0,0,0,4" />
+                                <TextBlock Text="{loc:T ContractDetail.ContractTitle}" FontWeight="SemiBold" Margin="0,0,0,4" />
                                 <TextBox Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}"
-                                         AutomationProperties.Name="Contract title" Margin="0,0,0,10" />
-                                <Button Content="Duplicate contract" Padding="12,0" Height="30"
+                                         AutomationProperties.Name="{loc:T ContractDetail.ContractTitle}" Margin="0,0,0,10" />
+                                <Button Content="{loc:T ContractDetail.Duplicate}" Padding="12,0" Height="30"
                                         HorizontalAlignment="Left" Margin="0,0,0,12"
-                                        AutomationProperties.Name="Duplicate contract"
+                                        AutomationProperties.Name="{loc:T ContractDetail.DuplicateAutomation}"
                                         Command="{Binding DuplicateContractCommand}" />
 
                                 <ItemsControl ItemsSource="{Binding IntakeFields}">
@@ -142,7 +143,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <TextBlock Text="{Binding SelectedClauseCount, StringFormat=Selected clauses: {0}}"
+                                <TextBlock Text="{Binding SelectedClauseCountText}"
                                            FontWeight="SemiBold" Margin="0,4,0,6" />
                                 <ItemsControl ItemsSource="{Binding ClauseGroups}">
                                     <ItemsControl.ItemTemplate>
@@ -171,12 +172,12 @@
                     <!-- Version history: snapshots taken automatically before AI edits and regenerations -->
                     <Expander Grid.Row="2" Margin="0,0,0,10"
                               IsExpanded="{Binding IsHistoryVisible}"
-                              AutomationProperties.Name="Version history">
+                              AutomationProperties.Name="{loc:T ContractDetail.VersionHistory}">
                         <Expander.Header>
                             <TextBlock Text="{Binding VersionHistoryHeader}" FontWeight="SemiBold" />
                         </Expander.Header>
                         <Grid Margin="0,6,0,2">
-                            <TextBlock Text="No earlier versions yet — one is saved automatically before every AI edit and regeneration."
+                            <TextBlock Text="{loc:T ContractDetail.VersionEmpty}"
                                        Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap"
                                        Visibility="{Binding IsVersionHistoryEmpty, Converter={StaticResource BoolToVis}}" />
                             <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto"
@@ -195,8 +196,8 @@
                                                 <TextBlock Grid.Column="1" Text="{Binding DetailsLabel}"
                                                            Style="{StaticResource SecondaryTextStyle}"
                                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                <Button Grid.Column="2" Content="Restore" Padding="10,2" Margin="8,0,0,0"
-                                                        AutomationProperties.Name="{Binding VersionLabel, StringFormat=Restore version {0}}"
+                                                <Button Grid.Column="2" Content="{loc:T ContractDetail.Restore}" Padding="10,2" Margin="8,0,0,0"
+                                                        AutomationProperties.Name="{Binding RestoreAutomationName}"
                                                         Command="{Binding DataContext.RevertToVersionCommand,
                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                         CommandParameter="{Binding VersionId}" />
@@ -211,12 +212,12 @@
                     <!-- Export history: every recorded DOCX/PDF export for this contract -->
                     <Expander Grid.Row="3" Margin="0,0,0,10"
                               IsExpanded="{Binding IsExportHistoryVisible}"
-                              AutomationProperties.Name="Export history">
+                              AutomationProperties.Name="{loc:T ContractDetail.ExportHistory}">
                         <Expander.Header>
                             <TextBlock Text="{Binding ExportHistoryHeader}" FontWeight="SemiBold" />
                         </Expander.Header>
                         <Grid Margin="0,6,0,2">
-                            <TextBlock Text="No exports yet — use Export DOCX or Export PDF above."
+                            <TextBlock Text="{loc:T ContractDetail.ExportHistoryEmpty}"
                                        Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap"
                                        Visibility="{Binding IsExportHistoryEmpty, Converter={StaticResource BoolToVis}}" />
                             <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto"
@@ -254,8 +255,8 @@
                     <TextBox Grid.Row="4"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
-                             AutomationProperties.Name="Contract document"
-                             AutomationProperties.HelpText="The assembled contract text. Edit the details and clauses above, then save and regenerate."
+                             AutomationProperties.Name="{loc:T ContractDetail.DocumentAutomation}"
+                             AutomationProperties.HelpText="{loc:T ContractDetail.DocumentHelp}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
@@ -268,7 +269,7 @@
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
                         <ProgressBar IsIndeterminate="True" Width="180" Height="4" />
-                        <TextBlock Text="Working…" Style="{StaticResource SecondaryTextStyle}"
+                        <TextBlock Text="{loc:T ContractDetail.Working}" Style="{StaticResource SecondaryTextStyle}"
                                    HorizontalAlignment="Center" Margin="0,8,0,0" />
                     </StackPanel>
                 </Grid>
@@ -286,8 +287,8 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="0,0,0,12">
-                        <TextBlock Text="AI assistant" FontWeight="SemiBold" />
-                        <TextBlock Text="Describe the change in plain language — the contract updates in place."
+                        <TextBlock Text="{loc:T ContractDetail.AiAssistant}" FontWeight="SemiBold" />
+                        <TextBlock Text="{loc:T ContractDetail.AiSubtitle}"
                                    Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
                     </StackPanel>
 
@@ -295,7 +296,7 @@
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <!-- Empty hint -->
-                            <TextBlock Text="Example: &#x201C;Make the confidentiality term 3 years&#x201D;"
+                            <TextBlock Text="{loc:T ContractDetail.ChatExample}"
                                        Style="{StaticResource SecondaryTextStyle}"
                                        TextWrapping="Wrap" Margin="0,8"
                                        Visibility="{Binding IsChatEmpty, Converter={StaticResource BoolToVis}}" />
@@ -357,7 +358,7 @@
                             BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1"
                             Visibility="{Binding HasPendingAiEdit, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
-                            <TextBlock Text="Proposed AI edit" FontWeight="SemiBold" />
+                            <TextBlock Text="{loc:T ContractDetail.ProposedAiEdit}" FontWeight="SemiBold" />
                             <TextBlock Text="{Binding PendingAiEditSummary}"
                                        Style="{StaticResource SecondaryTextStyle}"
                                        TextWrapping="Wrap" Margin="0,2,0,6" />
@@ -389,13 +390,13 @@
                                 </ItemsControl>
                             </ScrollViewer>
                             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                <Button Content="Accept" Style="{StaticResource PrimaryButtonStyle}"
+                                <Button Content="{loc:T ContractDetail.Accept}" Style="{StaticResource PrimaryButtonStyle}"
                                         Padding="14,4" MinWidth="80"
-                                        AutomationProperties.Name="Accept the proposed AI edit"
+                                        AutomationProperties.Name="{loc:T ContractDetail.AcceptAutomation}"
                                         Command="{Binding AcceptAiEditCommand}"
                                         IsEnabled="{Binding CanReviewAiEdit}" />
-                                <Button Content="Reject" Padding="14,4" MinWidth="80" Margin="8,0,0,0"
-                                        AutomationProperties.Name="Reject the proposed AI edit"
+                                <Button Content="{loc:T ContractDetail.Reject}" Padding="14,4" MinWidth="80" Margin="8,0,0,0"
+                                        AutomationProperties.Name="{loc:T ContractDetail.RejectAutomation}"
                                         Command="{Binding RejectAiEditCommand}" />
                             </StackPanel>
                         </StackPanel>
@@ -406,9 +407,9 @@
                             Background="#FFF4E5" CornerRadius="6" BorderBrush="#FFB74D" BorderThickness="1"
                             Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
-                            <TextBlock Text="Configure your OpenAI API key in Settings to use AI editing."
+                            <TextBlock Text="{loc:T ContractDetail.ApiKeyWarning}"
                                        TextWrapping="Wrap" Foreground="#E65100" FontSize="12" />
-                            <Button Content="Go to Settings" Margin="0,6,0,0" Padding="10,4" HorizontalAlignment="Left"
+                            <Button Content="{loc:T ContractDetail.GoToSettings}" Margin="0,6,0,0" Padding="10,4" HorizontalAlignment="Left"
                                     Command="{Binding GoToSettingsCommand}" FontSize="11" />
                         </StackPanel>
                     </Border>
@@ -421,8 +422,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="ChatBox"
                                  Text="{Binding ChatInput, UpdateSourceTrigger=PropertyChanged}"
-                                 AutomationProperties.Name="Instruction for the AI assistant"
-                                 AutomationProperties.HelpText="Describe the change you want. Press Enter to send, Shift+Enter for a new line."
+                                 AutomationProperties.Name="{loc:T ContractDetail.ChatAutomation}"
+                                 AutomationProperties.HelpText="{loc:T ContractDetail.ChatHelp}"
                                  AcceptsReturn="True" TextWrapping="Wrap" Height="60"
                                  VerticalContentAlignment="Top" Padding="8"
                                  VerticalScrollBarVisibility="Auto"
@@ -440,13 +441,13 @@
                                 </Style>
                             </TextBox.Style>
                         </TextBox>
-                        <Button Grid.Column="1" Content="Send" Width="70" Height="60" Margin="8,0,0,0"
+                        <Button Grid.Column="1" Content="{loc:T ContractDetail.Send}" Width="70" Height="60" Margin="8,0,0,0"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                AutomationProperties.Name="Send instruction to the AI assistant"
+                                AutomationProperties.Name="{loc:T ContractDetail.SendAutomation}"
                                 Command="{Binding SendChatEditCommand}"
                                 IsEnabled="{Binding CanChat}">
                             <Button.ToolTip>
-                                <ToolTip Content="Configure your OpenAI API key in Settings to use AI editing." 
+                                <ToolTip Content="{loc:T ContractDetail.ApiKeyWarning}"
                                          Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}" />
                             </Button.ToolTip>
                         </Button>
@@ -460,8 +461,8 @@
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock Text="{Binding LoadFailedMessage}" Style="{StaticResource BodyTextStyle}"
                                TextWrapping="Wrap" HorizontalAlignment="Center" />
-                    <Button Content="Back to Contracts" Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="Back to the Contracts list"
+                    <Button Content="{loc:T ContractDetail.BackToContracts}" Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="{loc:T ContractDetail.BackAutomation}"
                             Command="{Binding BackToListCommand}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>

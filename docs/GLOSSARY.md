@@ -14,4 +14,8 @@ legal text require separate legal and native-speaker review before being present
 | Mutual NDA | Accord de confidentialité réciproque | اتفاقية سرية متبادلة | Acuerdo mutuo de confidencialidad | Contract type |
 | One-way NDA | Accord de confidentialité unilatéral | اتفاقية سرية أحادية | Acuerdo unilateral de confidencialidad | Contract type |
 | Review | Vérification | المراجعة | Revisión | Wizard step |
-
+| Version history | Historique des versions | سجل الإصدارات | Historial de versiones | Contract detail |
+| Export history | Historique des exportations | سجل التصدير | Historial de exportaciones | Contract detail |
+| AI assistant | Assistant IA | مساعد الذكاء الاصطناعي | Asistente de IA | Optional editing tool |
+| Proposed edit | Modification proposée | تعديل مقترح | Cambio propuesto | User must accept or reject |
+| Restore | Restaurer | استعادة | Restaurar | Restore an earlier version |

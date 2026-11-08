@@ -33,7 +33,6 @@ public sealed class LocalizationResourceTests
     // Screens not yet migrated to {loc:T}. Remove a name when its migration commit lands.
     private static readonly HashSet<string> PendingMigration = new(StringComparer.OrdinalIgnoreCase)
     {
-        "ContractDetailView.xaml",
         "ClauseManagerView.xaml",
         "AnalyzeView.xaml",
         "AboutView.xaml",

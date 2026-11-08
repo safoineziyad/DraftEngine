@@ -283,4 +283,98 @@
   <data name="Update.Dismiss" xml:space="preserve"><value>X</value></data>
   <data name="Update.DismissAutomation" xml:space="preserve"><value>إخفاء إشعار التحديث</value></data>
   <data name="Update.InstallFailed" xml:space="preserve"><value>تعذّر تثبيت التحديث: {0}</value></data>
+  <data name="ContractDetail.PageTitle" xml:space="preserve"><value>تفاصيل العقد</value></data>
+  <data name="ContractDetail.ClientLabel" xml:space="preserve"><value> · العميل: </value></data>
+  <data name="ContractDetail.SaveRegenerate" xml:space="preserve"><value>حفظ وإعادة الإنشاء</value></data>
+  <data name="ContractDetail.SaveRegenerateAutomation" xml:space="preserve"><value>حفظ تغييرات العقد وإعادة إنشائه</value></data>
+  <data name="ContractDetail.SaveRegenerateHelp" xml:space="preserve"><value>يحفظ البيانات الوصفية وإجابات الإدخال والبنود المعدلة قبل إعادة بناء المستند.</value></data>
+  <data name="ContractDetail.AiPolish" xml:space="preserve"><value>تحسين بالذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.AiPolishAutomation" xml:space="preserve"><value>تطبيق التحسين عند إعادة إنشاء العقد</value></data>
+  <data name="ContractDetail.ExportDocx" xml:space="preserve"><value>تصدير DOCX</value></data>
+  <data name="ContractDetail.ExportDocxAutomation" xml:space="preserve"><value>تصدير العقد بصيغة DOCX</value></data>
+  <data name="ContractDetail.ExportPdf" xml:space="preserve"><value>تصدير PDF</value></data>
+  <data name="ContractDetail.ExportPdfAutomation" xml:space="preserve"><value>تصدير العقد بصيغة PDF</value></data>
+  <data name="ContractDetail.DocumentHeading" xml:space="preserve"><value>مستند العقد</value></data>
+  <data name="ContractDetail.DocumentHint" xml:space="preserve"><value> (لا يتغير النص المُجمّع إلا بعد الحفظ وإعادة الإنشاء)</value></data>
+  <data name="ContractDetail.EditAutomation" xml:space="preserve"><value>تعديل تفاصيل العقد وبنوده</value></data>
+  <data name="ContractDetail.EditDetails" xml:space="preserve"><value>تعديل التفاصيل والبنود</value></data>
+  <data name="ContractDetail.ContractTitle" xml:space="preserve"><value>عنوان العقد</value></data>
+  <data name="ContractDetail.Duplicate" xml:space="preserve"><value>نسخ العقد</value></data>
+  <data name="ContractDetail.DuplicateAutomation" xml:space="preserve"><value>نسخ العقد</value></data>
+  <data name="ContractDetail.SelectedClausesOne" xml:space="preserve"><value>تم تحديد بند واحد ({0})</value></data>
+  <data name="ContractDetail.SelectedClausesOther" xml:space="preserve"><value>تم تحديد {0} بنود</value></data>
+  <data name="ContractDetail.VersionHistory" xml:space="preserve"><value>سجل الإصدارات</value></data>
+  <data name="ContractDetail.VersionHistoryCount" xml:space="preserve"><value>سجل الإصدارات ({0})</value></data>
+  <data name="ContractDetail.VersionEmpty" xml:space="preserve"><value>لا توجد إصدارات سابقة بعد؛ يُحفظ إصدار تلقائياً قبل كل تعديل بالذكاء الاصطناعي أو إعادة إنشاء.</value></data>
+  <data name="ContractDetail.Restore" xml:space="preserve"><value>استعادة</value></data>
+  <data name="ContractDetail.RestoreAutomation" xml:space="preserve"><value>استعادة الإصدار {0}</value></data>
+  <data name="ContractDetail.ExportHistory" xml:space="preserve"><value>سجل التصدير</value></data>
+  <data name="ContractDetail.ExportHistoryCount" xml:space="preserve"><value>سجل التصدير ({0})</value></data>
+  <data name="ContractDetail.ExportHistoryEmpty" xml:space="preserve"><value>لا توجد عمليات تصدير بعد؛ استخدم زري تصدير DOCX أو PDF أعلاه.</value></data>
+  <data name="ContractDetail.DocumentAutomation" xml:space="preserve"><value>مستند العقد</value></data>
+  <data name="ContractDetail.DocumentHelp" xml:space="preserve"><value>نص العقد المُجمّع. عدّل التفاصيل والبنود أعلاه، ثم احفظ وأعد الإنشاء.</value></data>
+  <data name="ContractDetail.Working" xml:space="preserve"><value>جارٍ العمل…</value></data>
+  <data name="ContractDetail.AiAssistant" xml:space="preserve"><value>مساعد الذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.AiSubtitle" xml:space="preserve"><value>صِف التغيير بلغة بسيطة وسيُحدّث العقد مباشرةً.</value></data>
+  <data name="ContractDetail.ChatExample" xml:space="preserve"><value>مثال: «اجعل مدة السرية 3 سنوات»</value></data>
+  <data name="ContractDetail.ProposedAiEdit" xml:space="preserve"><value>تعديل مقترح من الذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.DiffSummaryOne" xml:space="preserve"><value>التغيير المقترح: سطر واحد ({0}) تغيّر. لم يُحفظ شيء بعد.</value></data>
+  <data name="ContractDetail.DiffSummaryOther" xml:space="preserve"><value>التغيير المقترح: تغيّر {0} أسطر. لم يُحفظ شيء بعد.</value></data>
+  <data name="ContractDetail.Accept" xml:space="preserve"><value>قبول</value></data>
+  <data name="ContractDetail.AcceptAutomation" xml:space="preserve"><value>قبول تعديل الذكاء الاصطناعي المقترح</value></data>
+  <data name="ContractDetail.Reject" xml:space="preserve"><value>رفض</value></data>
+  <data name="ContractDetail.RejectAutomation" xml:space="preserve"><value>رفض تعديل الذكاء الاصطناعي المقترح</value></data>
+  <data name="ContractDetail.ApiKeyWarning" xml:space="preserve"><value>أضف مفتاح OpenAI API في الإعدادات لاستخدام التعديل بالذكاء الاصطناعي.</value></data>
+  <data name="ContractDetail.GoToSettings" xml:space="preserve"><value>الانتقال إلى الإعدادات</value></data>
+  <data name="ContractDetail.ChatAutomation" xml:space="preserve"><value>تعليمات لمساعد الذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.ChatHelp" xml:space="preserve"><value>صِف التغيير المطلوب. اضغط Enter للإرسال أو Shift+Enter لسطر جديد.</value></data>
+  <data name="ContractDetail.Send" xml:space="preserve"><value>إرسال</value></data>
+  <data name="ContractDetail.SendAutomation" xml:space="preserve"><value>إرسال التعليمات إلى مساعد الذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.BackToContracts" xml:space="preserve"><value>العودة إلى العقود</value></data>
+  <data name="ContractDetail.BackAutomation" xml:space="preserve"><value>العودة إلى قائمة العقود</value></data>
+  <data name="ContractDetail.ErrorInvalidSelection" xml:space="preserve"><value>تعذّر فتح هذا العقد. حدده مجدداً من قائمة العقود.</value></data>
+  <data name="ContractDetail.ErrorOpen" xml:space="preserve"><value>تعذّر فتح هذا العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorMissing" xml:space="preserve"><value>لم يعد هذا العقد موجوداً. ربما تم حذفه.</value></data>
+  <data name="ContractDetail.ErrorLoad" xml:space="preserve"><value>تعذّر تحميل هذا العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorTypeUnavailable" xml:space="preserve"><value>لم يعد نوع العقد هذا متاحاً للتعديل.</value></data>
+  <data name="ContractDetail.ErrorSelectClause" xml:space="preserve"><value>حدد بنداً واحداً على الأقل قبل إعادة الإنشاء.</value></data>
+  <data name="ContractDetail.RegeneratedWithPlaceholders" xml:space="preserve"><value>أُعيد إنشاء العقد، لكن تعذّر ملء بعض العناصر النائبة وما زالت تظهر بصيغة {{...}}. استخدم المساعد لإكمالها.</value></data>
+  <data name="ContractDetail.Regenerated" xml:space="preserve"><value>حُفظت تغييراتك وأُعيد إنشاء العقد.</value></data>
+  <data name="ContractDetail.ErrorRegenerateRejected" xml:space="preserve"><value>تعذّرت إعادة إنشاء العقد باستخدام الإعدادات الحالية.</value></data>
+  <data name="ContractDetail.ErrorRegenerate" xml:space="preserve"><value>تعذّرت إعادة إنشاء العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorDuplicateMissing" xml:space="preserve"><value>تعذّر نسخ هذا العقد لأنه لم يعد موجوداً.</value></data>
+  <data name="ContractDetail.ErrorDuplicate" xml:space="preserve"><value>تعذّر نسخ العقد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeChat" xml:space="preserve"><value>أنشئ العقد قبل طلب التعديلات.</value></data>
+  <data name="ContractDetail.AiInstructionNotSent" xml:space="preserve"><value>لم تُرسل التعليمات. يشارك التعديل بالذكاء الاصطناعي نص العقد مع OpenAI.</value></data>
+  <data name="ContractDetail.ReviewProposedEdit" xml:space="preserve"><value>راجع التغيير المقترح أدناه، ثم اقبله أو ارفضه.</value></data>
+  <data name="ContractDetail.ErrorChatRejected" xml:space="preserve"><value>تعذّر على المساعد إعداد هذا التعديل. تحقق من إعدادات الذكاء الاصطناعي وحاول مجدداً.</value></data>
+  <data name="ContractDetail.ErrorChat" xml:space="preserve"><value>تعذّر على المساعد تطبيق التعديل. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.AiEditAppliedWithPlaceholders" xml:space="preserve"><value>طُبّق التعديل. ما زالت بعض العناصر النائبة {{...}}؛ اطلب من المساعد إكمالها.</value></data>
+  <data name="ContractDetail.AiEditApplied" xml:space="preserve"><value>طُبّق التعديل. حُفظ النص السابق في سجل الإصدارات.</value></data>
+  <data name="ContractDetail.ErrorAiEditRejected" xml:space="preserve"><value>تعذّر تطبيق التعديل المقترح على حالة العقد الحالية.</value></data>
+  <data name="ContractDetail.ErrorAiEdit" xml:space="preserve"><value>تعذّر تطبيق تعديل المساعد. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.AiEditDiscarded" xml:space="preserve"><value>تم تجاهل التعديل المقترح. لم يتغير شيء.</value></data>
+  <data name="ContractDetail.VersionRestored" xml:space="preserve"><value>تمت استعادة الإصدار السابق. بقي النص المستبدل في سجل الإصدارات.</value></data>
+  <data name="ContractDetail.ErrorRestoreRejected" xml:space="preserve"><value>لا يمكن استعادة هذا الإصدار في حالة العقد الحالية.</value></data>
+  <data name="ContractDetail.ErrorRestore" xml:space="preserve"><value>تعذّرت استعادة هذا الإصدار. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeExport" xml:space="preserve"><value>أنشئ العقد قبل تصديره.</value></data>
+  <data name="ContractDetail.ExportDialogTitle" xml:space="preserve"><value>تصدير العقد بصيغة {0}</value></data>
+  <data name="ContractDetail.ExportDialogFilter" xml:space="preserve"><value>مستند {0} (*.{1})|*.{1}</value></data>
+  <data name="ContractDetail.ExportedTo" xml:space="preserve"><value>تم التصدير إلى {0}</value></data>
+  <data name="ContractDetail.ExportOpenPrompt" xml:space="preserve"><value>تم تصدير المستند بنجاح. هل تريد فتحه الآن؟</value></data>
+  <data name="ContractDetail.ExportComplete" xml:space="preserve"><value>اكتمل التصدير</value></data>
+  <data name="ContractDetail.ErrorExportRejected" xml:space="preserve"><value>تعذّر إكمال التصدير باستخدام الإعدادات الحالية.</value></data>
+  <data name="ContractDetail.ErrorExport" xml:space="preserve"><value>تعذّر تصدير العقد بصيغة {0}. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="ContractDetail.ErrorLoadVersions" xml:space="preserve"><value>تعذّر تحميل سجل الإصدارات.</value></data>
+  <data name="ContractDetail.FileAvailable" xml:space="preserve"><value>الملف متاح</value></data>
+  <data name="ContractDetail.FileMissing" xml:space="preserve"><value>تم نقل الملف أو حذفه</value></data>
+  <data name="ContractDetail.FileInvalidPath" xml:space="preserve"><value>مسار غير صالح</value></data>
+  <data name="ContractDetail.VersionDetails" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="ContractDetail.VersionReasonAiEdit" xml:space="preserve"><value>تعديل بالذكاء الاصطناعي</value></data>
+  <data name="ContractDetail.VersionReasonRegeneration" xml:space="preserve"><value>إعادة الإنشاء</value></data>
+  <data name="ContractDetail.VersionReasonBeforeRevert" xml:space="preserve"><value>قبل الاستعادة</value></data>
+  <data name="ContractDetail.VersionReasonOther" xml:space="preserve"><value>إصدار سابق</value></data>
+  <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>تشارك التعديلات بالذكاء الاصطناعي نص هذا العقد مع OpenAI لمعالجته.&#xA;&#xA;تابع فقط إذا كنت توافق على إرسال هذا المستند إلى OpenAI؛ مثلاً إذا لم يتضمن معلومات سرية أو امتيازية لا يُسمح لك بمشاركتها مع خدمة خارجية.&#xA;&#xA;هل تريد متابعة التعديل بالذكاء الاصطناعي؟</value></data>
+  <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>التعديل بالذكاء الاصطناعي يرسل بيانات إلى OpenAI</value></data>
+  <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
 </root>

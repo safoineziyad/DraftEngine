@@ -55,3 +55,11 @@ Scope: documentation and code inspection only; no feature code changed.
 - Resource files now have **273 keys per language** (1,092 key/value entries total), and all four key sets remain equal under `LocalizationResourceTests.AllLanguages_HaveTheSameKeys`.
 - Release tests now pass at **318** (225 core, 65 App.Tests, 28 Analysis.Tests). Wizard-specific coverage includes dynamic label language refresh, translated type/field labels, invariant integer validation, and core summary labels returned as stable field keys.
 - The new screen has **not been visually verified**. Translation quality still needs native-speaker and legal review where relevant.
+
+## Contract-detail localization update (2026-11-08)
+
+- `ContractDetailView.xaml` and its directly related view-model output are migrated to localization keys; all four resource files contain **373 keys** with parity enforced by `LocalizationResourceTests.AllLanguages_HaveTheSameKeys`.
+- The Contract-detail view was removed from the pending literal guard. The remaining five views/windows contain **90** candidates, measured by `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline` against `docs/i18n-baseline.txt`.
+- `ContractDetailLocalizationTests.ContractDetailAndHistoryRows_RerenderAfterLanguageChange` exercises contract type/status, history rows, and load-error language refresh. Release build succeeded in an isolated output directory because the running DraftEngine process locked the normal output. All three Release test assemblies passed individually: **326** total (225 core, 73 App.Tests, 28 Analysis.Tests).
+- Contract detail is **Done in code, not visually verified**. French/Arabic/Spanish copy needs human review, especially long French strings and Arabic RTL layout.
+- This working branch also retains `0d94c21` (auto-update check/banner and silent-installer work). No merge or tag was made.

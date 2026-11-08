@@ -16,6 +16,9 @@ using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Enums;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
+using ContractTextDiff = DraftEngine.Core.Services.ContractTextDiff;
+using DiffLine = DraftEngine.Core.Services.DiffLine;
+using DiffLineKind = DraftEngine.Core.Services.DiffLineKind;
 using DraftEngine.Core.Models.ContractTypes;
 using Microsoft.Win32;
 using Serilog;
@@ -41,12 +44,16 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     private readonly INavigationService _navigation;
     private readonly IWizardDialogService _dialogService;
     private readonly IAppSettingsService _settingsService;
+    private readonly IExportHistoryService? _exportHistoryService;
 
     /// <summary>
     /// Contract id requested while an operation was still running; loaded as soon as the
     /// busy state clears, so a navigation request is never silently dropped.
     /// </summary>
     private int? _pendingContractId;
+
+    /// <summary>The instruction that produced <see cref="PendingAiEdit"/>.</summary>
+    private string? _pendingInstruction;
 
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
@@ -94,6 +101,39 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 
     /// <summary>Version history rows (newest first) shown in the document panel.</summary>
     public ObservableCollection<ContractVersionRowViewModel> Versions { get; } = new();
+
+    /// <summary>Export history rows (newest first) read from GeneratedDocument.</summary>
+    public ObservableCollection<ExportHistoryRowViewModel> ExportHistory { get; } = new();
+
+    /// <summary>True when the export history panel is expanded.</summary>
+    [ObservableProperty]
+    private bool isExportHistoryVisible;
+
+    /// <summary>Header text of the export history panel.</summary>
+    public string ExportHistoryHeader =>
+        ExportHistory.Count == 0 ? "Export history" : $"Export history ({ExportHistory.Count})";
+
+    /// <summary>True when no exports have been recorded yet.</summary>
+    public bool IsExportHistoryEmpty => ExportHistory.Count == 0;
+
+    /// <summary>The AI edit awaiting the user's Accept/Reject decision.</summary>
+    [ObservableProperty]
+    private AiEditPreview? pendingAiEdit;
+
+    /// <summary>The line diff for <see cref="PendingAiEdit"/>.</summary>
+    public ObservableCollection<DiffLineRowViewModel> DiffLines { get; } = new();
+
+    /// <summary>True while a proposed AI edit is waiting for review.</summary>
+    public bool HasPendingAiEdit => PendingAiEdit is not null;
+
+    /// <summary>True when the pending edit can be accepted or rejected right now.</summary>
+    public bool CanReviewAiEdit => PendingAiEdit is not null && !IsBusy;
+
+    /// <summary>Summary line shown above the diff.</summary>
+    public string PendingAiEditSummary => PendingAiEdit is null
+        ? string.Empty
+        : $"Proposed change: {DiffLines.Count(line => line.Kind != DiffLineKind.Unchanged)} changed " +
+          $"line(s). Nothing has been saved yet.";
 
     /// <summary>True when the version history panel is expanded.</summary>
     [ObservableProperty]
@@ -164,7 +204,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         IDocumentExportService exportService,
         INavigationService navigation,
         IWizardDialogService dialogService,
-        IAppSettingsService settingsService)
+        IAppSettingsService settingsService,
+        IExportHistoryService? exportHistoryService = null)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         _contractEditService = contractEditService ?? throw new ArgumentNullException(nameof(contractEditService));
@@ -178,6 +219,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+        _exportHistoryService = exportHistoryService;
     }
 
     /// <inheritdoc cref="INavigationAware" />
@@ -242,6 +284,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             await LoadEditorAsync(contract);
             await ReloadChatAsync(contractId);
             await ReloadVersionsAsync(contractId);
+            await ReloadExportHistoryAsync(contractId);
         }
         catch (Exception ex)
         {
@@ -708,18 +751,15 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         InfoMessage = null;
         try
         {
-            var updatedText = await _contractService.ApplyChatEditAsync(Contract.Id, instruction);
-            DocumentText = updatedText;
+            // Preview only: the proposed text is validated but not stored. The user sees a
+            // diff and must Accept before anything replaces the contract.
+            var preview = await _contractService.PreviewChatEditAsync(Contract.Id, instruction);
+            _pendingInstruction = instruction;
+            PendingAiEdit = preview;
             ChatInput = string.Empty;
-            Contract!.AssembledText = updatedText;
-            await ReloadChatAsync(Contract.Id);
-            await ReloadVersionsAsync(Contract.Id);
 
-            if (HasUnresolvedPlaceholders(updatedText))
-            {
-                InfoMessage = "Some placeholders are still visible as {{...}} in the document — " +
-                              "ask the assistant to fill them in.";
-            }
+            ShowDiff(preview);
+            InfoMessage = "Review the proposed change below, then Accept or Reject it.";
         }
         catch (InvalidOperationException ex)
         {
@@ -737,6 +777,81 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         {
             IsBusy = false;
         }
+    }
+
+    /// <summary>Applies the pending AI edit; a version snapshot is taken first.</summary>
+    [RelayCommand]
+    private async Task AcceptAiEditAsync()
+    {
+        if (IsBusy || Contract is null || PendingAiEdit is null) return;
+
+        var pending = PendingAiEdit;
+        var instruction = _pendingInstruction ?? string.Empty;
+        IsBusy = true;
+        ErrorMessage = null;
+        InfoMessage = null;
+        try
+        {
+            var updatedText = await _contractService.ApplyChatEditPreviewAsync(
+                Contract.Id, instruction, pending.UpdatedText);
+            DocumentText = updatedText;
+            Contract.AssembledText = updatedText;
+            PendingAiEdit = null;
+            _pendingInstruction = null;
+            DiffLines.Clear();
+
+            await ReloadChatAsync(Contract.Id);
+            await ReloadVersionsAsync(Contract.Id);
+
+            InfoMessage = HasUnresolvedPlaceholders(updatedText)
+                ? "The edit was applied. Some placeholders are still visible as {{...}} — ask the assistant to fill them in."
+                : "The edit was applied. The previous text is saved in version history.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            Log.Warning(ex, "AI edit apply rejected for contract {ContractId}.", Contract.Id);
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to apply the previewed AI edit for contract {ContractId}.", Contract.Id);
+            ErrorMessage = "The assistant's edit could not be applied. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Discards the pending AI edit without changing the contract.</summary>
+    [RelayCommand]
+    private void RejectAiEdit()
+    {
+        if (PendingAiEdit is null) return;
+
+        PendingAiEdit = null;
+        _pendingInstruction = null;
+        DiffLines.Clear();
+        InfoMessage = "The proposed edit was discarded. Nothing was changed.";
+    }
+
+    /// <summary>Builds the reviewable line diff for a proposed edit.</summary>
+    private void ShowDiff(AiEditPreview preview)
+    {
+        DiffLines.Clear();
+        foreach (var line in ContractTextDiff.Compute(preview.OriginalText, preview.UpdatedText))
+        {
+            DiffLines.Add(new DiffLineRowViewModel(line));
+        }
+
+        OnPropertyChanged(nameof(PendingAiEditSummary));
+    }
+
+    partial void OnPendingAiEditChanged(AiEditPreview? value)
+    {
+        OnPropertyChanged(nameof(HasPendingAiEdit));
+        OnPropertyChanged(nameof(CanReviewAiEdit));
+        OnPropertyChanged(nameof(PendingAiEditSummary));
     }
 
     /// <summary>
@@ -835,6 +950,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 : await _docxBuilder.BuildDocxAsync(Contract!, DocumentText, targetPath);
 
             await _exportService.RecordExportAsync(Contract!.Id, finalPath, fileType);
+            await ReloadExportHistoryAsync(Contract!.Id);
 
             var refreshed = await _contractService.GetByIdAsync(Contract.Id);
             if (refreshed is not null)
@@ -915,6 +1031,35 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
     }
 
+    /// <summary>Reloads the export history; failures never block the page.</summary>
+    private async Task ReloadExportHistoryAsync(int contractId)
+    {
+        if (_exportHistoryService is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var documents = await _exportHistoryService.GetHistoryAsync(contractId);
+            ExportHistory.Clear();
+            foreach (var document in documents)
+            {
+                ExportHistory.Add(new ExportHistoryRowViewModel(
+                    document,
+                    _exportHistoryService.GetFileStatus(document)));
+            }
+
+            OnPropertyChanged(nameof(ExportHistoryHeader));
+            OnPropertyChanged(nameof(IsExportHistoryEmpty));
+        }
+        catch (Exception ex)
+        {
+            // Supporting context only: an unreadable history must not break the contract page.
+            Log.Warning(ex, "Failed to load the export history for contract {ContractId}.", contractId);
+        }
+    }
+
     private void MarkAsUnloaded(string message)
     {
         LoadFailed = true;
@@ -924,7 +1069,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         DocumentText = string.Empty;
         PageTitle = "Contract Detail";
         ChatMessages.Clear();
+        ExportHistory.Clear();
+        DiffLines.Clear();
+        PendingAiEdit = null;
         OnPropertyChanged(nameof(IsChatEmpty));
+        OnPropertyChanged(nameof(ExportHistoryHeader));
+        OnPropertyChanged(nameof(IsExportHistoryEmpty));
     }
 
     private static string BuildDefaultFileName(Contract contract, string extension)
@@ -1087,6 +1237,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         OnPropertyChanged(nameof(ShowApiKeyWarning));
         OnPropertyChanged(nameof(CanSaveAndRegenerate));
         OnPropertyChanged(nameof(CanEditContract));
+        OnPropertyChanged(nameof(CanReviewAiEdit));
+        AcceptAiEditCommand.NotifyCanExecuteChanged();
         RegenerateCommand.NotifyCanExecuteChanged();
 
         if (!value)
@@ -1160,6 +1312,78 @@ public partial class ChatMessageRowViewModel : ObservableObject
 
     /// <summary>The local creation time, shown as HH:mm.</summary>
     public string TimeLabel { get; }
+}
+
+/// <summary>Display row for one line of an AI edit diff.</summary>
+public sealed class DiffLineRowViewModel
+{
+    /// <summary>Creates the row from a computed diff line.</summary>
+    public DiffLineRowViewModel(DiffLine line)
+    {
+        ArgumentNullException.ThrowIfNull(line);
+        Kind = line.Kind;
+        Text = line.Text;
+        Prefix = line.Kind switch
+        {
+            DiffLineKind.Added => "+ ",
+            DiffLineKind.Removed => "- ",
+            _ => "  ",
+        };
+    }
+
+    /// <summary>The diff kind, used by the view for colour.</summary>
+    public DiffLineKind Kind { get; }
+
+    /// <summary>Line text without the marker.</summary>
+    public string Text { get; }
+
+    /// <summary>Marker shown before the line.</summary>
+    public string Prefix { get; }
+
+    /// <summary>True for added lines.</summary>
+    public bool IsAdded => Kind == DiffLineKind.Added;
+
+    /// <summary>True for removed lines.</summary>
+    public bool IsRemoved => Kind == DiffLineKind.Removed;
+}
+
+/// <summary>Display row for one recorded export (GeneratedDocument).</summary>
+public sealed class ExportHistoryRowViewModel
+{
+    /// <summary>Creates the row from a persisted export and its file status.</summary>
+    public ExportHistoryRowViewModel(GeneratedDocument document, ExportFileStatus status)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        FileName = Path.GetFileName(document.FilePath);
+        FilePath = document.FilePath;
+        TypeLabel = document.FileType == FileType.Pdf ? "PDF" : "DOCX";
+        ExportedLabel = document.GeneratedAt.ToLocalTime().ToString("g");
+        StatusLabel = status switch
+        {
+            ExportFileStatus.Available => "File available",
+            ExportFileStatus.Missing => "File moved or deleted",
+            _ => "Invalid path",
+        };
+        IsAvailable = status == ExportFileStatus.Available;
+    }
+
+    /// <summary>The exported file name.</summary>
+    public string FileName { get; }
+
+    /// <summary>The full path (shown as a tooltip, never logged).</summary>
+    public string FilePath { get; }
+
+    /// <summary>DOCX or PDF.</summary>
+    public string TypeLabel { get; }
+
+    /// <summary>Local export timestamp.</summary>
+    public string ExportedLabel { get; }
+
+    /// <summary>Whether the recorded file still exists.</summary>
+    public string StatusLabel { get; }
+
+    /// <summary>True when the file is still on disk.</summary>
+    public bool IsAvailable { get; }
 }
 
 /// <summary>

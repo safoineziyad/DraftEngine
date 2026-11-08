@@ -62,6 +62,36 @@ elseif (-not (Test-Path (Join-Path $publishDir 'DraftEngine.App.exe'))) {
     throw "SkipPublish was set but '$publishDir' does not contain DraftEngine.App.exe. Run without -SkipPublish."
 }
 
+# --- 1b. Optional Authenticode signing of the published app -----------------
+# Ships unsigned when DRAFTENGINE_SIGN_CERT is absent; never fails the build.
+$signCert = $env:DRAFTENGINE_SIGN_CERT
+if ($signCert) {
+    $signtool = $null
+    $command = Get-Command -Name 'signtool.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($command) { $signtool = $command.Source }
+    if (-not $signtool) {
+        $kitsRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
+        if (Test-Path $kitsRoot) {
+            $signtool = Get-ChildItem -Path $kitsRoot -Filter 'signtool.exe' -Recurse -ErrorAction SilentlyContinue |
+                Where-Object { $_.FullName -match '\\x64\\' } |
+                Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
+        }
+    }
+
+    if ($signtool) {
+        Write-Host "Signing published binaries with '$signtool'..."
+        & $signtool sign /f $signCert /p $env:DRAFTENGINE_SIGN_PASSWORD /fd sha256 `
+            /tr http://timestamp.digicert.com /td sha256 (Join-Path $publishDir 'DraftEngine.App.exe')
+        Test-LastExitCode 'signtool (application binary)'
+    }
+    else {
+        Write-Warning 'DRAFTENGINE_SIGN_CERT is set but signtool.exe was not found; the build will be unsigned.'
+    }
+}
+else {
+    Write-Host 'No DRAFTENGINE_SIGN_CERT set: building an unsigned installer.'
+}
+
 # --- 2. Locate ISCC.exe (Inno Setup 6 compiler) ----------------------------
 $candidates = New-Object System.Collections.Generic.List[string]
 

@@ -12,6 +12,10 @@
         Background="{StaticResource WindowBackgroundBrush}"
         FontFamily="{StaticResource UiFontFamily}"
         FontSize="13">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
@@ -59,6 +63,11 @@
                             Content="Archived Contracts"
                             AutomationProperties.Name="Go to Archived Contracts"
                             Command="{Binding NavigateArchivedContractsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="About &amp; Help"
+                            AutomationProperties.Name="Go to About and Help"
+                            Command="{Binding NavigateAboutCommand}"
+                            Visibility="{Binding AboutEnabled, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
 
                 <!-- Bottom: version + settings shortcut -->

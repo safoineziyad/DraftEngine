@@ -3,7 +3,10 @@ using System.Windows;
 using System.Windows.Threading;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels;
+using DraftEngine.App.Views;
+using DraftEngine.Core.Interfaces;
 using DraftEngine.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,12 +79,57 @@ public partial class App : Application
             // InvalidOperationException which is surfaced below instead of an opaque crash.
             DatabaseService.EnsureDatabaseCreated(_host.Services);
 
+            // Keep the in-memory redaction switch aligned with the saved privacy setting
+            // from the very first AI request.
+            var settingsService = _host.Services.GetRequiredService<IAppSettingsService>();
+            var redactionService = _host.Services.GetService<IAiRedactionService>();
+            if (redactionService is not null)
+            {
+                redactionService.IsEnabled = settingsService.Current.HidePartyNamesFromAi;
+            }
+
+            // Offline license gate (only when Features:LicensingEnabled is on). With the
+            // default configuration this block is skipped entirely and startup is unchanged.
+            if (_appOptions.Features.LicensingEnabled)
+            {
+                var licenseService = _host.Services.GetRequiredService<
+                    DraftEngine.App.Services.Licensing.ILicenseService>();
+                var evaluation = licenseService.LoadAsync().GetAwaiter().GetResult();
+                if (!evaluation.IsUsable)
+                {
+                    var activation = new LicenseActivationWindow(licenseService);
+                    if (activation.ShowDialog() != true)
+                    {
+                        Shutdown();
+                        return;
+                    }
+                }
+            }
+
             var mainWindow = new MainWindow
             {
                 DataContext = _host.Services.GetRequiredService<MainViewModel>()
             };
             MainWindow = mainWindow;
             mainWindow.Show();
+
+            // First-run onboarding is opt-in (Features:OnboardingEnabled). Dismissing the
+            // dialog counts as skipping, so it is only ever shown once.
+            if (_appOptions.Features.OnboardingEnabled && !settingsService.Current.OnboardingCompleted)
+            {
+                try
+                {
+                    new OnboardingWindow { Owner = mainWindow }.ShowDialog();
+                    var updated = settingsService.Current;
+                    updated.OnboardingCompleted = true;
+                    settingsService.SaveAsync(updated).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    // Onboarding is a courtesy, never a startup blocker.
+                    Log.Warning(ex, "First-run onboarding could not be shown.");
+                }
+            }
 
             Log.Information("DraftEngine started.");
         }

@@ -130,6 +130,45 @@
                 </StackPanel>
             </Border>
 
+            <!-- Privacy section -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Privacy and AI endpoint" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                    <TextBlock Text="Stays on this computer: contracts, intake answers, clause selections, chat history, settings and the API key (all encrypted with your Windows user profile). Sent to the AI provider only when you use an AI feature: the current contract text, your instruction, and the model name. No telemetry is collected."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
+
+                    <CheckBox Content="Hide party names and addresses from AI"
+                              IsChecked="{Binding HidePartyNamesFromAi}"
+                              AutomationProperties.Name="Hide party names and addresses from AI"
+                              Margin="0,0,0,4" />
+                    <TextBlock Text="When on, real party names, addresses and e-mail addresses are replaced with tokens before every AI request and restored in the reply."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                    <CheckBox Content="Use a custom OpenAI-compatible endpoint"
+                              IsChecked="{Binding UseCustomOpenAiEndpoint}"
+                              AutomationProperties.Name="Use a custom AI endpoint"
+                              Margin="0,0,0,4" />
+                    <TextBlock Text="Base URL, e.g. https://your-resource.openai.azure.com/openai/deployments/… , a gateway, or http://localhost:11434/v1/ for Ollama or LM Studio."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <TextBox Text="{Binding OpenAiBaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding UseCustomOpenAiEndpoint}"
+                             AutomationProperties.Name="Custom AI base URL"
+                             ToolTip="Custom OpenAI-compatible base URL" />
+
+                    <Separator Margin="0,16,0,12" Background="{StaticResource BorderSubtleBrush}"
+                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+
+                    <TextBlock Text="{Binding AiConsentGranted, StringFormat=AI data-sharing consent: {0}}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,6" />
+                    <Button Content="Revoke AI consent" Padding="12,0" Height="30"
+                            HorizontalAlignment="Left"
+                            AutomationProperties.Name="Revoke AI data-sharing consent"
+                            Command="{Binding RevokeAiConsentCommand}"
+                            IsEnabled="{Binding AiConsentGranted}" />
+                </StackPanel>
+            </Border>
+
             <!-- Contract defaults section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>

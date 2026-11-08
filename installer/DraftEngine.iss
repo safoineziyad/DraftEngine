@@ -65,6 +65,17 @@ Compression=lzma2
 SolidCompression=yes
 CloseApplications=yes
 
+; --- Optional Authenticode signing -------------------------------------------
+; Set DRAFTENGINE_SIGN_CERT (path to a .pfx) and DRAFTENGINE_SIGN_PASSWORD before
+; compiling to sign the installer and the uninstaller. When the variable is absent
+; the directives are omitted and the build proceeds unsigned - no failure.
+#define SignCert GetEnv("DRAFTENGINE_SIGN_CERT")
+#define SignPassword GetEnv("DRAFTENGINE_SIGN_PASSWORD")
+#if SignCert != ""
+SignTool=signtool sign /f "{#SignCert}" /p "{#SignPassword}" /fd sha256 /tr http://timestamp.digicert.com /td sha256 $f
+SignedUninstaller=yes
+#endif
+
 [Types]
 Name: "full"; Description: "Full installation"
 Name: "compact"; Description: "Compact installation"

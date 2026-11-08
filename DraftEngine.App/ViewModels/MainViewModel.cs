@@ -19,6 +19,9 @@ public partial class MainViewModel : ObservableObject
     /// <summary>The window title (from appsettings.json App:DisplayName).</summary>
     public string Title => _appOptions?.App.DisplayName ?? "DraftEngine";
 
+    /// <summary>True when the About/Help page should appear in the sidebar.</summary>
+    public bool AboutEnabled => _appOptions?.Features.AboutEnabled ?? false;
+
     /// <summary>Creates the main shell view model and navigates to the dashboard.</summary>
     public MainViewModel(INavigationService navigation, AppOptions? appOptions = null)
     {
@@ -51,4 +54,8 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Navigates to archived contracts.</summary>
     [RelayCommand]
     private void NavigateArchivedContracts() => _navigation.Navigate("archived-contracts");
+
+    /// <summary>Navigates to the About &amp; Help page.</summary>
+    [RelayCommand]
+    private void NavigateAbout() => _navigation.Navigate("about");
 }

@@ -17,6 +17,7 @@ namespace DraftEngine.App.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly IAppSettingsService _settingsService;
+    private readonly IAiRedactionService? _redactionService;
     private bool _isLoading;
 
     /// <summary>The page title shown in the view header.</summary>
@@ -68,6 +69,22 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool isDirty;
 
+    /// <summary>True when a custom OpenAI-compatible endpoint (Azure, gateway, Ollama…) is used.</summary>
+    [ObservableProperty]
+    private bool useCustomOpenAiEndpoint;
+
+    /// <summary>The custom OpenAI-compatible base URL, e.g. http://localhost:11434/v1/.</summary>
+    [ObservableProperty]
+    private string openAiBaseUrl = string.Empty;
+
+    /// <summary>True when real party names and addresses are replaced before AI requests.</summary>
+    [ObservableProperty]
+    private bool hidePartyNamesFromAi;
+
+    /// <summary>True when the user has granted AI data-sharing consent.</summary>
+    [ObservableProperty]
+    private bool aiConsentGranted;
+
     /// <summary>True when the term-months validation error should be shown.</summary>
     public bool HasTermMonthsError => !string.IsNullOrEmpty(TermMonthsError);
 
@@ -96,9 +113,10 @@ public partial class SettingsViewModel : ObservableObject
     public bool HasSaveStatus => SaveStatusMessage is not null;
 
     /// <summary>Creates the settings view model and loads the saved settings.</summary>
-    public SettingsViewModel(IAppSettingsService settingsService)
+    public SettingsViewModel(IAppSettingsService settingsService, IAiRedactionService? redactionService = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+        _redactionService = redactionService;
         _settingsService.SettingsChanged += OnSettingsChanged;
         ApplyFromCurrentSettings();
     }
@@ -106,6 +124,25 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>Masks or reveals the API key.</summary>
     [RelayCommand]
     private void ToggleKeyVisibility() => IsKeyVisible = !IsKeyVisible;
+
+    /// <summary>Withdraws AI data-sharing consent; AI editing is blocked until granted again.</summary>
+    [RelayCommand]
+    private async Task RevokeAiConsentAsync()
+    {
+        try
+        {
+            var current = _settingsService.Current;
+            current.AiDataConsentAccepted = false;
+            await _settingsService.SaveAsync(current);
+            AiConsentGranted = false;
+            SaveStatusMessage = "AI consent revoked. AI editing is now blocked.";
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to revoke AI consent.");
+            SaveStatusMessage = "We couldn't update the AI consent setting. Please try again.";
+        }
+    }
 
     /// <summary>
     /// Tests the API key currently typed in the field (saved or not) against OpenAI and
@@ -179,13 +216,17 @@ public partial class SettingsViewModel : ObservableObject
                 DefaultTermMonths = termMonths,
                 // Preserve the AI data-sharing acknowledgement — editing settings must not
                 // silently withdraw the consent given during a chat edit.
-                AiDataConsentAccepted = _settingsService.Current.AiDataConsentAccepted,
+                AiDataConsentAccepted = AiConsentGranted,
                 OnboardingCompleted = _settingsService.Current.OnboardingCompleted,
-                OpenAiBaseUrl = _settingsService.Current.OpenAiBaseUrl,
-                UseCustomOpenAiEndpoint = _settingsService.Current.UseCustomOpenAiEndpoint,
-                HidePartyNamesFromAi = _settingsService.Current.HidePartyNamesFromAi,
+                OpenAiBaseUrl = string.IsNullOrWhiteSpace(OpenAiBaseUrl) ? null : OpenAiBaseUrl.Trim(),
+                UseCustomOpenAiEndpoint = UseCustomOpenAiEndpoint,
+                HidePartyNamesFromAi = HidePartyNamesFromAi,
             };
             await _settingsService.SaveAsync(settings);
+            if (_redactionService is not null)
+            {
+                _redactionService.IsEnabled = HidePartyNamesFromAi;
+            }
             IsDirty = false;
             SaveStatusMessage = "Settings saved.";
         }
@@ -209,6 +250,12 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     partial void OnSelectedModelChanged(string value) => MarkDirty();
+
+    partial void OnUseCustomOpenAiEndpointChanged(bool value) => MarkDirty();
+
+    partial void OnOpenAiBaseUrlChanged(string value) => MarkDirty();
+
+    partial void OnHidePartyNamesFromAiChanged(bool value) => MarkDirty();
 
     partial void OnSelectedGoverningLawChanged(string value) => MarkDirty();
 
@@ -256,6 +303,10 @@ public partial class SettingsViewModel : ObservableObject
             SelectedGoverningLaw = saved.DefaultGoverningLaw;
             DefaultTermMonths = saved.DefaultTermMonths;
             ValidateTermMonths(saved.DefaultTermMonths);
+            UseCustomOpenAiEndpoint = saved.UseCustomOpenAiEndpoint;
+            OpenAiBaseUrl = saved.OpenAiBaseUrl ?? string.Empty;
+            HidePartyNamesFromAi = saved.HidePartyNamesFromAi;
+            AiConsentGranted = saved.AiDataConsentAccepted;
             IsDirty = false;
         }
         finally

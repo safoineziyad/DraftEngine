@@ -88,6 +88,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -207,7 +208,50 @@
                         </Grid>
                     </Expander>
 
-                    <TextBox Grid.Row="3"
+                    <!-- Export history: every recorded DOCX/PDF export for this contract -->
+                    <Expander Grid.Row="3" Margin="0,0,0,10"
+                              IsExpanded="{Binding IsExportHistoryVisible}"
+                              AutomationProperties.Name="Export history">
+                        <Expander.Header>
+                            <TextBlock Text="{Binding ExportHistoryHeader}" FontWeight="SemiBold" />
+                        </Expander.Header>
+                        <Grid Margin="0,6,0,2">
+                            <TextBlock Text="No exports yet — use Export DOCX or Export PDF above."
+                                       Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap"
+                                       Visibility="{Binding IsExportHistoryEmpty, Converter={StaticResource BoolToVis}}" />
+                            <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto"
+                                          Visibility="{Binding IsExportHistoryEmpty, Converter={StaticResource BoolToVisInverse}}">
+                                <ItemsControl ItemsSource="{Binding ExportHistory}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2" ToolTip="{Binding FilePath}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding TypeLabel}" FontWeight="SemiBold"
+                                                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="1" Text="{Binding FileName}"
+                                                           Style="{StaticResource SecondaryTextStyle}"
+                                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="8,0,0,0">
+                                                    <TextBlock Text="{Binding ExportedLabel}"
+                                                               Style="{StaticResource SecondaryTextStyle}"
+                                                               VerticalAlignment="Center" Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding StatusLabel}"
+                                                               Style="{StaticResource SecondaryTextStyle}"
+                                                               VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Expander>
+
+                    <TextBox Grid.Row="4"
                              Text="{Binding DocumentText, Mode=OneWay}"
                              IsReadOnly="True"
                              AutomationProperties.Name="Contract document"
@@ -236,6 +280,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -306,8 +351,58 @@
                         </StackPanel>
                     </ScrollViewer>
 
+                    <!-- AI edit diff: Accept/Reject before anything is stored -->
+                    <Border Grid.Row="2" Margin="0,8,0,8" Padding="10" CornerRadius="6"
+                            Background="{StaticResource PanelBrush}"
+                            BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1"
+                            Visibility="{Binding HasPendingAiEdit, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="Proposed AI edit" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding PendingAiEditSummary}"
+                                       Style="{StaticResource SecondaryTextStyle}"
+                                       TextWrapping="Wrap" Margin="0,2,0,6" />
+                            <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding DiffLines}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Prefix}" FontFamily="Consolas" FontSize="11" />
+                                                <TextBlock Text="{Binding Text}" FontFamily="Consolas" FontSize="11"
+                                                           TextWrapping="Wrap" MaxWidth="310">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsAdded}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#1B5E20" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsRemoved}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#B71C1C" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Content="Accept" Style="{StaticResource PrimaryButtonStyle}"
+                                        Padding="14,4" MinWidth="80"
+                                        AutomationProperties.Name="Accept the proposed AI edit"
+                                        Command="{Binding AcceptAiEditCommand}"
+                                        IsEnabled="{Binding CanReviewAiEdit}" />
+                                <Button Content="Reject" Padding="14,4" MinWidth="80" Margin="8,0,0,0"
+                                        AutomationProperties.Name="Reject the proposed AI edit"
+                                        Command="{Binding RejectAiEditCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
                     <!-- API key warning -->
-                    <Border Grid.Row="2" Margin="0,8,0,8" Padding="10,8"
+                    <Border Grid.Row="3" Margin="0,8,0,8" Padding="10,8"
                             Background="#FFF4E5" CornerRadius="6" BorderBrush="#FFB74D" BorderThickness="1"
                             Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
@@ -319,7 +414,7 @@
                     </Border>
 
                     <!-- Input -->
-                    <Grid Grid.Row="3" Margin="0,4,0,0">
+                    <Grid Grid.Row="4" Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />

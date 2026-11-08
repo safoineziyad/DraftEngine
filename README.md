@@ -5,14 +5,19 @@ DraftEngine is a native Windows desktop application for drafting contracts, aime
 ## Features
 
 - **Four-step drafting wizard**: contract type → details (intake form) → clauses → review & generate.
+- **Resumable wizard drafts**: an in-progress draft is encrypted and restored after navigation or a restart.
+- **Clause Manager**: create, edit, duplicate and archive your own clauses alongside the read-only seeded library.
 - **Multiple contract types**: Mutual NDA, Non-Disclosure Agreement (One-Way), Independent Contractor Agreement, Consulting Agreement.
 - **Clause library**: Seeded clauses per contract type, grouped by category with live previews; core clauses are pre-selected and some are optional.
 - **Deterministic, template-first generation**: `{{Placeholder}}` substitution from your intake answers (see `DraftEngine.Core/Services/FieldService.cs`). Works fully offline, **no API key required**.
-- **Contract detail view**: read the assembled contract and edit it through natural-language **chat instructions** (requires an OpenAI API key).
-- **Export to DOCX and PDF** from the contract detail page.
+- **Contract detail view**: edit metadata, intake answers and clause selection after creation (with a version snapshot before every regeneration), then read and export the assembled contract.
+- **AI edit preview**: every proposed AI edit is shown as a line diff and must be Accepted or Rejected; the previous text is snapshotted first. Requires an OpenAI API key.
+- **Export to DOCX and PDF** from the contract detail page, with per-contract export history.
+- **Archive and duplicate**: archive contracts into a separate view (restore or permanently delete from there) and start a copy from any existing contract.
 - **Contracts list** with search by title/client, contract-type filter and sorting.
 - **Dashboard** with contract counts and recently updated contracts.
-- **Settings**: OpenAI key and model, plus defaults that pre-fill the new contract form (governing law, term in months).
+- **Settings**: OpenAI key and model, a custom OpenAI-compatible endpoint (Azure OpenAI, gateways, Ollama/LM Studio), party-name redaction for AI requests, AI consent revocation, plus defaults that pre-fill the new contract form (governing law, term in months).
+- **Onboarding and About**: optional three-screen first-run guide, plus an About & Help page with version, log/data folder, privacy summary, notify-only update check and offline license status.
 - **Local logging**: rolling Serilog files in `%APPDATA%\DraftEngine\logs`.
 
 ## Tech stack
@@ -68,7 +73,7 @@ Enter the key under **Settings → OpenAI → API key**, then **Save**. Key reso
 dotnet test DraftEngine.sln
 ```
 
-xUnit tests (157+ as of this writing — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
+xUnit tests (222 as of v0.3.0 — run the command for the current count). All AI-dependent tests are mocked: no network calls and no API key are needed.
 
 ## Installer
 
@@ -78,7 +83,7 @@ A per-user Windows installer (Inno Setup 6, no admin/UAC prompt) is built with o
 powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
 ```
 
-See [installer/README.md](installer/README.md) for prerequisites, options, and the output location (`installer\Output\DraftEngine-Setup-1.0.0.exe`).
+See [installer/README.md](installer/README.md) for prerequisites, options, and the output location (`installer\Output\DraftEngine-Setup-<version>.exe`). Authenticode signing is optional: set `DRAFTENGINE_SIGN_CERT` (and `DRAFTENGINE_SIGN_PASSWORD`) before building to sign the application binary, installer and uninstaller; without them the build proceeds unsigned. See [docs/RELEASE.md](docs/RELEASE.md).
 
 ## Repository structure
 

@@ -51,8 +51,15 @@ public static class ServiceRegistration
 
         // Wizard draft persistence, licensing (disabled by default), update check (off by default).
         services.AddTransient<IWizardDraftService, WizardDraftService>();
-        services.AddSingleton<ILicenseService, LicenseService>();
-        services.AddSingleton<IUpdateCheckService, UpdateCheckService>(sp => new UpdateCheckService(null));
+        services.AddSingleton<
+            DraftEngine.App.Services.Licensing.ILicenseVerifier,
+            DraftEngine.App.Services.Licensing.EmbeddedLicenseVerifier>();
+        services.AddSingleton<
+            DraftEngine.App.Services.Licensing.ILicenseService,
+            DraftEngine.App.Services.Licensing.LicenseService>();
+        services.AddSingleton<
+            DraftEngine.App.Services.Updates.IUpdateCheckService,
+            DraftEngine.App.Services.Updates.UpdateCheckService>();
 
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
@@ -62,6 +69,7 @@ public static class ServiceRegistration
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<ClauseManagerViewModel>();
         services.AddSingleton<ArchivedContractsViewModel>();
+        services.AddSingleton<AboutViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Navigation.

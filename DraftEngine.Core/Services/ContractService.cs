@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -49,6 +49,7 @@ public class ContractService : IContractService
     private readonly IDatabaseContextFactory _databaseFactory;
     private readonly IFieldService _fieldService;
     private readonly IContractAiService? _aiService;
+    private readonly IAiRedactionService? _redaction;
     private readonly ILogger<ContractService>? _logger;
 
     /// <summary>Creates the contract service.</summary>
@@ -63,7 +64,8 @@ public class ContractService : IContractService
         IDatabaseContextFactory databaseFactory,
         IFieldService fieldService,
         IContractAiService? aiService = null,
-        ILogger<ContractService>? logger = null)
+        ILogger<ContractService>? logger = null,
+        IAiRedactionService? redaction = null)
     {
         ArgumentNullException.ThrowIfNull(databaseFactory);
         ArgumentNullException.ThrowIfNull(fieldService);
@@ -71,6 +73,7 @@ public class ContractService : IContractService
         _fieldService = fieldService;
         _aiService = aiService;
         _logger = logger;
+        _redaction = redaction;
     }
 
     /// <inheritdoc />
@@ -284,18 +287,21 @@ public class ContractService : IContractService
         return documentText;
     }
 
-    /// <summary>
-    /// Applies a natural-language edit through <see cref="IContractAiService"/>. On success the
-    /// new text is stored and both the user and assistant chat messages are recorded. On failure
-    /// only the user message is recorded and an InvalidOperationException carrying the AI's
-    /// friendly error (never raw exception text) is thrown.
-    /// </summary>
+    /// <inheritdoc />
     public async Task<string> ApplyChatEditAsync(int contractId, string userInstruction)
     {
-        if (string.IsNullOrWhiteSpace(userInstruction))
-        {
-            throw new InvalidOperationException("Describe the change you want first, then send it again.");
-        }
+        var preview = await PreviewChatEditAsync(contractId, userInstruction);
+        return await ApplyChatEditPreviewAsync(contractId, userInstruction, preview.UpdatedText);
+    }
+
+    /// <summary>
+    /// Sends the instruction to the AI, validates the reply, and returns it as a preview.
+    /// Nothing is written to the database here: the caller shows a diff and applies it only
+    /// when the user accepts.
+    /// </summary>
+    public async Task<AiEditPreview> PreviewChatEditAsync(int contractId, string userInstruction)
+    {
+        ValidateInstruction(userInstruction);
 
         using var database = _databaseFactory.CreateContext();
 
@@ -318,10 +324,23 @@ public class ContractService : IContractService
 
         var instruction = userInstruction.Trim();
 
+        // Redaction is configured from the real intake values on every request so party
+        // names, addresses and e-mail addresses never leave the machine when the user has
+        // enabled "hide party details from AI".
+        var documentForAi = contract.AssembledText;
+        var instructionForAi = instruction;
+        if (_redaction is { IsEnabled: true })
+        {
+            var fieldValues = await LoadFieldValuesAsync(database, contract);
+            _redaction.Configure(CollectSensitiveValues(fieldValues));
+            documentForAi = _redaction.Redact(documentForAi);
+            instructionForAi = _redaction.Redact(instructionForAi);
+        }
+
         ContractEditResult result;
         try
         {
-            result = await _aiService.ApplyChatEditAsync(contract, contract.AssembledText, instruction);
+            result = await _aiService.ApplyChatEditAsync(contract, documentForAi, instructionForAi);
         }
         catch (Exception exception)
         {
@@ -338,6 +357,10 @@ public class ContractService : IContractService
         }
 
         var updatedText = result.UpdatedContractText.Trim();
+        if (_redaction is { IsEnabled: true })
+        {
+            updatedText = _redaction.Restore(updatedText);
+        }
 
         // Guard against a truncated or clause-dropping reply before it can replace the
         // stored contract (audit Finding #2): an accepted edit must not silently destroy
@@ -349,8 +372,48 @@ public class ContractService : IContractService
             throw new InvalidOperationException(validationError);
         }
 
-        // Keep the pre-edit text in the version history so the user can always revert a
-        // chat edit that damaged the contract (audit Finding #1).
+        return new AiEditPreview(contract.AssembledText, updatedText);
+    }
+
+    /// <summary>
+    /// Applies a previously previewed AI edit. The current text is snapshotted first, so the
+    /// accepted edit can always be reverted from the version history.
+    /// </summary>
+    public async Task<string> ApplyChatEditPreviewAsync(
+        int contractId,
+        string userInstruction,
+        string updatedText)
+    {
+        ValidateInstruction(userInstruction);
+        if (string.IsNullOrWhiteSpace(updatedText))
+        {
+            throw new InvalidOperationException("There is no proposed edit to apply.");
+        }
+
+        using var database = _databaseFactory.CreateContext();
+
+        var contract = await database.Set<Contract>().FirstOrDefaultAsync(c => c.Id == contractId);
+        if (contract is null)
+        {
+            throw new InvalidOperationException(ContractNotFound);
+        }
+
+        if (string.IsNullOrWhiteSpace(contract.AssembledText))
+        {
+            throw new InvalidOperationException("Generate the contract before asking for edits.");
+        }
+
+        var instruction = userInstruction.Trim();
+        var replacement = updatedText.Trim();
+
+        // Re-validate against the text that is stored now: another edit may have landed
+        // while the user was reviewing the diff.
+        var validationError = ValidateEditedText(contract.AssembledText, replacement);
+        if (validationError is not null)
+        {
+            throw new InvalidOperationException(validationError);
+        }
+
         var strategy = database.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
@@ -358,7 +421,7 @@ public class ContractService : IContractService
             try
             {
                 await StageVersionSnapshotAsync(database, contract, AiEditReason);
-                contract.AssembledText = updatedText;
+                contract.AssembledText = replacement;
                 contract.UpdatedAt = DateTime.UtcNow;
 
                 var now = DateTime.UtcNow;
@@ -388,6 +451,38 @@ public class ContractService : IContractService
         });
         await PruneHistoryAsync(database, contractId);
         return contract.AssembledText;
+    }
+
+    private static void ValidateInstruction(string userInstruction)
+    {
+        if (string.IsNullOrWhiteSpace(userInstruction))
+        {
+            throw new InvalidOperationException("Describe the change you want first, then send it again.");
+        }
+    }
+
+    /// <summary>
+    /// Picks the intake values that identify a party (names, addresses, e-mail addresses)
+    /// so they can be replaced before any AI request.
+    /// </summary>
+    private static IEnumerable<string> CollectSensitiveValues(Dictionary<string, string> values)
+    {
+        foreach (var pair in values)
+        {
+            if (string.IsNullOrWhiteSpace(pair.Value))
+            {
+                continue;
+            }
+
+            if (pair.Key.Equals("Party1", StringComparison.OrdinalIgnoreCase) ||
+                pair.Key.Equals("Party2", StringComparison.OrdinalIgnoreCase) ||
+                pair.Key.EndsWith("Name", StringComparison.OrdinalIgnoreCase) ||
+                pair.Key.EndsWith("Address", StringComparison.OrdinalIgnoreCase) ||
+                pair.Key.EndsWith("Email", StringComparison.OrdinalIgnoreCase))
+            {
+                yield return pair.Value;
+            }
+        }
     }
 
     /// <inheritdoc />

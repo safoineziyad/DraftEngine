@@ -46,7 +46,6 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     private readonly IContractTypeRegistry _contractTypeRegistry;
 
     private bool _clausesLoaded;
-    private bool _isNavigatingAway;
 
     /// <summary>The page title shown in the view header.</summary>
     public string PageTitle => "New Contract";

@@ -11,7 +11,7 @@ namespace DraftEngine.Core.Services;
 /// </summary>
 public static class ContractContentBuilder
 {
-    /// <summary>A label/value pair shown on the wizard's review step.</summary>
+    /// <summary>A stable field-key/value pair for the wizard's localized review step.</summary>
     public sealed record ContractSummaryRow(string Label, string Value);
 
     /// <summary>
@@ -69,7 +69,7 @@ public static class ContractContentBuilder
                 continue;
             }
 
-            rows.Add(new ContractSummaryRow(field.Label, value));
+            rows.Add(new ContractSummaryRow(field.Key, value));
         }
 
         return rows;

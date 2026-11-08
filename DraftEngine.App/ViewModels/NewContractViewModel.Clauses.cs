@@ -30,7 +30,7 @@ public partial class NewContractViewModel
                 .GroupBy(clause => clause.Category)
                 .OrderBy(g => g.Min(c => c.SortOrder)))
             {
-                var groupViewModel = new ClauseCategoryGroupViewModel(group.Key);
+                var groupViewModel = new ClauseCategoryGroupViewModel(group.Key, _localization);
                 foreach (var clause in group.OrderBy(c => c.SortOrder))
                 {
                     var option = new ClauseOptionViewModel(
@@ -39,7 +39,8 @@ public partial class NewContractViewModel
                         clause.BodyTemplate,
                         clause.IsOptional,
                         clause.IsDefaultSelected,
-                        _fieldService.ReplacePlaceholders(clause.BodyTemplate, values));
+                        _fieldService.ReplacePlaceholders(clause.BodyTemplate, values),
+                        _localization);
                     option.PropertyChanged += OnClauseOptionChanged;
                     groupViewModel.Clauses.Add(option);
                 }
@@ -54,9 +55,7 @@ public partial class NewContractViewModel
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load clauses for the new contract wizard.");
-            _dialogs.ShowError(
-                "The clause library could not be loaded.\n\n" +
-                "Please go back and try again, or restart DraftEngine.");
+            _dialogs.ShowError(_localization.GetString("Wizard.ErrorClauseLoad"));
         }
         finally
         {

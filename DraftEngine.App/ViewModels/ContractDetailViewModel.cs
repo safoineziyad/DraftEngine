@@ -11,6 +11,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Enums;
@@ -30,7 +31,7 @@ namespace DraftEngine.App.ViewModels;
 /// template-based regeneration, AI chat editing, and DOCX/PDF export. View models are
 /// singletons, so everything reloads from the database on every navigation.
 /// </summary>
-public partial class ContractDetailViewModel : ObservableObject, INavigationAware
+public partial class ContractDetailViewModel : ObservableObject, INavigationAware, IDisposable
 {
     private readonly IContractService _contractService;
     private readonly IContractEditService _contractEditService;
@@ -45,19 +46,25 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     private readonly IWizardDialogService _dialogService;
     private readonly IAppSettingsService _settingsService;
     private readonly IExportHistoryService? _exportHistoryService;
+    private readonly ILocalizationService _localization;
 
     /// <summary>
     /// Contract id requested while an operation was still running; loaded as soon as the
     /// busy state clears, so a navigation request is never silently dropped.
     /// </summary>
     private int? _pendingContractId;
+    private string? _errorMessageKey;
+    private object[] _errorMessageArguments = Array.Empty<object>();
+    private string? _infoMessageKey;
+    private object[] _infoMessageArguments = Array.Empty<object>();
+    private string? _loadFailedMessageKey;
 
     /// <summary>The instruction that produced <see cref="PendingAiEdit"/>.</summary>
     private string? _pendingInstruction;
 
     /// <summary>The page title shown in the view header (the contract title once loaded).</summary>
     [ObservableProperty]
-    private string pageTitle = "Contract Detail";
+    private string pageTitle = string.Empty;
 
     /// <summary>The editable title staged until the user saves and regenerates.</summary>
     [ObservableProperty]
@@ -110,8 +117,9 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     private bool isExportHistoryVisible;
 
     /// <summary>Header text of the export history panel.</summary>
-    public string ExportHistoryHeader =>
-        ExportHistory.Count == 0 ? "Export history" : $"Export history ({ExportHistory.Count})";
+    public string ExportHistoryHeader => ExportHistory.Count == 0
+        ? _localization.GetString("ContractDetail.ExportHistory")
+        : _localization.GetString("ContractDetail.ExportHistoryCount", ExportHistory.Count);
 
     /// <summary>True when no exports have been recorded yet.</summary>
     public bool IsExportHistoryEmpty => ExportHistory.Count == 0;
@@ -130,18 +138,65 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     public bool CanReviewAiEdit => PendingAiEdit is not null && !IsBusy;
 
     /// <summary>Summary line shown above the diff.</summary>
-    public string PendingAiEditSummary => PendingAiEdit is null
-        ? string.Empty
-        : $"Proposed change: {DiffLines.Count(line => line.Kind != DiffLineKind.Unchanged)} changed " +
-          $"line(s). Nothing has been saved yet.";
+    public string PendingAiEditSummary
+    {
+        get
+        {
+            if (PendingAiEdit is null)
+            {
+                return string.Empty;
+            }
+
+            var changedLines = DiffLines.Count(line => line.Kind != DiffLineKind.Unchanged);
+            return _localization.GetString(
+                changedLines == 1 ? "ContractDetail.DiffSummaryOne" : "ContractDetail.DiffSummaryOther",
+                changedLines);
+        }
+    }
 
     /// <summary>True when the version history panel is expanded.</summary>
     [ObservableProperty]
     private bool isHistoryVisible;
 
     /// <summary>Header text of the version history panel, including the snapshot count.</summary>
-    public string VersionHistoryHeader =>
-        Versions.Count == 0 ? "Version history" : $"Version history ({Versions.Count})";
+    public string VersionHistoryHeader => Versions.Count == 0
+        ? _localization.GetString("ContractDetail.VersionHistory")
+        : _localization.GetString("ContractDetail.VersionHistoryCount", Versions.Count);
+
+    public string ContractTypeDisplayName
+    {
+        get
+        {
+            if (Contract is null)
+            {
+                return string.Empty;
+            }
+
+            var typeId = _contractTypeRegistry.TryGetByDisplayName(Contract.ContractType)?.Id
+                         ?? Contract.ContractType;
+            var key = $"Wizard.Type.{typeId}.Name";
+            var value = _localization.GetString(key);
+            return string.Equals(value, key, StringComparison.Ordinal)
+                ? Contract.ContractType
+                : value;
+        }
+    }
+
+    public string ContractStatusDisplayName => Contract?.Status switch
+    {
+        ContractStatus.Draft => _localization.GetString("Status.Draft"),
+        ContractStatus.Generated => _localization.GetString("Status.Generated"),
+        ContractStatus.Exported => _localization.GetString("Status.Exported"),
+        _ => string.Empty
+    };
+
+    public string ClientLabel => _localization.GetString("ContractDetail.ClientLabel");
+    public string PageTitleFallback => _localization.GetString("ContractDetail.PageTitle");
+    public string SelectedClauseCountText => _localization.GetString(
+        SelectedClauseCount == 1
+            ? "ContractDetail.SelectedClausesOne"
+            : "ContractDetail.SelectedClausesOther",
+        SelectedClauseCount);
 
     /// <summary>True when no snapshots exist yet (hint text shown instead of the list).</summary>
     public bool IsVersionHistoryEmpty => Versions.Count == 0;
@@ -205,7 +260,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         INavigationService navigation,
         IWizardDialogService dialogService,
         IAppSettingsService settingsService,
-        IExportHistoryService? exportHistoryService = null)
+        IExportHistoryService? exportHistoryService = null,
+        ILocalizationService? localization = null)
     {
         _contractService = contractService ?? throw new ArgumentNullException(nameof(contractService));
         _contractEditService = contractEditService ?? throw new ArgumentNullException(nameof(contractEditService));
@@ -220,7 +276,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _exportHistoryService = exportHistoryService;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
+        PageTitle = _localization.GetString("ContractDetail.PageTitle");
+        _localization.LanguageChanged += OnLanguageChanged;
     }
+
+    public void Dispose() => _localization.LanguageChanged -= OnLanguageChanged;
 
     /// <inheritdoc cref="INavigationAware" />
     public async void OnNavigatedTo(object? parameter)
@@ -234,7 +295,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             var contractId = parameter as int?;
             if (contractId is null or <= 0)
             {
-                MarkAsUnloaded("This contract could not be opened. Select it again from the Contracts list.");
+                MarkAsUnloaded("ContractDetail.ErrorInvalidSelection");
                 return;
             }
 
@@ -243,7 +304,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         catch (Exception ex)
         {
             Log.Error(ex, "Unexpected failure while opening the contract detail page.");
-            MarkAsUnloaded("We couldn't open this contract. Please try again.");
+            MarkAsUnloaded("ContractDetail.ErrorOpen");
         }
     }
 
@@ -272,7 +333,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             var contract = await _contractService.GetByIdAsync(contractId);
             if (contract is null)
             {
-                MarkAsUnloaded("This contract no longer exists. It may have been deleted.");
+                MarkAsUnloaded("ContractDetail.ErrorMissing");
                 return;
             }
 
@@ -289,7 +350,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load contract {ContractId}.", contractId);
-            MarkAsUnloaded("We couldn't load this contract. Please try again.");
+            MarkAsUnloaded("ContractDetail.ErrorLoad");
         }
         finally
         {
@@ -315,7 +376,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             var definition = _contractTypeRegistry.TryGetByDisplayName(Contract.ContractType);
             if (definition is null)
             {
-                ErrorMessage = "This contract type is no longer available for editing.";
+                SetError("ContractDetail.ErrorTypeUnavailable");
                 return;
             }
 
@@ -327,7 +388,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 .ToList();
             if (selectedClauseIds.Count == 0)
             {
-                ErrorMessage = "Select at least one clause before regenerating.";
+                SetError("ContractDetail.ErrorSelectClause");
                 return;
             }
 
@@ -354,7 +415,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             });
             if (updated is null)
             {
-                MarkAsUnloaded("This contract no longer exists. It may have been deleted.");
+                MarkAsUnloaded("ContractDetail.ErrorMissing");
                 return;
             }
 
@@ -373,20 +434,19 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             }
 
             await ReloadVersionsAsync(contractId);
-            InfoMessage = HasUnresolvedPlaceholders(text)
-                ? "The contract was regenerated, but some placeholders could not be filled and " +
-                  "are still visible as {{...}} in the document. Use the assistant to complete them."
-                : "Your changes were saved and the contract was regenerated.";
+            SetInfo(HasUnresolvedPlaceholders(text)
+                ? "ContractDetail.RegeneratedWithPlaceholders"
+                : "ContractDetail.Regenerated");
         }
         catch (InvalidOperationException ex)
         {
             Log.Warning(ex, "Regeneration rejected for contract {ContractId}.", Contract.Id);
-            ErrorMessage = ex.Message;
+            SetError("ContractDetail.ErrorRegenerateRejected");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to regenerate contract {ContractId}.", Contract.Id);
-            ErrorMessage = "We couldn't regenerate the contract. Please try again.";
+            SetError("ContractDetail.ErrorRegenerate");
         }
         finally
         {
@@ -407,10 +467,10 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         {
             var copy = await _contractEditService.DuplicateContractAsync(
                 Contract.Id,
-                $"Copy of {Contract.Title}");
+                T("Contracts.DuplicateTitle", Contract.Title));
             if (copy is null)
             {
-                ErrorMessage = "We couldn't duplicate this contract because it no longer exists.";
+                SetError("ContractDetail.ErrorDuplicateMissing");
                 return;
             }
 
@@ -419,7 +479,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to duplicate contract {ContractId}.", Contract.Id);
-            ErrorMessage = "We couldn't duplicate the contract. Please try again.";
+            SetError("ContractDetail.ErrorDuplicate");
         }
         finally
         {
@@ -470,7 +530,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 kind == IntakeFieldKind.Choice ? initial : null,
                 kind == IntakeFieldKind.Date && DateTime.TryParse(initial, CultureInfo.CurrentCulture, DateTimeStyles.None, out var date)
                     ? date
-                    : null);
+                    : null,
+                _localization);
             if (kind is IntakeFieldKind.Text or IntakeFieldKind.Number)
             {
                 field.Value = initial;
@@ -498,7 +559,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             .GroupBy(clause => clause.Category)
             .OrderBy(group => group.Min(clause => clause.SortOrder)))
         {
-            var groupViewModel = new ClauseCategoryGroupViewModel(group.Key);
+            var groupViewModel = new ClauseCategoryGroupViewModel(group.Key, _localization);
             foreach (var clause in group.OrderBy(clause => clause.SortOrder))
             {
                 var option = new ClauseOptionViewModel(
@@ -507,7 +568,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                     clause.BodyTemplate,
                     clause.IsOptional,
                     storedSelections.TryGetValue(clause.Id, out var selected) ? selected : clause.IsDefaultSelected,
-                    _fieldService.ReplacePlaceholders(clause.BodyTemplate, values));
+                    _fieldService.ReplacePlaceholders(clause.BodyTemplate, values),
+                    _localization);
                 option.PropertyChanged += OnClauseOptionChanged;
                 groupViewModel.Clauses.Add(option);
             }
@@ -734,7 +796,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 
         if (!HasDocument)
         {
-            ErrorMessage = "Generate the contract before asking for edits.";
+            SetError("ContractDetail.ErrorGenerateBeforeChat");
             return;
         }
 
@@ -742,7 +804,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         // (audit Finding #10) and record the acknowledgement so it is never asked again.
         if (!await EnsureAiDataConsentAsync())
         {
-            InfoMessage = "The instruction was not sent. AI edits share the contract text with OpenAI.";
+            SetInfo("ContractDetail.AiInstructionNotSent");
             return;
         }
 
@@ -759,19 +821,19 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             ChatInput = string.Empty;
 
             ShowDiff(preview);
-            InfoMessage = "Review the proposed change below, then Accept or Reject it.";
+            SetInfo("ContractDetail.ReviewProposedEdit");
         }
         catch (InvalidOperationException ex)
         {
             // The service throws user-friendly messages (missing API key, quota, network…).
             Log.Warning(ex, "Chat edit rejected for contract {ContractId}.", Contract.Id);
-            ErrorMessage = ex.Message;
+            SetError("ContractDetail.ErrorChatRejected");
             await ReloadChatAsync(Contract.Id);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Chat edit failed for contract {ContractId}.", Contract.Id);
-            ErrorMessage = "The assistant could not apply the edit. Please try again.";
+            SetError("ContractDetail.ErrorChat");
         }
         finally
         {
@@ -803,19 +865,19 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             await ReloadChatAsync(Contract.Id);
             await ReloadVersionsAsync(Contract.Id);
 
-            InfoMessage = HasUnresolvedPlaceholders(updatedText)
-                ? "The edit was applied. Some placeholders are still visible as {{...}} — ask the assistant to fill them in."
-                : "The edit was applied. The previous text is saved in version history.";
+            SetInfo(HasUnresolvedPlaceholders(updatedText)
+                ? "ContractDetail.AiEditAppliedWithPlaceholders"
+                : "ContractDetail.AiEditApplied");
         }
         catch (InvalidOperationException ex)
         {
             Log.Warning(ex, "AI edit apply rejected for contract {ContractId}.", Contract.Id);
-            ErrorMessage = ex.Message;
+            SetError("ContractDetail.ErrorAiEditRejected");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to apply the previewed AI edit for contract {ContractId}.", Contract.Id);
-            ErrorMessage = "The assistant's edit could not be applied. Please try again.";
+            SetError("ContractDetail.ErrorAiEdit");
         }
         finally
         {
@@ -832,7 +894,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         PendingAiEdit = null;
         _pendingInstruction = null;
         DiffLines.Clear();
-        InfoMessage = "The proposed edit was discarded. Nothing was changed.";
+        SetInfo("ContractDetail.AiEditDiscarded");
     }
 
     /// <summary>Builds the reviewable line diff for a proposed edit.</summary>
@@ -879,17 +941,17 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             }
 
             await ReloadVersionsAsync(Contract.Id);
-            InfoMessage = "The earlier version was restored. The text it replaced was kept in the version history.";
+            SetInfo("ContractDetail.VersionRestored");
         }
         catch (InvalidOperationException ex)
         {
             Log.Warning(ex, "Version revert rejected for contract {ContractId}.", Contract.Id);
-            ErrorMessage = ex.Message;
+            SetError("ContractDetail.ErrorRestoreRejected");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to revert contract {ContractId} to version {VersionId}.", Contract.Id, versionId);
-            ErrorMessage = "We couldn't restore that version. Please try again.";
+            SetError("ContractDetail.ErrorRestore");
         }
         finally
         {
@@ -918,17 +980,17 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 
         if (!HasDocument)
         {
-            ErrorMessage = "Generate the contract before exporting it.";
+            SetError("ContractDetail.ErrorGenerateBeforeExport");
             return;
         }
 
         var extension = fileType == FileType.Pdf ? "pdf" : "docx";
         var dialog = new SaveFileDialog
         {
-            Title = $"Export contract as {extension.ToUpperInvariant()}",
+            Title = _localization.GetString("ContractDetail.ExportDialogTitle", extension.ToUpperInvariant()),
             FileName = BuildDefaultFileName(Contract!, extension),
             DefaultExt = $".{extension}",
-            Filter = $"{extension.ToUpperInvariant()} document (*.{extension})|*.{extension}",
+            Filter = _localization.GetString("ContractDetail.ExportDialogFilter", extension.ToUpperInvariant(), extension),
         };
 
         if (dialog.ShowDialog() != true)
@@ -958,12 +1020,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 Contract = refreshed;
             }
 
-            InfoMessage = $"Exported to {finalPath}";
+            SetInfo("ContractDetail.ExportedTo", finalPath);
 
             // Offer to open the exported file right away (audit Finding #20); declining or
             // a failing shell open must never turn a successful export into an error.
             if (_dialogService.Confirm(
-                    "The document was exported successfully. Open it now?", "Export complete",
+                    T("ContractDetail.ExportOpenPrompt"), T("ContractDetail.ExportComplete"),
                     MessageBoxImage.Information))
             {
                 OpenExportedFile(finalPath);
@@ -972,12 +1034,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         catch (InvalidOperationException ex)
         {
             Log.Warning(ex, "Export rejected for contract {ContractId}.", Contract.Id);
-            ErrorMessage = ex.Message;
+            SetError("ContractDetail.ErrorExportRejected");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to export contract {ContractId} as {FileType}.", Contract.Id, fileType);
-            ErrorMessage = $"We couldn't export the contract as {extension.ToUpperInvariant()}. Please try again.";
+            SetError("ContractDetail.ErrorExport", extension.ToUpperInvariant());
         }
         finally
         {
@@ -994,7 +1056,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             ChatMessages.Clear();
             foreach (var message in messages)
             {
-                ChatMessages.Add(new ChatMessageRowViewModel(message));
+                ChatMessages.Add(new ChatMessageRowViewModel(message, _localization));
             }
 
             // IsChatEmpty is a computed property: without this notification the "Example:"
@@ -1018,7 +1080,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             Versions.Clear();
             foreach (var version in versions.Reverse())
             {
-                Versions.Add(new ContractVersionRowViewModel(version));
+                Versions.Add(new ContractVersionRowViewModel(version, _localization));
             }
 
             OnPropertyChanged(nameof(VersionHistoryHeader));
@@ -1047,7 +1109,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
             {
                 ExportHistory.Add(new ExportHistoryRowViewModel(
                     document,
-                    _exportHistoryService.GetFileStatus(document)));
+                    _exportHistoryService.GetFileStatus(document),
+                    _localization));
             }
 
             OnPropertyChanged(nameof(ExportHistoryHeader));
@@ -1060,14 +1123,15 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
     }
 
-    private void MarkAsUnloaded(string message)
+    private void MarkAsUnloaded(string messageKey)
     {
         LoadFailed = true;
-        LoadFailedMessage = message;
+        _loadFailedMessageKey = messageKey;
+        LoadFailedMessage = T(messageKey);
         Contract = null;
         ResetEditor();
         DocumentText = string.Empty;
-        PageTitle = "Contract Detail";
+        PageTitle = PageTitleFallback;
         ChatMessages.Clear();
         ExportHistory.Clear();
         DiffLines.Clear();
@@ -1075,6 +1139,86 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         OnPropertyChanged(nameof(IsChatEmpty));
         OnPropertyChanged(nameof(ExportHistoryHeader));
         OnPropertyChanged(nameof(IsExportHistoryEmpty));
+        OnPropertyChanged(nameof(ContractTypeDisplayName));
+        OnPropertyChanged(nameof(ContractStatusDisplayName));
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        if (Contract is null)
+        {
+            PageTitle = PageTitleFallback;
+        }
+
+        if (_loadFailedMessageKey is not null)
+        {
+            LoadFailedMessage = T(_loadFailedMessageKey);
+        }
+
+        if (_errorMessageKey is not null)
+        {
+            ErrorMessage = _localization.GetString(_errorMessageKey, _errorMessageArguments);
+        }
+
+        if (_infoMessageKey is not null)
+        {
+            InfoMessage = _localization.GetString(_infoMessageKey, _infoMessageArguments);
+        }
+
+        foreach (var field in IntakeFields)
+        {
+            field.RefreshLocalization();
+        }
+
+        foreach (var group in ClauseGroups)
+        {
+            group.RefreshLocalization();
+            foreach (var clause in group.Clauses)
+            {
+                clause.RefreshLocalization();
+            }
+        }
+
+        foreach (var version in Versions)
+        {
+            version.RefreshLocalization();
+        }
+
+        foreach (var document in ExportHistory)
+        {
+            document.RefreshLocalization();
+        }
+
+        foreach (var message in ChatMessages)
+        {
+            message.RefreshLocalization();
+        }
+
+        OnPropertyChanged(nameof(ExportHistoryHeader));
+        OnPropertyChanged(nameof(VersionHistoryHeader));
+        OnPropertyChanged(nameof(PendingAiEditSummary));
+        OnPropertyChanged(nameof(ContractTypeDisplayName));
+        OnPropertyChanged(nameof(ContractStatusDisplayName));
+        OnPropertyChanged(nameof(ClientLabel));
+        OnPropertyChanged(nameof(PageTitleFallback));
+        OnPropertyChanged(nameof(SelectedClauseCountText));
+    }
+
+    private string T(string key, params object[] arguments) =>
+        _localization.GetString(key, arguments);
+
+    private void SetError(string key, params object[] arguments)
+    {
+        _errorMessageKey = key;
+        _errorMessageArguments = arguments;
+        ErrorMessage = _localization.GetString(key, arguments);
+    }
+
+    private void SetInfo(string key, params object[] arguments)
+    {
+        _infoMessageKey = key;
+        _infoMessageArguments = arguments;
+        InfoMessage = _localization.GetString(key, arguments);
     }
 
     private static string BuildDefaultFileName(Contract contract, string extension)
@@ -1154,12 +1298,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
 
         var accepted = _dialogService.Confirm(
-            "AI edits share this contract's text with OpenAI for processing.\n\n" +
-            "Only continue if you are comfortable sending this document to OpenAI — for " +
-            "example, if it contains no privileged or confidential client material you are " +
-            "not permitted to share with a third-party service.\n\n" +
-            "Continue with AI editing?",
-            "AI editing sends data to OpenAI",
+            T("ContractDetail.AiConsentMessage"),
+            T("ContractDetail.AiConsentTitle"),
             MessageBoxImage.Information);
 
         if (!accepted)
@@ -1183,7 +1323,12 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     {
         OnPropertyChanged(nameof(CanSaveAndRegenerate));
         OnPropertyChanged(nameof(CanEditContract));
+        OnPropertyChanged(nameof(ContractTypeDisplayName));
+        OnPropertyChanged(nameof(ContractStatusDisplayName));
     }
+
+    partial void OnSelectedClauseCountChanged(int value) =>
+        OnPropertyChanged(nameof(SelectedClauseCountText));
 
     partial void OnEditTitleChanged(string value)
     {
@@ -1225,7 +1370,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to reload versions");
-            ErrorMessage = "Could not load version history.";
+            SetError("ContractDetail.ErrorLoadVersions");
         }
     }
 
@@ -1277,9 +1422,25 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
         }
     }
 
-    partial void OnErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasError));
+    partial void OnErrorMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasError));
+        if (value is null)
+        {
+            _errorMessageKey = null;
+            _errorMessageArguments = Array.Empty<object>();
+        }
+    }
 
-    partial void OnInfoMessageChanged(string? value) => OnPropertyChanged(nameof(HasInfo));
+    partial void OnInfoMessageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasInfo));
+        if (value is null)
+        {
+            _infoMessageKey = null;
+            _infoMessageArguments = Array.Empty<object>();
+        }
+    }
 
     private void RaiseChatAvailability()
     {
@@ -1295,13 +1456,17 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 /// </summary>
 public partial class ChatMessageRowViewModel : ObservableObject
 {
+    private readonly DateTime _createdAt;
+    private readonly ILocalizationService _localization;
+
     /// <summary>Creates the row from the persisted message.</summary>
-    public ChatMessageRowViewModel(ChatMessage message)
+    public ChatMessageRowViewModel(ChatMessage message, ILocalizationService? localization = null)
     {
         ArgumentNullException.ThrowIfNull(message);
         IsUser = message.Role == MessageRole.User;
         Content = message.Content;
-        TimeLabel = message.CreatedAt.ToLocalTime().ToString("HH:mm");
+        _createdAt = message.CreatedAt.ToLocalTime();
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
     }
 
     /// <summary>True for user messages (right-aligned bubble); false for assistant messages.</summary>
@@ -1311,7 +1476,9 @@ public partial class ChatMessageRowViewModel : ObservableObject
     public string Content { get; }
 
     /// <summary>The local creation time, shown as HH:mm.</summary>
-    public string TimeLabel { get; }
+    public string TimeLabel => _createdAt.ToString("t", _localization.Culture);
+
+    public void RefreshLocalization() => OnPropertyChanged(nameof(TimeLabel));
 }
 
 /// <summary>Display row for one line of an AI edit diff.</summary>
@@ -1348,22 +1515,25 @@ public sealed class DiffLineRowViewModel
 }
 
 /// <summary>Display row for one recorded export (GeneratedDocument).</summary>
-public sealed class ExportHistoryRowViewModel
+public sealed class ExportHistoryRowViewModel : ObservableObject
 {
+    private readonly ExportFileStatus _status;
+    private readonly DateTime _exportedAt;
+    private readonly ILocalizationService _localization;
+
     /// <summary>Creates the row from a persisted export and its file status.</summary>
-    public ExportHistoryRowViewModel(GeneratedDocument document, ExportFileStatus status)
+    public ExportHistoryRowViewModel(
+        GeneratedDocument document,
+        ExportFileStatus status,
+        ILocalizationService? localization = null)
     {
         ArgumentNullException.ThrowIfNull(document);
         FileName = Path.GetFileName(document.FilePath);
         FilePath = document.FilePath;
         TypeLabel = document.FileType == FileType.Pdf ? "PDF" : "DOCX";
-        ExportedLabel = document.GeneratedAt.ToLocalTime().ToString("g");
-        StatusLabel = status switch
-        {
-            ExportFileStatus.Available => "File available",
-            ExportFileStatus.Missing => "File moved or deleted",
-            _ => "Invalid path",
-        };
+        _exportedAt = document.GeneratedAt.ToLocalTime();
+        _status = status;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
         IsAvailable = status == ExportFileStatus.Available;
     }
 
@@ -1377,28 +1547,43 @@ public sealed class ExportHistoryRowViewModel
     public string TypeLabel { get; }
 
     /// <summary>Local export timestamp.</summary>
-    public string ExportedLabel { get; }
+    public string ExportedLabel => _exportedAt.ToString("g", _localization.Culture);
 
     /// <summary>Whether the recorded file still exists.</summary>
-    public string StatusLabel { get; }
+    public string StatusLabel => _localization.GetString(_status switch
+    {
+        ExportFileStatus.Available => "ContractDetail.FileAvailable",
+        ExportFileStatus.Missing => "ContractDetail.FileMissing",
+        _ => "ContractDetail.FileInvalidPath",
+    });
 
     /// <summary>True when the file is still on disk.</summary>
     public bool IsAvailable { get; }
+
+    public void RefreshLocalization()
+    {
+        OnPropertyChanged(nameof(ExportedLabel));
+        OnPropertyChanged(nameof(StatusLabel));
+    }
 }
 
 /// <summary>
 /// Display row for one version-history snapshot: version number, why it was taken
 /// and when, plus the identifier the revert command needs.
 /// </summary>
-public sealed class ContractVersionRowViewModel
+public sealed class ContractVersionRowViewModel : ObservableObject
 {
+    private readonly ContractVersion _version;
+    private readonly ILocalizationService _localization;
+
     /// <summary>Creates the row from the persisted snapshot.</summary>
-    public ContractVersionRowViewModel(ContractVersion version)
+    public ContractVersionRowViewModel(ContractVersion version, ILocalizationService? localization = null)
     {
         ArgumentNullException.ThrowIfNull(version);
+        _version = version;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
         VersionId = version.Id;
         VersionLabel = $"#{version.VersionNumber}";
-        DetailsLabel = $"{version.Reason} · {version.CreatedAt.ToLocalTime():g}";
     }
 
     /// <summary>Database identifier passed to the revert command.</summary>
@@ -1406,7 +1591,20 @@ public sealed class ContractVersionRowViewModel
 
     /// <summary>Short version label, e.g. "#3".</summary>
     public string VersionLabel { get; }
+    public string RestoreAutomationName =>
+        _localization.GetString("ContractDetail.RestoreAutomation", VersionLabel);
 
     /// <summary>Human-readable reason and local timestamp of the snapshot.</summary>
-    public string DetailsLabel { get; }
+    public string DetailsLabel => _localization.GetString(
+        "ContractDetail.VersionDetails",
+        _localization.GetString(_version.Reason switch
+        {
+            "AI edit" => "ContractDetail.VersionReasonAiEdit",
+            "Regeneration" => "ContractDetail.VersionReasonRegeneration",
+            "Before revert" => "ContractDetail.VersionReasonBeforeRevert",
+            _ => "ContractDetail.VersionReasonOther",
+        }),
+        _version.CreatedAt.ToLocalTime().ToString("g", _localization.Culture));
+
+    public void RefreshLocalization() => OnPropertyChanged(nameof(DetailsLabel));
 }

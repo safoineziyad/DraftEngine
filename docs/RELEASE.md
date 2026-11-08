@@ -5,9 +5,9 @@
 `DraftEngine.App/DraftEngine.App.csproj` holds the single source of truth:
 
 ```xml
-<Version>0.3.0</Version>
-<AssemblyVersion>0.3.0.0</AssemblyVersion>
-<FileVersion>0.3.0.0</FileVersion>
+<Version>0.4.0</Version>
+<AssemblyVersion>0.4.0.0</AssemblyVersion>
+<FileVersion>0.4.0.0</FileVersion>
 ```
 
 The UI reads `AppVersion.Display`, which is stamped from this value. `installer/DraftEngine.iss`
@@ -45,29 +45,26 @@ powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
 A code-signing certificate must be purchased separately (see the manual steps in the release
 notes). Never commit the `.pfx` or its password.
 
-## Update check (off by default)
+## GitHub auto-update (enabled by default)
 
 `appsettings.json`:
 
 ```json
 "Features": {
-  "UpdateCheckEnabled": false,
-  "UpdateManifestUrl": ""
+  "AutoUpdateEnabled": true
 }
 ```
 
-When enabled, the About page can fetch one static HTTPS manifest. It never downloads or installs
-anything. Manifest shape:
+At startup, DraftEngine checks `https://api.github.com/repos/safoineziyad/DraftEngine/releases/latest`
+for a release newer than the running app. Debugger-attached runs skip this check. Set
+`Features:AutoUpdateEnabled` to `false` to disable it. When a newer release is found, the banner
+downloads the `DraftEngine-Setup-<version>.exe` release asset after the user clicks Update Now,
+then launches the Inno Setup installer silently and relaunches the app. No contract data or
+identifiers are sent. Attach the installer asset to every stable GitHub release.
 
 ```json
-{
-  "version": "0.3.1",
-  "downloadUrl": "https://example.com/DraftEngine-Setup-0.3.1.exe",
-  "releaseNotes": "Fixes and improvements."
-}
+DraftEngine-Setup-0.4.1.exe
 ```
-
-The request contains no identifiers and nothing is sent from the app except the GET itself.
 
 ## Licensing (off by default)
 

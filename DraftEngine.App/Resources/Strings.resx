@@ -17,6 +17,72 @@
   <data name="Common.Skip" xml:space="preserve"><value>Skip</value></data>
   <data name="Common.GetStarted" xml:space="preserve"><value>Get started</value></data>
   <data name="Common.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Wizard.PageTitle" xml:space="preserve"><value>New Contract</value></data>
+  <data name="Wizard.Subtitle" xml:space="preserve"><value>Draft a new agreement in four steps.</value></data>
+  <data name="Wizard.DiscardDraft" xml:space="preserve"><value>Discard draft</value></data>
+  <data name="Wizard.DiscardDraftConfirm" xml:space="preserve"><value>Discard the saved contract draft and clear the wizard?</value></data>
+  <data name="Wizard.DiscardDraftConfirmTitle" xml:space="preserve"><value>Discard draft</value></data>
+  <data name="Wizard.Step.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Wizard.Step.Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Wizard.Step.Clauses" xml:space="preserve"><value>Clauses</value></data>
+  <data name="Wizard.Step.Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Wizard.TypeHeading" xml:space="preserve"><value>Choose a contract type</value></data>
+  <data name="Wizard.TypeDescription" xml:space="preserve"><value>All contract types are available. Select the agreement you want to draft.</value></data>
+  <data name="Wizard.SelectTypeAutomation" xml:space="preserve"><value>Select contract type {0}</value></data>
+  <data name="Wizard.ComingSoon" xml:space="preserve"><value>Coming soon</value></data>
+  <data name="Wizard.DetailsHeading" xml:space="preserve"><value>Contract details</value></data>
+  <data name="Wizard.DetailsDescription" xml:space="preserve"><value>Answer the questions below. These values fill the clauses and the final document.</value></data>
+  <data name="Wizard.ClausesHeading" xml:space="preserve"><value>Select clauses</value></data>
+  <data name="Wizard.SelectedClauses.One" xml:space="preserve"><value>{0} of {1} clause selected</value></data>
+  <data name="Wizard.SelectedClauses.Other" xml:space="preserve"><value>{0} of {1} clauses selected</value></data>
+  <data name="Wizard.StandardClauses" xml:space="preserve"><value>Standard clauses are pre-selected. Expand any clause to preview its text with your answers.</value></data>
+  <data name="Wizard.LoadingClauses" xml:space="preserve"><value>Loading clauses…</value></data>
+  <data name="Wizard.ClauseCount.One" xml:space="preserve"><value>{0} clause</value></data>
+  <data name="Wizard.ClauseCount.Other" xml:space="preserve"><value>{0} clauses</value></data>
+  <data name="Wizard.IncludeClauseAutomation" xml:space="preserve"><value>Include {0} in the contract</value></data>
+  <data name="Wizard.PreviewClauseAutomation" xml:space="preserve"><value>Show or hide the preview of {0}</value></data>
+  <data name="Wizard.Preview" xml:space="preserve"><value>Preview ▾</value></data>
+  <data name="Wizard.HidePreview" xml:space="preserve"><value>Hide preview</value></data>
+  <data name="Wizard.Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="Wizard.ReviewHeading" xml:space="preserve"><value>Review your contract</value></data>
+  <data name="Wizard.ReviewDescription" xml:space="preserve"><value>Confirm the details below, then generate the document.</value></data>
+  <data name="Wizard.SummaryContractType" xml:space="preserve"><value>Contract type</value></data>
+  <data name="Wizard.SummaryClausesSelected" xml:space="preserve"><value>Clauses selected: {0}</value></data>
+  <data name="Wizard.AiPolish" xml:space="preserve"><value>Apply AI polish (requires OpenAI API key)</value></data>
+  <data name="Wizard.AiPolishAutomation" xml:space="preserve"><value>Apply AI polish to the generated contract</value></data>
+  <data name="Wizard.BackAutomation" xml:space="preserve"><value>Go back to the previous step</value></data>
+  <data name="Wizard.NextAutomation" xml:space="preserve"><value>Continue to the next step</value></data>
+  <data name="Wizard.Generate" xml:space="preserve"><value>Generate Contract</value></data>
+  <data name="Wizard.Generating" xml:space="preserve"><value>Generating…</value></data>
+  <data name="Wizard.ErrorClearDraft" xml:space="preserve"><value>The saved draft could not be cleared. Please try again.</value></data>
+  <data name="Wizard.ErrorDraftSave" xml:space="preserve"><value>Your latest wizard changes could not be saved. Please keep DraftEngine open and try again.</value></data>
+  <data name="Wizard.ErrorDraftSaveLeaving" xml:space="preserve"><value>Your wizard draft could not be saved.</value></data>
+  <data name="Wizard.ErrorClauseLoad" xml:space="preserve"><value>The clause library could not be loaded. Please go back and try again, or restart DraftEngine.</value></data>
+  <data name="Wizard.ErrorCreatedDraftClear" xml:space="preserve"><value>The contract was created, but the saved wizard draft could not be cleared.</value></data>
+  <data name="Wizard.ErrorGenerate" xml:space="preserve"><value>Contract generation failed. Please try again. If the problem persists, check your API key in Settings.</value></data>
+  <data name="Wizard.Type.MutualNda.Name" xml:space="preserve"><value>Mutual NDA</value></data>
+  <data name="Wizard.Type.MutualNda.Description" xml:space="preserve"><value>Mutual confidentiality agreement protecting both parties.</value></data>
+  <data name="Wizard.Type.OneWayNda.Name" xml:space="preserve"><value>One-Way NDA</value></data>
+  <data name="Wizard.Type.OneWayNda.Description" xml:space="preserve"><value>One-way confidentiality agreement protecting information disclosed by a single party.</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Name" xml:space="preserve"><value>Independent Contractor Agreement</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Description" xml:space="preserve"><value>Defines scope, fees, deliverables and ownership for contract work.</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Name" xml:space="preserve"><value>Consulting Agreement</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Description" xml:space="preserve"><value>Sets the terms of an ongoing advisory engagement.</value></data>
+  <data name="Wizard.Field.Party1" xml:space="preserve"><value>Party 1 name</value></data>
+  <data name="Wizard.Field.Party1Address" xml:space="preserve"><value>Party 1 address</value></data>
+  <data name="Wizard.Field.Party2" xml:space="preserve"><value>Party 2 name</value></data>
+  <data name="Wizard.Field.Party2Address" xml:space="preserve"><value>Party 2 address</value></data>
+  <data name="Wizard.Field.EffectiveDate" xml:space="preserve"><value>Effective date</value></data>
+  <data name="Wizard.Field.GoverningLaw" xml:space="preserve"><value>Governing law</value></data>
+  <data name="Wizard.Field.TermMonths" xml:space="preserve"><value>Term (months)</value></data>
+  <data name="Wizard.Field.Purpose" xml:space="preserve"><value>Purpose of disclosure / scope of work</value></data>
+  <data name="Wizard.Field.ClientEmail" xml:space="preserve"><value>Client email</value></data>
+  <data name="Wizard.Field.ContractorName" xml:space="preserve"><value>Contractor name</value></data>
+  <data name="Wizard.Field.ContractorAddress" xml:space="preserve"><value>Contractor address</value></data>
+  <data name="Wizard.Field.ClientName" xml:space="preserve"><value>Client name</value></data>
+  <data name="Wizard.Field.ClientAddress" xml:space="preserve"><value>Client address</value></data>
+  <data name="Wizard.Field.ConsultantName" xml:space="preserve"><value>Consultant name</value></data>
+  <data name="Wizard.Field.ConsultantAddress" xml:space="preserve"><value>Consultant address</value></data>
   <data name="Settings.Title" xml:space="preserve"><value>Settings</value></data>
   <data name="Settings.Appearance" xml:space="preserve"><value>Appearance and language</value></data>
   <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Changes apply immediately. Arabic switches the interface to right-to-left.</value></data>
@@ -211,4 +277,104 @@
   <data name="Common.Open" xml:space="preserve"><value>Open</value></data>
   <data name="Common.Duplicate" xml:space="preserve"><value>Duplicate</value></data>
   <data name="Common.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Update.Available" xml:space="preserve"><value>A new version ({0}) is available!</value></data>
+  <data name="Update.Now" xml:space="preserve"><value>Update Now</value></data>
+  <data name="Update.Downloading" xml:space="preserve"><value>Downloading...</value></data>
+  <data name="Update.Dismiss" xml:space="preserve"><value>X</value></data>
+  <data name="Update.DismissAutomation" xml:space="preserve"><value>Dismiss update notification</value></data>
+  <data name="Update.InstallFailed" xml:space="preserve"><value>The update could not be installed: {0}</value></data>
+  <data name="ContractDetail.PageTitle" xml:space="preserve"><value>Contract detail</value></data>
+  <data name="ContractDetail.ClientLabel" xml:space="preserve"><value> · Client: </value></data>
+  <data name="ContractDetail.SaveRegenerate" xml:space="preserve"><value>Save &amp; regenerate</value></data>
+  <data name="ContractDetail.SaveRegenerateAutomation" xml:space="preserve"><value>Save contract changes and regenerate</value></data>
+  <data name="ContractDetail.SaveRegenerateHelp" xml:space="preserve"><value>Saves edited metadata, intake answers and clauses before rebuilding the document.</value></data>
+  <data name="ContractDetail.AiPolish" xml:space="preserve"><value>AI polish</value></data>
+  <data name="ContractDetail.AiPolishAutomation" xml:space="preserve"><value>Apply AI polish when regenerating</value></data>
+  <data name="ContractDetail.ExportDocx" xml:space="preserve"><value>Export DOCX</value></data>
+  <data name="ContractDetail.ExportDocxAutomation" xml:space="preserve"><value>Export contract as DOCX</value></data>
+  <data name="ContractDetail.ExportPdf" xml:space="preserve"><value>Export PDF</value></data>
+  <data name="ContractDetail.ExportPdfAutomation" xml:space="preserve"><value>Export contract as PDF</value></data>
+  <data name="ContractDetail.DocumentHeading" xml:space="preserve"><value>Contract document</value></data>
+  <data name="ContractDetail.DocumentHint" xml:space="preserve"><value> (the assembled text changes only when you save and regenerate)</value></data>
+  <data name="ContractDetail.EditAutomation" xml:space="preserve"><value>Edit contract details and clauses</value></data>
+  <data name="ContractDetail.EditDetails" xml:space="preserve"><value>Edit details and clauses</value></data>
+  <data name="ContractDetail.ContractTitle" xml:space="preserve"><value>Contract title</value></data>
+  <data name="ContractDetail.Duplicate" xml:space="preserve"><value>Duplicate contract</value></data>
+  <data name="ContractDetail.DuplicateAutomation" xml:space="preserve"><value>Duplicate contract</value></data>
+  <data name="ContractDetail.SelectedClausesOne" xml:space="preserve"><value>{0} clause selected</value></data>
+  <data name="ContractDetail.SelectedClausesOther" xml:space="preserve"><value>{0} clauses selected</value></data>
+  <data name="ContractDetail.VersionHistory" xml:space="preserve"><value>Version history</value></data>
+  <data name="ContractDetail.VersionHistoryCount" xml:space="preserve"><value>Version history ({0})</value></data>
+  <data name="ContractDetail.VersionEmpty" xml:space="preserve"><value>No earlier versions yet — one is saved automatically before every AI edit and regeneration.</value></data>
+  <data name="ContractDetail.Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="ContractDetail.RestoreAutomation" xml:space="preserve"><value>Restore version {0}</value></data>
+  <data name="ContractDetail.ExportHistory" xml:space="preserve"><value>Export history</value></data>
+  <data name="ContractDetail.ExportHistoryCount" xml:space="preserve"><value>Export history ({0})</value></data>
+  <data name="ContractDetail.ExportHistoryEmpty" xml:space="preserve"><value>No exports yet — use Export DOCX or Export PDF above.</value></data>
+  <data name="ContractDetail.DocumentAutomation" xml:space="preserve"><value>Contract document</value></data>
+  <data name="ContractDetail.DocumentHelp" xml:space="preserve"><value>The assembled contract text. Edit the details and clauses above, then save and regenerate.</value></data>
+  <data name="ContractDetail.Working" xml:space="preserve"><value>Working…</value></data>
+  <data name="ContractDetail.AiAssistant" xml:space="preserve"><value>AI assistant</value></data>
+  <data name="ContractDetail.AiSubtitle" xml:space="preserve"><value>Describe the change in plain language — the contract updates in place.</value></data>
+  <data name="ContractDetail.ChatExample" xml:space="preserve"><value>Example: “Make the confidentiality term 3 years”</value></data>
+  <data name="ContractDetail.ProposedAiEdit" xml:space="preserve"><value>Proposed AI edit</value></data>
+  <data name="ContractDetail.DiffSummaryOne" xml:space="preserve"><value>Proposed change: {0} line changed. Nothing has been saved yet.</value></data>
+  <data name="ContractDetail.DiffSummaryOther" xml:space="preserve"><value>Proposed change: {0} lines changed. Nothing has been saved yet.</value></data>
+  <data name="ContractDetail.Accept" xml:space="preserve"><value>Accept</value></data>
+  <data name="ContractDetail.AcceptAutomation" xml:space="preserve"><value>Accept the proposed AI edit</value></data>
+  <data name="ContractDetail.Reject" xml:space="preserve"><value>Reject</value></data>
+  <data name="ContractDetail.RejectAutomation" xml:space="preserve"><value>Reject the proposed AI edit</value></data>
+  <data name="ContractDetail.ApiKeyWarning" xml:space="preserve"><value>Configure your OpenAI API key in Settings to use AI editing.</value></data>
+  <data name="ContractDetail.GoToSettings" xml:space="preserve"><value>Go to Settings</value></data>
+  <data name="ContractDetail.ChatAutomation" xml:space="preserve"><value>Instruction for the AI assistant</value></data>
+  <data name="ContractDetail.ChatHelp" xml:space="preserve"><value>Describe the change you want. Press Enter to send, Shift+Enter for a new line.</value></data>
+  <data name="ContractDetail.Send" xml:space="preserve"><value>Send</value></data>
+  <data name="ContractDetail.SendAutomation" xml:space="preserve"><value>Send instruction to the AI assistant</value></data>
+  <data name="ContractDetail.BackToContracts" xml:space="preserve"><value>Back to Contracts</value></data>
+  <data name="ContractDetail.BackAutomation" xml:space="preserve"><value>Back to the Contracts list</value></data>
+  <data name="ContractDetail.ErrorInvalidSelection" xml:space="preserve"><value>This contract could not be opened. Select it again from the Contracts list.</value></data>
+  <data name="ContractDetail.ErrorOpen" xml:space="preserve"><value>We couldn't open this contract. Please try again.</value></data>
+  <data name="ContractDetail.ErrorMissing" xml:space="preserve"><value>This contract no longer exists. It may have been deleted.</value></data>
+  <data name="ContractDetail.ErrorLoad" xml:space="preserve"><value>We couldn't load this contract. Please try again.</value></data>
+  <data name="ContractDetail.ErrorTypeUnavailable" xml:space="preserve"><value>This contract type is no longer available for editing.</value></data>
+  <data name="ContractDetail.ErrorSelectClause" xml:space="preserve"><value>Select at least one clause before regenerating.</value></data>
+  <data name="ContractDetail.RegeneratedWithPlaceholders" xml:space="preserve"><value>The contract was regenerated, but some placeholders could not be filled and remain visible as {{...}}. Use the assistant to complete them.</value></data>
+  <data name="ContractDetail.Regenerated" xml:space="preserve"><value>Your changes were saved and the contract was regenerated.</value></data>
+  <data name="ContractDetail.ErrorRegenerateRejected" xml:space="preserve"><value>The contract could not be regenerated with the current settings.</value></data>
+  <data name="ContractDetail.ErrorRegenerate" xml:space="preserve"><value>We couldn't regenerate the contract. Please try again.</value></data>
+  <data name="ContractDetail.ErrorDuplicateMissing" xml:space="preserve"><value>We couldn't duplicate this contract because it no longer exists.</value></data>
+  <data name="ContractDetail.ErrorDuplicate" xml:space="preserve"><value>We couldn't duplicate the contract. Please try again.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeChat" xml:space="preserve"><value>Generate the contract before asking for edits.</value></data>
+  <data name="ContractDetail.AiInstructionNotSent" xml:space="preserve"><value>The instruction was not sent. AI edits share the contract text with OpenAI.</value></data>
+  <data name="ContractDetail.ReviewProposedEdit" xml:space="preserve"><value>Review the proposed change below, then Accept or Reject it.</value></data>
+  <data name="ContractDetail.ErrorChatRejected" xml:space="preserve"><value>The assistant couldn't prepare this edit. Check your AI settings and try again.</value></data>
+  <data name="ContractDetail.ErrorChat" xml:space="preserve"><value>The assistant could not apply the edit. Please try again.</value></data>
+  <data name="ContractDetail.AiEditAppliedWithPlaceholders" xml:space="preserve"><value>The edit was applied. Some placeholders remain as {{...}} — ask the assistant to fill them in.</value></data>
+  <data name="ContractDetail.AiEditApplied" xml:space="preserve"><value>The edit was applied. The previous text is saved in version history.</value></data>
+  <data name="ContractDetail.ErrorAiEditRejected" xml:space="preserve"><value>The proposed edit could not be applied with the current contract state.</value></data>
+  <data name="ContractDetail.ErrorAiEdit" xml:space="preserve"><value>The assistant's edit could not be applied. Please try again.</value></data>
+  <data name="ContractDetail.AiEditDiscarded" xml:space="preserve"><value>The proposed edit was discarded. Nothing was changed.</value></data>
+  <data name="ContractDetail.VersionRestored" xml:space="preserve"><value>The earlier version was restored. The replaced text remains in version history.</value></data>
+  <data name="ContractDetail.ErrorRestoreRejected" xml:space="preserve"><value>That version cannot be restored in the current contract state.</value></data>
+  <data name="ContractDetail.ErrorRestore" xml:space="preserve"><value>We couldn't restore that version. Please try again.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeExport" xml:space="preserve"><value>Generate the contract before exporting it.</value></data>
+  <data name="ContractDetail.ExportDialogTitle" xml:space="preserve"><value>Export contract as {0}</value></data>
+  <data name="ContractDetail.ExportDialogFilter" xml:space="preserve"><value>{0} document (*.{1})|*.{1}</value></data>
+  <data name="ContractDetail.ExportedTo" xml:space="preserve"><value>Exported to {0}</value></data>
+  <data name="ContractDetail.ExportOpenPrompt" xml:space="preserve"><value>The document was exported successfully. Open it now?</value></data>
+  <data name="ContractDetail.ExportComplete" xml:space="preserve"><value>Export complete</value></data>
+  <data name="ContractDetail.ErrorExportRejected" xml:space="preserve"><value>The export could not be completed with the current settings.</value></data>
+  <data name="ContractDetail.ErrorExport" xml:space="preserve"><value>We couldn't export the contract as {0}. Please try again.</value></data>
+  <data name="ContractDetail.ErrorLoadVersions" xml:space="preserve"><value>Could not load version history.</value></data>
+  <data name="ContractDetail.FileAvailable" xml:space="preserve"><value>File available</value></data>
+  <data name="ContractDetail.FileMissing" xml:space="preserve"><value>File moved or deleted</value></data>
+  <data name="ContractDetail.FileInvalidPath" xml:space="preserve"><value>Invalid path</value></data>
+  <data name="ContractDetail.VersionDetails" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="ContractDetail.VersionReasonAiEdit" xml:space="preserve"><value>AI edit</value></data>
+  <data name="ContractDetail.VersionReasonRegeneration" xml:space="preserve"><value>Regeneration</value></data>
+  <data name="ContractDetail.VersionReasonBeforeRevert" xml:space="preserve"><value>Before restore</value></data>
+  <data name="ContractDetail.VersionReasonOther" xml:space="preserve"><value>Earlier version</value></data>
+  <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>AI edits share this contract's text with OpenAI for processing.&#xA;&#xA;Only continue if you are comfortable sending this document to OpenAI — for example, if it contains no privileged or confidential client material you are not permitted to share with a third-party service.&#xA;&#xA;Continue with AI editing?</value></data>
+  <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>AI editing sends data to OpenAI</value></data>
+  <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
 </root>

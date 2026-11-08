@@ -20,7 +20,7 @@ public sealed class AppOptions
     /// <summary>Gets the file logging settings.</summary>
     public SerilogOptions Serilog { get; } = new();
 
-    /// <summary>Gets the commercial-readiness feature switches (all off by default).</summary>
+    /// <summary>Gets the commercial-readiness feature switches.</summary>
     public FeatureOptions Features { get; } = new();
 
     /// <summary>
@@ -45,11 +45,12 @@ public sealed class AppOptions
         options.Data.ConnectionString = configuration["Data:ConnectionString"] ?? options.Data.ConnectionString;
         options.Serilog.FilePath = configuration["Serilog:FilePath"] ?? options.Serilog.FilePath;
 
-        // Every commercial feature is opt-in: a missing or unparsable value stays false so
-        // an existing installation keeps the exact same behaviour after upgrading.
+        // Commercial features stay opt-in except for the non-identifying GitHub auto-update check.
         options.Features.LicensingEnabled = ReadBool(configuration, "Features:LicensingEnabled");
         options.Features.LicenseGracePeriodDays = ReadNonNegativeInt(
             configuration, "Features:LicenseGracePeriodDays", options.Features.LicenseGracePeriodDays);
+        options.Features.AutoUpdateEnabled = ReadBool(
+            configuration, "Features:AutoUpdateEnabled", options.Features.AutoUpdateEnabled);
         options.Features.UpdateCheckEnabled = ReadBool(configuration, "Features:UpdateCheckEnabled");
         options.Features.UpdateManifestUrl = configuration["Features:UpdateManifestUrl"] ?? options.Features.UpdateManifestUrl;
         options.Features.OnboardingEnabled = ReadBool(configuration, "Features:OnboardingEnabled");
@@ -73,6 +74,9 @@ public sealed class AppOptions
 
     private static bool ReadBool(IConfiguration configuration, string key) =>
         bool.TryParse(configuration[key], out var value) && value;
+
+    private static bool ReadBool(IConfiguration configuration, string key, bool fallback) =>
+        bool.TryParse(configuration[key], out var value) ? value : fallback;
 
     private static int ReadNonNegativeInt(IConfiguration configuration, string key, int fallback) =>
         int.TryParse(configuration[key], out var value) && value >= 0 ? value : fallback;
@@ -120,8 +124,8 @@ public sealed class SerilogOptions
 }
 
 /// <summary>
-/// Commercial-readiness switches. Every flag defaults to <c>false</c>; with the defaults
-/// the application behaves exactly as it did before these features existed.
+/// Commercial-readiness switches. The GitHub auto-update check is enabled by default; all
+/// other feature flags remain disabled.
 /// </summary>
 public sealed class FeatureOptions
 {
@@ -131,7 +135,10 @@ public sealed class FeatureOptions
     /// <summary>Gets or sets how many days after expiry the app keeps working offline.</summary>
     public int LicenseGracePeriodDays { get; set; } = 14;
 
-    /// <summary>Gets or sets whether the notify-only update check runs at startup.</summary>
+    /// <summary>Gets or sets whether the GitHub auto-update check runs at startup.</summary>
+    public bool AutoUpdateEnabled { get; set; } = true;
+
+    /// <summary>Gets or sets whether the legacy manifest check is available on the About page.</summary>
     public bool UpdateCheckEnabled { get; set; }
 
     /// <summary>Gets or sets the HTTPS URL of the static update manifest.</summary>

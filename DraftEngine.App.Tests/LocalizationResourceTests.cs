@@ -1,4 +1,5 @@
 using System.IO;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Xunit;
@@ -18,6 +19,9 @@ public sealed class LocalizationResourceTests
     private static readonly string XamlDirectory =
         Path.Combine(AppContext.BaseDirectory, "Xaml");
 
+    private static readonly string LiteralBaselinePath =
+        Path.Combine(AppContext.BaseDirectory, "i18n-baseline.txt");
+
     private static readonly string[] LanguageFiles =
     [
         "Strings.resx",
@@ -29,8 +33,6 @@ public sealed class LocalizationResourceTests
     // Screens not yet migrated to {loc:T}. Remove a name when its migration commit lands.
     private static readonly HashSet<string> PendingMigration = new(StringComparer.OrdinalIgnoreCase)
     {
-        "NewContractView.xaml",
-        "ContractDetailView.xaml",
         "ClauseManagerView.xaml",
         "AnalyzeView.xaml",
         "AboutView.xaml",
@@ -113,6 +115,21 @@ public sealed class LocalizationResourceTests
     }
 
     [Fact]
+    public void PendingLiteralCount_DoesNotExceedBaseline()
+    {
+        Assert.True(File.Exists(LiteralBaselinePath), $"Expected literal baseline at '{LiteralBaselinePath}'.");
+        var baseline = int.Parse(
+            File.ReadAllText(LiteralBaselinePath).Trim(),
+            NumberStyles.None,
+            CultureInfo.InvariantCulture);
+        var actual = XamlFiles()
+            .Where(file => PendingMigration.Contains(Path.GetFileName(file)))
+            .Sum(file => CountLiteralUserFacingStrings(File.ReadAllText(file)));
+
+        Assert.True(actual <= baseline, $"Pending literal count {actual} exceeds baseline {baseline}.");
+    }
+
+    [Fact]
     public void MainWindow_HasNoLiteralUserFacingStrings()
     {
         var path = Path.Combine(XamlDirectory, "MainWindow.xaml");
@@ -121,14 +138,19 @@ public sealed class LocalizationResourceTests
     }
 
     private static bool HasLiteralUserFacingString(string xaml)
+        => CountLiteralUserFacingStrings(xaml) > 0;
+
+    private static int CountLiteralUserFacingStrings(string xaml)
     {
         const string attributePattern =
             @"(?:Text|Content|Header|ToolTip|Title|Watermark|PlaceholderText|AutomationProperties\.Name)\s*=\s*""([^""]*)""";
+        var count = 0;
 
         foreach (Match match in Regex.Matches(xaml, attributePattern))
         {
             var value = match.Groups[1].Value.Trim();
-            if (value.Length == 0 || value.StartsWith('{') || BrandNames.Contains(value))
+            // The required-field asterisk is a symbol, not translatable copy.
+            if (value.Length == 0 || value.StartsWith('{') || value == "*" || BrandNames.Contains(value))
             {
                 continue;
             }
@@ -138,11 +160,12 @@ public sealed class LocalizationResourceTests
                 continue;
             }
 
-            return true;
+            count++;
         }
 
         // Inline text such as <TextBlock>Hello</TextBlock> (single line only).
-        return Regex.IsMatch(xaml, @">\s*([A-Za-z][^<>{}]{2,})\s*</(?:TextBlock|Run|Hyperlink)>");
+        count += Regex.Matches(xaml, @">\s*([A-Za-z][^<>{}]{2,})\s*</(?:TextBlock|Run|Hyperlink)>").Count;
+        return count;
     }
 
     private static IEnumerable<string> XamlFiles()

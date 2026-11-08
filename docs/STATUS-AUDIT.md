@@ -12,7 +12,7 @@ Scope: documentation and code inspection only; no feature code changed.
 - Release build succeeded with six warnings: three production `CS8625` nullable warnings in `DraftEngine.Core/Services/UpdateCheckService.cs`; test warnings `CS8602` and `CS1998` in Analysis.Tests and one `CS8625` in `DraftEngine.Tests/Commercial/UpdateCheckServiceTests.cs`.
 - Resources: **207 keys per language** in `Strings.resx`, `Strings.fr.resx`, `Strings.ar.resx`, and `Strings.es.resx` (828 key/value entries total). Resource parity is covered by `LocalizationResourceTests.AllLanguages_HaveTheSameKeys`.
 - Current XAML literal-guard candidates: **158** in the seven views/windows still listed as pending in `LocalizationResourceTests.PendingMigration`: NewContract (24), Contract detail (44), Clause Manager (30), Analyze (24), About (21), Archived Contracts (6), License Activation (9). This is the guard's XAML attribute/inline-text scan only; it is **not** a count of remaining C# literals or a complete semantic count of user-facing text.
-- A separate scan finds **7 color-literal matches** in views: Contract detail (5), Contracts list (1), Dashboard (1). `docs/color-baseline.txt` is absent, so no shrinking color ratchet is in place.
+- A hex/RGB-style scan finds **7 color-literal matches** in views: Contract detail (5), Contracts list (1), Dashboard (1); `NewContractView.xaml` also contains the named color `White` in its type-card style. `docs/color-baseline.txt` is absent, so no shrinking color ratchet is in place.
 
 ## Requested item-by-item status
 
@@ -48,3 +48,18 @@ Scope: documentation and code inspection only; no feature code changed.
 - No WPF page/window has been visually verified in this audit.
 - No contract-language migration or RTL exports, full theme audit, automated binding trace harness, or complete C# literal inventory was performed.
 - Stage 1 is still substantial; this is a status snapshot, not a release-candidate sign-off.
+
+## Post-audit progress (2026-11-08)
+
+- The New Contract wizard is now migrated with 66 EN/FR/AR/ES keys. `NewContractView.xaml` was removed from the pending literal guard. The baseline fell from 158 to **134** candidates across the six remaining pending screens.
+- Resource files now have **273 keys per language** (1,092 key/value entries total), and all four key sets remain equal under `LocalizationResourceTests.AllLanguages_HaveTheSameKeys`.
+- Release tests now pass at **318** (225 core, 65 App.Tests, 28 Analysis.Tests). Wizard-specific coverage includes dynamic label language refresh, translated type/field labels, invariant integer validation, and core summary labels returned as stable field keys.
+- The new screen has **not been visually verified**. Translation quality still needs native-speaker and legal review where relevant.
+
+## Contract-detail localization update (2026-11-08)
+
+- `ContractDetailView.xaml` and its directly related view-model output are migrated to localization keys; all four resource files contain **373 keys** with parity enforced by `LocalizationResourceTests.AllLanguages_HaveTheSameKeys`.
+- The Contract-detail view was removed from the pending literal guard. The remaining five views/windows contain **90** candidates, measured by `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline` against `docs/i18n-baseline.txt`.
+- `ContractDetailLocalizationTests.ContractDetailAndHistoryRows_RerenderAfterLanguageChange` exercises contract type/status, history rows, and load-error language refresh. Release build succeeded in an isolated output directory because the running DraftEngine process locked the normal output. All three Release test assemblies passed individually: **326** total (225 core, 73 App.Tests, 28 Analysis.Tests).
+- Contract detail is **Done in code, not visually verified**. French/Arabic/Spanish copy needs human review, especially long French strings and Arabic RTL layout.
+- This working branch also retains `0d94c21` (auto-update check/banner and silent-installer work). No merge or tag was made.

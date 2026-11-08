@@ -75,6 +75,13 @@ public static class ServiceRegistration
         services.AddSingleton<
             DraftEngine.App.Services.Updates.IUpdateCheckService,
             DraftEngine.App.Services.Updates.UpdateCheckService>();
+        services.AddHttpClient<DraftEngine.App.Services.Updates.IUpdateService,
+            DraftEngine.App.Services.Updates.UpdateService>(client =>
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("DraftEngine-Updater");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            client.Timeout = TimeSpan.FromMinutes(5);
+        });
 
         // Localization: resx-backed strings, live language switching and persistence.
         services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();

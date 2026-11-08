@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DraftEngine.App.Services.Localization;
 
 namespace DraftEngine.App.ViewModels.NewContract;
 
@@ -28,12 +30,22 @@ public partial class IntakeFieldViewModel : ObservableObject
     [ObservableProperty] private string _value = string.Empty;
     [ObservableProperty] private DateTime? _dateValue;
     [ObservableProperty] private string? _selectedChoice;
+    private readonly string _fallbackLabel;
+    private readonly ILocalizationService _localization;
 
     /// <summary>Stable field key persisted as <c>ContractField.Key</c> (also used as the placeholder name).</summary>
     public string Key { get; }
 
     /// <summary>The field label shown above the input.</summary>
-    public string Label { get; }
+    public string Label
+    {
+        get
+        {
+            var key = $"Wizard.Field.{Key}";
+            var value = _localization.GetString(key);
+            return string.Equals(value, key, System.StringComparison.Ordinal) ? _fallbackLabel : value;
+        }
+    }
 
     /// <summary>Which input control to render for this field.</summary>
     public IntakeFieldKind Kind { get; }
@@ -69,24 +81,37 @@ public partial class IntakeFieldViewModel : ObservableObject
         bool isRequired,
         IReadOnlyList<string>? choices = null,
         string? defaultValue = null,
-        DateTime? defaultDate = null)
+        DateTime? defaultDate = null,
+        ILocalizationService? localization = null)
     {
         Key = key;
-        Label = label;
+        _fallbackLabel = label;
         Kind = kind;
         IsRequired = isRequired;
         Choices = choices ?? Array.Empty<string>();
         Value = defaultValue ?? string.Empty;
         SelectedChoice = defaultValue;
         DateValue = defaultDate;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
     }
+
+    public void RefreshLocalization() =>
+        OnPropertyChanged(nameof(Label));
+
+    partial void OnValueChanged(string value) => OnPropertyChanged(nameof(IsValid));
+    partial void OnDateValueChanged(DateTime? value) => OnPropertyChanged(nameof(IsValid));
+    partial void OnSelectedChoiceChanged(string? value) => OnPropertyChanged(nameof(IsValid));
 
     /// <summary>Whether the field currently satisfies its validation rule.</summary>
     public bool IsValid => !IsRequired || Kind switch
     {
         IntakeFieldKind.Date => DateValue is not null,
         IntakeFieldKind.Choice => !string.IsNullOrWhiteSpace(SelectedChoice),
-        IntakeFieldKind.Number => int.TryParse(Value, out var number) && number > 0,
+        IntakeFieldKind.Number => int.TryParse(
+            Value,
+            NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out var number) && number > 0,
         _ => !string.IsNullOrWhiteSpace(Value)
     };
 }

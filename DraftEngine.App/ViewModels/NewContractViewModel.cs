@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Interfaces;
@@ -44,11 +45,12 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     private readonly IAppSettingsService _appSettings;
     private readonly IWizardDraftService _drafts;
     private readonly IContractTypeRegistry _contractTypeRegistry;
+    private readonly ILocalizationService _localization;
 
     private bool _clausesLoaded;
 
     /// <summary>The page title shown in the view header.</summary>
-    public string PageTitle => "New Contract";
+    public string PageTitle => _localization.GetString("Wizard.PageTitle");
 
     /// <summary>The current wizard step (1-4).</summary>
     [ObservableProperty] private int _currentStep = 1;
@@ -112,7 +114,17 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     public bool IsGenerateVisible => CurrentStep == 4;
 
     /// <summary>The text of the generate button ("Generating…" while busy).</summary>
-    public string GenerateButtonText => IsBusy ? "Generating\u2026" : "Generate Contract";
+    public string GenerateButtonText =>
+        _localization.GetString(IsBusy ? "Wizard.Generating" : "Wizard.Generate");
+    public string SelectedClauseCountText => _localization.GetString(
+        SelectedClauseCount == 1 ? "Wizard.SelectedClauses.One" : "Wizard.SelectedClauses.Other",
+        SelectedClauseCount,
+        TotalClauseCount);
+    public string SummaryClauseCountText =>
+        _localization.GetString("Wizard.SummaryClausesSelected", SelectedClauseCount);
+    public string BackAutomationName => _localization.GetString("Wizard.BackAutomation");
+    public string NextAutomationName => _localization.GetString("Wizard.NextAutomation");
+    public string AiPolishAutomationName => _localization.GetString("Wizard.AiPolishAutomation");
 
     /// <summary>Creates the wizard view model and prepares a fresh wizard state.</summary>
     public NewContractViewModel(
@@ -123,7 +135,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         IWizardDialogService dialogs,
         IAppSettingsService appSettings,
         IWizardDraftService drafts,
-        IContractTypeRegistry? contractTypeRegistry = null)
+        IContractTypeRegistry? contractTypeRegistry = null,
+        ILocalizationService? localization = null)
     {
         _contractService = contractService;
         _clauseService = clauseService;
@@ -133,11 +146,12 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         _appSettings = appSettings;
         _drafts = drafts ?? throw new ArgumentNullException(nameof(drafts));
         _contractTypeRegistry = contractTypeRegistry ?? ContractTypeRegistry.Instance;
+        _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
 
-        Steps.Add(new WizardStepViewModel(1, "Type"));
-        Steps.Add(new WizardStepViewModel(2, "Details"));
-        Steps.Add(new WizardStepViewModel(3, "Clauses"));
-        Steps.Add(new WizardStepViewModel(4, "Review"));
+        Steps.Add(new WizardStepViewModel(1, "Wizard.Step.Type", _localization));
+        Steps.Add(new WizardStepViewModel(2, "Wizard.Step.Details", _localization));
+        Steps.Add(new WizardStepViewModel(3, "Wizard.Step.Clauses", _localization));
+        Steps.Add(new WizardStepViewModel(4, "Wizard.Step.Review", _localization));
 
         BuildContractTypes();
         BuildIntakeFields();
@@ -147,6 +161,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // The wizard is a singleton page: when navigated away, persist the draft;
         // when navigated to, load the saved draft instead of always resetting.
         _navigation.CurrentViewModelChanged += OnPageChanged;
+        _localization.LanguageChanged += OnLanguageChanged;
     }
 
     /// <summary>Selects an available contract type card on step 1.</summary>
@@ -255,7 +270,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         ContractTypes.Clear();
         foreach (var definition in _contractTypeRegistry.All)
         {
-            ContractTypes.Add(new ContractTypeOptionViewModel(definition, isAvailable: true));
+            ContractTypes.Add(new ContractTypeOptionViewModel(
+                definition, isAvailable: true, _localization));
         }
     }
 
@@ -274,7 +290,7 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // which placeholder keys they map to; the wizard only adapts them to input kinds.
         foreach (var intake in definition.IntakeFields)
         {
-            var field = BuildIntakeField(intake, governingLaw, governingLawChoices, termMonths);
+            var field = BuildIntakeField(intake, governingLaw, governingLawChoices, termMonths, _localization);
             field.PropertyChanged += OnIntakeFieldChanged;
             IntakeFields.Add(field);
         }
@@ -284,7 +300,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         ContractTypeIntakeField intake,
         string governingLaw,
         string[] governingLawChoices,
-        string termMonths)
+        string termMonths,
+        ILocalizationService localization)
     {
         var kind = intake.Kind switch
         {
@@ -315,7 +332,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
             intake.Required,
             choices,
             defaultValue,
-            defaultDate);
+            defaultDate,
+            localization);
     }
 
     /// <summary>
@@ -397,7 +415,15 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         QueueDraftSave();
     }
 
-    partial void OnSelectedClauseCountChanged(int value) => RefreshCommands();
+    partial void OnSelectedClauseCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(SelectedClauseCountText));
+        OnPropertyChanged(nameof(SummaryClauseCountText));
+        RefreshCommands();
+    }
+
+    partial void OnTotalClauseCountChanged(int value) =>
+        OnPropertyChanged(nameof(SelectedClauseCountText));
 
     partial void OnIsBusyChanged(bool value)
     {
@@ -406,4 +432,44 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     }
 
     partial void OnDraftErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasDraftError));
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(PageTitle));
+        OnPropertyChanged(nameof(GenerateButtonText));
+        OnPropertyChanged(nameof(SelectedClauseCountText));
+        OnPropertyChanged(nameof(SummaryClauseCountText));
+        OnPropertyChanged(nameof(BackAutomationName));
+        OnPropertyChanged(nameof(NextAutomationName));
+        OnPropertyChanged(nameof(AiPolishAutomationName));
+
+        foreach (var step in Steps)
+        {
+            step.RefreshLocalization();
+        }
+
+        foreach (var type in ContractTypes)
+        {
+            type.RefreshLocalization();
+        }
+
+        foreach (var field in IntakeFields)
+        {
+            field.RefreshLocalization();
+        }
+
+        foreach (var group in ClauseGroups)
+        {
+            group.RefreshLocalization();
+            foreach (var clause in group.Clauses)
+            {
+                clause.RefreshLocalization();
+            }
+        }
+
+        if (CurrentStep == 4)
+        {
+            BuildSummary();
+        }
+    }
 }

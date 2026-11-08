@@ -17,6 +17,72 @@
   <data name="Common.Skip" xml:space="preserve"><value>Ignorer</value></data>
   <data name="Common.GetStarted" xml:space="preserve"><value>Commencer</value></data>
   <data name="Common.Refresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="Wizard.PageTitle" xml:space="preserve"><value>Nouveau contrat</value></data>
+  <data name="Wizard.Subtitle" xml:space="preserve"><value>Rédigez un nouvel accord en quatre étapes.</value></data>
+  <data name="Wizard.DiscardDraft" xml:space="preserve"><value>Supprimer le brouillon</value></data>
+  <data name="Wizard.DiscardDraftConfirm" xml:space="preserve"><value>Supprimer le brouillon de contrat enregistré et réinitialiser l’assistant ?</value></data>
+  <data name="Wizard.DiscardDraftConfirmTitle" xml:space="preserve"><value>Supprimer le brouillon</value></data>
+  <data name="Wizard.Step.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Wizard.Step.Details" xml:space="preserve"><value>Détails</value></data>
+  <data name="Wizard.Step.Clauses" xml:space="preserve"><value>Clauses</value></data>
+  <data name="Wizard.Step.Review" xml:space="preserve"><value>Vérification</value></data>
+  <data name="Wizard.TypeHeading" xml:space="preserve"><value>Choisissez un type de contrat</value></data>
+  <data name="Wizard.TypeDescription" xml:space="preserve"><value>Tous les types de contrat sont disponibles. Sélectionnez l’accord à rédiger.</value></data>
+  <data name="Wizard.SelectTypeAutomation" xml:space="preserve"><value>Sélectionner le type de contrat {0}</value></data>
+  <data name="Wizard.ComingSoon" xml:space="preserve"><value>Bientôt disponible</value></data>
+  <data name="Wizard.DetailsHeading" xml:space="preserve"><value>Détails du contrat</value></data>
+  <data name="Wizard.DetailsDescription" xml:space="preserve"><value>Répondez aux questions ci-dessous. Ces valeurs rempliront les clauses et le document final.</value></data>
+  <data name="Wizard.ClausesHeading" xml:space="preserve"><value>Sélectionner les clauses</value></data>
+  <data name="Wizard.SelectedClauses.One" xml:space="preserve"><value>{0} clause sélectionnée sur {1}</value></data>
+  <data name="Wizard.SelectedClauses.Other" xml:space="preserve"><value>{0} clauses sélectionnées sur {1}</value></data>
+  <data name="Wizard.StandardClauses" xml:space="preserve"><value>Les clauses standard sont présélectionnées. Développez une clause pour afficher son texte avec vos réponses.</value></data>
+  <data name="Wizard.LoadingClauses" xml:space="preserve"><value>Chargement des clauses…</value></data>
+  <data name="Wizard.ClauseCount.One" xml:space="preserve"><value>{0} clause</value></data>
+  <data name="Wizard.ClauseCount.Other" xml:space="preserve"><value>{0} clauses</value></data>
+  <data name="Wizard.IncludeClauseAutomation" xml:space="preserve"><value>Inclure {0} dans le contrat</value></data>
+  <data name="Wizard.PreviewClauseAutomation" xml:space="preserve"><value>Afficher ou masquer l’aperçu de {0}</value></data>
+  <data name="Wizard.Preview" xml:space="preserve"><value>Aperçu ▾</value></data>
+  <data name="Wizard.HidePreview" xml:space="preserve"><value>Masquer l’aperçu</value></data>
+  <data name="Wizard.Optional" xml:space="preserve"><value>Facultative</value></data>
+  <data name="Wizard.ReviewHeading" xml:space="preserve"><value>Vérifiez votre contrat</value></data>
+  <data name="Wizard.ReviewDescription" xml:space="preserve"><value>Confirmez les détails ci-dessous, puis générez le document.</value></data>
+  <data name="Wizard.SummaryContractType" xml:space="preserve"><value>Type de contrat</value></data>
+  <data name="Wizard.SummaryClausesSelected" xml:space="preserve"><value>Clauses sélectionnées : {0}</value></data>
+  <data name="Wizard.AiPolish" xml:space="preserve"><value>Amélioration par IA (clé API OpenAI requise)</value></data>
+  <data name="Wizard.AiPolishAutomation" xml:space="preserve"><value>Améliorer le contrat généré avec l’IA</value></data>
+  <data name="Wizard.BackAutomation" xml:space="preserve"><value>Revenir à l’étape précédente</value></data>
+  <data name="Wizard.NextAutomation" xml:space="preserve"><value>Passer à l’étape suivante</value></data>
+  <data name="Wizard.Generate" xml:space="preserve"><value>Générer le contrat</value></data>
+  <data name="Wizard.Generating" xml:space="preserve"><value>Génération…</value></data>
+  <data name="Wizard.ErrorClearDraft" xml:space="preserve"><value>Impossible d’effacer le brouillon enregistré. Réessayez.</value></data>
+  <data name="Wizard.ErrorDraftSave" xml:space="preserve"><value>Les dernières modifications de l’assistant n’ont pas pu être enregistrées. Laissez DraftEngine ouvert et réessayez.</value></data>
+  <data name="Wizard.ErrorDraftSaveLeaving" xml:space="preserve"><value>Impossible d’enregistrer le brouillon de l’assistant.</value></data>
+  <data name="Wizard.ErrorClauseLoad" xml:space="preserve"><value>Impossible de charger la bibliothèque de clauses. Revenez en arrière et réessayez, ou redémarrez DraftEngine.</value></data>
+  <data name="Wizard.ErrorCreatedDraftClear" xml:space="preserve"><value>Le contrat a été créé, mais le brouillon enregistré de l’assistant n’a pas pu être effacé.</value></data>
+  <data name="Wizard.ErrorGenerate" xml:space="preserve"><value>La génération du contrat a échoué. Réessayez. Si le problème persiste, vérifiez votre clé API dans Paramètres.</value></data>
+  <data name="Wizard.Type.MutualNda.Name" xml:space="preserve"><value>Accord de confidentialité réciproque</value></data>
+  <data name="Wizard.Type.MutualNda.Description" xml:space="preserve"><value>Accord de confidentialité réciproque protégeant les deux parties.</value></data>
+  <data name="Wizard.Type.OneWayNda.Name" xml:space="preserve"><value>Accord de confidentialité unilatéral</value></data>
+  <data name="Wizard.Type.OneWayNda.Description" xml:space="preserve"><value>Accord protégeant les informations communiquées par une seule partie.</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Name" xml:space="preserve"><value>Contrat de prestataire indépendant</value></data>
+  <data name="Wizard.Type.IndependentContractorAgreement.Description" xml:space="preserve"><value>Définit la portée, les honoraires, les livrables et la propriété des travaux.</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Name" xml:space="preserve"><value>Contrat de conseil</value></data>
+  <data name="Wizard.Type.ConsultingAgreement.Description" xml:space="preserve"><value>Définit les conditions d’une mission de conseil continue.</value></data>
+  <data name="Wizard.Field.Party1" xml:space="preserve"><value>Nom de la partie 1</value></data>
+  <data name="Wizard.Field.Party1Address" xml:space="preserve"><value>Adresse de la partie 1</value></data>
+  <data name="Wizard.Field.Party2" xml:space="preserve"><value>Nom de la partie 2</value></data>
+  <data name="Wizard.Field.Party2Address" xml:space="preserve"><value>Adresse de la partie 2</value></data>
+  <data name="Wizard.Field.EffectiveDate" xml:space="preserve"><value>Date d’entrée en vigueur</value></data>
+  <data name="Wizard.Field.GoverningLaw" xml:space="preserve"><value>Droit applicable</value></data>
+  <data name="Wizard.Field.TermMonths" xml:space="preserve"><value>Durée (mois)</value></data>
+  <data name="Wizard.Field.Purpose" xml:space="preserve"><value>Objet de la divulgation / portée des travaux</value></data>
+  <data name="Wizard.Field.ClientEmail" xml:space="preserve"><value>Courriel du client</value></data>
+  <data name="Wizard.Field.ContractorName" xml:space="preserve"><value>Nom du prestataire</value></data>
+  <data name="Wizard.Field.ContractorAddress" xml:space="preserve"><value>Adresse du prestataire</value></data>
+  <data name="Wizard.Field.ClientName" xml:space="preserve"><value>Nom du client</value></data>
+  <data name="Wizard.Field.ClientAddress" xml:space="preserve"><value>Adresse du client</value></data>
+  <data name="Wizard.Field.ConsultantName" xml:space="preserve"><value>Nom du consultant</value></data>
+  <data name="Wizard.Field.ConsultantAddress" xml:space="preserve"><value>Adresse du consultant</value></data>
   <data name="Settings.Title" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Settings.Appearance" xml:space="preserve"><value>Apparence et langue</value></data>
   <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Les changements s'appliquent immédiatement. L'arabe bascule l'interface de droite à gauche.</value></data>
@@ -211,4 +277,104 @@
   <data name="Common.Open" xml:space="preserve"><value>Ouvrir</value></data>
   <data name="Common.Duplicate" xml:space="preserve"><value>Dupliquer</value></data>
   <data name="Common.Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Update.Available" xml:space="preserve"><value>Une nouvelle version ({0}) est disponible !</value></data>
+  <data name="Update.Now" xml:space="preserve"><value>Mettre à jour</value></data>
+  <data name="Update.Downloading" xml:space="preserve"><value>Téléchargement...</value></data>
+  <data name="Update.Dismiss" xml:space="preserve"><value>X</value></data>
+  <data name="Update.DismissAutomation" xml:space="preserve"><value>Masquer la notification de mise à jour</value></data>
+  <data name="Update.InstallFailed" xml:space="preserve"><value>Impossible d&apos;installer la mise à jour : {0}</value></data>
+  <data name="ContractDetail.PageTitle" xml:space="preserve"><value>Détails du contrat</value></data>
+  <data name="ContractDetail.ClientLabel" xml:space="preserve"><value> · Client : </value></data>
+  <data name="ContractDetail.SaveRegenerate" xml:space="preserve"><value>Enregistrer et régénérer</value></data>
+  <data name="ContractDetail.SaveRegenerateAutomation" xml:space="preserve"><value>Enregistrer les modifications du contrat et le régénérer</value></data>
+  <data name="ContractDetail.SaveRegenerateHelp" xml:space="preserve"><value>Enregistre les métadonnées, les réponses et les clauses modifiées avant de reconstruire le document.</value></data>
+  <data name="ContractDetail.AiPolish" xml:space="preserve"><value>Amélioration par IA</value></data>
+  <data name="ContractDetail.AiPolishAutomation" xml:space="preserve"><value>Appliquer l&apos;amélioration par IA lors de la régénération</value></data>
+  <data name="ContractDetail.ExportDocx" xml:space="preserve"><value>Exporter en DOCX</value></data>
+  <data name="ContractDetail.ExportDocxAutomation" xml:space="preserve"><value>Exporter le contrat en DOCX</value></data>
+  <data name="ContractDetail.ExportPdf" xml:space="preserve"><value>Exporter en PDF</value></data>
+  <data name="ContractDetail.ExportPdfAutomation" xml:space="preserve"><value>Exporter le contrat en PDF</value></data>
+  <data name="ContractDetail.DocumentHeading" xml:space="preserve"><value>Document contractuel</value></data>
+  <data name="ContractDetail.DocumentHint" xml:space="preserve"><value> (le texte assemblé change uniquement après l&apos;enregistrement et la régénération)</value></data>
+  <data name="ContractDetail.EditAutomation" xml:space="preserve"><value>Modifier les détails et les clauses du contrat</value></data>
+  <data name="ContractDetail.EditDetails" xml:space="preserve"><value>Modifier les détails et les clauses</value></data>
+  <data name="ContractDetail.ContractTitle" xml:space="preserve"><value>Titre du contrat</value></data>
+  <data name="ContractDetail.Duplicate" xml:space="preserve"><value>Dupliquer le contrat</value></data>
+  <data name="ContractDetail.DuplicateAutomation" xml:space="preserve"><value>Dupliquer le contrat</value></data>
+  <data name="ContractDetail.SelectedClausesOne" xml:space="preserve"><value>{0} clause sélectionnée</value></data>
+  <data name="ContractDetail.SelectedClausesOther" xml:space="preserve"><value>{0} clauses sélectionnées</value></data>
+  <data name="ContractDetail.VersionHistory" xml:space="preserve"><value>Historique des versions</value></data>
+  <data name="ContractDetail.VersionHistoryCount" xml:space="preserve"><value>Historique des versions ({0})</value></data>
+  <data name="ContractDetail.VersionEmpty" xml:space="preserve"><value>Aucune version antérieure. Une version est enregistrée automatiquement avant chaque modification par IA et chaque régénération.</value></data>
+  <data name="ContractDetail.Restore" xml:space="preserve"><value>Restaurer</value></data>
+  <data name="ContractDetail.RestoreAutomation" xml:space="preserve"><value>Restaurer la version {0}</value></data>
+  <data name="ContractDetail.ExportHistory" xml:space="preserve"><value>Historique des exportations</value></data>
+  <data name="ContractDetail.ExportHistoryCount" xml:space="preserve"><value>Historique des exportations ({0})</value></data>
+  <data name="ContractDetail.ExportHistoryEmpty" xml:space="preserve"><value>Aucune exportation. Utilisez les boutons Exporter en DOCX ou Exporter en PDF ci-dessus.</value></data>
+  <data name="ContractDetail.DocumentAutomation" xml:space="preserve"><value>Document contractuel</value></data>
+  <data name="ContractDetail.DocumentHelp" xml:space="preserve"><value>Texte assemblé du contrat. Modifiez les détails et les clauses ci-dessus, puis enregistrez et régénérez.</value></data>
+  <data name="ContractDetail.Working" xml:space="preserve"><value>Traitement…</value></data>
+  <data name="ContractDetail.AiAssistant" xml:space="preserve"><value>Assistant IA</value></data>
+  <data name="ContractDetail.AiSubtitle" xml:space="preserve"><value>Décrivez la modification en langage courant ; le contrat sera mis à jour.</value></data>
+  <data name="ContractDetail.ChatExample" xml:space="preserve"><value>Exemple : « Fixer la durée de confidentialité à 3 ans »</value></data>
+  <data name="ContractDetail.ProposedAiEdit" xml:space="preserve"><value>Modification proposée par l&apos;IA</value></data>
+  <data name="ContractDetail.DiffSummaryOne" xml:space="preserve"><value>Modification proposée : {0} ligne modifiée. Rien n&apos;a été enregistré.</value></data>
+  <data name="ContractDetail.DiffSummaryOther" xml:space="preserve"><value>Modification proposée : {0} lignes modifiées. Rien n&apos;a été enregistré.</value></data>
+  <data name="ContractDetail.Accept" xml:space="preserve"><value>Accepter</value></data>
+  <data name="ContractDetail.AcceptAutomation" xml:space="preserve"><value>Accepter la modification proposée par l&apos;IA</value></data>
+  <data name="ContractDetail.Reject" xml:space="preserve"><value>Refuser</value></data>
+  <data name="ContractDetail.RejectAutomation" xml:space="preserve"><value>Refuser la modification proposée par l&apos;IA</value></data>
+  <data name="ContractDetail.ApiKeyWarning" xml:space="preserve"><value>Configurez votre clé API OpenAI dans Paramètres pour utiliser la modification par IA.</value></data>
+  <data name="ContractDetail.GoToSettings" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
+  <data name="ContractDetail.ChatAutomation" xml:space="preserve"><value>Instruction pour l&apos;assistant IA</value></data>
+  <data name="ContractDetail.ChatHelp" xml:space="preserve"><value>Décrivez la modification souhaitée. Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne.</value></data>
+  <data name="ContractDetail.Send" xml:space="preserve"><value>Envoyer</value></data>
+  <data name="ContractDetail.SendAutomation" xml:space="preserve"><value>Envoyer l&apos;instruction à l&apos;assistant IA</value></data>
+  <data name="ContractDetail.BackToContracts" xml:space="preserve"><value>Retour aux contrats</value></data>
+  <data name="ContractDetail.BackAutomation" xml:space="preserve"><value>Retour à la liste des contrats</value></data>
+  <data name="ContractDetail.ErrorInvalidSelection" xml:space="preserve"><value>Impossible d&apos;ouvrir ce contrat. Sélectionnez-le à nouveau dans la liste des contrats.</value></data>
+  <data name="ContractDetail.ErrorOpen" xml:space="preserve"><value>Impossible d&apos;ouvrir ce contrat. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorMissing" xml:space="preserve"><value>Ce contrat n&apos;existe plus. Il a peut-être été supprimé.</value></data>
+  <data name="ContractDetail.ErrorLoad" xml:space="preserve"><value>Impossible de charger ce contrat. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorTypeUnavailable" xml:space="preserve"><value>Ce type de contrat n&apos;est plus disponible pour la modification.</value></data>
+  <data name="ContractDetail.ErrorSelectClause" xml:space="preserve"><value>Sélectionnez au moins une clause avant de régénérer.</value></data>
+  <data name="ContractDetail.RegeneratedWithPlaceholders" xml:space="preserve"><value>Le contrat a été régénéré, mais certains champs n&apos;ont pas pu être remplis et restent sous la forme {{...}}. Utilisez l&apos;assistant pour les compléter.</value></data>
+  <data name="ContractDetail.Regenerated" xml:space="preserve"><value>Vos modifications ont été enregistrées et le contrat a été régénéré.</value></data>
+  <data name="ContractDetail.ErrorRegenerateRejected" xml:space="preserve"><value>Impossible de régénérer le contrat avec les paramètres actuels.</value></data>
+  <data name="ContractDetail.ErrorRegenerate" xml:space="preserve"><value>Impossible de régénérer le contrat. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorDuplicateMissing" xml:space="preserve"><value>Impossible de dupliquer ce contrat, car il n&apos;existe plus.</value></data>
+  <data name="ContractDetail.ErrorDuplicate" xml:space="preserve"><value>Impossible de dupliquer le contrat. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeChat" xml:space="preserve"><value>Générez le contrat avant de demander des modifications.</value></data>
+  <data name="ContractDetail.AiInstructionNotSent" xml:space="preserve"><value>L&apos;instruction n&apos;a pas été envoyée. Les modifications par IA partagent le texte du contrat avec OpenAI.</value></data>
+  <data name="ContractDetail.ReviewProposedEdit" xml:space="preserve"><value>Examinez la modification proposée ci-dessous, puis acceptez-la ou refusez-la.</value></data>
+  <data name="ContractDetail.ErrorChatRejected" xml:space="preserve"><value>L&apos;assistant n&apos;a pas pu préparer cette modification. Vérifiez vos paramètres IA et réessayez.</value></data>
+  <data name="ContractDetail.ErrorChat" xml:space="preserve"><value>L&apos;assistant n&apos;a pas pu appliquer la modification. Réessayez.</value></data>
+  <data name="ContractDetail.AiEditAppliedWithPlaceholders" xml:space="preserve"><value>La modification a été appliquée. Certains champs {{...}} restent à remplir ; demandez à l&apos;assistant de les compléter.</value></data>
+  <data name="ContractDetail.AiEditApplied" xml:space="preserve"><value>La modification a été appliquée. Le texte précédent est conservé dans l&apos;historique des versions.</value></data>
+  <data name="ContractDetail.ErrorAiEditRejected" xml:space="preserve"><value>Impossible d&apos;appliquer la modification proposée à l&apos;état actuel du contrat.</value></data>
+  <data name="ContractDetail.ErrorAiEdit" xml:space="preserve"><value>Impossible d&apos;appliquer la modification de l&apos;assistant. Réessayez.</value></data>
+  <data name="ContractDetail.AiEditDiscarded" xml:space="preserve"><value>La modification proposée a été écartée. Rien n&apos;a changé.</value></data>
+  <data name="ContractDetail.VersionRestored" xml:space="preserve"><value>La version précédente a été restaurée. Le texte remplacé reste dans l&apos;historique des versions.</value></data>
+  <data name="ContractDetail.ErrorRestoreRejected" xml:space="preserve"><value>Impossible de restaurer cette version dans l&apos;état actuel du contrat.</value></data>
+  <data name="ContractDetail.ErrorRestore" xml:space="preserve"><value>Impossible de restaurer cette version. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorGenerateBeforeExport" xml:space="preserve"><value>Générez le contrat avant de l&apos;exporter.</value></data>
+  <data name="ContractDetail.ExportDialogTitle" xml:space="preserve"><value>Exporter le contrat en {0}</value></data>
+  <data name="ContractDetail.ExportDialogFilter" xml:space="preserve"><value>Document {0} (*.{1})|*.{1}</value></data>
+  <data name="ContractDetail.ExportedTo" xml:space="preserve"><value>Exporté vers {0}</value></data>
+  <data name="ContractDetail.ExportOpenPrompt" xml:space="preserve"><value>Le document a été exporté. Voulez-vous l&apos;ouvrir maintenant ?</value></data>
+  <data name="ContractDetail.ExportComplete" xml:space="preserve"><value>Exportation terminée</value></data>
+  <data name="ContractDetail.ErrorExportRejected" xml:space="preserve"><value>Impossible de terminer l&apos;exportation avec les paramètres actuels.</value></data>
+  <data name="ContractDetail.ErrorExport" xml:space="preserve"><value>Impossible d&apos;exporter le contrat en {0}. Réessayez.</value></data>
+  <data name="ContractDetail.ErrorLoadVersions" xml:space="preserve"><value>Impossible de charger l&apos;historique des versions.</value></data>
+  <data name="ContractDetail.FileAvailable" xml:space="preserve"><value>Fichier disponible</value></data>
+  <data name="ContractDetail.FileMissing" xml:space="preserve"><value>Fichier déplacé ou supprimé</value></data>
+  <data name="ContractDetail.FileInvalidPath" xml:space="preserve"><value>Chemin non valide</value></data>
+  <data name="ContractDetail.VersionDetails" xml:space="preserve"><value>{0} · {1}</value></data>
+  <data name="ContractDetail.VersionReasonAiEdit" xml:space="preserve"><value>Modification par IA</value></data>
+  <data name="ContractDetail.VersionReasonRegeneration" xml:space="preserve"><value>Régénération</value></data>
+  <data name="ContractDetail.VersionReasonBeforeRevert" xml:space="preserve"><value>Avant restauration</value></data>
+  <data name="ContractDetail.VersionReasonOther" xml:space="preserve"><value>Version précédente</value></data>
+  <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>Les modifications par IA transmettent le texte de ce contrat à OpenAI pour traitement.&#xA;&#xA;Continuez uniquement si vous acceptez d&apos;envoyer ce document à OpenAI — par exemple, s&apos;il ne contient aucune information privilégiée ou confidentielle que vous n&apos;êtes pas autorisé à partager avec un service tiers.&#xA;&#xA;Continuer la modification par IA ?</value></data>
+  <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La modification par IA envoie des données à OpenAI</value></data>
+  <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
 </root>

@@ -151,4 +151,21 @@
   <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Saltar la introducción</value></data>
   <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Volver</value></data>
   <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continuar la introducción</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>Tus acuerdos y tu actividad de redacción de un vistazo.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>Contratos creados</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>Tiempo estimado ahorrado</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>h</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>Contratos recientes</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>en total</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>Abrir el contrato {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>Aún no hay contratos.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>Crea tu primer acuerdo con el botón Nuevo contrato de arriba: solo tarda unos minutos.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>Cargando contratos…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>No pudimos cargar tus contratos. Inténtalo de nuevo.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>Contrato sin título</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>Borrador</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>Generado</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>Exportado</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;a las&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
 </root>

@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media;
 using DraftEngine.App.Services.Localization;
 using DraftEngine.App.ViewModels;
+using DraftEngine.Core.Enums;
+using DraftEngine.Core.Models;
 using Xunit;
 
 namespace DraftEngine.App.Tests;
@@ -198,6 +200,32 @@ public sealed class LocalizationTests : IDisposable
         Assert.Equal("Bienvenue dans DraftEngine", viewModel.StepTitle);
         Assert.Equal("Suivant", viewModel.PrimaryButtonText);
         Assert.Contains("contrat", viewModel.StepDescription);
+    }
+
+    [Fact]
+    public async Task ContractRow_LocalizesStatusTitleAndAutomation()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        var contract = new Contract
+        {
+            Title = string.Empty,
+            Status = ContractStatus.Exported,
+            UpdatedAt = new DateTime(2026, 1, 2, 15, 4, 0, DateTimeKind.Local)
+        };
+
+        var english = new ContractRowViewModel(contract, service);
+        Assert.Equal("Untitled contract", english.Title);
+        Assert.Equal("Exported", english.StatusText);
+        Assert.Equal("Open contract Untitled contract", english.OpenAutomationName);
+
+        await service.SetLanguageAsync("fr");
+        var french = new ContractRowViewModel(contract, service);
+
+        Assert.Equal("Contrat sans titre", french.Title);
+        Assert.Equal("Exporté", french.StatusText);
+        Assert.Equal("Ouvrir le contrat Contrat sans titre", french.OpenAutomationName);
+        Assert.Contains("à", french.UpdatedAtText);
     }
 
     private LocalizationService CreateService() =>

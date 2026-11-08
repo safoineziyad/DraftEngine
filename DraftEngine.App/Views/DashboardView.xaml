@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -70,13 +71,13 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-                    <TextBlock Text="Your agreements and drafting activity at a glance."
+                    <TextBlock Text="{loc:T Dashboard.Subtitle}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
                 </StackPanel>
                 <Button Grid.Column="1"
-                        Content="New Contract"
+                        Content="{loc:T Nav.NewContract}"
                         Style="{StaticResource PrimaryButtonStyle}"
-                        AutomationProperties.Name="Start a new contract"
+                        AutomationProperties.Name="{loc:T Nav.NewContractAutomation}"
                         Command="{Binding NewContractCommand}"
                         VerticalAlignment="Center"
                         MinWidth="140" />
@@ -86,7 +87,7 @@
             <UniformGrid Grid.Row="1" Columns="2" Margin="0,0,0,20">
                 <Border Style="{StaticResource Card}" Padding="20" Margin="0,0,8,0">
                     <StackPanel>
-                        <TextBlock Text="Contracts created" Style="{StaticResource SecondaryTextStyle}" />
+                        <TextBlock Text="{loc:T Dashboard.ContractsCreated}" Style="{StaticResource SecondaryTextStyle}" />
                         <TextBlock Text="{Binding ContractCount}"
                                    FontSize="28" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AccentBrush}"
@@ -95,12 +96,12 @@
                 </Border>
                 <Border Style="{StaticResource Card}" Padding="20" Margin="8,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="Estimated time saved" Style="{StaticResource SecondaryTextStyle}" />
+                        <TextBlock Text="{loc:T Dashboard.EstimatedTimeSaved}" Style="{StaticResource SecondaryTextStyle}" />
                         <TextBlock FontSize="28" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AccentBrush}"
                                    Margin="0,6,0,0">
                             <Run Text="{Binding HoursSavedEstimate, Mode=OneWay}" />
-                            <Run Text="h" FontSize="16" />
+                            <Run Text="{loc:T Common.HoursShort}" FontSize="16" />
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -124,12 +125,12 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="24,20,24,12">
-                        <TextBlock Text="Recent contracts" FontSize="15" FontWeight="SemiBold"
+                        <TextBlock Text="{loc:T Dashboard.RecentContracts}" FontSize="15" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Style="{StaticResource SecondaryTextStyle}"
                                    HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Run Text="{Binding ContractCount, Mode=OneWay}" />
-                            <Run Text="total" />
+                            <Run Text="{loc:T Dashboard.Total}" />
                         </TextBlock>
                     </Grid>
 
@@ -143,7 +144,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Button Style="{StaticResource ContractRowStyle}"
-                                        AutomationProperties.Name="{Binding Title, StringFormat=Open contract {0}}"
+                                        AutomationProperties.Name="{Binding OpenAutomationName}"
                                         Command="{Binding DataContext.OpenContractCommand,
                                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
@@ -185,7 +186,7 @@
                                         <TextBlock Grid.Column="2" Text="{Binding UpdatedAtText}"
                                                    Style="{StaticResource SecondaryTextStyle}"
                                                    VerticalAlignment="Center" Margin="0,0,12,0" />
-                                        <TextBlock Grid.Column="3" Text="&#x203A;"
+                                        <TextBlock Grid.Column="3" Text="{loc:T Common.ChevronRight}"
                                                    FontSize="16"
                                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                                    VerticalAlignment="Center" />
@@ -198,15 +199,15 @@
                     <!-- Empty state -->
                     <StackPanel Grid.Row="2" Margin="24,24,24,28"
                                 Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="No contracts yet."
+                        <TextBlock Text="{loc:T Dashboard.NoContracts}"
                                    FontSize="15" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Create your first agreement with the New Contract button above — it only takes a few minutes."
+                        <TextBlock Text="{loc:T Dashboard.EmptyStateDescription}"
                                    Style="{StaticResource SecondaryTextStyle}"
                                    Margin="0,4,0,14" TextWrapping="Wrap" />
-                        <Button Content="New Contract"
+                        <Button Content="{loc:T Nav.NewContract}"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                AutomationProperties.Name="Start a new contract"
+                                AutomationProperties.Name="{loc:T Nav.NewContractAutomation}"
                                 Command="{Binding NewContractCommand}"
                                 HorizontalAlignment="Left"
                                 MinWidth="140" />
@@ -214,7 +215,7 @@
 
                     <!-- Loading -->
                     <TextBlock Grid.Row="2" Margin="24,20"
-                               Text="Loading contracts…"
+                               Text="{loc:T Dashboard.Loading}"
                                Style="{StaticResource SecondaryTextStyle}"
                                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
                 </Grid>

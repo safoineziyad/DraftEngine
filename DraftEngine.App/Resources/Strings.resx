@@ -151,4 +151,21 @@
   <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Skip onboarding</value></data>
   <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Go back</value></data>
   <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continue onboarding</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>Your agreements and drafting activity at a glance.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>Contracts created</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>Estimated time saved</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>h</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>Recent contracts</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>total</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>Open contract {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>No contracts yet.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>Create your first agreement with the New Contract button above — it only takes a few minutes.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>Loading contracts…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>We couldn&apos;t load your contracts. Please try again.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>Untitled contract</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>Draft</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>Generated</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>Exported</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>MMM d, yyyy &apos;at&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
 </root>

@@ -151,4 +151,21 @@
   <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>تخطي التعريف</value></data>
   <data name="Onboarding.BackAutomation" xml:space="preserve"><value>الرجوع</value></data>
   <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>متابعة التعريف</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>اتفاقياتك ونشاط الصياغة الخاص بك في لمحة.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>العقود المُنشأة</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>الوقت المقدَّر الذي وفّرته</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>س</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>العقود الأخيرة</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>الإجمالي</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>فتح العقد {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>لا توجد عقود بعد.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>أنشئ اتفاقيتك الأولى باستخدام زر «عقد جديد» أعلاه — لا يستغرق الأمر سوى بضع دقائق.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>جارٍ تحميل العقود…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>تعذّر تحميل عقودك. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>عقد بلا عنوان</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>مسودة</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>مُنشأ</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>مُصدَّر</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;الساعة&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
 </root>

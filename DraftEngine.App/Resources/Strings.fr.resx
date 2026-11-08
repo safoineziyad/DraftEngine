@@ -151,4 +151,21 @@
   <data name="Onboarding.SkipAutomation" xml:space="preserve"><value>Passer l&apos;accueil</value></data>
   <data name="Onboarding.BackAutomation" xml:space="preserve"><value>Revenir en arrière</value></data>
   <data name="Onboarding.ContinueAutomation" xml:space="preserve"><value>Continuer l&apos;accueil</value></data>
+  <data name="Dashboard.Subtitle" xml:space="preserve"><value>Vos accords et votre activité de rédaction en un coup d&apos;œil.</value></data>
+  <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>Contrats créés</value></data>
+  <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>Temps estimé gagné</value></data>
+  <data name="Common.HoursShort" xml:space="preserve"><value>h</value></data>
+  <data name="Dashboard.RecentContracts" xml:space="preserve"><value>Contrats récents</value></data>
+  <data name="Dashboard.Total" xml:space="preserve"><value>au total</value></data>
+  <data name="Dashboard.OpenContractAutomation" xml:space="preserve"><value>Ouvrir le contrat {0}</value></data>
+  <data name="Dashboard.NoContracts" xml:space="preserve"><value>Aucun contrat pour l&apos;instant.</value></data>
+  <data name="Dashboard.EmptyStateDescription" xml:space="preserve"><value>Créez votre premier accord avec le bouton Nouveau contrat ci-dessus — cela ne prend que quelques minutes.</value></data>
+  <data name="Dashboard.Loading" xml:space="preserve"><value>Chargement des contrats…</value></data>
+  <data name="Dashboard.ErrorLoad" xml:space="preserve"><value>Nous n&apos;avons pas pu charger vos contrats. Veuillez réessayer.</value></data>
+  <data name="Contract.Untitled" xml:space="preserve"><value>Contrat sans titre</value></data>
+  <data name="Status.Draft" xml:space="preserve"><value>Brouillon</value></data>
+  <data name="Status.Generated" xml:space="preserve"><value>Généré</value></data>
+  <data name="Status.Exported" xml:space="preserve"><value>Exporté</value></data>
+  <data name="Common.DateTimeFormat" xml:space="preserve"><value>d MMM yyyy &apos;à&apos; HH:mm</value></data>
+  <data name="Common.ChevronRight" xml:space="preserve"><value>&#x203A;</value></data>
 </root>

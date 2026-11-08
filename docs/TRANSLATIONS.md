@@ -10,18 +10,18 @@ native speaker or a lawyer.
 
 | Language | File | Keys | Status |
 |---|---|---|---|
-| English | `DraftEngine.App/Resources/Strings.resx` | 147 | Source / reviewed by authors |
-| French | `DraftEngine.App/Resources/Strings.fr.resx` | 147 | **Machine-drafted, needs native review** |
-| Arabic | `DraftEngine.App/Resources/Strings.ar.resx` | 147 | **Machine-drafted, needs native review** — also needs RTL layout review |
-| Spanish | `DraftEngine.App/Resources/Strings.es.resx` | 147 | **Machine-drafted, needs native review** |
+| English | `DraftEngine.App/Resources/Strings.resx` | 164 | Source / reviewed by authors |
+| French | `DraftEngine.App/Resources/Strings.fr.resx` | 164 | **Machine-drafted, needs native review** |
+| Arabic | `DraftEngine.App/Resources/Strings.ar.resx` | 164 | **Machine-drafted, needs native review** — also needs RTL layout review |
+| Spanish | `DraftEngine.App/Resources/Strings.es.resx` | 164 | **Machine-drafted, needs native review** |
 
 Parity is enforced by `DraftEngine.App.Tests/LocalizationResourceTests` (same keys,
 no empty values, every `{loc:T}` key present in all four files). Parity does not mean
 a translation is correct; it only means no key is missing.
 
-Translation scope so far: the global window chrome/sidebar, the Settings screen and
-the onboarding dialog. Remaining screens are tracked by `PendingMigration` in the
-same test file and in `docs/PROGRESS.md`.
+Translation scope so far: the global window chrome/sidebar, the Settings screen, the
+onboarding dialog and the Dashboard. Remaining screens are tracked by
+`PendingMigration` in the same test file and in `docs/PROGRESS.md`.
 
 ## Review process
 

@@ -8,7 +8,7 @@
         Width="720" Height="520"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
         FontFamily="{StaticResource UiFontFamily}"
         FontSize="13">
     <Window.Resources>
@@ -26,8 +26,8 @@
                              Minimum="0"
                              Maximum="{Binding StepCount}"
                              Value="{Binding StepIndex, Mode=OneWay}"
-                             Foreground="{StaticResource AccentBrush}"
-                             Background="{StaticResource PanelBrush}"
+                             Foreground="{DynamicResource AccentBrush}"
+                             Background="{DynamicResource PanelBrush}"
                              BorderThickness="0" />
             </StackPanel>
 
@@ -51,13 +51,13 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Border Width="8" Height="8" CornerRadius="4"
-                                        Background="{StaticResource AccentBrush}"
+                                        Background="{DynamicResource AccentBrush}"
                                         VerticalAlignment="Top"
                                         Margin="0,6,0,0" />
                                 <TextBlock Grid.Column="1"
                                            Text="{Binding}"
                                            TextWrapping="Wrap"
-                                           Foreground="{StaticResource TextPrimaryBrush}" />
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

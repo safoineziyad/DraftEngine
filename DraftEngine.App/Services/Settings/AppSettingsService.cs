@@ -76,6 +76,8 @@ public sealed class AppSettingsService : IAppSettingsService
             OpenAiBaseUrl = string.IsNullOrWhiteSpace(settings.OpenAiBaseUrl) ? null : settings.OpenAiBaseUrl,
             UseCustomOpenAiEndpoint = settings.UseCustomOpenAiEndpoint,
             HidePartyNamesFromAi = settings.HidePartyNamesFromAi,
+            Language = settings.Language,
+            Theme = settings.Theme,
         };
 
         var json = JsonSerializer.Serialize(stored, JsonOptions);
@@ -146,6 +148,8 @@ public sealed class AppSettingsService : IAppSettingsService
                 OpenAiBaseUrl = string.IsNullOrWhiteSpace(stored.OpenAiBaseUrl) ? null : stored.OpenAiBaseUrl,
                 UseCustomOpenAiEndpoint = stored.UseCustomOpenAiEndpoint,
                 HidePartyNamesFromAi = stored.HidePartyNamesFromAi,
+                Language = string.IsNullOrWhiteSpace(stored.Language) ? "system" : stored.Language,
+                Theme = string.IsNullOrWhiteSpace(stored.Theme) ? "System" : stored.Theme,
             };
         }
         catch (Exception ex)
@@ -168,5 +172,7 @@ public sealed class AppSettingsService : IAppSettingsService
         public string? OpenAiBaseUrl { get; set; }
         public bool UseCustomOpenAiEndpoint { get; set; }
         public bool HidePartyNamesFromAi { get; set; }
+        public string Language { get; set; } = "system";
+        public string Theme { get; set; } = "System";
     }
 }

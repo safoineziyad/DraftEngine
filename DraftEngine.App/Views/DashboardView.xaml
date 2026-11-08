@@ -13,11 +13,11 @@
         <Style x:Key="StatusBadgeStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="10,3" />
-            <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsGenerated}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource AccentLightBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsExported}" Value="True">
                     <Setter Property="Background" Value="{StaticResource SuccessLightBrush}" />
@@ -41,7 +41,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Row" Property="Background" Value="{StaticResource PanelBrush}" />
+                                <Setter TargetName="Row" Property="Background" Value="{DynamicResource PanelBrush}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Row" Property="Opacity" Value="0.5" />
@@ -89,7 +89,7 @@
                         <TextBlock Text="Contracts created" Style="{StaticResource SecondaryTextStyle}" />
                         <TextBlock Text="{Binding ContractCount}"
                                    FontSize="28" FontWeight="SemiBold"
-                                   Foreground="{StaticResource AccentBrush}"
+                                   Foreground="{DynamicResource AccentBrush}"
                                    Margin="0,6,0,0" />
                     </StackPanel>
                 </Border>
@@ -97,7 +97,7 @@
                     <StackPanel>
                         <TextBlock Text="Estimated time saved" Style="{StaticResource SecondaryTextStyle}" />
                         <TextBlock FontSize="28" FontWeight="SemiBold"
-                                   Foreground="{StaticResource AccentBrush}"
+                                   Foreground="{DynamicResource AccentBrush}"
                                    Margin="0,6,0,0">
                             <Run Text="{Binding HoursSavedEstimate, Mode=OneWay}" />
                             <Run Text="h" FontSize="16" />
@@ -108,7 +108,7 @@
 
             <!-- Error banner: shown when loading fails, above the recent contracts area -->
             <Border Grid.Row="2" Margin="0,0,0,16" Padding="12"
-                    Background="{StaticResource DangerBrush}" CornerRadius="6"
+                    Background="{DynamicResource DangerBrush}" CornerRadius="6"
                     Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
                            TextWrapping="Wrap" VerticalAlignment="Center" />
@@ -125,7 +125,7 @@
 
                     <Grid Grid.Row="0" Margin="24,20,24,12">
                         <TextBlock Text="Recent contracts" FontSize="15" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Style="{StaticResource SecondaryTextStyle}"
                                    HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Run Text="{Binding ContractCount, Mode=OneWay}" />
@@ -133,7 +133,7 @@
                         </TextBlock>
                     </Grid>
 
-                    <Border Grid.Row="1" Height="1" Background="{StaticResource BorderSubtleBrush}"
+                    <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtleBrush}"
                             Margin="24,0" />
 
                     <!-- Contract rows -->
@@ -157,7 +157,7 @@
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Title}"
                                                        FontSize="14" FontWeight="SemiBold"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
                                                        TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{Binding ContractType}"
                                                        Style="{StaticResource SecondaryTextStyle}"
@@ -168,14 +168,14 @@
                                             <TextBlock Text="{Binding StatusText}" FontSize="12">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                         <Setter Property="FontWeight" Value="Medium" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsGenerated}" Value="True">
-                                                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding IsExported}" Value="True">
-                                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -187,7 +187,7 @@
                                                    VerticalAlignment="Center" Margin="0,0,12,0" />
                                         <TextBlock Grid.Column="3" Text="&#x203A;"
                                                    FontSize="16"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
                                                    VerticalAlignment="Center" />
                                     </Grid>
                                 </Button>
@@ -200,7 +200,7 @@
                                 Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="No contracts yet."
                                    FontSize="15" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock Text="Create your first agreement with the New Contract button above — it only takes a few minutes."
                                    Style="{StaticResource SecondaryTextStyle}"
                                    Margin="0,4,0,14" TextWrapping="Wrap" />

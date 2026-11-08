@@ -33,8 +33,8 @@
                 </Grid.RowDefinitions>
 
                 <!-- Toolbar -->
-                <Border Grid.Row="0" Padding="16,12" BorderBrush="{StaticResource BorderSubtleBrush}"
-                        BorderThickness="0,0,0,1" Background="{StaticResource PanelBrush}">
+                <Border Grid.Row="0" Padding="16,12" BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="0,0,0,1" Background="{DynamicResource PanelBrush}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -72,7 +72,7 @@
                                 CommandParameter="{Binding SelectedClause}"
                                 IsEnabled="{Binding CanDuplicateSelected}" />
                         <Button Grid.Column="4" Content="Archive" Margin="8,0,0,0" Padding="12,0"
-                                Foreground="{StaticResource DangerBrush}"
+                                Foreground="{DynamicResource DangerBrush}"
                                 AutomationProperties.Name="Archive the selected clause"
                                 Command="{Binding ArchiveClauseCommand}"
                                 CommandParameter="{Binding SelectedClause}"
@@ -88,7 +88,7 @@
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="16,10" />
                             <Setter Property="BorderThickness" Value="0,0,0,1" />
-                            <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         </Style>
                     </ListView.ItemContainerStyle>
@@ -173,7 +173,7 @@
                           Content="Optional clause" AutomationProperties.Name="Mark clause as optional" />
 
                 <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Margin="0,0,0,8"
-                           Text="{Binding PlaceholderWarning}" Foreground="{StaticResource DangerBrush}"
+                           Text="{Binding PlaceholderWarning}" Foreground="{DynamicResource DangerBrush}"
                            TextWrapping="Wrap"
                            Visibility="{Binding HasPlaceholderWarning, Converter={StaticResource BoolToVis}}" />
 
@@ -193,7 +193,7 @@
 
         <!-- Error banner -->
         <StackPanel Grid.Row="3" Margin="16" Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
-            <Border Background="{StaticResource DangerBrush}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource DangerBrush}" CornerRadius="6" Padding="12">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
                                VerticalAlignment="Center" />

@@ -47,7 +47,7 @@
                           IsChecked="{Binding UseAiPolish}"
                           IsEnabled="{Binding CanEditContract}"
                           AutomationProperties.Name="Apply AI polish when regenerating"
-                          Foreground="{StaticResource TextPrimaryBrush}" />
+                          Foreground="{DynamicResource TextPrimaryBrush}" />
                 <Button Content="Export DOCX" Padding="14,0" Height="34" Margin="8,0,0,0"
                         AutomationProperties.Name="Export contract as DOCX"
                         Command="{Binding ExportDocxCommand}"
@@ -61,14 +61,14 @@
         </Grid>
 
         <!-- Error banner -->
-        <Border Grid.Row="1" Background="{StaticResource DangerBrush}" CornerRadius="6"
+        <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
             <TextBlock Text="{Binding ErrorMessage}" Foreground="White" TextWrapping="Wrap" />
         </Border>
 
         <!-- Success banner -->
-        <Border Grid.Row="2" Background="{StaticResource SuccessBrush}" CornerRadius="6"
+        <Border Grid.Row="2" Background="{DynamicResource SuccessBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
             <TextBlock Text="{Binding InfoMessage}" Foreground="White" TextWrapping="Wrap" />
@@ -306,13 +306,13 @@
                                         <Grid Margin="0,4">
                                             <Border CornerRadius="10" Padding="12,8" MaxWidth="280"
                                                     HorizontalAlignment="Left"
-                                                    Background="{StaticResource PanelBrush}">
+                                                    Background="{DynamicResource PanelBrush}">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                 <Setter Property="HorizontalAlignment" Value="Right" />
-                                                                <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+                                                                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -321,7 +321,7 @@
                                                     <TextBlock Text="{Binding Content}" TextWrapping="Wrap">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                         <Setter Property="Foreground" Value="White" />
@@ -333,7 +333,7 @@
                                                     <TextBlock Text="{Binding TimeLabel}" FontSize="10" Margin="0,4,0,0">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
-                                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
                                                                         <Setter Property="Foreground" Value="#DCE7FF" />
@@ -353,8 +353,8 @@
 
                     <!-- AI edit diff: Accept/Reject before anything is stored -->
                     <Border Grid.Row="2" Margin="0,8,0,8" Padding="10" CornerRadius="6"
-                            Background="{StaticResource PanelBrush}"
-                            BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1"
+                            Background="{DynamicResource PanelBrush}"
+                            BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="1"
                             Visibility="{Binding HasPendingAiEdit, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Text="Proposed AI edit" FontWeight="SemiBold" />
@@ -371,7 +371,7 @@
                                                            TextWrapping="Wrap" MaxWidth="310">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsAdded}" Value="True">
                                                                     <Setter Property="Foreground" Value="#1B5E20" />
@@ -434,7 +434,7 @@
                                 <Style TargetType="TextBox">
                                     <Style.Triggers>
                                         <Trigger Property="IsKeyboardFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>

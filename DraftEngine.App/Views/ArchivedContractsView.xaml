@@ -32,7 +32,7 @@
                     Command="{Binding LoadCommand}" VerticalAlignment="Center" />
         </Grid>
 
-        <Border Grid.Row="1" Background="{StaticResource DangerBrush}" CornerRadius="6"
+        <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
             <TextBlock Text="{Binding ErrorMessage}" Foreground="White" TextWrapping="Wrap" />
@@ -55,7 +55,7 @@
                         <ItemsControl ItemsSource="{Binding Contracts}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource BorderSubtleBrush}"
+                                    <Border BorderBrush="{DynamicResource BorderSubtleBrush}"
                                             BorderThickness="0,0,0,1" Padding="8">
                                         <Grid>
                                             <Grid.ColumnDefinitions>

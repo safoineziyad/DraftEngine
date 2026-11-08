@@ -50,7 +50,7 @@
                              AutomationProperties.Name="Search contracts by title or client" />
                     <TextBlock Text="Search by title or client…"
                                Margin="12,0,0,0" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                IsHitTestVisible="False">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -108,9 +108,9 @@
                     </Grid.RowDefinitions>
 
                     <!-- Header row -->
-                    <Border Grid.Row="0" BorderBrush="{StaticResource BorderSubtleBrush}"
+                    <Border Grid.Row="0" BorderBrush="{DynamicResource BorderSubtleBrush}"
                             BorderThickness="0,0,0,1"
-                            Background="{StaticResource PanelBrush}"
+                            Background="{DynamicResource PanelBrush}"
                             Padding="16,10">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -136,7 +136,7 @@
                     <ItemsControl Grid.Row="1" Margin="0,4,0,0" ItemsSource="{Binding Contracts}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Padding="16,10" BorderBrush="{StaticResource BorderSubtleBrush}"
+                                <Border Padding="16,10" BorderBrush="{DynamicResource BorderSubtleBrush}"
                                         BorderThickness="0,0,0,1">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -162,13 +162,13 @@
                                                 HorizontalAlignment="Left" VerticalAlignment="Center">
                                             <Border.Style>
                                                 <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="{StaticResource AccentLightBrush}" />
+                                                    <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Status}" Value="Generated">
                                                             <Setter Property="Background" Value="{StaticResource BadgeGeneratedBg}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Status}" Value="Exported">
-                                                            <Setter Property="Background" Value="{StaticResource SuccessBrush}" />
+                                                            <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -176,7 +176,7 @@
                                             <TextBlock Text="{Binding Status}" FontSize="12" FontWeight="SemiBold">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Status}" Value="Exported">
                                                                 <Setter Property="Foreground" Value="White" />
@@ -210,7 +210,7 @@
                                                     CommandParameter="{Binding}" />
                                             <Button Content="Delete" Padding="12,0" Height="30" FontSize="12"
                                                     Margin="6,0,0,0"
-                                                    Foreground="{StaticResource DangerBrush}"
+                                                    Foreground="{DynamicResource DangerBrush}"
                                                     AutomationProperties.Name="{Binding Title, StringFormat=Delete contract {0}}"
                                                     Command="{Binding DataContext.DeleteCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -234,7 +234,7 @@
                 <!-- Error banner -->
                 <StackPanel VerticalAlignment="Top" Margin="16"
                             Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
-                    <Border Background="{StaticResource DangerBrush}" CornerRadius="6" Padding="12">
+                    <Border Background="{DynamicResource DangerBrush}" CornerRadius="6" Padding="12">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
                                        VerticalAlignment="Center" />

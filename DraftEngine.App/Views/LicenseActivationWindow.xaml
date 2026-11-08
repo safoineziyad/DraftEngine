@@ -5,7 +5,7 @@
         Width="560" Height="320"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
         FontFamily="{StaticResource UiFontFamily}"
         FontSize="13">
     <Border Padding="28">
@@ -20,7 +20,7 @@
                      VerticalContentAlignment="Top" Padding="8"
                      AutomationProperties.Name="License key" />
 
-            <TextBlock x:Name="StatusText" Foreground="{StaticResource DangerBrush}"
+            <TextBlock x:Name="StatusText" Foreground="{DynamicResource DangerBrush}"
                        TextWrapping="Wrap" Margin="0,8,0,0" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">

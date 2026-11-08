@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>Tableau de bord</value></data>
+  <data name="Nav.NewContract" xml:space="preserve"><value>Nouveau contrat</value></data>
+  <data name="Nav.Contracts" xml:space="preserve"><value>Contrats</value></data>
+  <data name="Nav.Analyze" xml:space="preserve"><value>Analyser</value></data>
+  <data name="Nav.Settings" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Nav.ClauseManager" xml:space="preserve"><value>Gestion des clauses</value></data>
+  <data name="Nav.Archived" xml:space="preserve"><value>Contrats archivés</value></data>
+  <data name="Nav.About" xml:space="preserve"><value>À propos et aide</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>Suivant</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Retour</value></data>
+  <data name="Common.Skip" xml:space="preserve"><value>Ignorer</value></data>
+  <data name="Common.GetStarted" xml:space="preserve"><value>Commencer</value></data>
+  <data name="Common.Refresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="Settings.Title" xml:space="preserve"><value>Paramètres</value></data>
+  <data name="Settings.Appearance" xml:space="preserve"><value>Apparence et langue</value></data>
+  <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Les changements s'appliquent immédiatement. L'arabe bascule l'interface de droite à gauche.</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Langue</value></data>
+  <data name="Settings.Theme" xml:space="preserve"><value>Thème</value></data>
+  <data name="Theme.Light" xml:space="preserve"><value>Clair</value></data>
+  <data name="Theme.Dark" xml:space="preserve"><value>Sombre</value></data>
+  <data name="Theme.System" xml:space="preserve"><value>Suivre Windows</value></data>
+  <data name="Language.System" xml:space="preserve"><value>Système</value></data>
+  <data name="Analyze.Title" xml:space="preserve"><value>Analyser</value></data>
+  <data name="Analyze.Subtitle" xml:space="preserve"><value>Vérifiez un contrat par rapport à un guide. Les contrôles déterministes fonctionnent hors ligne ; la revue par IA est facultative et soumise au consentement.</value></data>
+  <data name="Analyze.Disclaimer" xml:space="preserve"><value>Ceci n'est pas un avis juridique. Une relecture par un avocat habilité est requise.</value></data>
+  <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choisir un fichier...</value></data>
+</root>

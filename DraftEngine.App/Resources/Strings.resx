@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav.Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav.NewContract" xml:space="preserve"><value>New Contract</value></data>
+  <data name="Nav.Contracts" xml:space="preserve"><value>Contracts</value></data>
+  <data name="Nav.Analyze" xml:space="preserve"><value>Analyze</value></data>
+  <data name="Nav.Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Nav.ClauseManager" xml:space="preserve"><value>Clause Manager</value></data>
+  <data name="Nav.Archived" xml:space="preserve"><value>Archived Contracts</value></data>
+  <data name="Nav.About" xml:space="preserve"><value>About &amp; Help</value></data>
+  <data name="Common.Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Common.Skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="Common.GetStarted" xml:space="preserve"><value>Get started</value></data>
+  <data name="Common.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Settings.Title" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings.Appearance" xml:space="preserve"><value>Appearance and language</value></data>
+  <data name="Settings.AppearanceDescription" xml:space="preserve"><value>Changes apply immediately. Arabic switches the interface to right-to-left.</value></data>
+  <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings.Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Theme.Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Theme.Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Theme.System" xml:space="preserve"><value>Follow Windows</value></data>
+  <data name="Language.System" xml:space="preserve"><value>System</value></data>
+  <data name="Analyze.Title" xml:space="preserve"><value>Analyze</value></data>
+  <data name="Analyze.Subtitle" xml:space="preserve"><value>Review a contract against a playbook. Deterministic checks work offline; AI review is optional and consent-gated.</value></data>
+  <data name="Analyze.Disclaimer" xml:space="preserve"><value>Not legal advice. Review by a licensed attorney required.</value></data>
+  <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choose file...</value></data>
+</root>

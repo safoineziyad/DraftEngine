@@ -20,7 +20,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="DraftEngine" FontWeight="SemiBold" FontSize="18"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding VersionText, StringFormat=Version {0}}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,12" />
                     <TextBlock Text="DraftEngine drafts contracts locally from templates. Generation works fully offline and never requires an AI key."
@@ -39,7 +39,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Diagnostics" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="Version, Windows and .NET only. No contract data, paths or identifiers."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,8" />
                     <TextBlock Text="{Binding DiagnosticsText}" Style="{StaticResource SecondaryTextStyle}"
@@ -53,7 +53,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Privacy summary" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="Contracts, intake answers, chat history, settings and the API key stay on this computer and are encrypted with your Windows user profile. There is no telemetry, no account and no background upload."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,6" />
                     <TextBlock Text="AI editing is optional. When you use it, the current contract text and your instruction are sent to the AI provider you configured. Enable 'Hide party names and addresses from AI' in Settings to replace real party details with tokens before sending."
@@ -64,7 +64,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Updates" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding UpdateStatus}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,10" />
                     <Button Content="Check for updates" Padding="12,0" Height="30"
@@ -79,7 +79,7 @@
                     Visibility="{Binding IsLicensingEnabled, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
                     <TextBlock Text="License" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding LicenseStatus}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,10" />
                     <TextBox Text="{Binding LicenseKey, UpdateSourceTrigger=PropertyChanged}"

@@ -42,4 +42,10 @@ public class AppSettings
 
     /// <summary>When true, replace party names and addresses with placeholders before sending to AI.</summary>
     public bool HidePartyNamesFromAi { get; set; }
+
+    /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
+    public string Language { get; set; } = "system";
+
+    /// <summary>Theme preference: System, Light or Dark.</summary>
+    public string Theme { get; set; } = "System";
 }

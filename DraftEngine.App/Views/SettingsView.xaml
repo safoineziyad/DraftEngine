@@ -22,7 +22,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="OpenAI" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="Contract data is encrypted with your Windows user profile. Do not reset your Windows password or copy the database to another Windows account — the data will be unreadable. If you plan to change Windows users, export all contracts to DOCX/PDF first."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
                     <TextBlock Text="How your data is handled: when you use AI features (chat edits and AI polish), the contract text, "
@@ -39,10 +39,10 @@
                     <TextBlock Text="{Binding ApiKeyStatusText}" Margin="0,0,0,6">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
-                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasApiKey}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -105,10 +105,10 @@
                         <TextBlock Text="{Binding TestStatusMessage}" TextWrapping="Wrap" Margin="8,0,0,0">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsTestSuccessful}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -116,8 +116,8 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <Separator Margin="0,20,0,16" Background="{StaticResource BorderSubtleBrush}"
-                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <Separator Margin="0,20,0,16" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
 
                     <!-- Model selection -->
                     <TextBlock Text="Model" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
@@ -134,7 +134,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Privacy and AI endpoint" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="Stays on this computer: contracts, intake answers, clause selections, chat history, settings and the API key (all encrypted with your Windows user profile). Sent to the AI provider only when you use an AI feature: the current contract text, your instruction, and the model name. No telemetry is collected."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
 
@@ -156,8 +156,8 @@
                              AutomationProperties.Name="Custom AI base URL"
                              ToolTip="Custom OpenAI-compatible base URL" />
 
-                    <Separator Margin="0,16,0,12" Background="{StaticResource BorderSubtleBrush}"
-                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <Separator Margin="0,16,0,12" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
 
                     <TextBlock Text="{Binding AiConsentGranted, StringFormat=AI data-sharing consent: {0}}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,6" />
@@ -173,7 +173,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Contract defaults" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="These values pre-fill the new contract form. You can still change them per contract."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,16" />
 
@@ -198,7 +198,7 @@
                             <TextBox Text="{Binding DefaultTermMonths, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                                      AutomationProperties.Name="Default contract term in months"
                                      ToolTip="Contract term in months (1–120)" />
-                            <TextBlock Text="{Binding TermMonthsError}" Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"
+                            <TextBlock Text="{Binding TermMonthsError}" Foreground="{DynamicResource DangerBrush}" Margin="0,4,0,0"
                                        TextWrapping="Wrap"
                                        Visibility="{Binding HasTermMonthsError, Converter={StaticResource BoolToVis}}" />
                             <TextBlock Text="Whole number of months, between 1 and 120."
@@ -212,7 +212,7 @@
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="Backup and data export" FontWeight="SemiBold" FontSize="15"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="A portable backup contains contracts, intake answers, clauses, versions, chat history and non-secret settings in one password-encrypted file (AES-256-GCM). It can be restored on another Windows PC. The password is never stored; if you lose it the backup cannot be opened. The OpenAI API key is not included."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,12" />
 
@@ -233,8 +233,8 @@
                                 IsEnabled="{Binding CanUseBackup}" />
                     </WrapPanel>
 
-                    <Separator Margin="0,16,0,12" Background="{StaticResource BorderSubtleBrush}"
-                               BorderBrush="{StaticResource BorderSubtleBrush}" />
+                    <Separator Margin="0,16,0,12" Background="{DynamicResource BorderSubtleBrush}"
+                               BorderBrush="{DynamicResource BorderSubtleBrush}" />
                     <TextBlock Text="Export my data" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
                     <TextBlock Text="A readable, UNENCRYPTED copy for your own records or another tool. It includes contract text and intake answers; store it somewhere protected. The API key is never included."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8" />
@@ -269,7 +269,7 @@
                     <!-- Unsaved changes indicator -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"
                                 Visibility="{Binding IsDirty, Converter={StaticResource BoolToVis}}">
-                        <Border Width="8" Height="8" CornerRadius="4" Background="{StaticResource AccentBrush}" />
+                        <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource AccentBrush}" />
                         <TextBlock Text="Unsaved changes" Style="{StaticResource SecondaryTextStyle}" Margin="8,0,0,0" />
                     </StackPanel>
 

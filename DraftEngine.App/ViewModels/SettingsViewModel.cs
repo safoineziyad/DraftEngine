@@ -27,6 +27,15 @@ public partial class SettingsViewModel : ObservableObject
     private bool _isLoading;
     private bool _isApplyingLanguage;
 
+    // Status text is stored as a resource key (+ format args) so it can be re-rendered
+    // when the user switches language without repeating the action.
+    private string? _testStatusKey;
+    private object[] _testStatusArgs = Array.Empty<object>();
+    private string? _saveStatusKey;
+    private object[] _saveStatusArgs = Array.Empty<object>();
+    private string? _backupStatusKey;
+    private object[] _backupStatusArgs = Array.Empty<object>();
+
     /// <summary>The page title shown in the view header (recomputed on language change).</summary>
     public string PageTitle => _localization.GetString("Settings.PageTitle");
 
@@ -107,7 +116,7 @@ public partial class SettingsViewModel : ObservableObject
 
     /// <summary>API key status text for UI display.</summary>
     [ObservableProperty]
-    private string apiKeyStatusText = "No API key configured";
+    private string apiKeyStatusText = string.Empty;
 
     /// <summary>True if an API key is configured.</summary>
     [ObservableProperty]
@@ -118,7 +127,12 @@ public partial class SettingsViewModel : ObservableObject
     private string? termMonthsError;
 
     /// <summary>The Show/Hide toggle label for the API key field.</summary>
-    public string ShowHideKeyText => IsKeyVisible ? "Hide" : "Show";
+    public string ShowHideKeyText =>
+        _localization.GetString(IsKeyVisible ? "Settings.Hide" : "Settings.Show");
+
+    /// <summary>Localized consent status line shown above the revoke button.</summary>
+    public string AiConsentStatusText => _localization.GetString(
+        AiConsentGranted ? "Settings.AiConsentGranted" : "Settings.AiConsentNotGranted");
 
     /// <summary>True when a connection test status message should be shown.</summary>
     public bool HasTestStatus => TestStatusMessage is not null;
@@ -177,14 +191,14 @@ public partial class SettingsViewModel : ObservableObject
 
         if (BackupPassword.Length < 8)
         {
-            BackupStatusMessage = "Choose a backup password of at least 8 characters.";
+            SetBackupStatus("Settings.ErrorBackupPasswordShort");
             return;
         }
 
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
-            Title = "Export encrypted backup",
-            Filter = "DraftEngine backup (*.debk)|*.debk",
+            Title = Text("Settings.ExportBackupTitle"),
+            Filter = Text("Settings.BackupFilter"),
             DefaultExt = ".debk",
             FileName = $"DraftEngine-backup-{DateTime.Now:yyyyMMdd}.debk"
         };
@@ -198,12 +212,12 @@ public partial class SettingsViewModel : ObservableObject
         {
             await using var stream = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
             var summary = await _backupService.ExportEncryptedAsync(stream, BackupPassword, includeApiKey: false);
-            BackupStatusMessage = $"Encrypted backup saved: {summary.Contracts} contracts, {summary.Clauses} clauses. Keep the password safe; it cannot be recovered.";
+            SetBackupStatus("Settings.BackupSaved", summary.Contracts, summary.Clauses);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Portable backup export failed.");
-            BackupStatusMessage = "The backup could not be written. Check the destination and try again.";
+            SetBackupStatus("Settings.ErrorBackupWrite");
         }
         finally
         {
@@ -222,8 +236,8 @@ public partial class SettingsViewModel : ObservableObject
 
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "Restore encrypted backup",
-            Filter = "DraftEngine backup (*.debk)|*.debk|All files (*.*)|*.*",
+            Title = Text("Settings.RestoreBackupTitle"),
+            Filter = Text("Settings.BackupOpenFilter"),
             CheckFileExists = true
         };
         if (dialog.ShowDialog() != true)
@@ -232,8 +246,8 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         var confirmed = MessageBox.Show(
-            "Restoring replaces all current contracts, clauses, intake answers, chat history and versions on this computer. A pre-import backup is written first. Continue?",
-            "Restore backup",
+            Text("Settings.RestoreConfirm"),
+            Text("Settings.RestoreConfirmTitle"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning,
             MessageBoxResult.No);
@@ -244,7 +258,7 @@ public partial class SettingsViewModel : ObservableObject
 
         if (BackupPassword.Length < 8)
         {
-            BackupStatusMessage = "Enter the password used when the backup was created.";
+            SetBackupStatus("Settings.ErrorRestorePassword");
             return;
         }
 
@@ -253,20 +267,21 @@ public partial class SettingsViewModel : ObservableObject
         {
             await using var stream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             var summary = await _backupService.ImportEncryptedAsync(stream, BackupPassword, confirmReplace: true);
-            BackupStatusMessage = $"Backup restored: {summary.Contracts} contracts, {summary.Clauses} clauses. Restart the app if a page still shows old data.";
+            SetBackupStatus("Settings.RestoreDone", summary.Contracts, summary.Clauses);
         }
         catch (BackupPasswordException)
         {
-            BackupStatusMessage = "Wrong password, or the backup file was modified. Nothing was changed.";
+            SetBackupStatus("Settings.ErrorWrongPassword");
         }
         catch (BackupFormatException ex)
         {
-            BackupStatusMessage = ex.Message;
+            Log.Error(ex, "Portable backup format was not recognized.");
+            SetBackupStatus("Settings.ErrorRestore");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Portable backup import failed.");
-            BackupStatusMessage = "The backup could not be restored. Nothing was changed.";
+            SetBackupStatus("Settings.ErrorRestore");
         }
         finally
         {
@@ -284,18 +299,16 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         var isCsv = string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase);
-        var warning = isCsv
-            ? "This CSV export is NOT encrypted and includes contract titles, parties and intake answers. Store it somewhere protected. Continue?"
-            : "This JSON export is NOT encrypted and includes contract text, intake answers and chat history. Store it somewhere protected. Continue?";
-        if (MessageBox.Show(warning, "Export my data", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
+        var warning = Text(isCsv ? "Settings.CsvWarning" : "Settings.JsonWarning");
+        if (MessageBox.Show(warning, Text("Settings.ExportDataTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
         {
             return;
         }
 
         var dialog = new Microsoft.Win32.SaveFileDialog
         {
-            Title = "Export my data",
-            Filter = isCsv ? "CSV (*.csv)|*.csv" : "JSON (*.json)|*.json",
+            Title = Text("Settings.ExportDataTitle"),
+            Filter = Text(isCsv ? "Settings.CsvFilter" : "Settings.JsonFilter"),
             DefaultExt = isCsv ? ".csv" : ".json",
             FileName = $"DraftEngine-data-{DateTime.Now:yyyyMMdd}.{(isCsv ? "csv" : "json")}"
         };
@@ -317,12 +330,12 @@ public partial class SettingsViewModel : ObservableObject
                 await _backupService.WriteJsonAsync(stream, includeApiKey: false);
             }
 
-            BackupStatusMessage = "Data exported. The file is unencrypted; protect it or delete it when done.";
+            SetBackupStatus("Settings.ExportDone");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Plain data export failed.");
-            BackupStatusMessage = "The export could not be written.";
+            SetBackupStatus("Settings.ErrorExport");
         }
         finally
         {
@@ -344,12 +357,12 @@ public partial class SettingsViewModel : ObservableObject
             current.AiDataConsentAccepted = false;
             await _settingsService.SaveAsync(current);
             AiConsentGranted = false;
-            SaveStatusMessage = "AI consent revoked. AI editing is now blocked.";
+            SetSaveStatus("Settings.ConsentRevoked");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to revoke AI consent.");
-            SaveStatusMessage = "We couldn't update the AI consent setting. Please try again.";
+            SetSaveStatus("Settings.ErrorConsentRevoke");
         }
     }
 
@@ -366,36 +379,45 @@ public partial class SettingsViewModel : ObservableObject
         if (key.Length == 0)
         {
             IsTestSuccessful = false;
-            TestStatusMessage = "Please paste your OpenAI API key first.";
+            SetTestStatus("Settings.ErrorApiKeyMissing");
             return;
         }
 
         IsTestingConnection = true;
-        TestStatusMessage = "Connecting…";
+        SetTestStatus("Settings.Connecting");
         try
         {
             var aiService = _settingsService.CreateAiService(key, SelectedModel);
             if (aiService is null)
             {
                 IsTestSuccessful = false;
-                TestStatusMessage = "Please paste your OpenAI API key first.";
+                SetTestStatus("Settings.ErrorApiKeyMissing");
                 return;
             }
 
             var result = await aiService.TestConnectionDetailedAsync();
             IsTestSuccessful = result.Success;
-            TestStatusMessage = result.Success
-                ? "Connected to OpenAI successfully."
-                : string.IsNullOrWhiteSpace(result.Message)
-                    ? "Could not connect to OpenAI. Please try again."
-                    : result.Message;
+            if (result.Success)
+            {
+                SetTestStatus("Settings.Connected");
+            }
+            else if (string.IsNullOrWhiteSpace(result.Message))
+            {
+                SetTestStatus("Settings.ErrorConnect");
+            }
+            else
+            {
+                // Provider/service message is shown as-is (not translated content).
+                _testStatusKey = null;
+                TestStatusMessage = result.Message;
+            }
         }
         catch (Exception ex)
         {
             // Log the detail (never the key); show only a friendly sentence.
             Log.Error(ex, "OpenAI connection test failed.");
             IsTestSuccessful = false;
-            TestStatusMessage = "Something went wrong while testing the connection. Please try again.";
+            SetTestStatus("Settings.ErrorConnectionTest");
         }
         finally
         {
@@ -410,7 +432,7 @@ public partial class SettingsViewModel : ObservableObject
         var termMonths = DefaultTermMonths;
         if (termMonths < 1 || termMonths > 120)
         {
-            SaveStatusMessage = "Term must be between 1 and 120 months.";
+            SetSaveStatus("Settings.ErrorTermRange");
             return;
         }
 
@@ -437,12 +459,12 @@ public partial class SettingsViewModel : ObservableObject
                 _redactionService.IsEnabled = HidePartyNamesFromAi;
             }
             IsDirty = false;
-            SaveStatusMessage = "Settings saved.";
+            SetSaveStatus("Settings.Saved");
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to save settings.");
-            SaveStatusMessage = "We couldn't save your settings. Please try again.";
+            SetSaveStatus("Settings.ErrorSave");
         }
         finally
         {
@@ -453,9 +475,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnOpenAiApiKeyChanged(string value)
     {
         MarkDirty();
-        var hasKey = !string.IsNullOrWhiteSpace(value);
-        HasApiKey = hasKey;
-        ApiKeyStatusText = hasKey ? "API key configured" : "No API key configured";
+        UpdateApiKeyStatus(value);
     }
 
     partial void OnSelectedModelChanged(string value) => MarkDirty();
@@ -476,6 +496,9 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnIsKeyVisibleChanged(bool value) => OnPropertyChanged(nameof(ShowHideKeyText));
 
+    partial void OnAiConsentGrantedChanged(bool value) =>
+        OnPropertyChanged(nameof(AiConsentStatusText));
+
     partial void OnSelectedLanguageChanged(string value)
     {
         if (_isApplyingLanguage || string.IsNullOrWhiteSpace(value))
@@ -492,6 +515,27 @@ public partial class SettingsViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(PageTitle));
         OnPropertyChanged(nameof(SupportedLanguages));
+        OnPropertyChanged(nameof(AiConsentStatusText));
+        OnPropertyChanged(nameof(ShowHideKeyText));
+
+        // Re-render values composed from resource keys in the new language.
+        UpdateApiKeyStatus(OpenAiApiKey);
+        ValidateTermMonths(DefaultTermMonths);
+
+        if (_testStatusKey is not null)
+        {
+            TestStatusMessage = Text(_testStatusKey, _testStatusArgs);
+        }
+
+        if (_saveStatusKey is not null)
+        {
+            SaveStatusMessage = Text(_saveStatusKey, _saveStatusArgs);
+        }
+
+        if (_backupStatusKey is not null)
+        {
+            BackupStatusMessage = Text(_backupStatusKey, _backupStatusArgs);
+        }
 
         if (!string.Equals(SelectedLanguage, _localization.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
         {
@@ -555,30 +599,43 @@ public partial class SettingsViewModel : ObservableObject
         if (string.IsNullOrEmpty(trimmed))
         {
             HasApiKey = false;
-            ApiKeyStatusText = "No API key configured";
+            ApiKeyStatusText = Text("Settings.ApiKeyNotConfigured");
             return;
         }
 
         HasApiKey = true;
-        if (trimmed.Length > 8)
-        {
-            ApiKeyStatusText = $"API key configured ({trimmed.Substring(0, 3)}...{trimmed.Substring(trimmed.Length - 4)})";
-        }
-        else
-        {
-            ApiKeyStatusText = "API key configured";
-        }
+        ApiKeyStatusText = trimmed.Length > 8
+            ? Text("Settings.ApiKeyConfiguredMasked", trimmed.Substring(0, 3), trimmed.Substring(trimmed.Length - 4))
+            : Text("Settings.ApiKeyConfigured");
     }
 
     private void ValidateTermMonths(int value)
     {
-        if (value < 1 || value > 120)
-        {
-            TermMonthsError = "Term must be between 1 and 120 months.";
-        }
-        else
-        {
-            TermMonthsError = null;
-        }
+        TermMonthsError = value < 1 || value > 120 ? Text("Settings.ErrorTermRange") : null;
+    }
+
+    private string Text(string key) => _localization.GetString(key);
+
+    private string Text(string key, params object[] args) => _localization.GetString(key, args);
+
+    private void SetTestStatus(string key, params object[] args)
+    {
+        _testStatusKey = key;
+        _testStatusArgs = args;
+        TestStatusMessage = Text(key, args);
+    }
+
+    private void SetSaveStatus(string key, params object[] args)
+    {
+        _saveStatusKey = key;
+        _saveStatusArgs = args;
+        SaveStatusMessage = Text(key, args);
+    }
+
+    private void SetBackupStatus(string key, params object[] args)
+    {
+        _backupStatusKey = key;
+        _backupStatusArgs = args;
+        BackupStatusMessage = Text(key, args);
     }
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -46,4 +46,90 @@
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Go to Archived Contracts</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Go to About and Help</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Connect DraftEngine to OpenAI and choose the defaults used for new contracts.</value></data>
+  <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Contract data is encrypted with your Windows user profile. Do not reset your Windows password or copy the database to another Windows account — the data will be unreadable. If you plan to change Windows users, export all contracts to DOCX/PDF first.</value></data>
+  <data name="Settings.DataHandling" xml:space="preserve"><value>How your data is handled: when you use AI features (chat edits and AI polish), the contract text, your instructions and the intake answers are transmitted to OpenAI for processing. Contract content and chat history are stored encrypted on this computer. Do not use AI features for privileged or confidential client material you are not permitted to share with a third-party service.</value></data>
+  <data name="Settings.ApiKey" xml:space="preserve"><value>API key</value></data>
+  <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>OpenAI API key</value></data>
+  <data name="Settings.ApiKeyShowHideAutomation" xml:space="preserve"><value>Show or hide the API key</value></data>
+  <data name="Settings.TestConnection" xml:space="preserve"><value>Test Connection</value></data>
+  <data name="Settings.TestConnectionAutomation" xml:space="preserve"><value>Test the OpenAI connection</value></data>
+  <data name="Settings.Model" xml:space="preserve"><value>Model</value></data>
+  <data name="Settings.ModelAutomation" xml:space="preserve"><value>OpenAI model</value></data>
+  <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini is faster and cheaper; gpt-4o is more capable.</value></data>
+  <data name="Settings.PrivacySection" xml:space="preserve"><value>Privacy and AI endpoint</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Stays on this computer: contracts, intake answers, clause selections, chat history, settings and the API key (all encrypted with your Windows user profile). Sent to the AI provider only when you use an AI feature: the current contract text, your instruction, and the model name. No telemetry is collected.</value></data>
+  <data name="Settings.HidePartyNames" xml:space="preserve"><value>Hide party names and addresses from AI</value></data>
+  <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>When on, real party names, addresses and e-mail addresses are replaced with tokens before every AI request and restored in the reply.</value></data>
+  <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Use a custom OpenAI-compatible endpoint</value></data>
+  <data name="Settings.CustomEndpointAutomation" xml:space="preserve"><value>Use a custom AI endpoint</value></data>
+  <data name="Settings.CustomEndpointDescription" xml:space="preserve"><value>Base URL, e.g. https://your-resource.openai.azure.com/openai/deployments/… , a gateway, or http://localhost:11434/v1/ for Ollama or LM Studio.</value></data>
+  <data name="Settings.CustomBaseUrlAutomation" xml:space="preserve"><value>Custom AI base URL</value></data>
+  <data name="Settings.CustomBaseUrlTooltip" xml:space="preserve"><value>Custom OpenAI-compatible base URL</value></data>
+  <data name="Settings.AiConsentGranted" xml:space="preserve"><value>AI data-sharing consent: granted</value></data>
+  <data name="Settings.AiConsentNotGranted" xml:space="preserve"><value>AI data-sharing consent: not granted</value></data>
+  <data name="Settings.RevokeConsent" xml:space="preserve"><value>Revoke AI consent</value></data>
+  <data name="Settings.RevokeConsentAutomation" xml:space="preserve"><value>Revoke AI data-sharing consent</value></data>
+  <data name="Settings.ContractDefaults" xml:space="preserve"><value>Contract defaults</value></data>
+  <data name="Settings.ContractDefaultsDescription" xml:space="preserve"><value>These values pre-fill the new contract form. You can still change them per contract.</value></data>
+  <data name="Settings.DefaultGoverningLaw" xml:space="preserve"><value>Default governing law</value></data>
+  <data name="Settings.DefaultGoverningLawAutomation" xml:space="preserve"><value>Default governing law</value></data>
+  <data name="Settings.DefaultTermMonths" xml:space="preserve"><value>Default term (months)</value></data>
+  <data name="Settings.DefaultTermMonthsAutomation" xml:space="preserve"><value>Default contract term in months</value></data>
+  <data name="Settings.DefaultTermMonthsTooltip" xml:space="preserve"><value>Contract term in months (1–120)</value></data>
+  <data name="Settings.DefaultTermMonthsDescription" xml:space="preserve"><value>Whole number of months, between 1 and 120.</value></data>
+  <data name="Settings.BackupSection" xml:space="preserve"><value>Backup and data export</value></data>
+  <data name="Settings.BackupDescription" xml:space="preserve"><value>A portable backup contains contracts, intake answers, clauses, versions, chat history and non-secret settings in one password-encrypted file (AES-256-GCM). It can be restored on another Windows PC. The password is never stored; if you lose it the backup cannot be opened. The OpenAI API key is not included.</value></data>
+  <data name="Settings.BackupPassword" xml:space="preserve"><value>Backup password (at least 8 characters)</value></data>
+  <data name="Settings.BackupPasswordAutomation" xml:space="preserve"><value>Backup password</value></data>
+  <data name="Settings.BackupPasswordTooltip" xml:space="preserve"><value>Used only for this export or restore</value></data>
+  <data name="Settings.ExportBackup" xml:space="preserve"><value>Export encrypted backup</value></data>
+  <data name="Settings.ExportBackupAutomation" xml:space="preserve"><value>Export encrypted backup</value></data>
+  <data name="Settings.RestoreBackup" xml:space="preserve"><value>Restore backup...</value></data>
+  <data name="Settings.RestoreBackupAutomation" xml:space="preserve"><value>Restore encrypted backup</value></data>
+  <data name="Settings.ExportData" xml:space="preserve"><value>Export my data</value></data>
+  <data name="Settings.ExportDataDescription" xml:space="preserve"><value>A readable, UNENCRYPTED copy for your own records or another tool. It includes contract text and intake answers; store it somewhere protected. The API key is never included.</value></data>
+  <data name="Settings.ExportJson" xml:space="preserve"><value>Export JSON...</value></data>
+  <data name="Settings.ExportJsonAutomation" xml:space="preserve"><value>Export data as JSON</value></data>
+  <data name="Settings.ExportCsv" xml:space="preserve"><value>Export CSV...</value></data>
+  <data name="Settings.ExportCsvAutomation" xml:space="preserve"><value>Export data as CSV</value></data>
+  <data name="Settings.UnsavedChanges" xml:space="preserve"><value>Unsaved changes</value></data>
+  <data name="Settings.Save" xml:space="preserve"><value>Save settings</value></data>
+  <data name="Settings.SaveAutomation" xml:space="preserve"><value>Save settings</value></data>
+  <data name="Settings.ApiKeyNotConfigured" xml:space="preserve"><value>No API key configured</value></data>
+  <data name="Settings.ApiKeyConfigured" xml:space="preserve"><value>API key configured</value></data>
+  <data name="Settings.ApiKeyConfiguredMasked" xml:space="preserve"><value>API key configured ({0}...{1})</value></data>
+  <data name="Settings.Show" xml:space="preserve"><value>Show</value></data>
+  <data name="Settings.Hide" xml:space="preserve"><value>Hide</value></data>
+  <data name="Settings.ErrorBackupPasswordShort" xml:space="preserve"><value>Choose a backup password of at least 8 characters.</value></data>
+  <data name="Settings.ExportBackupTitle" xml:space="preserve"><value>Export encrypted backup</value></data>
+  <data name="Settings.BackupFilter" xml:space="preserve"><value>DraftEngine backup (*.debk)|*.debk</value></data>
+  <data name="Settings.BackupSaved" xml:space="preserve"><value>Encrypted backup saved: {0} contracts, {1} clauses. Keep the password safe; it cannot be recovered.</value></data>
+  <data name="Settings.ErrorBackupWrite" xml:space="preserve"><value>The backup could not be written. Check the destination and try again.</value></data>
+  <data name="Settings.RestoreBackupTitle" xml:space="preserve"><value>Restore encrypted backup</value></data>
+  <data name="Settings.BackupOpenFilter" xml:space="preserve"><value>DraftEngine backup (*.debk)|*.debk|All files (*.*)|*.*</value></data>
+  <data name="Settings.RestoreConfirm" xml:space="preserve"><value>Restoring replaces all current contracts, clauses, intake answers, chat history and versions on this computer. A pre-import backup is written first. Continue?</value></data>
+  <data name="Settings.RestoreConfirmTitle" xml:space="preserve"><value>Restore backup</value></data>
+  <data name="Settings.ErrorRestorePassword" xml:space="preserve"><value>Enter the password used when the backup was created.</value></data>
+  <data name="Settings.RestoreDone" xml:space="preserve"><value>Backup restored: {0} contracts, {1} clauses. Restart the app if a page still shows old data.</value></data>
+  <data name="Settings.ErrorWrongPassword" xml:space="preserve"><value>Wrong password, or the backup file was modified. Nothing was changed.</value></data>
+  <data name="Settings.ErrorRestore" xml:space="preserve"><value>The backup could not be restored. Nothing was changed.</value></data>
+  <data name="Settings.CsvWarning" xml:space="preserve"><value>This CSV export is NOT encrypted and includes contract titles, parties and intake answers. Store it somewhere protected. Continue?</value></data>
+  <data name="Settings.JsonWarning" xml:space="preserve"><value>This JSON export is NOT encrypted and includes contract text, intake answers and chat history. Store it somewhere protected. Continue?</value></data>
+  <data name="Settings.ExportDataTitle" xml:space="preserve"><value>Export my data</value></data>
+  <data name="Settings.CsvFilter" xml:space="preserve"><value>CSV (*.csv)|*.csv</value></data>
+  <data name="Settings.JsonFilter" xml:space="preserve"><value>JSON (*.json)|*.json</value></data>
+  <data name="Settings.ExportDone" xml:space="preserve"><value>Data exported. The file is unencrypted; protect it or delete it when done.</value></data>
+  <data name="Settings.ErrorExport" xml:space="preserve"><value>The export could not be written.</value></data>
+  <data name="Settings.ConsentRevoked" xml:space="preserve"><value>AI consent revoked. AI editing is now blocked.</value></data>
+  <data name="Settings.ErrorConsentRevoke" xml:space="preserve"><value>We couldn&apos;t update the AI consent setting. Please try again.</value></data>
+  <data name="Settings.ErrorApiKeyMissing" xml:space="preserve"><value>Please paste your OpenAI API key first.</value></data>
+  <data name="Settings.Connecting" xml:space="preserve"><value>Connecting…</value></data>
+  <data name="Settings.Connected" xml:space="preserve"><value>Connected to OpenAI successfully.</value></data>
+  <data name="Settings.ErrorConnect" xml:space="preserve"><value>Could not connect to OpenAI. Please try again.</value></data>
+  <data name="Settings.ErrorConnectionTest" xml:space="preserve"><value>Something went wrong while testing the connection. Please try again.</value></data>
+  <data name="Settings.ErrorTermRange" xml:space="preserve"><value>Term must be between 1 and 120 months.</value></data>
+  <data name="Settings.Saved" xml:space="preserve"><value>Settings saved.</value></data>
+  <data name="Settings.ErrorSave" xml:space="preserve"><value>We couldn&apos;t save your settings. Please try again.</value></data>
 </root>

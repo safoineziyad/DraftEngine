@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -46,4 +46,90 @@
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Aller aux contrats archivés</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Aller à l'aide et à propos</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Connectez DraftEngine à OpenAI et choisissez les valeurs par défaut utilisées pour les nouveaux contrats.</value></data>
+  <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Les données des contrats sont chiffrées avec votre profil utilisateur Windows. Ne réinitialisez pas votre mot de passe Windows et ne copiez pas la base de données vers un autre compte Windows : les données deviendraient illisibles. Si vous prévoyez de changer d&apos;utilisateur Windows, exportez d&apos;abord tous les contrats en DOCX/PDF.</value></data>
+  <data name="Settings.DataHandling" xml:space="preserve"><value>Traitement de vos données : lorsque vous utilisez les fonctions d&apos;IA (modifications par chat et polissage par IA), le texte du contrat, vos instructions et les réponses du questionnaire sont transmis à OpenAI pour traitement. Le contenu du contrat et l&apos;historique du chat sont stockés chiffrés sur cet ordinateur. N&apos;utilisez pas les fonctions d&apos;IA pour des documents clients privilégiés ou confidentiels que vous n&apos;êtes pas autorisé à partager avec un service tiers.</value></data>
+  <data name="Settings.ApiKey" xml:space="preserve"><value>Clé API</value></data>
+  <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>Clé API OpenAI</value></data>
+  <data name="Settings.ApiKeyShowHideAutomation" xml:space="preserve"><value>Afficher ou masquer la clé API</value></data>
+  <data name="Settings.TestConnection" xml:space="preserve"><value>Tester la connexion</value></data>
+  <data name="Settings.TestConnectionAutomation" xml:space="preserve"><value>Tester la connexion à OpenAI</value></data>
+  <data name="Settings.Model" xml:space="preserve"><value>Modèle</value></data>
+  <data name="Settings.ModelAutomation" xml:space="preserve"><value>Modèle OpenAI</value></data>
+  <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini est plus rapide et moins cher ; gpt-4o est plus performant.</value></data>
+  <data name="Settings.PrivacySection" xml:space="preserve"><value>Confidentialité et point de terminaison IA</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Reste sur cet ordinateur : contrats, réponses du questionnaire, sélections de clauses, historique du chat, paramètres et clé API (tous chiffrés avec votre profil utilisateur Windows). Envoyés au fournisseur d&apos;IA uniquement lorsque vous utilisez une fonction d&apos;IA : le texte du contrat en cours, votre instruction et le nom du modèle. Aucune télémétrie n&apos;est collectée.</value></data>
+  <data name="Settings.HidePartyNames" xml:space="preserve"><value>Masquer les noms et adresses des parties à l&apos;IA</value></data>
+  <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>Lorsque cette option est activée, les noms, adresses et adresses e-mail réels des parties sont remplacés par des jetons avant chaque requête d&apos;IA et restaurés dans la réponse.</value></data>
+  <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Utiliser un point de terminaison compatible OpenAI personnalisé</value></data>
+  <data name="Settings.CustomEndpointAutomation" xml:space="preserve"><value>Utiliser un point de terminaison IA personnalisé</value></data>
+  <data name="Settings.CustomEndpointDescription" xml:space="preserve"><value>URL de base, par exemple https://your-resource.openai.azure.com/openai/deployments/… , une passerelle, ou http://localhost:11434/v1/ pour Ollama ou LM Studio.</value></data>
+  <data name="Settings.CustomBaseUrlAutomation" xml:space="preserve"><value>URL de base de l&apos;IA personnalisée</value></data>
+  <data name="Settings.CustomBaseUrlTooltip" xml:space="preserve"><value>URL de base personnalisée compatible OpenAI</value></data>
+  <data name="Settings.AiConsentGranted" xml:space="preserve"><value>Consentement au partage de données avec l&apos;IA : accordé</value></data>
+  <data name="Settings.AiConsentNotGranted" xml:space="preserve"><value>Consentement au partage de données avec l&apos;IA : non accordé</value></data>
+  <data name="Settings.RevokeConsent" xml:space="preserve"><value>Révoquer le consentement IA</value></data>
+  <data name="Settings.RevokeConsentAutomation" xml:space="preserve"><value>Révoquer le consentement au partage de données avec l&apos;IA</value></data>
+  <data name="Settings.ContractDefaults" xml:space="preserve"><value>Valeurs par défaut des contrats</value></data>
+  <data name="Settings.ContractDefaultsDescription" xml:space="preserve"><value>Ces valeurs préremplissent le formulaire de nouveau contrat. Vous pouvez toujours les modifier contrat par contrat.</value></data>
+  <data name="Settings.DefaultGoverningLaw" xml:space="preserve"><value>Droit applicable par défaut</value></data>
+  <data name="Settings.DefaultGoverningLawAutomation" xml:space="preserve"><value>Droit applicable par défaut</value></data>
+  <data name="Settings.DefaultTermMonths" xml:space="preserve"><value>Durée par défaut (mois)</value></data>
+  <data name="Settings.DefaultTermMonthsAutomation" xml:space="preserve"><value>Durée par défaut du contrat en mois</value></data>
+  <data name="Settings.DefaultTermMonthsTooltip" xml:space="preserve"><value>Durée du contrat en mois (1–120)</value></data>
+  <data name="Settings.DefaultTermMonthsDescription" xml:space="preserve"><value>Nombre entier de mois, entre 1 et 120.</value></data>
+  <data name="Settings.BackupSection" xml:space="preserve"><value>Sauvegarde et exportation des données</value></data>
+  <data name="Settings.BackupDescription" xml:space="preserve"><value>Une sauvegarde portable contient les contrats, les réponses du questionnaire, les clauses, les versions, l&apos;historique du chat et les paramètres non secrets dans un seul fichier chiffré par mot de passe (AES-256-GCM). Elle peut être restaurée sur un autre PC Windows. Le mot de passe n&apos;est jamais stocké ; si vous le perdez, la sauvegarde ne peut pas être ouverte. La clé API OpenAI n&apos;est pas incluse.</value></data>
+  <data name="Settings.BackupPassword" xml:space="preserve"><value>Mot de passe de sauvegarde (au moins 8 caractères)</value></data>
+  <data name="Settings.BackupPasswordAutomation" xml:space="preserve"><value>Mot de passe de sauvegarde</value></data>
+  <data name="Settings.BackupPasswordTooltip" xml:space="preserve"><value>Utilisé uniquement pour cette exportation ou restauration</value></data>
+  <data name="Settings.ExportBackup" xml:space="preserve"><value>Exporter une sauvegarde chiffrée</value></data>
+  <data name="Settings.ExportBackupAutomation" xml:space="preserve"><value>Exporter une sauvegarde chiffrée</value></data>
+  <data name="Settings.RestoreBackup" xml:space="preserve"><value>Restaurer une sauvegarde...</value></data>
+  <data name="Settings.RestoreBackupAutomation" xml:space="preserve"><value>Restaurer une sauvegarde chiffrée</value></data>
+  <data name="Settings.ExportData" xml:space="preserve"><value>Exporter mes données</value></data>
+  <data name="Settings.ExportDataDescription" xml:space="preserve"><value>Une copie lisible et NON CHIFFRÉE pour vos propres archives ou un autre outil. Elle inclut le texte des contrats et les réponses du questionnaire ; stockez-la dans un endroit protégé. La clé API n&apos;est jamais incluse.</value></data>
+  <data name="Settings.ExportJson" xml:space="preserve"><value>Exporter en JSON...</value></data>
+  <data name="Settings.ExportJsonAutomation" xml:space="preserve"><value>Exporter les données en JSON</value></data>
+  <data name="Settings.ExportCsv" xml:space="preserve"><value>Exporter en CSV...</value></data>
+  <data name="Settings.ExportCsvAutomation" xml:space="preserve"><value>Exporter les données en CSV</value></data>
+  <data name="Settings.UnsavedChanges" xml:space="preserve"><value>Modifications non enregistrées</value></data>
+  <data name="Settings.Save" xml:space="preserve"><value>Enregistrer les paramètres</value></data>
+  <data name="Settings.SaveAutomation" xml:space="preserve"><value>Enregistrer les paramètres</value></data>
+  <data name="Settings.ApiKeyNotConfigured" xml:space="preserve"><value>Aucune clé API configurée</value></data>
+  <data name="Settings.ApiKeyConfigured" xml:space="preserve"><value>Clé API configurée</value></data>
+  <data name="Settings.ApiKeyConfiguredMasked" xml:space="preserve"><value>Clé API configurée ({0}...{1})</value></data>
+  <data name="Settings.Show" xml:space="preserve"><value>Afficher</value></data>
+  <data name="Settings.Hide" xml:space="preserve"><value>Masquer</value></data>
+  <data name="Settings.ErrorBackupPasswordShort" xml:space="preserve"><value>Choisissez un mot de passe de sauvegarde d&apos;au moins 8 caractères.</value></data>
+  <data name="Settings.ExportBackupTitle" xml:space="preserve"><value>Exporter une sauvegarde chiffrée</value></data>
+  <data name="Settings.BackupFilter" xml:space="preserve"><value>Sauvegarde DraftEngine (*.debk)|*.debk</value></data>
+  <data name="Settings.BackupSaved" xml:space="preserve"><value>Sauvegarde chiffrée enregistrée : {0} contrats, {1} clauses. Conservez le mot de passe en lieu sûr ; il ne peut pas être récupéré.</value></data>
+  <data name="Settings.ErrorBackupWrite" xml:space="preserve"><value>La sauvegarde n&apos;a pas pu être écrite. Vérifiez la destination et réessayez.</value></data>
+  <data name="Settings.RestoreBackupTitle" xml:space="preserve"><value>Restaurer une sauvegarde chiffrée</value></data>
+  <data name="Settings.BackupOpenFilter" xml:space="preserve"><value>Sauvegarde DraftEngine (*.debk)|*.debk|Tous les fichiers (*.*)|*.*</value></data>
+  <data name="Settings.RestoreConfirm" xml:space="preserve"><value>La restauration remplace tous les contrats, clauses, réponses du questionnaire, historiques de chat et versions actuels sur cet ordinateur. Une sauvegarde avant importation est d&apos;abord écrite. Continuer ?</value></data>
+  <data name="Settings.RestoreConfirmTitle" xml:space="preserve"><value>Restaurer une sauvegarde</value></data>
+  <data name="Settings.ErrorRestorePassword" xml:space="preserve"><value>Saisissez le mot de passe utilisé lors de la création de la sauvegarde.</value></data>
+  <data name="Settings.RestoreDone" xml:space="preserve"><value>Sauvegarde restaurée : {0} contrats, {1} clauses. Redémarrez l&apos;application si une page affiche encore d&apos;anciennes données.</value></data>
+  <data name="Settings.ErrorWrongPassword" xml:space="preserve"><value>Mot de passe incorrect, ou le fichier de sauvegarde a été modifié. Rien n&apos;a été modifié.</value></data>
+  <data name="Settings.ErrorRestore" xml:space="preserve"><value>La sauvegarde n&apos;a pas pu être restaurée. Rien n&apos;a été modifié.</value></data>
+  <data name="Settings.CsvWarning" xml:space="preserve"><value>Cette exportation CSV n&apos;est PAS chiffrée et inclut les titres des contrats, les parties et les réponses du questionnaire. Stockez-la dans un endroit protégé. Continuer ?</value></data>
+  <data name="Settings.JsonWarning" xml:space="preserve"><value>Cette exportation JSON n&apos;est PAS chiffrée et inclut le texte des contrats, les réponses du questionnaire et l&apos;historique du chat. Stockez-la dans un endroit protégé. Continuer ?</value></data>
+  <data name="Settings.ExportDataTitle" xml:space="preserve"><value>Exporter mes données</value></data>
+  <data name="Settings.CsvFilter" xml:space="preserve"><value>CSV (*.csv)|*.csv</value></data>
+  <data name="Settings.JsonFilter" xml:space="preserve"><value>JSON (*.json)|*.json</value></data>
+  <data name="Settings.ExportDone" xml:space="preserve"><value>Données exportées. Le fichier n&apos;est pas chiffré ; protégez-le ou supprimez-le une fois terminé.</value></data>
+  <data name="Settings.ErrorExport" xml:space="preserve"><value>L&apos;exportation n&apos;a pas pu être écrite.</value></data>
+  <data name="Settings.ConsentRevoked" xml:space="preserve"><value>Consentement IA révoqué. La modification par IA est désormais bloquée.</value></data>
+  <data name="Settings.ErrorConsentRevoke" xml:space="preserve"><value>Nous n&apos;avons pas pu mettre à jour le consentement IA. Veuillez réessayer.</value></data>
+  <data name="Settings.ErrorApiKeyMissing" xml:space="preserve"><value>Veuillez d&apos;abord coller votre clé API OpenAI.</value></data>
+  <data name="Settings.Connecting" xml:space="preserve"><value>Connexion…</value></data>
+  <data name="Settings.Connected" xml:space="preserve"><value>Connexion à OpenAI réussie.</value></data>
+  <data name="Settings.ErrorConnect" xml:space="preserve"><value>Impossible de se connecter à OpenAI. Veuillez réessayer.</value></data>
+  <data name="Settings.ErrorConnectionTest" xml:space="preserve"><value>Une erreur est survenue lors du test de la connexion. Veuillez réessayer.</value></data>
+  <data name="Settings.ErrorTermRange" xml:space="preserve"><value>La durée doit être comprise entre 1 et 120 mois.</value></data>
+  <data name="Settings.Saved" xml:space="preserve"><value>Paramètres enregistrés.</value></data>
+  <data name="Settings.ErrorSave" xml:space="preserve"><value>Nous n&apos;avons pas pu enregistrer vos paramètres. Veuillez réessayer.</value></data>
 </root>

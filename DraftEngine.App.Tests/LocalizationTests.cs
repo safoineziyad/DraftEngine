@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.ViewModels;
 using Xunit;
 
 namespace DraftEngine.App.Tests;
@@ -162,6 +163,24 @@ public sealed class LocalizationTests : IDisposable
         Assert.Equal("الإصدار 0.4.0", service.GetString("Common.Version", "0.4.0"));
     }
 
+    [Fact]
+    public async Task SettingsViewModel_RerendersComposedText_OnLanguageChange()
+    {
+        var service = CreateService();
+        await service.InitializeAsync();
+        var viewModel = new SettingsViewModel(new StubSettingsService(), localization: service);
+
+        Assert.Equal("No API key configured", viewModel.ApiKeyStatusText);
+        Assert.Equal("AI data-sharing consent: not granted", viewModel.AiConsentStatusText);
+        Assert.Equal("Show", viewModel.ShowHideKeyText);
+
+        await service.SetLanguageAsync("fr");
+
+        Assert.Equal("Aucune clé API configurée", viewModel.ApiKeyStatusText);
+        Assert.Equal("Consentement au partage de données avec l'IA : non accordé", viewModel.AiConsentStatusText);
+        Assert.Equal("Afficher", viewModel.ShowHideKeyText);
+    }
+
     private LocalizationService CreateService() =>
         new(_store, () => CultureInfo.GetCultureInfo("en-US"));
 
@@ -171,6 +190,26 @@ public sealed class LocalizationTests : IDisposable
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.GetCultureInfo("en-US");
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+    }
+
+    private sealed class StubSettingsService : DraftEngine.App.Services.Settings.IAppSettingsService
+    {
+        public DraftEngine.App.Services.Settings.AppSettings Current { get; } = new();
+
+        public event Action? SettingsChanged;
+
+        public Task<DraftEngine.App.Services.Settings.AppSettings> ReloadAsync() => Task.FromResult(Current);
+
+        public Task SaveAsync(DraftEngine.App.Services.Settings.AppSettings settings)
+        {
+            SettingsChanged?.Invoke();
+            return Task.CompletedTask;
+        }
+
+        public Task<DraftEngine.Core.Interfaces.IContractAiService?> CreateAiServiceAsync() =>
+            Task.FromResult<DraftEngine.Core.Interfaces.IContractAiService?>(null);
+
+        public DraftEngine.Core.Interfaces.IContractAiService? CreateAiService(string apiKey, string model) => null;
     }
 
     private sealed class MemoryLanguageStore : ILanguagePreferenceStore

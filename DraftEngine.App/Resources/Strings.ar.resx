@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
@@ -46,4 +46,90 @@
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>الانتقال إلى العقود المؤرشفة</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>الانتقال إلى حول والمساعدة</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>فتح الإعدادات</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>اربط DraftEngine بـ OpenAI واختر الإعدادات الافتراضية المستخدمة للعقود الجديدة.</value></data>
+  <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
+  <data name="Settings.EncryptionWarning" xml:space="preserve"><value>تُشفَّر بيانات العقود باستخدام ملف تعريف مستخدم Windows الخاص بك. لا تُعِد تعيين كلمة مرور Windows ولا تنسخ قاعدة البيانات إلى حساب Windows آخر — ستصبح البيانات غير قابلة للقراءة. إذا كنت تخطط لتغيير مستخدم Windows، فصدّر جميع العقود إلى DOCX/PDF أولًا.</value></data>
+  <data name="Settings.DataHandling" xml:space="preserve"><value>كيفية معالجة بياناتك: عند استخدام ميزات الذكاء الاصطناعي (تعديلات المحادثة والتحسين بالذكاء الاصطناعي)، يُرسَل نص العقد وتعليماتك وإجابات الاستبيان إلى OpenAI للمعالجة. يُخزَّن محتوى العقد وسجل المحادثة مشفَّرين على هذا الكمبيوتر. لا تستخدم ميزات الذكاء الاصطناعي لمواد عملاء محمية أو سرية غير مسموح لك بمشاركتها مع خدمة طرف ثالث.</value></data>
+  <data name="Settings.ApiKey" xml:space="preserve"><value>مفتاح API</value></data>
+  <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>مفتاح OpenAI API</value></data>
+  <data name="Settings.ApiKeyShowHideAutomation" xml:space="preserve"><value>إظهار أو إخفاء مفتاح API</value></data>
+  <data name="Settings.TestConnection" xml:space="preserve"><value>اختبار الاتصال</value></data>
+  <data name="Settings.TestConnectionAutomation" xml:space="preserve"><value>اختبار الاتصال بـ OpenAI</value></data>
+  <data name="Settings.Model" xml:space="preserve"><value>النموذج</value></data>
+  <data name="Settings.ModelAutomation" xml:space="preserve"><value>نموذج OpenAI</value></data>
+  <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini أسرع وأقل تكلفة؛ gpt-4o أكثر قدرة.</value></data>
+  <data name="Settings.PrivacySection" xml:space="preserve"><value>الخصوصية ونقطة اتصال الذكاء الاصطناعي</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>يبقى على هذا الكمبيوتر: العقود وإجابات الاستبيان واختيارات البنود وسجل المحادثة والإعدادات ومفتاح API (جميعها مشفَّرة بملف تعريف مستخدم Windows). تُرسَل إلى مزوّد الذكاء الاصطناعي فقط عند استخدام ميزة ذكاء اصطناعي: نص العقد الحالي وتعليمك واسم النموذج. لا تُجمَع أي بيانات تتبع.</value></data>
+  <data name="Settings.HidePartyNames" xml:space="preserve"><value>إخفاء أسماء وعناوين الأطراف عن الذكاء الاصطناعي</value></data>
+  <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>عند التفعيل، تُستبدَل أسماء الأطراف وعناوينها وعناوين بريدها الإلكتروني برموز قبل كل طلب ذكاء اصطناعي وتُستعاد في الرد.</value></data>
+  <data name="Settings.CustomEndpoint" xml:space="preserve"><value>استخدام نقطة اتصال مخصصة متوافقة مع OpenAI</value></data>
+  <data name="Settings.CustomEndpointAutomation" xml:space="preserve"><value>استخدام نقطة اتصال ذكاء اصطناعي مخصصة</value></data>
+  <data name="Settings.CustomEndpointDescription" xml:space="preserve"><value>عنوان URL الأساسي، مثل https://your-resource.openai.azure.com/openai/deployments/… أو بوابة أو http://localhost:11434/v1/ لـ Ollama أو LM Studio.</value></data>
+  <data name="Settings.CustomBaseUrlAutomation" xml:space="preserve"><value>عنوان URL أساسي مخصص للذكاء الاصطناعي</value></data>
+  <data name="Settings.CustomBaseUrlTooltip" xml:space="preserve"><value>عنوان URL أساسي مخصص متوافق مع OpenAI</value></data>
+  <data name="Settings.AiConsentGranted" xml:space="preserve"><value>الموافقة على مشاركة البيانات مع الذكاء الاصطناعي: ممنوحة</value></data>
+  <data name="Settings.AiConsentNotGranted" xml:space="preserve"><value>الموافقة على مشاركة البيانات مع الذكاء الاصطناعي: غير ممنوحة</value></data>
+  <data name="Settings.RevokeConsent" xml:space="preserve"><value>إلغاء موافقة الذكاء الاصطناعي</value></data>
+  <data name="Settings.RevokeConsentAutomation" xml:space="preserve"><value>إلغاء الموافقة على مشاركة البيانات مع الذكاء الاصطناعي</value></data>
+  <data name="Settings.ContractDefaults" xml:space="preserve"><value>الإعدادات الافتراضية للعقود</value></data>
+  <data name="Settings.ContractDefaultsDescription" xml:space="preserve"><value>تملأ هذه القيم نموذج العقد الجديد مسبقًا. يمكنك تغييرها لكل عقد على حدة.</value></data>
+  <data name="Settings.DefaultGoverningLaw" xml:space="preserve"><value>القانون الحاكم الافتراضي</value></data>
+  <data name="Settings.DefaultGoverningLawAutomation" xml:space="preserve"><value>القانون الحاكم الافتراضي</value></data>
+  <data name="Settings.DefaultTermMonths" xml:space="preserve"><value>المدة الافتراضية (بالأشهر)</value></data>
+  <data name="Settings.DefaultTermMonthsAutomation" xml:space="preserve"><value>مدة العقد الافتراضية بالأشهر</value></data>
+  <data name="Settings.DefaultTermMonthsTooltip" xml:space="preserve"><value>مدة العقد بالأشهر (1–120)</value></data>
+  <data name="Settings.DefaultTermMonthsDescription" xml:space="preserve"><value>عدد صحيح من الأشهر، بين 1 و120.</value></data>
+  <data name="Settings.BackupSection" xml:space="preserve"><value>النسخ الاحتياطي وتصدير البيانات</value></data>
+  <data name="Settings.BackupDescription" xml:space="preserve"><value>تحتوي النسخة الاحتياطية المحمولة على العقود وإجابات الاستبيان والبنود والإصدارات وسجل المحادثة والإعدادات غير السرية في ملف واحد مشفَّر بكلمة مرور (AES-256-GCM). يمكن استعادتها على كمبيوتر Windows آخر. لا تُخزَّن كلمة المرور أبدًا؛ وإذا فقدتها فلا يمكن فتح النسخة الاحتياطية. لا يُضمَّن مفتاح OpenAI API.</value></data>
+  <data name="Settings.BackupPassword" xml:space="preserve"><value>كلمة مرور النسخ الاحتياطي (8 أحرف على الأقل)</value></data>
+  <data name="Settings.BackupPasswordAutomation" xml:space="preserve"><value>كلمة مرور النسخ الاحتياطي</value></data>
+  <data name="Settings.BackupPasswordTooltip" xml:space="preserve"><value>يُستخدم فقط لهذا التصدير أو الاستعادة</value></data>
+  <data name="Settings.ExportBackup" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.ExportBackupAutomation" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.RestoreBackup" xml:space="preserve"><value>استعادة نسخة احتياطية...</value></data>
+  <data name="Settings.RestoreBackupAutomation" xml:space="preserve"><value>استعادة نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.ExportData" xml:space="preserve"><value>تصدير بياناتي</value></data>
+  <data name="Settings.ExportDataDescription" xml:space="preserve"><value>نسخة مقروءة وغير مشفَّرة لسجلاتك أو لأداة أخرى. تتضمن نص العقود وإجابات الاستبيان؛ خزّنها في مكان محمي. لا يُضمَّن مفتاح API أبدًا.</value></data>
+  <data name="Settings.ExportJson" xml:space="preserve"><value>تصدير JSON...</value></data>
+  <data name="Settings.ExportJsonAutomation" xml:space="preserve"><value>تصدير البيانات بصيغة JSON</value></data>
+  <data name="Settings.ExportCsv" xml:space="preserve"><value>تصدير CSV...</value></data>
+  <data name="Settings.ExportCsvAutomation" xml:space="preserve"><value>تصدير البيانات بصيغة CSV</value></data>
+  <data name="Settings.UnsavedChanges" xml:space="preserve"><value>تغييرات غير محفوظة</value></data>
+  <data name="Settings.Save" xml:space="preserve"><value>حفظ الإعدادات</value></data>
+  <data name="Settings.SaveAutomation" xml:space="preserve"><value>حفظ الإعدادات</value></data>
+  <data name="Settings.ApiKeyNotConfigured" xml:space="preserve"><value>لم يُضبط مفتاح API</value></data>
+  <data name="Settings.ApiKeyConfigured" xml:space="preserve"><value>مفتاح API مضبوط</value></data>
+  <data name="Settings.ApiKeyConfiguredMasked" xml:space="preserve"><value>مفتاح API مضبوط ({0}...{1})</value></data>
+  <data name="Settings.Show" xml:space="preserve"><value>إظهار</value></data>
+  <data name="Settings.Hide" xml:space="preserve"><value>إخفاء</value></data>
+  <data name="Settings.ErrorBackupPasswordShort" xml:space="preserve"><value>اختر كلمة مرور للنسخ الاحتياطي من 8 أحرف على الأقل.</value></data>
+  <data name="Settings.ExportBackupTitle" xml:space="preserve"><value>تصدير نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.BackupFilter" xml:space="preserve"><value>نسخة احتياطية DraftEngine (*.debk)|*.debk</value></data>
+  <data name="Settings.BackupSaved" xml:space="preserve"><value>حُفظت النسخة الاحتياطية المشفَّرة: {0} عقدًا و{1} بندًا. احتفظ بكلمة المرور في مكان آمن؛ لا يمكن استعادتها.</value></data>
+  <data name="Settings.ErrorBackupWrite" xml:space="preserve"><value>تعذّر كتابة النسخة الاحتياطية. تحقّق من الوجهة وحاول مرة أخرى.</value></data>
+  <data name="Settings.RestoreBackupTitle" xml:space="preserve"><value>استعادة نسخة احتياطية مشفَّرة</value></data>
+  <data name="Settings.BackupOpenFilter" xml:space="preserve"><value>نسخة احتياطية DraftEngine (*.debk)|*.debk|كل الملفات (*.*)|*.*</value></data>
+  <data name="Settings.RestoreConfirm" xml:space="preserve"><value>تستبدل الاستعادة جميع العقود والبنود وإجابات الاستبيان وسجل المحادثة والإصدارات الحالية على هذا الكمبيوتر. تُكتب نسخة احتياطية قبل الاستيراد أولًا. هل تريد المتابعة؟</value></data>
+  <data name="Settings.RestoreConfirmTitle" xml:space="preserve"><value>استعادة النسخة الاحتياطية</value></data>
+  <data name="Settings.ErrorRestorePassword" xml:space="preserve"><value>أدخل كلمة المرور المستخدمة عند إنشاء النسخة الاحتياطية.</value></data>
+  <data name="Settings.RestoreDone" xml:space="preserve"><value>استُعيدت النسخة الاحتياطية: {0} عقدًا و{1} بندًا. أعد تشغيل التطبيق إذا كانت إحدى الصفحات تعرض بيانات قديمة.</value></data>
+  <data name="Settings.ErrorWrongPassword" xml:space="preserve"><value>كلمة مرور خاطئة أو تم تعديل ملف النسخة الاحتياطية. لم يتغير شيء.</value></data>
+  <data name="Settings.ErrorRestore" xml:space="preserve"><value>تعذّرت استعادة النسخة الاحتياطية. لم يتغير شيء.</value></data>
+  <data name="Settings.CsvWarning" xml:space="preserve"><value>تصدير CSV هذا غير مشفَّر ويتضمن عناوين العقود والأطراف وإجابات الاستبيان. خزّنه في مكان محمي. هل تريد المتابعة؟</value></data>
+  <data name="Settings.JsonWarning" xml:space="preserve"><value>تصدير JSON هذا غير مشفَّر ويتضمن نص العقود وإجابات الاستبيان وسجل المحادثة. خزّنه في مكان محمي. هل تريد المتابعة؟</value></data>
+  <data name="Settings.ExportDataTitle" xml:space="preserve"><value>تصدير بياناتي</value></data>
+  <data name="Settings.CsvFilter" xml:space="preserve"><value>CSV (*.csv)|*.csv</value></data>
+  <data name="Settings.JsonFilter" xml:space="preserve"><value>JSON (*.json)|*.json</value></data>
+  <data name="Settings.ExportDone" xml:space="preserve"><value>صُدّرت البيانات. الملف غير مشفَّر؛ احمِه أو احذفه عند الانتهاء.</value></data>
+  <data name="Settings.ErrorExport" xml:space="preserve"><value>تعذّرت كتابة التصدير.</value></data>
+  <data name="Settings.ConsentRevoked" xml:space="preserve"><value>أُلغيت موافقة الذكاء الاصطناعي. أصبح التعديل بالذكاء الاصطناعي محظورًا.</value></data>
+  <data name="Settings.ErrorConsentRevoke" xml:space="preserve"><value>تعذّر تحديث إعداد موافقة الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorApiKeyMissing" xml:space="preserve"><value>يرجى لصق مفتاح OpenAI API أولًا.</value></data>
+  <data name="Settings.Connecting" xml:space="preserve"><value>جارٍ الاتصال…</value></data>
+  <data name="Settings.Connected" xml:space="preserve"><value>تم الاتصال بـ OpenAI بنجاح.</value></data>
+  <data name="Settings.ErrorConnect" xml:space="preserve"><value>تعذّر الاتصال بـ OpenAI. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorConnectionTest" xml:space="preserve"><value>حدث خطأ أثناء اختبار الاتصال. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Settings.ErrorTermRange" xml:space="preserve"><value>يجب أن تكون المدة بين 1 و120 شهرًا.</value></data>
+  <data name="Settings.Saved" xml:space="preserve"><value>حُفظت الإعدادات.</value></data>
+  <data name="Settings.ErrorSave" xml:space="preserve"><value>تعذّر حفظ إعداداتك. يرجى المحاولة مرة أخرى.</value></data>
 </root>

@@ -41,9 +41,11 @@ NEXT STEP: Step 3 — migrate MainWindow + sidebar literals to `{loc:T}` / C#, a
 
 - **MainWindow + sidebar — Done.** All nav labels, AutomationProperties names and the version label now use `{loc:T}`; `MainWindow.xaml` passes the literal guard. Sidebar divider mirrors for RTL. Evidence: `MainWindow.xaml`, `LocalizationResourceTests.MainWindow_HasNoLiteralUserFacingStrings`.
 - **Step 4 guard tests — Done.** `LocalizationResourceTests`: key parity across 4 languages, no empty values, every XAML key exists everywhere, and a shrinking pending-list guard for literal strings. Test count 299 → **304** (222 + 54 + 28).
-- Settings, Onboarding, Dashboard, Contracts list, New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
+- **Settings — Done (not visually verified), 2026-11-08.** `SettingsView.xaml` uses `{loc:T}` for every literal and `SettingsView.xaml` is removed from `PendingMigration`, so the literal guard now covers it. `SettingsViewModel` builds API-key/consent/term status and all dialogs, filters, warnings and error messages from `GetString`/format keys (no concatenated sentences); status text is stored as a key + arguments and re-rendered on `LanguageChanged`, so an in-flight result also switches language. 86 `Settings.*` keys added in EN/FR/AR/ES (128 keys per language). `LocalizationTests.SettingsViewModel_RerendersComposedText_OnLanguageChange` covers the live path. Test count 304 → **305** (222 + 55 + 28); build 0 errors. Translation status/glossary recorded in `docs/TRANSLATIONS.md`.
+- **Partial:** provider-supplied connection failure text (`result.Message`) is displayed as received and is not translated; WPF rendering/layout of the migrated Settings screen was not visually verified.
+- Onboarding, Dashboard, Contracts list, New Contract wizard, Contract detail, Clause Manager, Analyze, About, dialogs — pending; each gets its own commit and removes its file from `PendingMigration`.
 
-NEXT STEP: Step 3 — migrate Settings screen (SettingsView.xaml + SettingsViewModel C# strings) to `{loc:T}`/GetString, add keys in all four resx, remove `SettingsView.xaml` from `PendingMigration`, build/test/commit.
+NEXT STEP: Step 3 — migrate Onboarding (OnboardingWindow.xaml + OnboardingViewModel) to `{loc:T}`/GetString, add keys in all four resx, remove `OnboardingWindow.xaml` from `PendingMigration`, build/test/commit.
 
 ### Test counts
 

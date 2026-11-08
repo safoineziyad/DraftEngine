@@ -34,6 +34,13 @@ public interface IContractAiService
     /// <summary>Applies a natural-language edit to the current contract text.</summary>
     Task<ContractEditResult> ApplyChatEditAsync(Contract contract, string currentDocument, string userInstruction);
 
+    /// <summary>
+    /// Sends one system/user prompt pair and returns the raw text response. Used by the
+    /// analysis reviewer; implementations must not log either prompt.
+    /// </summary>
+    Task<string> CompletePromptAsync(string systemPrompt, string userPrompt) =>
+        throw new NotSupportedException("This AI implementation does not support free-form prompts.");
+
     /// <summary>Quick connectivity check against the AI provider; false on any failure.</summary>
     Task<bool> TestConnectionAsync();
 

@@ -50,6 +50,14 @@ public static class ServiceRegistration
         services.AddTransient<IContractEditService, ContractEditService>();
         services.AddTransient<IExportHistoryService, ExportHistoryService>();
 
+        // Contract analysis: deterministic always; AI review uses consent + redaction.
+        services.AddSingleton<DraftEngine.Analysis.IAiReviewer, DraftEngine.App.Services.Analysis.AppAiReviewer>();
+        services.AddSingleton<DraftEngine.App.Services.Analysis.IAnalysisService>(provider =>
+            new DraftEngine.App.Services.Analysis.AnalysisService(
+                provider.GetRequiredService<IDatabaseContextFactory>(),
+                provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>(),
+                provider.GetRequiredService<DraftEngine.Analysis.IAiReviewer>()));
+
         // Portable encrypted backup/restore and plain data export.
         services.AddSingleton<IPortableBackupService>(provider => new PortableBackupService(
             provider.GetRequiredService<IDatabaseContextFactory>(),
@@ -76,6 +84,7 @@ public static class ServiceRegistration
         services.AddSingleton<ClauseManagerViewModel>();
         services.AddSingleton<ArchivedContractsViewModel>();
         services.AddSingleton<AboutViewModel>();
+        services.AddSingleton<AnalyzeViewModel>();
         services.AddSingleton<MainViewModel>();
 
         // Navigation.

@@ -16,6 +16,12 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="{Binding NavigateNewContractCommand}" />
+        <KeyBinding Key="F" Modifiers="Control" Command="{Binding NavigateContractsCommand}" />
+        <KeyBinding Key="K" Modifiers="Control" Command="{Binding NavigateAnalyzeCommand}" />
+    </Window.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" />
@@ -55,6 +61,10 @@
                             Content="Settings"
                             AutomationProperties.Name="Go to Settings"
                             Command="{Binding NavigateSettingsCommand}" />
+                    <Button Style="{StaticResource NavButtonStyle}"
+                            Content="Analyze"
+                            AutomationProperties.Name="Analyze a contract"
+                            Command="{Binding NavigateAnalyzeCommand}" />
                     <Button Style="{StaticResource NavButtonStyle}"
                             Content="Clause Manager"
                             AutomationProperties.Name="Go to Clause Manager"

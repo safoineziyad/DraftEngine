@@ -5,6 +5,7 @@
     <ProjectReference Include="..\DraftEngine.Data\DraftEngine.Data.csproj" />
     <ProjectReference Include="..\DraftEngine.AI\DraftEngine.AI.csproj" />
     <ProjectReference Include="..\DraftEngine.Documents\DraftEngine.Documents.csproj" />
+    <ProjectReference Include="..\DraftEngine.Analysis\DraftEngine.Analysis.csproj" />
   </ItemGroup>
 
   <ItemGroup>

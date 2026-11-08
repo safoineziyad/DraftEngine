@@ -173,6 +173,19 @@ public class OpenAiContractService : IContractAiService
     }
 
     /// <inheritdoc />
+    public Task<string> CompletePromptAsync(string systemPrompt, string userPrompt)
+    {
+        if (systemPrompt is null) throw new ArgumentNullException(nameof(systemPrompt));
+        if (userPrompt is null) throw new ArgumentNullException(nameof(userPrompt));
+
+        return SendChatCompletionAsync(new List<ChatCompletionMessage>
+        {
+            new() { Role = "system", Content = systemPrompt },
+            new() { Role = "user", Content = userPrompt }
+        });
+    }
+
+    /// <inheritdoc />
     public async Task<bool> TestConnectionAsync() => (await TestConnectionDetailedAsync()).Success;
 
     /// <inheritdoc />

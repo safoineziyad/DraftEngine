@@ -20,6 +20,7 @@ public class NavigationService : INavigationService
         ["clause-management"] = typeof(ClauseManagerViewModel),
         ["archived-contracts"] = typeof(ArchivedContractsViewModel),
         ["about"] = typeof(AboutViewModel),
+        ["analyze"] = typeof(AnalyzeViewModel),
     };
 
     /// <summary>

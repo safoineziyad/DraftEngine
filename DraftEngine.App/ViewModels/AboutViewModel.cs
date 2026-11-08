@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Configuration;
@@ -39,6 +41,27 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
     public string DataFolder => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "DraftEngine");
+
+    /// <summary>Version, OS and runtime only: no contract data, paths or identifiers.</summary>
+    public string DiagnosticsText =>
+        $"DraftEngine {AppVersion.Display}{Environment.NewLine}" +
+        $"Windows {Environment.OSVersion.VersionString}{Environment.NewLine}" +
+        $".NET {RuntimeInformation.FrameworkDescription}";
+
+    /// <summary>Copies the content-free diagnostics summary to the clipboard.</summary>
+    [RelayCommand]
+    private void CopyDiagnostics()
+    {
+        try
+        {
+            Clipboard.SetText(DiagnosticsText);
+            UpdateStatus = "Diagnostics copied (version, Windows and .NET only).";
+        }
+        catch (Exception)
+        {
+            UpdateStatus = "The clipboard is unavailable.";
+        }
+    }
 
     /// <summary>True when the notify-only update check is enabled in configuration.</summary>
     public bool IsUpdateCheckEnabled => _options.Features.UpdateCheckEnabled;

@@ -267,7 +267,9 @@ public partial class ContractsListViewModel : ObservableObject
         {
             query = query.Where(c =>
                 c.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                (c.ClientName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+                (c.ClientName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (c.GoverningLaw?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (c.AssembledText?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
         }
 
         if (!string.IsNullOrEmpty(SelectedTypeFilter) && SelectedTypeFilter != AllTypesFilter)

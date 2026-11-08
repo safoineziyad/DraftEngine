@@ -76,6 +76,10 @@ public sealed class SettingsBackedAiService : IContractAiService
         => Require().ApplyChatEditAsync(contract, currentDocument, userInstruction);
 
     /// <inheritdoc />
+    public Task<string> CompletePromptAsync(string systemPrompt, string userPrompt)
+        => Require().CompletePromptAsync(systemPrompt, userPrompt);
+
+    /// <inheritdoc />
     public Task<bool> TestConnectionAsync()
         => Resolve()?.TestConnectionAsync() ?? Task.FromResult(false);
 

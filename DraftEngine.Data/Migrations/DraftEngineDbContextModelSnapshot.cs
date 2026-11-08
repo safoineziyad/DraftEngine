@@ -837,6 +837,46 @@ namespace DraftEngine.Data.Migrations
                     b.ToTable("Contracts", (string)null);
                 });
 
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractAnalysis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ContractId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContractType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ResultJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId");
+
+                    b.ToTable("ContractAnalyses");
+                });
+
             modelBuilder.Entity("DraftEngine.Core.Models.ContractClause", b =>
                 {
                     b.Property<int>("Id")
@@ -1053,6 +1093,15 @@ namespace DraftEngine.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DraftEngine.Core.Models.ContractAnalysis", b =>
+                {
+                    b.HasOne("DraftEngine.Core.Models.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId");
+
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("DraftEngine.Core.Models.ContractClause", b =>

@@ -55,6 +55,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void NavigateArchivedContracts() => _navigation.Navigate("archived-contracts");
 
+    /// <summary>Navigates to the Analyze page.</summary>
+    [RelayCommand]
+    private void NavigateAnalyze() => _navigation.Navigate("analyze");
+
     /// <summary>Navigates to the About &amp; Help page.</summary>
     [RelayCommand]
     private void NavigateAbout() => _navigation.Navigate("about");

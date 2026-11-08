@@ -38,6 +38,20 @@
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
+                    <TextBlock Text="Diagnostics" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                    <TextBlock Text="Version, Windows and .NET only. No contract data, paths or identifiers."
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <TextBlock Text="{Binding DiagnosticsText}" Style="{StaticResource SecondaryTextStyle}"
+                               TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <Button Content="Copy diagnostics" HorizontalAlignment="Left"
+                            Command="{Binding CopyDiagnosticsCommand}"
+                            AutomationProperties.Name="Copy version and OS diagnostics" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
                     <TextBlock Text="Privacy summary" FontWeight="SemiBold" FontSize="15"
                                Foreground="{StaticResource TextPrimaryBrush}" />
                     <TextBlock Text="Contracts, intake answers, chat history, settings and the API key stay on this computer and are encrypted with your Windows user profile. There is no telemetry, no account and no background upload."

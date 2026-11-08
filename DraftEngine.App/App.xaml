@@ -39,6 +39,9 @@
             <DataTemplate DataType="{x:Type vm:AboutViewModel}">
                 <views:AboutView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AnalyzeViewModel}">
+                <views:AnalyzeView />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

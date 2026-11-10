@@ -134,6 +134,7 @@ public partial class App : Application
                 if (!evaluation.IsUsable)
                 {
                     var activation = new LicenseActivationWindow(licenseService);
+                    ThemeService.TrySetDarkTitleBar(activation, themeService.AppliedTheme == AppliedTheme.Dark);
                     if (activation.ShowDialog() != true)
                     {
                         Shutdown();
@@ -156,7 +157,9 @@ public partial class App : Application
             {
                 try
                 {
-                    new OnboardingWindow(locService) { Owner = mainWindow }.ShowDialog();
+                    var onboarding = new OnboardingWindow(locService) { Owner = mainWindow };
+                    ThemeService.TrySetDarkTitleBar(onboarding, themeService.AppliedTheme == AppliedTheme.Dark);
+                    onboarding.ShowDialog();
                     var updated = settingsService.Current;
                     updated.OnboardingCompleted = true;
                     settingsService.SaveAsync(updated).GetAwaiter().GetResult();

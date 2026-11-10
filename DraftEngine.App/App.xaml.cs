@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
@@ -14,6 +16,7 @@ using DraftEngine.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DraftEngine.App;
@@ -36,6 +39,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        var upgradeVerification = e.Args.Contains("--verify-upgrade", StringComparer.Ordinal);
 
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
@@ -57,6 +61,13 @@ public partial class App : Application
                 .Build();
 
             _appOptions = AppOptions.Load(configuration);
+            if (upgradeVerification &&
+                !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("DRAFTENGINE_DATA_DIR")))
+            {
+                _appOptions.Serilog.FilePath = Path.Combine(
+                    Environment.GetEnvironmentVariable("DRAFTENGINE_DATA_DIR")!,
+                    "upgrade-smoke-.log");
+            }
 
             // Rolling file log from the Serilog section (environment variables expanded).
             var logFilePath = Environment.ExpandEnvironmentVariables(_appOptions.Serilog.FilePath);
@@ -81,6 +92,13 @@ public partial class App : Application
             // Applies migrations and creates %APPDATA%\DraftEngine; throws a friendly
             // InvalidOperationException which is surfaced below instead of an opaque crash.
             DatabaseService.EnsureDatabaseCreated(_host.Services);
+
+            if (upgradeVerification)
+            {
+                VerifyUpgradeDatabase();
+                Shutdown(0);
+                return;
+            }
 
             // Wire up localization before any window is created: load the saved/Windows
             // language, expose a bindable source for {loc:T Key}, and set the WPF text
@@ -149,6 +167,13 @@ public partial class App : Application
         {
             Log.Fatal(ex, "Application startup failed.");
 
+            if (upgradeVerification)
+            {
+                WriteUpgradeVerificationFailure(ex.GetType().Name);
+                Shutdown(-1);
+                return;
+            }
+
             // The database bootstrap throws a curated InvalidOperationException; surface that
             // sentence so the user knows what to fix. Anything else could be any technical
             // failure (DI, XAML, IO), so only the generic line is shown - never ex.Message.
@@ -162,6 +187,66 @@ public partial class App : Application
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(-1);
+        }
+    }
+
+    private void VerifyUpgradeDatabase()
+    {
+        var dataDirectory = Environment.GetEnvironmentVariable("DRAFTENGINE_DATA_DIR");
+        var expectedTitle = Environment.GetEnvironmentVariable("DRAFTENGINE_EXPECTED_CONTRACT_TITLE");
+        var reportPath = Environment.GetEnvironmentVariable("DRAFTENGINE_UPGRADE_REPORT");
+        if (string.IsNullOrWhiteSpace(dataDirectory) ||
+            string.IsNullOrWhiteSpace(expectedTitle) ||
+            string.IsNullOrWhiteSpace(reportPath))
+        {
+            throw new InvalidOperationException("Upgrade verification requires its test environment variables.");
+        }
+
+        using var scope = _host!.Services.CreateScope();
+        var database = scope.ServiceProvider.GetRequiredService<DraftEngineDbContext>();
+        var contractSurvived = database.Contracts.Any(contract => contract.Title == expectedTitle);
+        var pendingMigrations = database.Database.GetPendingMigrations().Count();
+        var backupCount = Directory.GetFiles(
+            dataDirectory,
+            "draftengine.db.backup-*",
+            SearchOption.TopDirectoryOnly).Length;
+
+        var report = new
+        {
+            Status = contractSurvived && pendingMigrations == 0 && backupCount > 0 ? "passed" : "failed",
+            ContractSurvived = contractSurvived,
+            PendingMigrations = pendingMigrations,
+            PreMigrationBackupCount = backupCount
+        };
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(reportPath))!);
+        File.WriteAllText(reportPath, JsonSerializer.Serialize(report));
+
+        if (report.Status != "passed")
+        {
+            throw new InvalidOperationException("The database upgrade smoke check failed.");
+        }
+    }
+
+    private static void WriteUpgradeVerificationFailure(string exceptionType)
+    {
+        var reportPath = Environment.GetEnvironmentVariable("DRAFTENGINE_UPGRADE_REPORT");
+        if (string.IsNullOrWhiteSpace(reportPath))
+        {
+            return;
+        }
+
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(reportPath))!);
+            File.WriteAllText(reportPath, JsonSerializer.Serialize(new
+            {
+                Status = "failed",
+                ExceptionType = exceptionType
+            }));
+        }
+        catch (IOException)
+        {
+            // The verification report is best-effort; the nonzero process exit remains authoritative.
         }
     }
 

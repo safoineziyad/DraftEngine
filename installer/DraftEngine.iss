@@ -12,7 +12,7 @@
 ; ============================================================================
 
 ; --- Single source of truth for the version --------------------------------
-#define AppVersion "0.4.0"
+#define AppVersion "0.4.0.1"
 ; ---------------------------------------------------------------------------
 
 #define AppName "DraftEngine"
@@ -72,7 +72,7 @@ RestartApplications=yes
 ; the directives are omitted and the build proceeds unsigned - no failure.
 #define SignCert GetEnv("DRAFTENGINE_SIGN_CERT")
 #define SignPassword GetEnv("DRAFTENGINE_SIGN_PASSWORD")
-#if SignCert != ""
+#if SignCert != "" && SignPassword != ""
 SignTool=signtool sign /f "{#SignCert}" /p "{#SignPassword}" /fd sha256 /tr http://timestamp.digicert.com /td sha256 $f
 SignedUninstaller=yes
 #endif
@@ -100,30 +100,3 @@ Name: "{autodesktop}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename
 Filename: "{app}\DraftEngine.App.exe"; Flags: nowait postinstall skipifsilent
 ; The interactive entry skips silent mode; this entry relaunches after a silent update.
 Filename: "{app}\DraftEngine.App.exe"; Flags: nowait; Check: WizardSilent
-
-[Code]
-// ---------------------------------------------------------------------------
-// User data (contracts, settings, logs) lives in %APPDATA%\DraftEngine and is
-// NOT part of the installation, so a normal uninstall never touches it.
-// On uninstall we ask once (default: No / keep data) and delete afterwards.
-// ---------------------------------------------------------------------------
-var
-  DeleteUserData: Boolean;
-
-function InitializeUninstall(): Boolean;
-begin
-  Result := True; // never block the uninstall itself
-  DeleteUserData := False;
-  if DirExists(ExpandConstant('{userappdata}\DraftEngine')) then
-    DeleteUserData := MsgBox(
-      'Do you also want to delete your DraftEngine data (contracts and settings)?' + #13#13 +
-      'Location: ' + ExpandConstant('{userappdata}\DraftEngine') + #13#13 +
-      'Click No to keep your data (it will be reused by a future installation).',
-      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES; // MB_DEFBUTTON2 = No is default
-end;
-
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-begin
-  if (CurUninstallStep = usPostUninstall) and DeleteUserData then
-    DelTree(ExpandConstant('{userappdata}\DraftEngine'), True, True, True);
-end;

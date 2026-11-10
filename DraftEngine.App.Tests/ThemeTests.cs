@@ -78,6 +78,23 @@ public sealed class ThemeTests
     }
 
     [Fact]
+    public void HighContrast_OverridesTheSelectedPalette()
+    {
+        var settings = new FakeSettingsService();
+        var system = new FakeSystemThemeProvider(usesLight: true);
+        var highContrast = true;
+        var theme = new ThemeService(settings, system, () => highContrast);
+
+        theme.Initialize("Light");
+        Assert.True(theme.IsHighContrast);
+
+        // Turning High Contrast off restores the explicit Light palette.
+        highContrast = false;
+        system.RaiseChanged(usesLight: true);
+        Assert.False(theme.IsHighContrast);
+    }
+
+    [Fact]
     public void ExplicitMode_IgnoresSystemChanges()
     {
         var settings = new FakeSettingsService();

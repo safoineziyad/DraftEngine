@@ -84,6 +84,22 @@ public sealed class ThemeDictionaryTests
     }
 
     [Fact]
+    public void HighContrast_DefinesEveryReferencedBrush()
+    {
+        var highContrast = LoadKeys("HighContrast.xaml");
+        var referenced = XamlFiles()
+            .SelectMany(file => Regex.Matches(File.ReadAllText(file), @"\{DynamicResource\s+([A-Za-z0-9_.]+)\}"))
+            .Select(match => match.Groups[1].Value)
+            .Where(key => key.EndsWith("Brush", StringComparison.Ordinal))
+            .Distinct(StringComparer.Ordinal);
+
+        foreach (var key in referenced)
+        {
+            Assert.True(highContrast.Contains(key), $"HighContrast.xaml is missing referenced brush '{key}'.");
+        }
+    }
+
+    [Fact]
     public void ViewsAndStyles_ContainNoColorLiterals()
     {
         var offenders = new List<string>();

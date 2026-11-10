@@ -66,6 +66,11 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 
 NEXT STEP: run the full Release suite, record the final counts, and write the Done/Partial/Not-done report with click-through steps.
 
+### Task 2c — High Contrast (Done, not visually verified, 2026-11-10)
+
+- Added `Themes/HighContrast.xaml` mapping every semantic brush to Windows system colors; `ThemeService` selects it automatically when `SystemParameters.HighContrast` is true (even with an explicit Light/Dark choice), never forces a dark title bar in that mode, and re-evaluates on High Contrast changes. `IsHighContrast` is exposed for tests.
+- Tests: `HighContrast_DefinesEveryReferencedBrush`, `HighContrast_OverridesTheSelectedPalette`. Affected suite 25/25 pass.
+
 ### Task 3 + ratchet — pickers and a lower literal baseline (Done, not visually verified, 2026-11-10)
 
 - Language picker already offered English/Français/العربية/Español in their own names, applied immediately and persisted; new tests pin that behaviour (`SettingsPickerTests`). The theme picker added in 2a follows the active language ("Clair" after switching to French).

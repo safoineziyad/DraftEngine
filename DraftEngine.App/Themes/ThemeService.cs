@@ -29,17 +29,34 @@ public sealed class ThemeService : IThemeService, IDisposable
 {
     private readonly IAppSettingsService _settings;
     private readonly ISystemThemeProvider _systemTheme;
+    private readonly Func<bool> _highContrastProvider;
     private ResourceDictionary? _currentDictionary;
+    private bool _highContrast;
 
-    public ThemeService(IAppSettingsService settings, ISystemThemeProvider systemTheme)
+    public ThemeService(
+        IAppSettingsService settings,
+        ISystemThemeProvider systemTheme,
+        Func<bool>? highContrastProvider = null)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _systemTheme = systemTheme ?? throw new ArgumentNullException(nameof(systemTheme));
+        _highContrastProvider = highContrastProvider ?? (() => SystemParameters.HighContrast);
         _systemTheme.SystemThemeChanged += OnSystemThemeChanged;
+        try
+        {
+            SystemParameters.StaticPropertyChanged += OnSystemParametersChanged;
+        }
+        catch (Exception)
+        {
+            // Static system-parameter events are best-effort.
+        }
     }
 
     public ThemeMode Mode { get; private set; } = ThemeMode.System;
     public AppliedTheme AppliedTheme { get; private set; } = AppliedTheme.Light;
+
+    /// <summary>True when the Windows High Contrast scheme is driving the palette.</summary>
+    public bool IsHighContrast => _highContrast;
     public event EventHandler? ThemeChanged;
 
     public void Initialize(string? storedMode)
@@ -59,9 +76,31 @@ public sealed class ThemeService : IThemeService, IDisposable
 
     private void OnSystemThemeChanged(object? sender, EventArgs e)
     {
-        if (Mode == ThemeMode.System)
+        // High Contrast can change while an explicit Light/Dark choice is active, so
+        // always re-evaluate; Follow-Windows also re-resolves its light/dark value.
+        if (Mode == ThemeMode.System || IsHighContrast != SafeHighContrast())
         {
             Apply(Mode, persist: false);
+        }
+    }
+
+    private void OnSystemParametersChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (string.Equals(e.PropertyName, nameof(SystemParameters.HighContrast), StringComparison.Ordinal))
+        {
+            Apply(Mode, persist: false);
+        }
+    }
+
+    private bool SafeHighContrast()
+    {
+        try
+        {
+            return _highContrastProvider();
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 
@@ -69,7 +108,8 @@ public sealed class ThemeService : IThemeService, IDisposable
     {
         Mode = mode;
         var applied = ThemeResolver.Resolve(mode, _systemTheme.SystemUsesLightMode());
-        if (applied == AppliedTheme && _currentDictionary is not null && !persist)
+        var highContrast = SafeHighContrast();
+        if (applied == AppliedTheme && highContrast == _highContrast && _currentDictionary is not null && !persist)
         {
             // Still refresh title bars after startup.
             UpdateTitleBars(applied);
@@ -77,9 +117,11 @@ public sealed class ThemeService : IThemeService, IDisposable
         }
 
         AppliedTheme = applied;
-        var uri = new Uri(
-            applied == AppliedTheme.Dark ? "Themes/Dark.xaml" : "Themes/Light.xaml",
-            UriKind.Relative);
+        _highContrast = highContrast;
+        var themeFile = highContrast
+            ? "Themes/HighContrast.xaml"
+            : applied == AppliedTheme.Dark ? "Themes/Dark.xaml" : "Themes/Light.xaml";
+        var uri = new Uri(themeFile, UriKind.Relative);
 
         try
         {
@@ -103,7 +145,8 @@ public sealed class ThemeService : IThemeService, IDisposable
                 _currentDictionary = dictionary;
             }
 
-            UpdateTitleBars(applied);
+            // Never force a dark title bar in High Contrast; the system scheme owns it.
+            UpdateTitleBars(highContrast ? AppliedTheme.Light : applied);
             ThemeChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)
@@ -117,7 +160,8 @@ public sealed class ThemeService : IThemeService, IDisposable
         var source = dictionary.Source?.OriginalString;
         return source is not null &&
             (source.EndsWith("Themes/Light.xaml", StringComparison.OrdinalIgnoreCase) ||
-             source.EndsWith("Themes/Dark.xaml", StringComparison.OrdinalIgnoreCase));
+             source.EndsWith("Themes/Dark.xaml", StringComparison.OrdinalIgnoreCase) ||
+             source.EndsWith("Themes/HighContrast.xaml", StringComparison.OrdinalIgnoreCase));
     }
 
     private static void UpdateTitleBars(AppliedTheme theme)
@@ -163,6 +207,15 @@ public sealed class ThemeService : IThemeService, IDisposable
     public void Dispose()
     {
         _systemTheme.SystemThemeChanged -= OnSystemThemeChanged;
+        try
+        {
+            SystemParameters.StaticPropertyChanged -= OnSystemParametersChanged;
+        }
+        catch (Exception)
+        {
+            // Ignore teardown races.
+        }
+
         ( _systemTheme as IDisposable)?.Dispose();
     }
 }

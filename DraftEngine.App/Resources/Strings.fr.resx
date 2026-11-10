@@ -98,6 +98,7 @@
   <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choisir un fichier...</value></data>
   <data name="Settings.PageTitle" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Settings.LanguageDescription" xml:space="preserve"><value>Choisissez la langue utilisée dans DraftEngine. Les modifications s'appliquent immédiatement.</value></data>
+  <data name="Settings.ThemeDescription" xml:space="preserve"><value>Choisissez Clair, Sombre ou suivez le thème Windows. Les modifications s'appliquent immédiatement.</value></data>
   <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Bienvenue dans DraftEngine</value></data>
   <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Choisissez votre langue</value></data>
   <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>

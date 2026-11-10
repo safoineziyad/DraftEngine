@@ -36,6 +36,23 @@
                 </StackPanel>
             </Border>
 
+            <!-- Theme: applies immediately and is persisted. -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.Theme}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{loc:T Settings.ThemeDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                    <ComboBox ItemsSource="{Binding ThemeOptions}"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="Mode"
+                              SelectedValue="{Binding SelectedTheme, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.Theme}"
+                              HorizontalAlignment="Left"
+                              Width="240" />
+                </StackPanel>
+            </Border>
+
             <!-- OpenAI section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>

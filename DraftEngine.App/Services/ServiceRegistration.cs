@@ -2,6 +2,7 @@ using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Themes;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models.ContractTypes;
@@ -86,6 +87,10 @@ public static class ServiceRegistration
         // Localization: resx-backed strings, live language switching and persistence.
         services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+
+        // Theme: Light/Dark/Follow-Windows, applied live and persisted.
+        services.AddSingleton<ISystemThemeProvider, RegistrySystemThemeProvider>();
+        services.AddSingleton<IThemeService, ThemeService>();
 
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();

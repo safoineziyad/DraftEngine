@@ -9,6 +9,7 @@ using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
+using DraftEngine.App.Themes;
 using DraftEngine.App.ViewModels;
 using DraftEngine.App.Views;
 using DraftEngine.Core.Interfaces;
@@ -118,6 +119,11 @@ public partial class App : Application
                 redactionService.IsEnabled = settingsService.Current.HidePartyNamesFromAi;
             }
 
+            // Apply the saved Light/Dark/Follow-Windows theme before the first window is
+            // created so there is no light flash and every brush resolves at load time.
+            var themeService = _host.Services.GetRequiredService<IThemeService>();
+            themeService.Initialize(settingsService.Current.Theme);
+
             // Offline license gate (only when Features:LicensingEnabled is on). With the
             // default configuration this block is skipped entirely and startup is unchanged.
             if (_appOptions.Features.LicensingEnabled)
@@ -140,6 +146,7 @@ public partial class App : Application
             {
                 DataContext = _host.Services.GetRequiredService<MainViewModel>()
             };
+            ThemeService.TrySetDarkTitleBar(mainWindow, themeService.AppliedTheme == AppliedTheme.Dark);
             MainWindow = mainWindow;
             mainWindow.Show();
 

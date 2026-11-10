@@ -64,7 +64,14 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Task 2 — theme service wiring (initialize before the first window, Settings theme picker) plus the initial control-style pass; build Release, run affected tests, commit, push.
+NEXT STEP: Task 2 — theme every control style and popup (Button, TextBox, ComboBox popup, DataGrid, ListView, TabControl, ScrollBar, ToolTip, Expander, ContextMenu, CheckBox, dialogs, diff panel) and remove remaining color literals; build Release, run affected tests, commit, push.
+
+### Task 2a — theme service wiring + picker (Done, not visually verified, 2026-11-10)
+
+- `IThemeService`/`ISystemThemeProvider` are now registered in DI and initialized in `App.OnStartup` **before** the first window is created (`themeService.Initialize(settings.Theme)`), so there is no light flash. `ThemeService.TrySetDarkTitleBar` is applied to MainWindow (DWM attribute 20 with 19 fallback, failures silent).
+- `ThemeService.Apply` now removes every Light/Dark theme dictionary (including the static `Themes/Light.xaml` fallback) before inserting the applied one, so a dark theme is never shadowed by the light fallback. `RegistrySystemThemeProvider` live-switches only in Follow-Windows mode.
+- Settings gains a theme picker (Follow Windows/Light/Dark) that applies and persists immediately; a manual Settings save now preserves `Theme`/`Language` instead of resetting them. New `Settings.ThemeDescription` key in EN/FR/AR/ES.
+- Tests: `ThemeTests` (17 incl. the resolution matrix, persistence round trip, live System switch, explicit-mode isolation and the picker). Affected suite 44/44 pass; build 0 errors. **Not visually verified.**
 
 ### Task 1 — sidebar (Done, not visually verified, 2026-11-10)
 

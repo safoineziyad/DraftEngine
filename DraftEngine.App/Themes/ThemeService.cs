@@ -87,9 +87,15 @@ public sealed class ThemeService : IThemeService, IDisposable
             var merged = Application.Current?.Resources.MergedDictionaries;
             if (merged is not null)
             {
-                if (_currentDictionary is not null)
+                // Remove every theme dictionary, including the static Light fallback merged
+                // in App.xaml and any previously applied dictionary, so a dark theme can
+                // never be shadowed by the light one (later merged dictionaries win).
+                for (var index = merged.Count - 1; index >= 0; index--)
                 {
-                    merged.Remove(_currentDictionary);
+                    if (IsThemeDictionary(merged[index]))
+                    {
+                        merged.RemoveAt(index);
+                    }
                 }
 
                 // Theme first so Typography/Styles resolve against its brushes.
@@ -104,6 +110,14 @@ public sealed class ThemeService : IThemeService, IDisposable
         {
             Log.Warning(ex, "The theme resource dictionary could not be applied.");
         }
+    }
+
+    private static bool IsThemeDictionary(ResourceDictionary dictionary)
+    {
+        var source = dictionary.Source?.OriginalString;
+        return source is not null &&
+            (source.EndsWith("Themes/Light.xaml", StringComparison.OrdinalIgnoreCase) ||
+             source.EndsWith("Themes/Dark.xaml", StringComparison.OrdinalIgnoreCase));
     }
 
     private static void UpdateTitleBars(AppliedTheme theme)

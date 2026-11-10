@@ -64,7 +64,15 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: run the full Release suite, record the final counts, and write the Done/Partial/Not-done report with click-through steps.
+NEXT STEP: none for this batch — Tasks 1–4 are implemented. Remaining known work: the pre-existing 0.2.2 upgrade data loss (see Task 1 note) and migrating Clause Manager / Analyze / About / License Activation.
+
+### Final verification (2026-11-10)
+
+- Release build: **0 errors**, 7 warnings (pre-existing nullable warnings).
+- Full suite: **363 tests, 362 pass, 1 fail** — `DraftEngine.Tests` 225/225, `DraftEngine.Analysis.Tests` 28/28, `DraftEngine.App.Tests` 109/110.
+- The single failure is the **pre-existing** `UpgradeMigrationTests.Version022Database_UpgradesFromCopiedDataDirectory_AndPreservesContract`, reproduced on the clean baseline before any edits (upgrading a 0.2.2 database leaves `Contracts=0`). It is unrelated to Tasks 1–4 and must be fixed separately.
+- Test count rose from **329** at baseline to **363** (+34).
+- XAML was rendered on an STA thread in Light, Dark and High Contrast for all 9 pages with no exceptions; **no screen was visually reviewed** in this environment.
 
 ### Task 2c — High Contrast (Done, not visually verified, 2026-11-10)
 

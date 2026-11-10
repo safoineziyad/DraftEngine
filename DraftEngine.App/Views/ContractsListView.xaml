@@ -8,8 +8,6 @@
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <!-- Local badge colors (light tints not present in the shared theme). -->
-        <SolidColorBrush x:Key="BadgeGeneratedBg" Color="#DCFCE7" />
     </UserControl.Resources>
 
     <Grid>
@@ -170,7 +168,7 @@
                                                     <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Status}" Value="Generated">
-                                                            <Setter Property="Background" Value="{StaticResource BadgeGeneratedBg}" />
+                                                            <Setter Property="Background" Value="{DynamicResource BadgeGeneratedBackgroundBrush}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Status}" Value="Exported">
                                                             <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
@@ -184,7 +182,7 @@
                                                         <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding Status}" Value="Exported">
-                                                                <Setter Property="Foreground" Value="White" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource SuccessForegroundBrush}" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -241,7 +239,7 @@
                             Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
                     <Border Background="{DynamicResource DangerBrush}" CornerRadius="6" Padding="12">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
+                            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}"
                                        VerticalAlignment="Center" />
                             <Button Content="{loc:T Contracts.TryAgain}" Height="28" Padding="10,0" FontSize="12"
                                     Margin="12,0,0,0"

@@ -64,7 +64,14 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Task 2 — theme every control style and popup (Button, TextBox, ComboBox popup, DataGrid, ListView, TabControl, ScrollBar, ToolTip, Expander, ContextMenu, CheckBox, dialogs, diff panel) and remove remaining color literals; build Release, run affected tests, commit, push.
+NEXT STEP: Task 4 ratchet — migrate the About screen (21 literals) and lower `docs/i18n-baseline.txt` from 90; then run the full suite and write the final report.
+
+### Task 2b — control styles, popups and color literals (Done, rendered-not-visually-verified, 2026-11-10)
+
+- Added 24 semantic brush keys to **both** Light and Dark (control/input surfaces, popup, hover/selected, tooltip, row alternate, accent foreground, warning, diff foreground, success surface, badge, scrollbar thumb, tab selected, danger/success/accent-muted foreground). Light and Dark key sets are identical.
+- `Themes/Styles.xaml` now themes Button (quiet/primary), TextBox, PasswordBox, CheckBox, ComboBox **and its dropdown popup**, ComboBoxItem, ListView/ListViewItem, DataGrid/ColumnHeader/Row/Cell, Expander, ContextMenu/MenuItem, ToolTip, TabControl/TabItem and ScrollBar. Accent foreground is now a theme brush so dark primary buttons use dark text on light blue.
+- Removed **all 22** color literals from views/styles (regex count 22 → 0); error banners use `DangerForegroundBrush`/`SuccessForegroundBrush`, the diff uses `DiffAdded/RemovedForegroundBrush`, the API-key warning uses the warning brushes.
+- Tests: new `ThemeDictionaryTests` (key parity, 15 WCAG AA pairs in both themes, every referenced `*Brush` exists in both, zero color literals) and `WpfPageOpenTests` (opens all 9 pages under en/fr/ar/es × Light/Dark on an STA thread, asserting RTL FlowDirection and a resolved theme brush). A temporary STA harness also rendered all 10 views/windows in both themes with 0 failures; it was removed after use. Affected suite 35/35 pass. **Rendered without exceptions; not visually verified.**
 
 ### Task 2a — theme service wiring + picker (Done, not visually verified, 2026-11-10)
 

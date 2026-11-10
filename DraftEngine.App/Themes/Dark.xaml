@@ -26,4 +26,31 @@
     <SolidColorBrush x:Key="DiffContextBrush" Color="#1F2937" />
     <SolidColorBrush x:Key="NavHoverBrush" Color="#1F2937" />
     <SolidColorBrush x:Key="NavActiveBrush" Color="#1E3A8A" />
+
+    <!-- Control surfaces, inputs and popups -->
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="#111827" />
+    <SolidColorBrush x:Key="ControlBorderBrush" Color="#374151" />
+    <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#374151" />
+    <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#1E3A8A" />
+    <SolidColorBrush x:Key="SelectedForegroundBrush" Color="#F9FAFB" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#6B7280" />
+    <SolidColorBrush x:Key="PopupBackgroundBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="TooltipBackgroundBrush" Color="#374151" />
+    <SolidColorBrush x:Key="TooltipForegroundBrush" Color="#F9FAFB" />
+    <SolidColorBrush x:Key="RowAlternateBackgroundBrush" Color="#111827" />
+    <SolidColorBrush x:Key="AccentForegroundBrush" Color="#0B1220" />
+    <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#3B2A12" />
+    <SolidColorBrush x:Key="WarningBorderBrush" Color="#B45309" />
+    <SolidColorBrush x:Key="WarningForegroundBrush" Color="#FCD34D" />
+    <SolidColorBrush x:Key="DiffAddedForegroundBrush" Color="#86EFAC" />
+    <SolidColorBrush x:Key="DiffRemovedForegroundBrush" Color="#FCA5A5" />
+    <SolidColorBrush x:Key="SuccessSurfaceBrush" Color="#14432A" />
+    <SolidColorBrush x:Key="BadgeGeneratedBackgroundBrush" Color="#14432A" />
+    <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#4B5563" />
+    <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="#6B7280" />
+    <SolidColorBrush x:Key="TabSelectedForegroundBrush" Color="#93C5FD" />
+    <SolidColorBrush x:Key="DangerForegroundBrush" Color="#3F0D0D" />
+    <SolidColorBrush x:Key="SuccessForegroundBrush" Color="#052E16" />
+    <SolidColorBrush x:Key="AccentMutedForegroundBrush" Color="#1E3A8A" />
 </ResourceDictionary>

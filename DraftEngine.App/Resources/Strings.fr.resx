@@ -103,6 +103,9 @@
   <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Common.VersionLabel" xml:space="preserve"><value>Version </value></data>
   <data name="Main.VersionAutomation" xml:space="preserve"><value>Version de l'application</value></data>
+  <data name="Main.CommitLabel" xml:space="preserve"><value>Révision</value></data>
+  <data name="Nav.GroupWorkspace" xml:space="preserve"><value>Espace de travail</value></data>
+  <data name="Nav.GroupTools" xml:space="preserve"><value>Outils</value></data>
   <data name="Nav.DashboardAutomation" xml:space="preserve"><value>Aller au tableau de bord</value></data>
   <data name="Nav.NewContractAutomation" xml:space="preserve"><value>Commencer un nouveau contrat</value></data>
   <data name="Nav.ContractsAutomation" xml:space="preserve"><value>Aller à la liste des contrats</value></data>

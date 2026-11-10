@@ -64,7 +64,16 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Stage 1 — migrate Clause Manager as its own batch; build Release, run all tests, update this line, commit, and push.
+NEXT STEP: Task 2 — theme service wiring (initialize before the first window, Settings theme picker) plus the initial control-style pass; build Release, run affected tests, commit, push.
+
+### Task 1 — sidebar (Done, not visually verified, 2026-11-10)
+
+Verified baseline on `feature/i18n-theme` before any edits: Release build 0 errors, full suite **329 tests** (225 `DraftEngine.Tests`, 76 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`). One **pre-existing** failure: `UpgradeMigrationTests.Version022Database_UpgradesFromCopiedDataDirectory_AndPreservesContract` — upgrading a 0.2.2 database leaves `Contracts=0` (the seeded default user is replaced and cascades). Reproduced on the clean tree at `9963a66`, unrelated to this work.
+
+- Sidebar regrouped: **Workspace** (Dashboard, New Contract, Contracts, Archived), **Tools** (Analyze, Clause Manager), bottom-pinned **Settings** and optional **About**. Exactly one Settings entry (test asserts it).
+- Every item has a Segoe Fluent Icons glyph (Segoe MDL2 Assets fallback) via `IconFontFamily`; labels, automation names and `ToolTip` come from `NavigationItemViewModel`/`{loc:T}`. Active page shows an accent bar on the leading edge and a `NavActiveBrush` tint; hover and keyboard-focus states added. Layout mirrors under RTL because each row is a `FlowDirection`-aware grid.
+- Footer shows `AppVersion.Display` (never hardcoded) and the build commit hash when `AppVersion.HasCommitHash` is true (`Main.CommitLabel` localized). New keys `Nav.GroupWorkspace`, `Nav.GroupTools`, `Main.CommitLabel` added in EN/FR/AR/ES.
+- Tests: new `SidebarTests` (6) covering single Settings, grouping, icons, active marker, live label switch and About gating. Build 0 errors; affected tests 12/12 pass. **Not visually verified.**
 
 ### Test counts
 

@@ -16,6 +16,15 @@ public static class AppVersion
     public static string BuildStamp { get; } =
         $"Commit {GetMetadata("BuildCommitHash")} · {GetMetadata("BuildDateUtc")}";
 
+    /// <summary>The git commit hash stamped at build time, or "local"/"unknown" when absent.</summary>
+    public static string CommitHash { get; } = GetMetadata("BuildCommitHash");
+
+    /// <summary>True when a real commit hash was stamped (not the local/unknown placeholder).</summary>
+    public static bool HasCommitHash { get; } =
+        !string.IsNullOrWhiteSpace(CommitHash) &&
+        !string.Equals(CommitHash, "local", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(CommitHash, "unknown", StringComparison.OrdinalIgnoreCase);
+
     private static string ResolveDisplayVersion()
     {
         var assembly = Assembly.GetExecutingAssembly();

@@ -103,6 +103,9 @@
   <data name="Common.Version" xml:space="preserve"><value>الإصدار {0}</value></data>
   <data name="Common.VersionLabel" xml:space="preserve"><value>الإصدار </value></data>
   <data name="Main.VersionAutomation" xml:space="preserve"><value>إصدار التطبيق</value></data>
+  <data name="Main.CommitLabel" xml:space="preserve"><value>رفع</value></data>
+  <data name="Nav.GroupWorkspace" xml:space="preserve"><value>مساحة العمل</value></data>
+  <data name="Nav.GroupTools" xml:space="preserve"><value>الأدوات</value></data>
   <data name="Nav.DashboardAutomation" xml:space="preserve"><value>الانتقال إلى لوحة التحكم</value></data>
   <data name="Nav.NewContractAutomation" xml:space="preserve"><value>بدء عقد جديد</value></data>
   <data name="Nav.ContractsAutomation" xml:space="preserve"><value>الانتقال إلى قائمة العقود</value></data>

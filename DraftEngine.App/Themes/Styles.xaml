@@ -104,36 +104,83 @@
         </Setter>
     </Style>
 
-    <!-- Sidebar navigation button: left-aligned, transparent, subtle hover. -->
-    <Style x:Key="NavButtonStyle" TargetType="Button" BasedOn="{StaticResource QuietButtonStyle}">
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="Height" Value="36" />
-        <Setter Property="Padding" Value="16,0" />
-        <Setter Property="Margin" Value="0,2" />
+    <!-- Sidebar group header ("Workspace", "Tools"). -->
+    <Style x:Key="NavGroupHeaderStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="Margin" Value="16,14,16,6" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!--
+        Sidebar navigation item: icon + label, an accent bar on the leading edge and a
+        subtle background tint when active. FlowDirection mirrors the whole grid for RTL,
+        so the accent bar and icon automatically move to the right edge.
+    -->
+    <Style x:Key="NavItemButtonStyle" TargetType="Button">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="Margin" Value="0,1" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Root"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource AccentBrush}"
+                            BorderThickness="0"
                             CornerRadius="6">
-                        <ContentPresenter HorizontalAlignment="Left"
-                                          VerticalAlignment="Center"
-                                          Margin="{TemplateBinding Padding}"
-                                          RecognizesAccessKey="True" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="ActiveBar"
+                                    Grid.Column="0"
+                                    Width="3"
+                                    Margin="0,7"
+                                    CornerRadius="2"
+                                    Background="{DynamicResource AccentBrush}"
+                                    Visibility="Collapsed" />
+                            <ContentPresenter Grid.Column="1"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource AccentLightBrush}" />
+                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource NavHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Root" Property="BorderThickness" Value="1" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Root" Property="Opacity" Value="0.5" />
                         </Trigger>
+                        <DataTrigger Binding="{Binding IsActive}" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{DynamicResource NavActiveBrush}" />
+                            <Setter TargetName="ActiveBar" Property="Visibility" Value="Visible" />
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- Icon font: Segoe Fluent Icons with the Segoe MDL2 Assets fallback on older Windows. -->
+    <Style x:Key="NavIconStyle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>

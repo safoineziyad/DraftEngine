@@ -24,4 +24,6 @@
     <SolidColorBrush x:Key="DiffAddedBrush" Color="#14432A" />
     <SolidColorBrush x:Key="DiffRemovedBrush" Color="#4C1D1D" />
     <SolidColorBrush x:Key="DiffContextBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="NavHoverBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="NavActiveBrush" Color="#1E3A8A" />
 </ResourceDictionary>

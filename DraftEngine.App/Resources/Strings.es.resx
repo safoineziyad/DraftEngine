@@ -114,6 +114,15 @@
   <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analizar un contrato</value></data>
   <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Ir al gestor de cláusulas</value></data>
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Ir a los contratos archivados</value></data>
+  <data name="Archived.Subtitle" xml:space="preserve"><value>Restaure un contrato archivado o elimínelo definitivamente junto con su historial.</value></data>
+  <data name="Archived.Empty" xml:space="preserve"><value>No hay contratos archivados.</value></data>
+  <data name="Archived.Restore" xml:space="preserve"><value>Restaurar</value></data>
+  <data name="Archived.DeletePermanently" xml:space="preserve"><value>Eliminar definitivamente</value></data>
+  <data name="Archived.ErrorLoad" xml:space="preserve"><value>No se pudieron cargar los contratos archivados. Inténtelo de nuevo.</value></data>
+  <data name="Archived.ErrorRestore" xml:space="preserve"><value>No se pudo restaurar este contrato. Inténtelo de nuevo.</value></data>
+  <data name="Archived.ErrorDelete" xml:space="preserve"><value>No se pudo eliminar definitivamente este contrato. Inténtelo de nuevo.</value></data>
+  <data name="Archived.DeleteConfirm" xml:space="preserve"><value>¿Eliminar definitivamente «{0}» y su historial? Esta acción no se puede deshacer.</value></data>
+  <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Eliminar definitivamente el contrato</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Ir a Acerca de y ayuda</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Abrir configuración</value></data>
   <data name="Settings.Subtitle" xml:space="preserve"><value>Conecte DraftEngine con OpenAI y elija los valores predeterminados para los contratos nuevos.</value></data>

@@ -114,6 +114,15 @@
   <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analyser un contrat</value></data>
   <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Aller au gestionnaire de clauses</value></data>
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Aller aux contrats archivés</value></data>
+  <data name="Archived.Subtitle" xml:space="preserve"><value>Restaurez un contrat archivé ou supprimez-le définitivement avec son historique.</value></data>
+  <data name="Archived.Empty" xml:space="preserve"><value>Aucun contrat archivé.</value></data>
+  <data name="Archived.Restore" xml:space="preserve"><value>Restaurer</value></data>
+  <data name="Archived.DeletePermanently" xml:space="preserve"><value>Supprimer définitivement</value></data>
+  <data name="Archived.ErrorLoad" xml:space="preserve"><value>Impossible de charger les contrats archivés. Veuillez réessayer.</value></data>
+  <data name="Archived.ErrorRestore" xml:space="preserve"><value>Impossible de restaurer ce contrat. Veuillez réessayer.</value></data>
+  <data name="Archived.ErrorDelete" xml:space="preserve"><value>Impossible de supprimer définitivement ce contrat. Veuillez réessayer.</value></data>
+  <data name="Archived.DeleteConfirm" xml:space="preserve"><value>Supprimer définitivement « {0} » et son historique ? Cette action est irréversible.</value></data>
+  <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Supprimer définitivement le contrat</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Aller à l'aide et à propos</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
   <data name="Settings.Subtitle" xml:space="preserve"><value>Connectez DraftEngine à OpenAI et choisissez les valeurs par défaut utilisées pour les nouveaux contrats.</value></data>

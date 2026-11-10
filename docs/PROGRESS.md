@@ -64,7 +64,13 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Task 4 ratchet — migrate the About screen (21 literals) and lower `docs/i18n-baseline.txt` from 90; then run the full suite and write the final report.
+NEXT STEP: run the full Release suite, record the final counts, and write the Done/Partial/Not-done report with click-through steps.
+
+### Task 3 + ratchet — pickers and a lower literal baseline (Done, not visually verified, 2026-11-10)
+
+- Language picker already offered English/Français/العربية/Español in their own names, applied immediately and persisted; new tests pin that behaviour (`SettingsPickerTests`). The theme picker added in 2a follows the active language ("Clair" after switching to French).
+- Migrated **Archived Contracts** to `{loc:T}`: subtitle, refresh, header, empty state, restore/delete buttons plus page title and all error/confirm text now come from 13 new `Archived.*` keys in EN/FR/AR/ES. Removed it from `PendingMigration` and lowered `docs/i18n-baseline.txt` **90 → 84**. The color-literal ratchet is now fixed at **0**.
+- Tests: `SettingsPickerTests` (3). Build 0 errors; affected tests 42/42 (LocalizationResource + WpfPageOpen + StartupResolution + SettingsPicker) pass.
 
 ### Task 2b — control styles, popups and color literals (Done, rendered-not-visually-verified, 2026-11-10)
 

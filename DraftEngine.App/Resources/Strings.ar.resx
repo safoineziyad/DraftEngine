@@ -114,6 +114,15 @@
   <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>تحليل عقد</value></data>
   <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>الانتقال إلى مدير البنود</value></data>
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>الانتقال إلى العقود المؤرشفة</value></data>
+  <data name="Archived.Subtitle" xml:space="preserve"><value>استعد عقدًا مؤرشفًا أو احذفه نهائيًا مع سجله.</value></data>
+  <data name="Archived.Empty" xml:space="preserve"><value>لا توجد عقود مؤرشفة.</value></data>
+  <data name="Archived.Restore" xml:space="preserve"><value>استعادة</value></data>
+  <data name="Archived.DeletePermanently" xml:space="preserve"><value>حذف نهائي</value></data>
+  <data name="Archived.ErrorLoad" xml:space="preserve"><value>تعذّر تحميل العقود المؤرشفة. حاول مرة أخرى.</value></data>
+  <data name="Archived.ErrorRestore" xml:space="preserve"><value>تعذّرت استعادة هذا العقد. حاول مرة أخرى.</value></data>
+  <data name="Archived.ErrorDelete" xml:space="preserve"><value>تعذّر حذف هذا العقد نهائيًا. حاول مرة أخرى.</value></data>
+  <data name="Archived.DeleteConfirm" xml:space="preserve"><value>حذف «{0}» وسجله نهائيًا؟ لا يمكن التراجع عن ذلك.</value></data>
+  <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>حذف العقد نهائيًا</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>الانتقال إلى حول والمساعدة</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>فتح الإعدادات</value></data>
   <data name="Settings.Subtitle" xml:space="preserve"><value>اربط DraftEngine بـ OpenAI واختر الإعدادات الافتراضية المستخدمة للعقود الجديدة.</value></data>

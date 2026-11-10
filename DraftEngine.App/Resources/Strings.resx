@@ -114,6 +114,15 @@
   <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analyze a contract</value></data>
   <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Go to Clause Manager</value></data>
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Go to Archived Contracts</value></data>
+  <data name="Archived.Subtitle" xml:space="preserve"><value>Restore an archived contract or permanently delete it and its history.</value></data>
+  <data name="Archived.Empty" xml:space="preserve"><value>No archived contracts.</value></data>
+  <data name="Archived.Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Archived.DeletePermanently" xml:space="preserve"><value>Permanently delete</value></data>
+  <data name="Archived.ErrorLoad" xml:space="preserve"><value>We couldn't load archived contracts. Please try again.</value></data>
+  <data name="Archived.ErrorRestore" xml:space="preserve"><value>We couldn't restore this contract. Please try again.</value></data>
+  <data name="Archived.ErrorDelete" xml:space="preserve"><value>We couldn't permanently delete this contract. Please try again.</value></data>
+  <data name="Archived.DeleteConfirm" xml:space="preserve"><value>Permanently delete "{0}" and its history? This cannot be undone.</value></data>
+  <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Permanently delete contract</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Go to About and Help</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Settings.Subtitle" xml:space="preserve"><value>Connect DraftEngine to OpenAI and choose the defaults used for new contracts.</value></data>

@@ -63,7 +63,10 @@ public sealed class UpgradeMigrationTests
             }
 
             var copiedDatabasePath = Path.Combine(copiedDirectory, "draftengine.db");
-            File.Copy(legacyDatabasePath, copiedDatabasePath);
+            // EF Core leaves SQLite in WAL mode: committed rows can live in the -wal
+            // sidecar. A plain File.Copy of only the .db file yields a stale (even
+            // structurally incomplete) database, so snapshot through the engine.
+            CopyDatabase(legacyDatabasePath, copiedDatabasePath);
 
             var appAssembly = typeof(App).Assembly.Location;
             Assert.True(File.Exists(appAssembly), $"Expected application assembly at '{appAssembly}'.");
@@ -118,7 +121,10 @@ public sealed class UpgradeMigrationTests
             Assert.True(report.RootElement.GetProperty("PreMigrationBackupCount").GetInt32() > 0);
 
             var backupPath = Assert.Single(Directory.GetFiles(copiedDirectory, "draftengine.db.backup-*"));
-            Assert.Equal(File.ReadAllBytes(copiedDatabasePath), File.ReadAllBytes(backupPath));
+            // Byte equality is not a valid invariant for a live SQLite database: opening the
+            // copied file can checkpoint WAL and update the header change counter. The real
+            // guarantee is that the snapshot contains every row of the pre-migration data.
+            AssertDatabasesHaveSameData(copiedDatabasePath, backupPath);
 
             await using (var upgradedDatabase = new DraftEngineDbContext(
                 new DbContextOptionsBuilder<DraftEngineDbContext>().UseSqlite(
@@ -136,5 +142,101 @@ public sealed class UpgradeMigrationTests
                 Directory.Delete(root, recursive: true);
             }
         }
+    }
+
+    /// <summary>
+    /// Asserts two SQLite databases contain exactly the same rows in every user table.
+    /// This is stronger for data safety than a byte comparison (which a header counter can
+    /// break) and still fails if any row is missing, added or altered.
+    /// </summary>
+    private static void AssertDatabasesHaveSameData(string firstPath, string secondPath)
+    {
+        string[] tables =
+        [
+            "Users", "Contracts", "Clauses", "ContractClauses", "ContractFields",
+            "ChatMessages", "GeneratedDocuments", "ContractVersions"
+        ];
+
+        using var first = Open(firstPath);
+        using var second = Open(secondPath);
+        // The clause library is seeded reference data: migrations may append clauses, so it
+        // must retain every pre-upgrade row rather than stay the same size.
+        var growsByDesign = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Clauses" };
+
+        foreach (var table in tables)
+        {
+            // Compare by column name, not ordinal: SQLite migrations rebuild tables, which
+            // reorders columns even when every value is preserved. Match rows by Id so
+            // appended reference rows cannot hide a lost row.
+            var expected = ReadRows(second, table);
+            var actual = ReadRows(first, table);
+            if (!growsByDesign.Contains(table))
+            {
+                Assert.True(expected.Count == actual.Count,
+                    $"Table '{table}' row count changed from {expected.Count} to {actual.Count}.");
+            }
+            else
+            {
+                Assert.True(actual.Count >= expected.Count,
+                    $"Table '{table}' lost rows: {expected.Count} before, {actual.Count} after.");
+            }
+
+            var actualById = actual.ToDictionary(row => row["Id"]);
+            foreach (var expectedRow in expected)
+            {
+                Assert.True(actualById.TryGetValue(expectedRow["Id"], out var upgradedRow),
+                    $"Table '{table}' lost the row with Id {expectedRow["Id"]}.");
+                foreach (var (column, value) in expectedRow)
+                {
+                    Assert.True(upgradedRow.TryGetValue(column, out var upgradedValue),
+                        $"Table '{table}' lost the column '{column}'.");
+                    Assert.True(value == upgradedValue,
+                        $"Table '{table}' row Id {expectedRow["Id"]} column '{column}' changed from '{value}' to '{upgradedValue}'.");
+                }
+            }
+        }
+    }
+
+    private static SqliteConnection Open(string path)
+    {
+        var builder = new SqliteConnectionStringBuilder { DataSource = path, Pooling = false };
+        var connection = new SqliteConnection(builder.ConnectionString);
+        connection.Open();
+        return connection;
+    }
+
+    private static List<Dictionary<string, string>> ReadRows(SqliteConnection connection, string table)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = $"SELECT * FROM {table} ORDER BY rowid";
+        using var reader = command.ExecuteReader();
+        var rows = new List<Dictionary<string, string>>();
+        while (reader.Read())
+        {
+            var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                values[reader.GetName(i)] = reader.IsDBNull(i)
+                    ? "<null>"
+                    : reader.GetValue(i).ToString() ?? string.Empty;
+            }
+
+            rows.Add(values);
+        }
+
+        return rows;
+    }
+
+    /// <summary>Copies a SQLite database consistently, including any WAL contents.</summary>
+    private static void CopyDatabase(string sourcePath, string destinationPath)
+    {
+        var sourceBuilder = new SqliteConnectionStringBuilder { DataSource = sourcePath, Pooling = false };
+        var destinationBuilder = new SqliteConnectionStringBuilder { DataSource = destinationPath, Pooling = false };
+
+        using var source = new SqliteConnection(sourceBuilder.ConnectionString);
+        source.Open();
+        using var destination = new SqliteConnection(destinationBuilder.ConnectionString);
+        destination.Open();
+        source.BackupDatabase(destination);
     }
 }

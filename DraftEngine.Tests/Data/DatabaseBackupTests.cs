@@ -6,8 +6,9 @@ namespace DraftEngine.Tests.Data;
 
 /// <summary>
 /// Tests for the pre-migration database backup performed by
-/// <see cref="DatabaseService"/> (audit Finding #4): a copy of the SQLite file must be
-/// taken just before pending migrations are applied, and old backups must be pruned.
+/// <see cref="DatabaseService"/>: a consistent SQLite snapshot must be taken just before
+/// pending migrations are applied (including committed WAL contents), and old backups
+/// must be pruned.
 /// </summary>
 public class DatabaseBackupTests : IDisposable
 {
@@ -35,6 +36,7 @@ public class DatabaseBackupTests : IDisposable
     {
         _dbContext.Dispose();
         _connection.Dispose();
+        SqliteConnection.ClearAllPools();
 
         try
         {
@@ -49,17 +51,18 @@ public class DatabaseBackupTests : IDisposable
     }
 
     [Fact]
-    public void BackupBeforePendingMigrations_WithPendingMigrations_CreatesBackupFile()
+    public void BackupBeforePendingMigrations_WithPendingMigrations_CreatesSnapshotOfEveryRow()
     {
         // The in-memory context has no migration history table, so every migration is
-        // pending; the "database file" is a dummy on disk whose copy we can assert.
-        var databasePath = CreateDatabaseFile();
+        // pending; the snapshot must capture the real on-disk database file.
+        var databasePath = CreateRealDatabaseFile();
 
-        DatabaseService.BackupBeforePendingMigrations(_dbContext, databasePath, new EmptyServiceProvider());
+        var backupPath = DatabaseService.BackupBeforePendingMigrations(
+            _dbContext, databasePath, new EmptyServiceProvider());
 
-        var backups = Directory.GetFiles(_tempDirectory, "*.backup-*");
-        var backup = Assert.Single(backups);
-        Assert.Equal(File.ReadAllBytes(databasePath), File.ReadAllBytes(backup));
+        Assert.NotNull(backupPath);
+        Assert.True(File.Exists(backupPath));
+        Assert.Equal(ReadValues(databasePath), ReadValues(backupPath!));
     }
 
     [Fact]
@@ -67,10 +70,12 @@ public class DatabaseBackupTests : IDisposable
     {
         // Apply the migrations first so the history table marks the schema as current.
         _dbContext.Database.Migrate();
-        var databasePath = CreateDatabaseFile();
+        var databasePath = CreateRealDatabaseFile();
 
-        DatabaseService.BackupBeforePendingMigrations(_dbContext, databasePath, new EmptyServiceProvider());
+        var backupPath = DatabaseService.BackupBeforePendingMigrations(
+            _dbContext, databasePath, new EmptyServiceProvider());
 
+        Assert.Null(backupPath);
         Assert.Empty(Directory.GetFiles(_tempDirectory, "*.backup-*"));
     }
 
@@ -79,16 +84,40 @@ public class DatabaseBackupTests : IDisposable
     {
         var databasePath = Path.Combine(_tempDirectory, "draftengine.db");
 
-        DatabaseService.BackupBeforePendingMigrations(_dbContext, databasePath, new EmptyServiceProvider());
+        var backupPath = DatabaseService.BackupBeforePendingMigrations(
+            _dbContext, databasePath, new EmptyServiceProvider());
 
+        Assert.Null(backupPath);
         Assert.False(File.Exists(databasePath));
         Assert.Empty(Directory.GetFiles(_tempDirectory, "*.backup-*"));
     }
 
     [Fact]
+    public void CreateSnapshot_FromWalDatabase_IncludesCommittedRows()
+    {
+        // Regression for the upgrade data loss: EF leaves SQLite in WAL mode, so a plain
+        // File.Copy of only the .db file loses rows that are still in the -wal sidecar.
+        var databasePath = Path.Combine(_tempDirectory, "wal.db");
+        var builder = new SqliteConnectionStringBuilder { DataSource = databasePath, Pooling = false };
+        using var live = new SqliteConnection(builder.ConnectionString);
+        live.Open();
+        Execute(live, "PRAGMA journal_mode=WAL;");
+        Execute(live, "CREATE TABLE Data(Id INTEGER PRIMARY KEY, Value TEXT);");
+        Execute(live, "INSERT INTO Data(Value) VALUES ('committed-in-wal');");
+
+        Assert.Equal("wal", ExecuteScalar(live, "PRAGMA journal_mode;"));
+        Assert.True(new FileInfo(databasePath + "-wal").Length > 0, "expected a non-empty WAL sidecar");
+
+        var snapshotPath = Path.Combine(_tempDirectory, "wal-snapshot.db");
+        DatabaseService.CreateSnapshot(databasePath, snapshotPath);
+
+        Assert.Equal(new[] { "committed-in-wal" }, ReadValues(snapshotPath));
+    }
+
+    [Fact]
     public void PruneBackups_KeepsOnlyTheNewestBackups()
     {
-        var databasePath = CreateDatabaseFile();
+        var databasePath = CreateRealDatabaseFile();
 
         // Five fake backups with clearly ordered timestamps.
         for (var i = 0; i < 5; i++)
@@ -112,12 +141,47 @@ public class DatabaseBackupTests : IDisposable
         Assert.DoesNotContain("draftengine.db.backup-20260102-000000", names);
     }
 
-    /// <summary>Creates a small dummy file standing in for the SQLite database.</summary>
-    private string CreateDatabaseFile()
+    /// <summary>Creates a real SQLite database file with a single row.</summary>
+    private string CreateRealDatabaseFile()
     {
         var path = Path.Combine(_tempDirectory, "draftengine.db");
-        File.WriteAllBytes(path, new byte[] { 1, 2, 3, 4 });
+        var builder = new SqliteConnectionStringBuilder { DataSource = path, Pooling = false };
+        using var connection = new SqliteConnection(builder.ConnectionString);
+        connection.Open();
+        Execute(connection, "CREATE TABLE Data(Id INTEGER PRIMARY KEY, Value TEXT);");
+        Execute(connection, "INSERT INTO Data(Value) VALUES ('backup-me');");
         return path;
+    }
+
+    private static List<string> ReadValues(string databasePath)
+    {
+        var builder = new SqliteConnectionStringBuilder { DataSource = databasePath, Pooling = false };
+        using var connection = new SqliteConnection(builder.ConnectionString);
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT Value FROM Data ORDER BY Id";
+        using var reader = command.ExecuteReader();
+        var values = new List<string>();
+        while (reader.Read())
+        {
+            values.Add(reader.GetString(0));
+        }
+
+        return values;
+    }
+
+    private static void Execute(SqliteConnection connection, string sql)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        command.ExecuteNonQuery();
+    }
+
+    private static object? ExecuteScalar(SqliteConnection connection, string sql)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        return command.ExecuteScalar();
     }
 
     /// <summary>Minimal service provider: DatabaseService only resolves loggers from it, optionally.</summary>

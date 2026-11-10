@@ -39,7 +39,7 @@ public partial class DraftEngineDbContext : DbContext
     /// <remarks>
     /// <para>
     /// <see cref="Contract.UserId"/> is a required foreign key to <c>Users.Id</c> with
-    /// cascade delete. Nothing ever created that row, so every contract insert failed with
+    /// restrict delete. Nothing ever created that row, so every contract insert failed with
     /// "SQLite Error 19: FOREIGN KEY constraint failed" and the new-contract wizard could
     /// never save.
     /// </para>

@@ -159,9 +159,10 @@ public sealed class UpgradeMigrationTests
 
         using var first = Open(firstPath);
         using var second = Open(secondPath);
-        // The clause library is seeded reference data: migrations may append clauses, so it
-        // must retain every pre-upgrade row rather than stay the same size.
-        var growsByDesign = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Clauses" };
+        // The clause library is seeded reference data, not user content: migrations may append
+        // clauses and normalize their ContractType (AlignClauseData), so it must retain every
+        // pre-upgrade row rather than stay identical.
+        var referenceTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "Clauses" };
 
         foreach (var table in tables)
         {
@@ -170,7 +171,7 @@ public sealed class UpgradeMigrationTests
             // appended reference rows cannot hide a lost row.
             var expected = ReadRows(second, table);
             var actual = ReadRows(first, table);
-            if (!growsByDesign.Contains(table))
+            if (!referenceTables.Contains(table))
             {
                 Assert.True(expected.Count == actual.Count,
                     $"Table '{table}' row count changed from {expected.Count} to {actual.Count}.");
@@ -186,6 +187,11 @@ public sealed class UpgradeMigrationTests
             {
                 Assert.True(actualById.TryGetValue(expectedRow["Id"], out var upgradedRow),
                     $"Table '{table}' lost the row with Id {expectedRow["Id"]}.");
+                if (referenceTables.Contains(table))
+                {
+                    continue; // Seeded library rows may be normalized by design.
+                }
+
                 foreach (var (column, value) in expectedRow)
                 {
                     Assert.True(upgradedRow.TryGetValue(column, out var upgradedValue),

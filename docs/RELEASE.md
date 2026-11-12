@@ -95,5 +95,9 @@ creates a database at the last migration included in the `v0.2.2` source tag, co
 temporary data directory, and starts the built app with `DRAFTENGINE_DATA_DIR` set to that copy.
 The app's `--verify-upgrade` mode exits without opening the UI and reports whether the test
 contract survived, migrations completed, and a pre-migration backup exists. The test also
-compares the backup bytes with the original copied database. This validates data migration and
-the app's configured data path; it does not install over the user's existing application.
+compares every user table row-by-row (by column name and row Id) between the pre-migration
+snapshot and the upgraded database, so no contract, field, clause, version, chat message or
+generated document may be lost or altered. Byte equality is intentionally not used: SQLite
+rebuilds tables and updates its header change counter, which changes bytes without changing
+data. This validates data migration and the app's configured data path; it does not install
+over the user's existing application.

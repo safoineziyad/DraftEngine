@@ -390,4 +390,12 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>Les modifications par IA transmettent le texte de ce contrat à OpenAI pour traitement.&#xA;&#xA;Continuez uniquement si vous acceptez d&apos;envoyer ce document à OpenAI — par exemple, s&apos;il ne contient aucune information privilégiée ou confidentielle que vous n&apos;êtes pas autorisé à partager avec un service tiers.&#xA;&#xA;Continuer la modification par IA ?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La modification par IA envoie des données à OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine n&apos;a pas pu démarrer</value></data>
+  <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine n&apos;a pas pu ouvrir sa base de données. Vos données n&apos;ont pas été modifiées. Redémarrez l&apos;application ; si le problème persiste, contactez le support.</value></data>
+  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>La mise à niveau de la base de données n&apos;a pas pu aboutir ; la sauvegarde effectuée avant la mise à niveau a donc été restaurée. Vos données sont inchangées. Redémarrez l&apos;application ; si le problème persiste, contactez le support.</value></data>
+  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>Diagnostics (version, Windows, .NET et type d&apos;erreur uniquement ; aucune donnée de contrat)</value></data>
+  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>Copier les diagnostics</value></data>
+  <data name="Startup.Error.Close" xml:space="preserve"><value>Fermer</value></data>
+  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copiés.</value></data>
+  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>Le presse-papiers est indisponible.</value></data>
 </root>

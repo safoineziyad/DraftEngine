@@ -64,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: none for this batch — Tasks 1–4 are implemented. Remaining known work: the pre-existing 0.2.2 upgrade data loss (see Task 1 note) and migrating Clause Manager / Analyze / About / License Activation.
+NEXT STEP: Phase 2 — build and verify the 0.4.0-beta.1 installer. The running DraftEngine instance must be closed first so `dotnet publish` can replace the Release output. Phase 1 evidence is under "Phase 1 — 0.2.2 upgrade data-loss fix (2026-11-12)" below.
 
 ### Final verification (2026-11-10)
 
@@ -131,3 +131,24 @@ Verified baseline on `feature/i18n-theme` before any edits: Release build 0 erro
 
 Complete: 222 tests, multi-type generation, clause manager, drafts, archive, AI diff/redaction,
 onboarding, About, licensing behind a flag.
+
+### Phase 1 — 0.2.2 upgrade data-loss fix (2026-11-12)
+
+**Root cause (reproduced, not the reported one).** No migration deletes or re-inserts the user and no cascade fires. `dotnet ef migrations script` contains no `DELETE FROM "Users"` / `DROP TABLE "Users"` (0 matches; only the `InitialCreate` seed insert). A step-by-step migration harness kept `Contracts = 1` after every migration. The loss happened earlier: EF `Migrate()` leaves SQLite in WAL mode (`PRAGMA journal_mode = wal`, `-wal` file 457,352 bytes), and the test's `File.Copy` of only `draftengine.db` produced a stale/incomplete database, so the verifier saw `Contracts = 0`. Fresh databases default to `journal_mode = delete`; only after the first `Migrate()` does WAL appear.
+
+**Fixes.**
+- All database copies/snapshots now use the SQLite online backup API (`SqliteConnection.BackupDatabase`), never `File.Copy`.
+- `DatabaseService.EnsureDatabaseCreated` takes the snapshot **before** any migration, aborts the upgrade if the snapshot cannot be created, and restores the snapshot (clearing pools, `-wal`, `-shm`) if a migration throws. The exception carries `DatabaseService.RestoredDataKey = true`.
+- Startup shows a localized `StartupErrorWindow` with a “Copy diagnostics” button that copies only version, Windows, .NET, exception type and the restored flag (`StartupDiagnostics`); no messages, paths or contract data.
+- `Contracts.UserId → Users.Id` is now `DeleteBehavior.Restrict` via the new corrective migration `20261110212129_RestrictUserCascade` (released migrations untouched; `Clauses.OwnerUserId` was already Restrict).
+
+**Test evidence.** Full suite **372 passed, 0 failed** (232 `DraftEngine.Tests`, 112 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`), up from 363 with 1 failure. New/updated coverage:
+- `UpgradeMigrationTests` passes and compares every user table row-by-row, by column name and row Id, between the pre-upgrade snapshot and the upgraded database (byte equality is invalid because SQLite rebuilds tables). The seeded `Clauses` library may grow/normalize; every original clause Id must survive.
+- `UpgradeDataPreservationTests`: real 0.2.2 schema fixture (3 contracts, fields, clauses, versions, chat messages, generated documents) and a 0.3.x-era fixture; identical row counts for every user table and retained contract text/clause ids.
+- `DatabaseBackupTests.CreateSnapshot_FromWalDatabase_IncludesCommittedRows` reproduces the WAL root cause.
+- `DatabaseUpgradeFailureTests`: a deliberately failing migration restores the original database, keeps the contract row and reports the restore.
+- `MigrationUserSafetyTests`: scans every migration `UpOperation` and fails on `DeleteData`/`DropTable`/SQL delete targeting Users or Contracts.
+- `CascadeProtectionTests`: every FK to `User` is `Restrict`; deleting the user throws and the contract survives.
+- `StartupDiagnosticsTests`: diagnostics contain no contract text, key or path.
+
+**Real data-folder copy check (counts only).** A copy of `DE-backup-20261110-2126` was migrated through `DatabaseService` in a temp folder (source untouched): Users 1→1, Contracts 1→1, ContractFields 9→9, ContractClauses 9→9, ContractVersions 1→1, Clauses 42→42, ChatMessages 0→0, GeneratedDocuments 0→0, ContractAnalyses 0→0; `__EFMigrationsHistory` 10→11. **Not visually verified.**

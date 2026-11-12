@@ -390,4 +390,12 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>La edición con IA comparte el texto de este contrato con OpenAI para procesarlo.&#xA;&#xA;Continúa solo si aceptas enviar este documento a OpenAI; por ejemplo, si no contiene material privilegiado o confidencial que no tengas permiso para compartir con un servicio externo.&#xA;&#xA;¿Continuar con la edición con IA?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La edición con IA envía datos a OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine no pudo iniciarse</value></data>
+  <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine no pudo abrir su base de datos. Tus datos no se modificaron. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
+  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>No se pudo completar la actualización de la base de datos, así que se restauró la copia de seguridad previa. Tus datos no han cambiado. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
+  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>Diagnóstico (solo versión, Windows, .NET y tipo de error; sin datos de contratos)</value></data>
+  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>Copiar diagnóstico</value></data>
+  <data name="Startup.Error.Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnóstico copiado.</value></data>
+  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>El portapapeles no está disponible.</value></data>
 </root>

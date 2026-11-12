@@ -36,6 +36,8 @@ public sealed class DatabaseUpgradeFailureTests : IDisposable
         var exception = Assert.Throws<InvalidOperationException>(
             () => DatabaseService.EnsureDatabaseCreated(provider));
         Assert.Contains("restored", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.True(exception.Data[DatabaseService.RestoredDataKey] is true,
+            "The startup error path needs the restore flag to show its localized message.");
 
         // Data is back to the pre-upgrade state.
         Assert.Equal(1L, Convert.ToInt64(Scalar(databasePath, "SELECT COUNT(*) FROM Contracts")));

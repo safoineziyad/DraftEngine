@@ -17,6 +17,13 @@ public static class DatabaseService
     private const int BackupFileCount = 3;
 
     /// <summary>
+    /// Exception <see cref="Exception.Data"/> key set to true when a failed upgrade was rolled
+    /// back by restoring the pre-migration snapshot. Startup uses it to choose a localized
+    /// message without parsing the English message text.
+    /// </summary>
+    public const string RestoredDataKey = "DraftEngine.DatabaseRestored";
+
+    /// <summary>
     /// Creates the database directory if needed (e.g. %APPDATA%\DraftEngine), takes a
     /// consistent snapshot of the database when pending migrations are about to be applied,
     /// and then applies those migrations. If a migration fails, the pre-migration snapshot is
@@ -54,7 +61,9 @@ public static class DatabaseService
                   "Check that the application data folder is writable, then restart the application.";
 
             Log(services, LogLevel.Error, friendlyMessage, ex);
-            throw new InvalidOperationException(friendlyMessage, ex);
+            var error = new InvalidOperationException(friendlyMessage, ex);
+            error.Data[RestoredDataKey] = restored;
+            throw error;
         }
     }
 

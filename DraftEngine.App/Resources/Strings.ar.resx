@@ -390,4 +390,12 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>تشارك التعديلات بالذكاء الاصطناعي نص هذا العقد مع OpenAI لمعالجته.&#xA;&#xA;تابع فقط إذا كنت توافق على إرسال هذا المستند إلى OpenAI؛ مثلاً إذا لم يتضمن معلومات سرية أو امتيازية لا يُسمح لك بمشاركتها مع خدمة خارجية.&#xA;&#xA;هل تريد متابعة التعديل بالذكاء الاصطناعي؟</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>التعديل بالذكاء الاصطناعي يرسل بيانات إلى OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Startup.Error.Title" xml:space="preserve"><value>تعذّر بدء DraftEngine</value></data>
+  <data name="Startup.Error.Body" xml:space="preserve"><value>تعذّر على DraftEngine فتح قاعدة بياناته. لم تتغيّر بياناتك. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
+  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>تعذّر إكمال ترقية قاعدة البيانات، لذا تمت استعادة النسخة الاحتياطية التي أُنشئت قبل الترقية. بياناتك دون تغيير. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
+  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>التشخيص (الإصدار وWindows و.NET ونوع الخطأ فقط؛ دون بيانات العقود)</value></data>
+  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>نسخ التشخيص</value></data>
+  <data name="Startup.Error.Close" xml:space="preserve"><value>إغلاق</value></data>
+  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>تم نسخ التشخيص.</value></data>
+  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>الحافظة غير متاحة.</value></data>
 </root>

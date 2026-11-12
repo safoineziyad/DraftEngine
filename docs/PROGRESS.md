@@ -64,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Phase 2 — build and verify the 0.4.0-beta.1 installer. The running DraftEngine instance must be closed first so `dotnet publish` can replace the Release output. Phase 1 evidence is under "Phase 1 — 0.2.2 upgrade data-loss fix (2026-11-12)" below.
+NEXT STEP: none — Phases 1–4 are complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
 ### Final verification (2026-11-10)
 
@@ -152,3 +152,13 @@ onboarding, About, licensing behind a flag.
 - `StartupDiagnosticsTests`: diagnostics contain no contract text, key or path.
 
 **Real data-folder copy check (counts only).** A copy of `DE-backup-20261110-2126` was migrated through `DatabaseService` in a temp folder (source untouched): Users 1→1, Contracts 1→1, ContractFields 9→9, ContractClauses 9→9, ContractVersions 1→1, Clauses 42→42, ChatMessages 0→0, GeneratedDocuments 0→0, ContractAnalyses 0→0; `__EFMigrationsHistory` 10→11. **Not visually verified.**
+
+### Phases 2–4 — installer and beta pre-release (2026-11-12)
+
+- Versions agree: assembly/file `0.4.0.1`, informational `0.4.0-beta.1`, installer `AppVersion 0.4.0.1`; the UI reads the assembly. Installer `AppId` is the v0.2.2 GUID and there is no `[UninstallDelete]`, so `%APPDATA%\DraftEngine` is never removed. The build script fails if either invariant changes.
+- Kept the framework-dependent publish (`--self-contained false`): the installer is 14.2 MB instead of ~70 MB+, and `InitializeSetup` now checks for the x64 .NET 8 Desktop Runtime, stops with a clear message and opens the download page when it is missing.
+- `installer/DraftEngine.iss` excludes `*.pdb`; `scripts/build-installer.ps1` cleans, publishes, locates ISCC, skips signing cleanly, writes the `.sha256` and prints every path. Output moved from `dist/` to `installer/Output/` (both ignored).
+- Installer: `installer/Output/DraftEngine-Setup-0.4.0.1.exe` (14,256,171 bytes), SHA-256 `40aaee43fe6c98e896114fe3eacacd03c5c0b023fbf52cca11b2d4d9902e5948`.
+- Published `v0.4.0-beta.1` as a **pre-release** from `feature/i18n-theme` with the installer and checksum assets; `v0.2.2` remains Latest. Release notes: `docs/RELEASE-NOTES-0.4.0-beta.1.md`.
+- `installer/Output/`, `publish/` and `dist/` are git-ignored; no installer, `.pdb`, key or secret is committed. Release upload was slow but completed; asset digest matches the local hash.
+- **Not visually verified:** the installer wizard (including the runtime check), the installed app, and the localized startup error window.

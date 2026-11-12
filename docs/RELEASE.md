@@ -25,7 +25,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1
 
 The script cleans and publishes `DraftEngine.App` (framework-dependent, win-x64) to `.\publish`,
 optionally signs the app and installer, and compiles `installer\DraftEngine.iss` with Inno Setup 6.
-The local installer and its SHA-256 file are written to `.\dist\`. It performs no release upload
+The local installer and its SHA-256 file are written to `installer\Output\`. It performs no release upload
 or tagging. Close a running DraftEngine instance before building so Windows does not lock its
 Release executable.
 

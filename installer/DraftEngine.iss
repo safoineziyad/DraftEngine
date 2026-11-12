@@ -89,8 +89,9 @@ Name: "app"; Description: "DraftEngine application"; Types: full compact custom;
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 ; The published output (..\publish). ignoreversion so every build overwrites.
+; Debug symbols are not shipped to users.
 [Files]
-Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: app
+Source: "..\publish\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: app
 
 [Icons]
 Name: "{group}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\{#AppExeName}"; Comment: "AI contract drafting assistant"
@@ -100,3 +101,52 @@ Name: "{autodesktop}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename
 Filename: "{app}\DraftEngine.App.exe"; Flags: nowait postinstall skipifsilent
 ; The interactive entry skips silent mode; this entry relaunches after a silent update.
 Filename: "{app}\DraftEngine.App.exe"; Flags: nowait; Check: WizardSilent
+
+[Code]
+const
+  DotNetDownloadUrl = 'https://dotnet.microsoft.com/download/dotnet/8.0';
+
+{ The app is published framework-dependent, so the x64 .NET 8 Desktop Runtime must be
+  present. Check the shared framework folder; a missing runtime stops setup with a clear
+  message and a download link instead of failing later when the app cannot start. }
+function DesktopRuntime8Installed(): Boolean;
+var
+  FindRec: TFindRec;
+begin
+  Result := False;
+  if FindFirst(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App\8.*'), FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          Result := True;
+          Exit;
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
+  end;
+end;
+
+function InitializeSetup(): Boolean;
+var
+  ErrorCode: Integer;
+begin
+  Result := True;
+  if not IsWin64 then
+    Exit;
+
+  if DesktopRuntime8Installed() then
+    Exit;
+
+  if MsgBox('DraftEngine needs the Microsoft .NET 8 Desktop Runtime (x64), which is not installed.' + #13#10#13#10 +
+            'Download it from:' + #13#10 + DotNetDownloadUrl + #13#10#13#10 +
+            'Open the download page now?', mbCriticalError, MB_YESNO) = IDYES then
+  begin
+    ShellExec('open', DotNetDownloadUrl, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  end;
+
+  Result := False;
+end;

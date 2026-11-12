@@ -6,7 +6,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $projectPath = Join-Path $repoRoot 'DraftEngine.App\DraftEngine.App.csproj'
 $issPath = Join-Path $repoRoot 'installer\DraftEngine.iss'
 $publishDirectory = Join-Path $repoRoot 'publish'
-$distDirectory = Join-Path $repoRoot 'dist'
+$distDirectory = Join-Path $repoRoot 'installer\Output'
 
 if (-not (Test-Path -LiteralPath (Join-Path $repoRoot 'DraftEngine.sln'))) {
     throw "Repository root was not found at '$repoRoot'."
@@ -83,6 +83,7 @@ if (Test-Path -LiteralPath $publishDirectory) {
 }
 New-Item -ItemType Directory -Path $publishDirectory -Force | Out-Null
 New-Item -ItemType Directory -Path $distDirectory -Force | Out-Null
+Write-Host "Installer output: $distDirectory"
 
 $setupPath = Join-Path $distDirectory "DraftEngine-Setup-$installerVersion.exe"
 $checksumPath = "$setupPath.sha256"

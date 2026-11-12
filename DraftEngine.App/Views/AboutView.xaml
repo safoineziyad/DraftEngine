@@ -23,6 +23,8 @@
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding VersionText, StringFormat=Version {0}}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,12" />
+                    <TextBlock Text="{Binding BuildStampText}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,12" />
                     <TextBlock Text="DraftEngine drafts contracts locally from templates. Generation works fully offline and never requires an AI key."
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
                     <StackPanel Orientation="Horizontal" Margin="0,12,0,0">

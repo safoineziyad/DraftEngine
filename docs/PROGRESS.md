@@ -64,7 +64,49 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Stage 1 — migrate Clause Manager as its own batch; build Release, run all tests, update this line, commit, and push.
+NEXT STEP: none — Phases 1–4 are complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
+
+### Final verification (2026-11-10)
+
+- Release build: **0 errors**, 7 warnings (pre-existing nullable warnings).
+- Full suite: **363 tests, 362 pass, 1 fail** — `DraftEngine.Tests` 225/225, `DraftEngine.Analysis.Tests` 28/28, `DraftEngine.App.Tests` 109/110.
+- The single failure is the **pre-existing** `UpgradeMigrationTests.Version022Database_UpgradesFromCopiedDataDirectory_AndPreservesContract`, reproduced on the clean baseline before any edits (upgrading a 0.2.2 database leaves `Contracts=0`). It is unrelated to Tasks 1–4 and must be fixed separately.
+- Test count rose from **329** at baseline to **363** (+34).
+- XAML was rendered on an STA thread in Light, Dark and High Contrast for all 9 pages with no exceptions; **no screen was visually reviewed** in this environment.
+
+### Task 2c — High Contrast (Done, not visually verified, 2026-11-10)
+
+- Added `Themes/HighContrast.xaml` mapping every semantic brush to Windows system colors; `ThemeService` selects it automatically when `SystemParameters.HighContrast` is true (even with an explicit Light/Dark choice), never forces a dark title bar in that mode, and re-evaluates on High Contrast changes. `IsHighContrast` is exposed for tests.
+- Tests: `HighContrast_DefinesEveryReferencedBrush`, `HighContrast_OverridesTheSelectedPalette`. Affected suite 25/25 pass.
+
+### Task 3 + ratchet — pickers and a lower literal baseline (Done, not visually verified, 2026-11-10)
+
+- Language picker already offered English/Français/العربية/Español in their own names, applied immediately and persisted; new tests pin that behaviour (`SettingsPickerTests`). The theme picker added in 2a follows the active language ("Clair" after switching to French).
+- Migrated **Archived Contracts** to `{loc:T}`: subtitle, refresh, header, empty state, restore/delete buttons plus page title and all error/confirm text now come from 13 new `Archived.*` keys in EN/FR/AR/ES. Removed it from `PendingMigration` and lowered `docs/i18n-baseline.txt` **90 → 84**. The color-literal ratchet is now fixed at **0**.
+- Tests: `SettingsPickerTests` (3). Build 0 errors; affected tests 42/42 (LocalizationResource + WpfPageOpen + StartupResolution + SettingsPicker) pass.
+
+### Task 2b — control styles, popups and color literals (Done, rendered-not-visually-verified, 2026-11-10)
+
+- Added 24 semantic brush keys to **both** Light and Dark (control/input surfaces, popup, hover/selected, tooltip, row alternate, accent foreground, warning, diff foreground, success surface, badge, scrollbar thumb, tab selected, danger/success/accent-muted foreground). Light and Dark key sets are identical.
+- `Themes/Styles.xaml` now themes Button (quiet/primary), TextBox, PasswordBox, CheckBox, ComboBox **and its dropdown popup**, ComboBoxItem, ListView/ListViewItem, DataGrid/ColumnHeader/Row/Cell, Expander, ContextMenu/MenuItem, ToolTip, TabControl/TabItem and ScrollBar. Accent foreground is now a theme brush so dark primary buttons use dark text on light blue.
+- Removed **all 22** color literals from views/styles (regex count 22 → 0); error banners use `DangerForegroundBrush`/`SuccessForegroundBrush`, the diff uses `DiffAdded/RemovedForegroundBrush`, the API-key warning uses the warning brushes.
+- Tests: new `ThemeDictionaryTests` (key parity, 15 WCAG AA pairs in both themes, every referenced `*Brush` exists in both, zero color literals) and `WpfPageOpenTests` (opens all 9 pages under en/fr/ar/es × Light/Dark on an STA thread, asserting RTL FlowDirection and a resolved theme brush). A temporary STA harness also rendered all 10 views/windows in both themes with 0 failures; it was removed after use. Affected suite 35/35 pass. **Rendered without exceptions; not visually verified.**
+
+### Task 2a — theme service wiring + picker (Done, not visually verified, 2026-11-10)
+
+- `IThemeService`/`ISystemThemeProvider` are now registered in DI and initialized in `App.OnStartup` **before** the first window is created (`themeService.Initialize(settings.Theme)`), so there is no light flash. `ThemeService.TrySetDarkTitleBar` is applied to MainWindow (DWM attribute 20 with 19 fallback, failures silent).
+- `ThemeService.Apply` now removes every Light/Dark theme dictionary (including the static `Themes/Light.xaml` fallback) before inserting the applied one, so a dark theme is never shadowed by the light fallback. `RegistrySystemThemeProvider` live-switches only in Follow-Windows mode.
+- Settings gains a theme picker (Follow Windows/Light/Dark) that applies and persists immediately; a manual Settings save now preserves `Theme`/`Language` instead of resetting them. New `Settings.ThemeDescription` key in EN/FR/AR/ES.
+- Tests: `ThemeTests` (17 incl. the resolution matrix, persistence round trip, live System switch, explicit-mode isolation and the picker). Affected suite 44/44 pass; build 0 errors. **Not visually verified.**
+
+### Task 1 — sidebar (Done, not visually verified, 2026-11-10)
+
+Verified baseline on `feature/i18n-theme` before any edits: Release build 0 errors, full suite **329 tests** (225 `DraftEngine.Tests`, 76 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`). One **pre-existing** failure: `UpgradeMigrationTests.Version022Database_UpgradesFromCopiedDataDirectory_AndPreservesContract` — upgrading a 0.2.2 database leaves `Contracts=0` (the seeded default user is replaced and cascades). Reproduced on the clean tree at `9963a66`, unrelated to this work.
+
+- Sidebar regrouped: **Workspace** (Dashboard, New Contract, Contracts, Archived), **Tools** (Analyze, Clause Manager), bottom-pinned **Settings** and optional **About**. Exactly one Settings entry (test asserts it).
+- Every item has a Segoe Fluent Icons glyph (Segoe MDL2 Assets fallback) via `IconFontFamily`; labels, automation names and `ToolTip` come from `NavigationItemViewModel`/`{loc:T}`. Active page shows an accent bar on the leading edge and a `NavActiveBrush` tint; hover and keyboard-focus states added. Layout mirrors under RTL because each row is a `FlowDirection`-aware grid.
+- Footer shows `AppVersion.Display` (never hardcoded) and the build commit hash when `AppVersion.HasCommitHash` is true (`Main.CommitLabel` localized). New keys `Nav.GroupWorkspace`, `Nav.GroupTools`, `Main.CommitLabel` added in EN/FR/AR/ES.
+- Tests: new `SidebarTests` (6) covering single Settings, grouping, icons, active marker, live label switch and About gating. Build 0 errors; affected tests 12/12 pass. **Not visually verified.**
 
 ### Test counts
 
@@ -89,3 +131,34 @@ NEXT STEP: Stage 1 — migrate Clause Manager as its own batch; build Release, r
 
 Complete: 222 tests, multi-type generation, clause manager, drafts, archive, AI diff/redaction,
 onboarding, About, licensing behind a flag.
+
+### Phase 1 — 0.2.2 upgrade data-loss fix (2026-11-12)
+
+**Root cause (reproduced, not the reported one).** No migration deletes or re-inserts the user and no cascade fires. `dotnet ef migrations script` contains no `DELETE FROM "Users"` / `DROP TABLE "Users"` (0 matches; only the `InitialCreate` seed insert). A step-by-step migration harness kept `Contracts = 1` after every migration. The loss happened earlier: EF `Migrate()` leaves SQLite in WAL mode (`PRAGMA journal_mode = wal`, `-wal` file 457,352 bytes), and the test's `File.Copy` of only `draftengine.db` produced a stale/incomplete database, so the verifier saw `Contracts = 0`. Fresh databases default to `journal_mode = delete`; only after the first `Migrate()` does WAL appear.
+
+**Fixes.**
+- All database copies/snapshots now use the SQLite online backup API (`SqliteConnection.BackupDatabase`), never `File.Copy`.
+- `DatabaseService.EnsureDatabaseCreated` takes the snapshot **before** any migration, aborts the upgrade if the snapshot cannot be created, and restores the snapshot (clearing pools, `-wal`, `-shm`) if a migration throws. The exception carries `DatabaseService.RestoredDataKey = true`.
+- Startup shows a localized `StartupErrorWindow` with a “Copy diagnostics” button that copies only version, Windows, .NET, exception type and the restored flag (`StartupDiagnostics`); no messages, paths or contract data.
+- `Contracts.UserId → Users.Id` is now `DeleteBehavior.Restrict` via the new corrective migration `20261110212129_RestrictUserCascade` (released migrations untouched; `Clauses.OwnerUserId` was already Restrict).
+
+**Test evidence.** Full suite **372 passed, 0 failed** (232 `DraftEngine.Tests`, 112 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`), up from 363 with 1 failure. New/updated coverage:
+- `UpgradeMigrationTests` passes and compares every user table row-by-row, by column name and row Id, between the pre-upgrade snapshot and the upgraded database (byte equality is invalid because SQLite rebuilds tables). The seeded `Clauses` library may grow/normalize; every original clause Id must survive.
+- `UpgradeDataPreservationTests`: real 0.2.2 schema fixture (3 contracts, fields, clauses, versions, chat messages, generated documents) and a 0.3.x-era fixture; identical row counts for every user table and retained contract text/clause ids.
+- `DatabaseBackupTests.CreateSnapshot_FromWalDatabase_IncludesCommittedRows` reproduces the WAL root cause.
+- `DatabaseUpgradeFailureTests`: a deliberately failing migration restores the original database, keeps the contract row and reports the restore.
+- `MigrationUserSafetyTests`: scans every migration `UpOperation` and fails on `DeleteData`/`DropTable`/SQL delete targeting Users or Contracts.
+- `CascadeProtectionTests`: every FK to `User` is `Restrict`; deleting the user throws and the contract survives.
+- `StartupDiagnosticsTests`: diagnostics contain no contract text, key or path.
+
+**Real data-folder copy check (counts only).** A copy of `DE-backup-20261110-2126` was migrated through `DatabaseService` in a temp folder (source untouched): Users 1→1, Contracts 1→1, ContractFields 9→9, ContractClauses 9→9, ContractVersions 1→1, Clauses 42→42, ChatMessages 0→0, GeneratedDocuments 0→0, ContractAnalyses 0→0; `__EFMigrationsHistory` 10→11. **Not visually verified.**
+
+### Phases 2–4 — installer and beta pre-release (2026-11-12)
+
+- Versions agree: assembly/file `0.4.0.1`, informational `0.4.0-beta.1`, installer `AppVersion 0.4.0.1`; the UI reads the assembly. Installer `AppId` is the v0.2.2 GUID and there is no `[UninstallDelete]`, so `%APPDATA%\DraftEngine` is never removed. The build script fails if either invariant changes.
+- Kept the framework-dependent publish (`--self-contained false`): the installer is 14.2 MB instead of ~70 MB+, and `InitializeSetup` now checks for the x64 .NET 8 Desktop Runtime, stops with a clear message and opens the download page when it is missing.
+- `installer/DraftEngine.iss` excludes `*.pdb`; `scripts/build-installer.ps1` cleans, publishes, locates ISCC, skips signing cleanly, writes the `.sha256` and prints every path. Output moved from `dist/` to `installer/Output/` (both ignored).
+- Installer: `installer/Output/DraftEngine-Setup-0.4.0.1.exe` (14,256,171 bytes), SHA-256 `40aaee43fe6c98e896114fe3eacacd03c5c0b023fbf52cca11b2d4d9902e5948`.
+- Published `v0.4.0-beta.1` as a **pre-release** from `feature/i18n-theme` with the installer and checksum assets; `v0.2.2` remains Latest. Release notes: `docs/RELEASE-NOTES-0.4.0-beta.1.md`.
+- `installer/Output/`, `publish/` and `dist/` are git-ignored; no installer, `.pdb`, key or secret is committed. Release upload was slow but completed; asset digest matches the local hash.
+- **Not visually verified:** the installer wizard (including the runtime check), the installed app, and the localized startup error window.

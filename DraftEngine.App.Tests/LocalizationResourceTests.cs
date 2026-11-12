@@ -36,7 +36,6 @@ public sealed class LocalizationResourceTests
         "ClauseManagerView.xaml",
         "AnalyzeView.xaml",
         "AboutView.xaml",
-        "ArchivedContractsView.xaml",
         "LicenseActivationWindow.xaml"
     };
 

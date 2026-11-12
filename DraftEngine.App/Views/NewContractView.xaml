@@ -85,7 +85,7 @@
 
         <!-- Contract type card (step 1). -->
         <Style x:Key="TypeCardButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -168,7 +168,7 @@
         <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasDraftError, Converter={StaticResource BoolToVis}}">
-            <TextBlock Text="{Binding DraftErrorMessage}" Foreground="White" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding DraftErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}" TextWrapping="Wrap" />
         </Border>
 
         <!-- Wizard content -->

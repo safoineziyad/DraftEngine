@@ -1089,7 +1089,7 @@ namespace DraftEngine.Data.Migrations
                     b.HasOne("DraftEngine.Core.Models.User", "User")
                         .WithMany("Contracts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

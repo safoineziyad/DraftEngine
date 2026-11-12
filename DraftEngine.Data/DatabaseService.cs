@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,32 +17,53 @@ public static class DatabaseService
     private const int BackupFileCount = 3;
 
     /// <summary>
-    /// Creates the database directory if needed (e.g. %APPDATA%\DraftEngine), backs the
-    /// database file up when pending migrations are about to be applied, and then applies
-    /// those migrations. Failures are logged and rethrown with a friendly message
-    /// instead of crashing with an opaque provider exception.
+    /// Exception <see cref="Exception.Data"/> key set to true when a failed upgrade was rolled
+    /// back by restoring the pre-migration snapshot. Startup uses it to choose a localized
+    /// message without parsing the English message text.
+    /// </summary>
+    public const string RestoredDataKey = "DraftEngine.DatabaseRestored";
+
+    /// <summary>
+    /// Creates the database directory if needed (e.g. %APPDATA%\DraftEngine), takes a
+    /// consistent snapshot of the database when pending migrations are about to be applied,
+    /// and then applies those migrations. If a migration fails, the pre-migration snapshot is
+    /// restored so the user is left exactly where they started. Failures are logged and
+    /// rethrown with a friendly message instead of crashing with an opaque provider exception.
     /// </summary>
     /// <param name="services">The application service provider.</param>
     /// <exception cref="InvalidOperationException">Thrown when the database cannot be initialized.</exception>
     public static void EnsureDatabaseCreated(IServiceProvider services)
     {
+        string? databasePath = null;
+        string? backupPath = null;
+
         try
         {
             using var scope = services.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<DraftEngineDbContext>();
 
-            var databasePath = ResolveDataDirectory(dbContext);
-            BackupBeforePendingMigrations(dbContext, databasePath, services);
+            databasePath = ResolveDataDirectory(dbContext);
+            // A consistent snapshot must exist before any schema change runs. A failed
+            // backup aborts the migration rather than risking unbacked data loss.
+            backupPath = BackupBeforePendingMigrations(dbContext, databasePath, services);
             dbContext.Database.Migrate();
         }
         catch (Exception ex)
         {
-            const string friendlyMessage =
-                "DraftEngine could not initialize its database (applying the schema failed). " +
-                "Check that the application data folder is writable, then restart the application.";
+            var restored = databasePath is not null &&
+                backupPath is not null &&
+                TryRestoreBackup(databasePath, backupPath, services);
+
+            var friendlyMessage = restored
+                ? "DraftEngine could not apply its database upgrade, so the pre-upgrade backup was restored. " +
+                  "Your data is unchanged. Restart the application; if the problem persists, contact support."
+                : "DraftEngine could not initialize its database (applying the schema failed). " +
+                  "Check that the application data folder is writable, then restart the application.";
 
             Log(services, LogLevel.Error, friendlyMessage, ex);
-            throw new InvalidOperationException(friendlyMessage, ex);
+            var error = new InvalidOperationException(friendlyMessage, ex);
+            error.Data[RestoredDataKey] = restored;
+            throw error;
         }
     }
 
@@ -102,42 +125,123 @@ public static class DatabaseService
     }
 
     /// <summary>
-    /// Copies the SQLite file to a timestamped <c>.backup-</c> sibling just before pending
-    /// migrations are applied, then prunes old backups down to <see cref="BackupFileCount"/>.
-    /// This guarantees a failed or buggy migration never destroys the only copy of the
-    /// user's contracts. A backup failure is logged and never blocks startup: the migration
-    /// itself may still succeed, and refusing to start would be a worse outcome.
+    /// Takes a consistent SQLite snapshot of the database file to a timestamped
+    /// <c>.backup-</c> sibling just before pending migrations are applied, then prunes old
+    /// backups down to <see cref="BackupFileCount"/>.
     /// </summary>
-    internal static void BackupBeforePendingMigrations(
+    /// <remarks>
+    /// A plain <see cref="File.Copy(string,string)"/> is unsafe: EF Core leaves SQLite in
+    /// WAL mode, so committed rows can live in the <c>-wal</c> sidecar and a file copy would
+    /// produce a stale or even structurally incomplete database. The SQLite online backup
+    /// API reads the main file and WAL through the engine and writes a standalone snapshot.
+    /// </remarks>
+    /// <returns>The backup path, or null when no backup was needed.</returns>
+    internal static string? BackupBeforePendingMigrations(
         DraftEngineDbContext dbContext,
         string? databasePath,
         IServiceProvider services)
     {
         if (string.IsNullOrWhiteSpace(databasePath) || !File.Exists(databasePath))
         {
-            return; // Fresh database (or non-file provider): nothing to lose.
+            return null; // Fresh database (or non-file provider): nothing to lose.
         }
+
+        var pendingMigrations = dbContext.Database.GetPendingMigrations().ToList();
+        if (pendingMigrations.Count == 0)
+        {
+            return null; // Schema already current: no need to churn backup files.
+        }
+
+        var backupPath = databasePath + ".backup-" + DateTime.Now.ToString("yyyyMMdd-HHmmss-fff");
 
         try
         {
-            var pendingMigrations = dbContext.Database.GetPendingMigrations().ToList();
-            if (pendingMigrations.Count == 0)
-            {
-                return; // Schema already current: no need to churn backup files.
-            }
-
-            var backupPath = databasePath + ".backup-" + DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            File.Copy(databasePath, backupPath, overwrite: false);
+            CreateSnapshot(databasePath, backupPath);
             PruneBackups(databasePath);
 
             Log(services, LogLevel.Information,
                 $"Backed up the database to '{backupPath}' before applying " +
                 $"{pendingMigrations.Count} pending migration(s).");
+
+            return backupPath;
         }
         catch (Exception ex)
         {
+            // Never apply a schema change without a usable snapshot: abort and let the
+            // caller report a clear error instead of risking the only copy of user data.
+            Log(services, LogLevel.Error,
+                "The pre-migration database backup could not be created; the upgrade was aborted.", ex);
+            throw new InvalidOperationException(
+                "DraftEngine could not back up the database before upgrading it, so the upgrade was aborted. " +
+                "Your data is unchanged. Check that the application data folder is writable, then restart.",
+                ex);
+        }
+    }
+
+    /// <summary>Writes a consistent, standalone SQLite snapshot of <paramref name="sourcePath"/>.</summary>
+    internal static void CreateSnapshot(string sourcePath, string destinationPath)
+    {
+        if (File.Exists(destinationPath))
+        {
+            File.Delete(destinationPath);
+        }
+
+        var sourceBuilder = new SqliteConnectionStringBuilder
+        {
+            DataSource = sourcePath,
+            Pooling = false
+        };
+        var destinationBuilder = new SqliteConnectionStringBuilder
+        {
+            DataSource = destinationPath,
+            Pooling = false
+        };
+
+        using var source = new SqliteConnection(sourceBuilder.ConnectionString);
+        source.Open();
+        using var destination = new SqliteConnection(destinationBuilder.ConnectionString);
+        destination.Open();
+        source.BackupDatabase(destination);
+    }
+
+    /// <summary>
+    /// Restores a pre-migration snapshot over the live database after a failed migration.
+    /// Returns false when the restore itself fails (the original error is still reported).
+    /// </summary>
+    private static bool TryRestoreBackup(string databasePath, string backupPath, IServiceProvider services)
+    {
+        try
+        {
+            // Release every pooled handle before replacing the files.
+            SqliteConnection.ClearAllPools();
+            DeleteIfExists(databasePath + "-wal");
+            DeleteIfExists(databasePath + "-shm");
+            File.Copy(backupPath, databasePath, overwrite: true);
+
             Log(services, LogLevel.Warning,
-                "The database backup could not be created; continuing with the migration.", ex);
+                $"The database upgrade failed; restored the pre-upgrade snapshot '{backupPath}'.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(services, LogLevel.Error,
+                $"The database upgrade failed and the snapshot '{backupPath}' could not be restored.", ex);
+            return false;
+        }
+    }
+
+    private static void DeleteIfExists(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch (IOException)
+        {
+            // Best effort; the snapshot copy below still overwrites the database file.
         }
     }
 

@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.Extensions.Configuration;
 
 namespace DraftEngine.App.Configuration;
@@ -67,6 +68,12 @@ public sealed class AppOptions
         {
             options.OpenAi.BaseUrl = envBaseUrl.Trim();
             options.OpenAi.UseCustomEndpoint = true;
+        }
+
+        var dataDirectory = Environment.GetEnvironmentVariable("DRAFTENGINE_DATA_DIR");
+        if (!string.IsNullOrWhiteSpace(dataDirectory))
+        {
+            options.Data.ConnectionString = $"Data Source={Path.Combine(dataDirectory.Trim(), "draftengine.db")}";
         }
 
         return options;

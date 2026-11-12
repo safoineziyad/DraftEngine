@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
+using DraftEngine.App.Themes;
 using DraftEngine.Core.Interfaces;
 using Serilog;
 
@@ -24,8 +25,10 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAiRedactionService? _redactionService;
     private readonly IPortableBackupService? _backupService;
     private readonly ILocalizationService _localization;
+    private readonly IThemeService? _themeService;
     private bool _isLoading;
     private bool _isApplyingLanguage;
+    private bool _isApplyingTheme;
 
     // Status text is stored as a resource key (+ format args) so it can be re-rendered
     // when the user switches language without repeating the action.
@@ -41,6 +44,13 @@ public partial class SettingsViewModel : ObservableObject
 
     /// <summary>Languages offered in the picker, each shown in its own name.</summary>
     public IReadOnlyList<SupportedLanguage> SupportedLanguages => _localization.SupportedLanguages;
+
+    /// <summary>Themes offered in the picker: Follow Windows (default), Light and Dark.</summary>
+    public IReadOnlyList<ThemeChoiceViewModel> ThemeOptions { get; }
+
+    /// <summary>Theme selected in the picker; changing it applies and persists immediately.</summary>
+    [ObservableProperty]
+    private ThemeMode selectedTheme = ThemeMode.System;
 
     /// <summary>OpenAI chat model choices.</summary>
     public IReadOnlyList<string> ModelOptions { get; } = new[] { "gpt-4o-mini", "gpt-4o" };
@@ -145,13 +155,21 @@ public partial class SettingsViewModel : ObservableObject
         IAppSettingsService settingsService,
         IAiRedactionService? redactionService = null,
         IPortableBackupService? backupService = null,
-        ILocalizationService? localization = null)
+        ILocalizationService? localization = null,
+        IThemeService? themeService = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
         _backupService = backupService;
+        _themeService = themeService;
         _localization = localization ?? LocalizationSource.Current.Service
             ?? throw new ArgumentNullException(nameof(localization));
+        ThemeOptions =
+        [
+            new ThemeChoiceViewModel(ThemeMode.System, "Theme.System", _localization),
+            new ThemeChoiceViewModel(ThemeMode.Light, "Theme.Light", _localization),
+            new ThemeChoiceViewModel(ThemeMode.Dark, "Theme.Dark", _localization),
+        ];
         _settingsService.SettingsChanged += OnSettingsChanged;
         _localization.LanguageChanged += OnLanguageChanged;
         _isApplyingLanguage = true;
@@ -452,6 +470,10 @@ public partial class SettingsViewModel : ObservableObject
                 OpenAiBaseUrl = string.IsNullOrWhiteSpace(OpenAiBaseUrl) ? null : OpenAiBaseUrl.Trim(),
                 UseCustomOpenAiEndpoint = UseCustomOpenAiEndpoint,
                 HidePartyNamesFromAi = HidePartyNamesFromAi,
+                // Persisted elsewhere (theme service / language store); preserve them so a
+                // manual Save never resets the user's language or theme choice.
+                Theme = _settingsService.Current.Theme,
+                Language = _settingsService.Current.Language,
             };
             await _settingsService.SaveAsync(settings);
             if (_redactionService is not null)
@@ -499,6 +521,17 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnAiConsentGrantedChanged(bool value) =>
         OnPropertyChanged(nameof(AiConsentStatusText));
 
+    partial void OnSelectedThemeChanged(ThemeMode value)
+    {
+        if (_isApplyingTheme || _themeService is null)
+        {
+            return;
+        }
+
+        // Applies the theme live and persists the choice through the settings service.
+        _ = _themeService.SetModeAsync(value);
+    }
+
     partial void OnSelectedLanguageChanged(string value)
     {
         if (_isApplyingLanguage || string.IsNullOrWhiteSpace(value))
@@ -515,6 +548,11 @@ public partial class SettingsViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(PageTitle));
         OnPropertyChanged(nameof(SupportedLanguages));
+        OnPropertyChanged(nameof(ThemeOptions));
+        foreach (var option in ThemeOptions)
+        {
+            option.RefreshLocalization();
+        }
         OnPropertyChanged(nameof(AiConsentStatusText));
         OnPropertyChanged(nameof(ShowHideKeyText));
 
@@ -579,6 +617,9 @@ public partial class SettingsViewModel : ObservableObject
             UpdateApiKeyStatus(saved.OpenAiApiKey);
             SelectedModel = ModelOptions.Contains(saved.OpenAiModel) ? saved.OpenAiModel : AppSettings.FallbackModel;
             SelectedGoverningLaw = saved.DefaultGoverningLaw;
+            _isApplyingTheme = true;
+            SelectedTheme = ThemeResolver.Parse(saved.Theme);
+            _isApplyingTheme = false;
             DefaultTermMonths = saved.DefaultTermMonths;
             ValidateTermMonths(saved.DefaultTermMonths);
             UseCustomOpenAiEndpoint = saved.UseCustomOpenAiEndpoint;

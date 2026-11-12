@@ -195,7 +195,7 @@
         <StackPanel Grid.Row="3" Margin="16" Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
             <Border Background="{DynamicResource DangerBrush}" CornerRadius="6" Padding="12">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}"
                                VerticalAlignment="Center" />
                     <Button Content="Try again" Height="28" Padding="10,0" FontSize="12"
                             Margin="12,0,0,0"

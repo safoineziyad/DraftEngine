@@ -19,10 +19,48 @@ public partial class MainViewModel : ObservableObject
     private readonly INavigationService _navigation;
     private readonly AppOptions? _appOptions;
     private readonly IUpdateService? _updateService;
+    private readonly ILocalizationService? _localization;
     private UpdateInfo? _availableUpdate;
+
+    /// <summary>Segoe Fluent Icons glyphs with a Segoe MDL2 Assets fallback for older Windows.</summary>
+    private const string IconHome = "\uE80F";
+    private const string IconAdd = "\uE710";
+    private const string IconList = "\uE8FD";
+    private const string IconArchive = "\uE7B8";
+    private const string IconAnalyze = "\uE9D2";
+    private const string IconClauses = "\uE8F1";
+    private const string IconSettings = "\uE713";
+    private const string IconInfo = "\uE946";
 
     /// <summary>The view model of the page currently displayed in the content area.</summary>
     public object? CurrentViewModel => _navigation.CurrentViewModel;
+
+    /// <summary>The key of the page currently shown (drives the sidebar active marker).</summary>
+    public string CurrentPageKey => _navigation.CurrentKey;
+
+    /// <summary>Workspace group: dashboard, contract creation and the contract lists.</summary>
+    public IReadOnlyList<NavigationItemViewModel> WorkspaceItems { get; }
+
+    /// <summary>Tools group: analysis and clause management.</summary>
+    public IReadOnlyList<NavigationItemViewModel> ToolsItems { get; }
+
+    /// <summary>Bottom group: settings and about, pinned below the scrollable list.</summary>
+    public IReadOnlyList<NavigationItemViewModel> BottomItems { get; }
+
+    /// <summary>Every navigation item in sidebar order (for tests and keyboard traversal).</summary>
+    public IReadOnlyList<NavigationItemViewModel> AllItems { get; }
+
+    /// <summary>Version label from the assembly version, localized ("Version 0.4.0…").</summary>
+    public string VersionDisplay =>
+        FormatLocalized("Common.Version", $"Version {AppVersion.Display}", AppVersion.Display);
+
+    /// <summary>Commit label plus hash, or empty when no real hash was stamped.</summary>
+    public string CommitDisplay => AppVersion.HasCommitHash
+        ? $"{GetLocalized("Main.CommitLabel", "Commit")} {AppVersion.CommitHash}"
+        : string.Empty;
+
+    /// <summary>True when a build commit hash is available to show in the footer.</summary>
+    public bool HasCommit => AppVersion.HasCommitHash;
 
     /// <summary>Whether the update banner is currently visible.</summary>
     public bool IsUpdateBannerVisible => IsUpdateAvailable && !IsUpdateDismissed;
@@ -63,14 +101,42 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         INavigationService navigation,
         AppOptions? appOptions = null,
-        IUpdateService? updateService = null)
+        IUpdateService? updateService = null,
+        ILocalizationService? localization = null)
     {
         _navigation = navigation;
         _appOptions = appOptions;
         _updateService = updateService;
-        _navigation.CurrentViewModelChanged += _ => OnPropertyChanged(nameof(CurrentViewModel));
+        _localization = localization ?? LocalizationSource.Current.Service;
+
+        WorkspaceItems =
+        [
+            new NavigationItemViewModel("dashboard", "Nav.Dashboard", IconHome, NavigateDashboardCommand, _localization),
+            new NavigationItemViewModel("new-contract", "Nav.NewContract", IconAdd, NavigateNewContractCommand, _localization),
+            new NavigationItemViewModel("contracts", "Nav.Contracts", IconList, NavigateContractsCommand, _localization),
+            new NavigationItemViewModel("archived-contracts", "Nav.Archived", IconArchive, NavigateArchivedContractsCommand, _localization),
+        ];
+        ToolsItems =
+        [
+            new NavigationItemViewModel("analyze", "Nav.Analyze", IconAnalyze, NavigateAnalyzeCommand, _localization),
+            new NavigationItemViewModel("clause-management", "Nav.ClauseManager", IconClauses, NavigateClauseManagementCommand, _localization),
+        ];
+        var bottomItems = new List<NavigationItemViewModel>
+        {
+            new("settings", "Nav.Settings", IconSettings, NavigateSettingsCommand, _localization),
+        };
+        if (AboutEnabled)
+        {
+            bottomItems.Add(new NavigationItemViewModel("about", "Nav.About", IconInfo, NavigateAboutCommand, _localization));
+        }
+
+        BottomItems = bottomItems;
+        AllItems = WorkspaceItems.Concat(ToolsItems).Concat(BottomItems).ToArray();
+
+        _navigation.CurrentViewModelChanged += _ => OnCurrentViewModelChanged();
         _navigation.Navigate("dashboard");
-        if (LocalizationSource.Current.Service is { } localizationService)
+        OnCurrentViewModelChanged();
+        if (_localization is { } localizationService)
         {
             localizationService.LanguageChanged += OnLanguageChanged;
         }
@@ -81,10 +147,26 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    private void OnCurrentViewModelChanged()
+    {
+        OnPropertyChanged(nameof(CurrentViewModel));
+        OnPropertyChanged(nameof(CurrentPageKey));
+        foreach (var item in AllItems)
+        {
+            item.IsActive = string.Equals(item.Key, _navigation.CurrentKey, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(UpdateBannerText));
         OnPropertyChanged(nameof(UpdateButtonText));
+        OnPropertyChanged(nameof(VersionDisplay));
+        OnPropertyChanged(nameof(CommitDisplay));
+        foreach (var item in AllItems)
+        {
+            item.RefreshLocalization();
+        }
     }
 
     private static string GetLocalized(string key, string fallback) =>

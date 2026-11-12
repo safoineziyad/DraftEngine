@@ -25,11 +25,13 @@ public partial class DraftEngineDbContext
 
             entity.HasIndex(user => user.Email).IsUnique();
 
-            // A user owns their contracts: removing the user removes everything they created.
+            // Never cascade from Users: deleting (or replacing) the single local user row
+            // must not silently delete every contract they own. User data is preserved and
+            // a user deletion is blocked while contracts still reference it.
             entity.HasMany(user => user.Contracts)
                 .WithOne(contract => contract.User)
                 .HasForeignKey(contract => contract.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Contract>(entity =>

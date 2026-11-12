@@ -8,7 +8,6 @@
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <SolidColorBrush x:Key="SuccessLightBrush" Color="#F0FDF4" />
 
         <!-- Status badge: neutral by default, accent for Generated, green for Exported. -->
         <Style x:Key="StatusBadgeStyle" TargetType="Border">
@@ -21,7 +20,7 @@
                     <Setter Property="Background" Value="{DynamicResource AccentLightBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsExported}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource SuccessLightBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource SuccessSurfaceBrush}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -111,7 +110,7 @@
             <Border Grid.Row="2" Margin="0,0,0,16" Padding="12"
                     Background="{DynamicResource DangerBrush}" CornerRadius="6"
                     Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="White"
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}"
                            TextWrapping="Wrap" VerticalAlignment="Center" />
             </Border>
 

@@ -1,4 +1,4 @@
-# DraftEngine 0.4.0 — Project State
+# DraftEngine 0.4.0-beta.1 — Project State
 
 ## What it is
 
@@ -72,3 +72,5 @@ app; existing data is untouched. The analysis table is created by the
 - OCR for scanned PDFs is detected and reported, not supported.
 - Seeded clause wording and playbooks need review by a qualified attorney.
 - WPF layout and click-through are not covered by automated tests.
+- The current local beta build is `0.4.0-beta.1` (installer version `0.4.0.1`); the installer is
+  for local upgrade testing only and has not been published.

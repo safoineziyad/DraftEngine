@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
+using DraftEngine.App.Services.Localization;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models;
 using Serilog;
@@ -17,8 +18,11 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
 
     private readonly IContractEditService _contractEditService;
     private readonly IWizardDialogService _dialogs;
+    private readonly ILocalizationService _localization;
+    private string? _errorKey;
+    private object[] _errorArgs = Array.Empty<object>();
 
-    public string PageTitle => "Archived Contracts";
+    public string PageTitle => _localization.GetString("Nav.Archived");
 
     public ObservableCollection<Contract> Contracts { get; } = new();
 
@@ -33,10 +37,32 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
 
     public ArchivedContractsViewModel(
         IContractEditService contractEditService,
-        IWizardDialogService dialogs)
+        IWizardDialogService dialogs,
+        ILocalizationService? localization = null)
     {
         _contractEditService = contractEditService ?? throw new ArgumentNullException(nameof(contractEditService));
         _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+        _localization = localization ?? LocalizationSource.Current.Service
+            ?? throw new ArgumentNullException(nameof(localization));
+        _localization.LanguageChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(PageTitle));
+        if (_errorKey is not null)
+        {
+            ErrorMessage = Text(_errorKey, _errorArgs);
+        }
+    }
+
+    private string Text(string key, params object[] args) => _localization.GetString(key, args);
+
+    private void SetError(string key, params object[] args)
+    {
+        _errorKey = key;
+        _errorArgs = args;
+        ErrorMessage = Text(key, args);
     }
 
     public async void OnNavigatedTo(object? parameter) => await LoadAsync();
@@ -65,7 +91,7 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load archived contracts.");
-            ErrorMessage = "We couldn't load archived contracts. Please try again.";
+            SetError("Archived.ErrorLoad");
         }
         finally
         {
@@ -94,7 +120,7 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to restore archived contract {ContractId}.", contract.Id);
-            ErrorMessage = "We couldn't restore this contract. Please try again.";
+            SetError("Archived.ErrorRestore");
         }
         finally
         {
@@ -111,8 +137,8 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
         }
 
         if (!_dialogs.Confirm(
-                $"Permanently delete \"{contract.Title}\" and its history? This cannot be undone.",
-                "Permanently delete contract"))
+                Text("Archived.DeleteConfirm", contract.Title),
+                Text("Archived.DeleteConfirmTitle")))
         {
             return;
         }
@@ -128,7 +154,7 @@ public partial class ArchivedContractsViewModel : ObservableObject, INavigationA
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to permanently delete archived contract {ContractId}.", contract.Id);
-            ErrorMessage = "We couldn't permanently delete this contract. Please try again.";
+            SetError("Archived.ErrorDelete");
         }
         finally
         {

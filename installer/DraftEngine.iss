@@ -12,7 +12,7 @@
 ; ============================================================================
 
 ; --- Single source of truth for the version --------------------------------
-#define AppVersion "0.4.0"
+#define AppVersion "0.4.0.1"
 ; ---------------------------------------------------------------------------
 
 #define AppName "DraftEngine"
@@ -72,7 +72,7 @@ RestartApplications=yes
 ; the directives are omitted and the build proceeds unsigned - no failure.
 #define SignCert GetEnv("DRAFTENGINE_SIGN_CERT")
 #define SignPassword GetEnv("DRAFTENGINE_SIGN_PASSWORD")
-#if SignCert != ""
+#if SignCert != "" && SignPassword != ""
 SignTool=signtool sign /f "{#SignCert}" /p "{#SignPassword}" /fd sha256 /tr http://timestamp.digicert.com /td sha256 $f
 SignedUninstaller=yes
 #endif
@@ -89,8 +89,9 @@ Name: "app"; Description: "DraftEngine application"; Types: full compact custom;
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 ; The published output (..\publish). ignoreversion so every build overwrites.
+; Debug symbols are not shipped to users.
 [Files]
-Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: app
+Source: "..\publish\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: app
 
 [Icons]
 Name: "{group}\DraftEngine"; Filename: "{app}\{#AppExeName}"; IconFilename: "{app}\{#AppExeName}"; Comment: "AI contract drafting assistant"
@@ -102,28 +103,50 @@ Filename: "{app}\DraftEngine.App.exe"; Flags: nowait postinstall skipifsilent
 Filename: "{app}\DraftEngine.App.exe"; Flags: nowait; Check: WizardSilent
 
 [Code]
-// ---------------------------------------------------------------------------
-// User data (contracts, settings, logs) lives in %APPDATA%\DraftEngine and is
-// NOT part of the installation, so a normal uninstall never touches it.
-// On uninstall we ask once (default: No / keep data) and delete afterwards.
-// ---------------------------------------------------------------------------
-var
-  DeleteUserData: Boolean;
+const
+  DotNetDownloadUrl = 'https://dotnet.microsoft.com/download/dotnet/8.0';
 
-function InitializeUninstall(): Boolean;
+{ The app is published framework-dependent, so the x64 .NET 8 Desktop Runtime must be
+  present. Check the shared framework folder; a missing runtime stops setup with a clear
+  message and a download link instead of failing later when the app cannot start. }
+function DesktopRuntime8Installed(): Boolean;
+var
+  FindRec: TFindRec;
 begin
-  Result := True; // never block the uninstall itself
-  DeleteUserData := False;
-  if DirExists(ExpandConstant('{userappdata}\DraftEngine')) then
-    DeleteUserData := MsgBox(
-      'Do you also want to delete your DraftEngine data (contracts and settings)?' + #13#13 +
-      'Location: ' + ExpandConstant('{userappdata}\DraftEngine') + #13#13 +
-      'Click No to keep your data (it will be reused by a future installation).',
-      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES; // MB_DEFBUTTON2 = No is default
+  Result := False;
+  if FindFirst(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App\8.*'), FindRec) then
+  begin
+    try
+      repeat
+        if (FindRec.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          Result := True;
+          Exit;
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+    end;
+  end;
 end;
 
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+function InitializeSetup(): Boolean;
+var
+  ErrorCode: Integer;
 begin
-  if (CurUninstallStep = usPostUninstall) and DeleteUserData then
-    DelTree(ExpandConstant('{userappdata}\DraftEngine'), True, True, True);
+  Result := True;
+  if not IsWin64 then
+    Exit;
+
+  if DesktopRuntime8Installed() then
+    Exit;
+
+  if MsgBox('DraftEngine needs the Microsoft .NET 8 Desktop Runtime (x64), which is not installed.' + #13#10#13#10 +
+            'Download it from:' + #13#10 + DotNetDownloadUrl + #13#10#13#10 +
+            'Open the download page now?', mbCriticalError, MB_YESNO) = IDYES then
+  begin
+    ShellExec('open', DotNetDownloadUrl, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  end;
+
+  Result := False;
 end;

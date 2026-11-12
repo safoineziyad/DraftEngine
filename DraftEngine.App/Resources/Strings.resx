@@ -98,11 +98,15 @@
   <data name="Analyze.ChooseFile" xml:space="preserve"><value>Choose file...</value></data>
   <data name="Settings.PageTitle" xml:space="preserve"><value>Settings</value></data>
   <data name="Settings.LanguageDescription" xml:space="preserve"><value>Choose the language used throughout DraftEngine. Changes apply immediately.</value></data>
+  <data name="Settings.ThemeDescription" xml:space="preserve"><value>Choose Light, Dark or follow the Windows theme. Changes apply immediately.</value></data>
   <data name="Onboarding.WindowTitle" xml:space="preserve"><value>Welcome to DraftEngine</value></data>
   <data name="Onboarding.LanguagePrompt" xml:space="preserve"><value>Choose your language</value></data>
   <data name="Common.Version" xml:space="preserve"><value>Version {0}</value></data>
   <data name="Common.VersionLabel" xml:space="preserve"><value>Version </value></data>
   <data name="Main.VersionAutomation" xml:space="preserve"><value>Application version</value></data>
+  <data name="Main.CommitLabel" xml:space="preserve"><value>Commit</value></data>
+  <data name="Nav.GroupWorkspace" xml:space="preserve"><value>Workspace</value></data>
+  <data name="Nav.GroupTools" xml:space="preserve"><value>Tools</value></data>
   <data name="Nav.DashboardAutomation" xml:space="preserve"><value>Go to Dashboard</value></data>
   <data name="Nav.NewContractAutomation" xml:space="preserve"><value>Start a new contract</value></data>
   <data name="Nav.ContractsAutomation" xml:space="preserve"><value>Go to Contracts list</value></data>
@@ -110,6 +114,15 @@
   <data name="Nav.AnalyzeAutomation" xml:space="preserve"><value>Analyze a contract</value></data>
   <data name="Nav.ClauseManagerAutomation" xml:space="preserve"><value>Go to Clause Manager</value></data>
   <data name="Nav.ArchivedAutomation" xml:space="preserve"><value>Go to Archived Contracts</value></data>
+  <data name="Archived.Subtitle" xml:space="preserve"><value>Restore an archived contract or permanently delete it and its history.</value></data>
+  <data name="Archived.Empty" xml:space="preserve"><value>No archived contracts.</value></data>
+  <data name="Archived.Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Archived.DeletePermanently" xml:space="preserve"><value>Permanently delete</value></data>
+  <data name="Archived.ErrorLoad" xml:space="preserve"><value>We couldn't load archived contracts. Please try again.</value></data>
+  <data name="Archived.ErrorRestore" xml:space="preserve"><value>We couldn't restore this contract. Please try again.</value></data>
+  <data name="Archived.ErrorDelete" xml:space="preserve"><value>We couldn't permanently delete this contract. Please try again.</value></data>
+  <data name="Archived.DeleteConfirm" xml:space="preserve"><value>Permanently delete "{0}" and its history? This cannot be undone.</value></data>
+  <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Permanently delete contract</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Go to About and Help</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Settings.Subtitle" xml:space="preserve"><value>Connect DraftEngine to OpenAI and choose the defaults used for new contracts.</value></data>
@@ -377,4 +390,12 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>AI edits share this contract's text with OpenAI for processing.&#xA;&#xA;Only continue if you are comfortable sending this document to OpenAI — for example, if it contains no privileged or confidential client material you are not permitted to share with a third-party service.&#xA;&#xA;Continue with AI editing?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>AI editing sends data to OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine could not start</value></data>
+  <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine could not open its database. Your data was not changed. Restart the application; if the problem persists, contact support.</value></data>
+  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>The database upgrade could not be completed, so the pre-upgrade backup was restored. Your data is unchanged. Restart the application; if the problem persists, contact support.</value></data>
+  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>Diagnostics (version, Windows, .NET and error type only; no contract data)</value></data>
+  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>Copy diagnostics</value></data>
+  <data name="Startup.Error.Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copied.</value></data>
+  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>The clipboard is unavailable.</value></data>
 </root>

@@ -31,6 +31,9 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
     /// <summary>The running version (single source of truth: the csproj Version).</summary>
     public string VersionText => AppVersion.Display;
 
+    /// <summary>The commit and UTC build date embedded in the running assembly.</summary>
+    public string BuildStampText => AppVersion.BuildStamp;
+
     /// <summary>The folder that holds rolling log files.</summary>
     public string LogFolder => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),

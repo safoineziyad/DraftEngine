@@ -28,10 +28,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <!-- Package version is shown from assembly informational metadata; numeric versions drive Windows upgrade ordering. -->
-    <Version>0.4.0-beta.1</Version>
-    <AssemblyVersion>0.4.0.1</AssemblyVersion>
-    <FileVersion>0.4.0.1</FileVersion>
+    <!-- Versions come from Directory.Build.props (single source of truth). -->
     <BuildCommitHash Condition="'$(BuildCommitHash)' == ''">local</BuildCommitHash>
     <BuildDateUtc Condition="'$(BuildDateUtc)' == ''">not stamped</BuildDateUtc>
     <Product>DraftEngine</Product>

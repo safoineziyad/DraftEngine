@@ -12,7 +12,12 @@
 ; ============================================================================
 
 ; --- Single source of truth for the version --------------------------------
+; AppVersion is normally supplied by installer\Build-Installer.ps1 from Directory.Build.props:
+;   ISCC.exe /DAppVersion=0.4.0.1 installer\DraftEngine.iss
+; The fallback below only keeps a manual ISCC run from failing.
+#ifndef AppVersion
 #define AppVersion "0.4.0.1"
+#endif
 ; ---------------------------------------------------------------------------
 
 #define AppName "DraftEngine"

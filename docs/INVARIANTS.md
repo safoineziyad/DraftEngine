@@ -6,5 +6,5 @@
 6. Any seed change needs an EF migration.
 7. CurrentUserId = 1 remains the single-user assumption.
 8. All existing tests keep passing; every new feature ships with tests.
-9. No telemetry. Network calls only: OpenAI/user-configured AI endpoint and the GitHub update check (enabled by default, configurable off).
+9. No telemetry. Network calls only: the OpenAI/user-configured AI endpoint and the signed update-manifest check. Update checks are **on by default** (notify-only: one HTTPS GET with `User-Agent: DraftEngine/<version>`, no identifiers, no query string), can be turned off in Settings (then no update request is made at all), and are disclosed in the first-run screen and About privacy text. Installing an update always requires an explicit click plus a confirmation.
 10. Do not rebuild anything that already works.

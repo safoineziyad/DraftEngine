@@ -26,7 +26,9 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
     private readonly ILicenseService _licenseService;
 
     /// <summary>Page title shown in the header.</summary>
-    public string PageTitle => "About & Help";
+    public string PageTitle =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("About.PageTitle")
+        ?? "About & Help";
 
     /// <summary>The running version (single source of truth: the csproj Version).</summary>
     public string VersionText => AppVersion.Display;

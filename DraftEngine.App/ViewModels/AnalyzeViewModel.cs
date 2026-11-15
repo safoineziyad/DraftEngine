@@ -45,7 +45,9 @@ public partial class AnalyzeViewModel : ObservableObject, INavigationAware
     private AnalysisResult? _currentResult;
 
     /// <summary>Page title shown in the header.</summary>
-    public string PageTitle => "Analyze";
+    public string PageTitle =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("Analyze.PageTitle")
+        ?? "Analyze";
 
     /// <summary>Mandatory disclaimer shown with every result and export.</summary>
     public string Disclaimer => AnalysisResult.Disclaimer;

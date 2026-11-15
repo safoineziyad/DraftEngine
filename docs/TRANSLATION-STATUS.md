@@ -1,15 +1,15 @@
 # Translation Status
 
-Updated: 2026-11-08
+Updated: 2026-11-12
 
 ## Resource coverage
 
 | Language | Resource file | Keys | Key parity | Human review |
 |---|---|---:|---|---|
-| English | `DraftEngine.App/Resources/Strings.resx` | 373 | Pass: `LocalizationResourceTests.AllLanguages_HaveTheSameKeys` | Source language |
-| French | `DraftEngine.App/Resources/Strings.fr.resx` | 373 | Pass | Native-speaker review still required |
-| Arabic | `DraftEngine.App/Resources/Strings.ar.resx` | 373 | Pass | Native-speaker and RTL layout review still required |
-| Spanish | `DraftEngine.App/Resources/Strings.es.resx` | 373 | Pass | Native-speaker review still required |
+| English | `DraftEngine.App/Resources/Strings.resx` | 499 | Pass: `LocalizationResourceTests.AllLanguages_HaveTheSameKeys` | Source language |
+| French | `DraftEngine.App/Resources/Strings.fr.resx` | 499 | Pass | Native-speaker review still required |
+| Arabic | `DraftEngine.App/Resources/Strings.ar.resx` | 499 | Pass | Native-speaker and RTL layout review still required |
+| Spanish | `DraftEngine.App/Resources/Strings.es.resx` | 499 | Pass | Native-speaker review still required |
 
 `LocalizationResourceTests.NoTranslationValue_IsEmpty` and
 `LocalizationResourceTests.EveryLocMarkupKey_ExistsInEveryLanguage` enforce non-empty
@@ -27,7 +27,18 @@ The wizard migration is covered by `LocalizationResourceTests.MigratedScreens_Co
 Contract detail's live metadata/status, history rows and failure-message switching are covered by
 `ContractDetailLocalizationTests.ContractDetailAndHistoryRows_RerenderAfterLanguageChange`.
 
-The shrinking XAML literal baseline is **90** candidates across the five pending screens, tracked
-by `docs/i18n-baseline.txt` and `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline`.
-This scan does not measure remaining C# literals or clause/legal text. WPF rendering and all
-translations are **not visually verified** and have not received human linguistic review.
+The XAML literal baseline is now **0**: Clause Manager, Analyze, About and License Activation
+were migrated in Phase 4, so every screen uses `{loc:T}` keys. `docs/i18n-baseline.txt` and
+`LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline` keep it at zero.
+
+## Remaining known gaps (Phase 4)
+
+- **C# UI strings.** `ClauseManagerViewModel`, `AnalyzeViewModel`, `AboutViewModel` and
+  `LicenseService` still build some user-visible status/dialog sentences in English (error
+  banners, update status, analysis progress, license evaluation messages). They are tracked in
+  `docs/I18N-INVENTORY.md`; page titles for the migrated screens now use resource keys.
+- **Clause and legal text** is seed data and is intentionally English-only until a lawyer
+  reviews each language.
+- **Visual verification.** No screen has been checked visually in any language; Arabic RTL
+  is wired through the shared window style (`FlowDirection` binding) but has not been seen.
+- **Human review.** All non-English values remain machine-drafted.

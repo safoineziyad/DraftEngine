@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
@@ -20,7 +21,7 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-            <TextBlock Text="Create, edit and archive your clause templates."
+            <TextBlock Text="{loc:T Clause.Subtitle}"
                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
         </StackPanel>
 
@@ -47,33 +48,33 @@
                             <ComboBox Width="180" Margin="0,0,8,0"
                                       ItemsSource="{Binding ContractTypes}"
                                       SelectedItem="{Binding SelectedContractType, UpdateSourceTrigger=PropertyChanged}"
-                                      AutomationProperties.Name="Filter clauses by contract type" />
+                                      AutomationProperties.Name="{loc:T Clause.FilterType}" />
                             <ComboBox Width="150" Margin="0,0,8,0"
                                       ItemsSource="{Binding CategoryFilters}"
                                       SelectedItem="{Binding SelectedCategoryFilter}"
-                                      AutomationProperties.Name="Filter clauses by category" />
+                                      AutomationProperties.Name="{loc:T Clause.FilterCategory}" />
                             <ComboBox Width="120"
                                       ItemsSource="{Binding SourceFilters}"
                                       SelectedItem="{Binding SelectedSourceFilter}"
-                                      AutomationProperties.Name="Filter clauses by source" />
+                                      AutomationProperties.Name="{loc:T Clause.FilterSource}" />
                         </StackPanel>
-                        <Button Grid.Column="1" Content="+ New" Margin="8,0,0,0" Padding="12,0"
+                        <Button Grid.Column="1" Content="{loc:T Clause.New}" Margin="8,0,0,0" Padding="12,0"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                AutomationProperties.Name="Create a new clause"
+                                AutomationProperties.Name="{loc:T Clause.NewAutomation}"
                                 Command="{Binding NewClauseCommand}" />
-                        <Button Grid.Column="2" Content="Edit" Margin="8,0,0,0" Padding="12,0"
-                                AutomationProperties.Name="Edit the selected clause"
+                        <Button Grid.Column="2" Content="{loc:T Clause.Edit}" Margin="8,0,0,0" Padding="12,0"
+                                AutomationProperties.Name="{loc:T Clause.EditAutomation}"
                                 Command="{Binding EditClauseCommand}"
                                 CommandParameter="{Binding SelectedClause}"
                                 IsEnabled="{Binding CanEditSelected}" />
-                        <Button Grid.Column="3" Content="Duplicate" Margin="8,0,0,0" Padding="12,0"
-                                AutomationProperties.Name="Duplicate the selected clause"
+                        <Button Grid.Column="3" Content="{loc:T Clause.Duplicate}" Margin="8,0,0,0" Padding="12,0"
+                                AutomationProperties.Name="{loc:T Clause.DuplicateAutomation}"
                                 Command="{Binding DuplicateClauseCommand}"
                                 CommandParameter="{Binding SelectedClause}"
                                 IsEnabled="{Binding CanDuplicateSelected}" />
-                        <Button Grid.Column="4" Content="Archive" Margin="8,0,0,0" Padding="12,0"
+                        <Button Grid.Column="4" Content="{loc:T Clause.Archive}" Margin="8,0,0,0" Padding="12,0"
                                 Foreground="{DynamicResource DangerBrush}"
-                                AutomationProperties.Name="Archive the selected clause"
+                                AutomationProperties.Name="{loc:T Clause.ArchiveAutomation}"
                                 Command="{Binding ArchiveClauseCommand}"
                                 CommandParameter="{Binding SelectedClause}"
                                 IsEnabled="{Binding CanArchiveSelected}" />
@@ -83,7 +84,7 @@
                 <!-- Rows -->
                 <ListView Grid.Row="1" ItemsSource="{Binding Clauses}"
                           SelectedItem="{Binding SelectedClause, Mode=TwoWay}"
-                          AutomationProperties.Name="Clause list">
+                          AutomationProperties.Name="{loc:T Clause.ListAutomation}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="16,10" />
@@ -121,11 +122,11 @@
                 <!-- Empty state -->
                 <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                             Visibility="{Binding HasNoClauses, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="No clauses yet — create your first one."
+                    <TextBlock Text="{loc:T Clause.Empty}"
                                Style="{StaticResource BodyTextStyle}" FontSize="15"
                                HorizontalAlignment="Center" />
-                    <Button Content="+ New Clause" Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="Create a new clause"
+                    <Button Content="{loc:T Clause.NewLong}" Style="{StaticResource PrimaryButtonStyle}"
+                            AutomationProperties.Name="{loc:T Clause.NewAutomation}"
                             Command="{Binding NewClauseCommand}"
                             HorizontalAlignment="Center" Margin="0,16,0,0" />
                 </StackPanel>
@@ -149,28 +150,28 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Title" Style="{StaticResource BodyTextStyle}"
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:T Clause.TitleLabel}" Style="{StaticResource BodyTextStyle}"
                            VerticalAlignment="Center" Margin="0,0,0,4" />
                 <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,12"
                          Text="{Binding SelectedClause.Title, UpdateSourceTrigger=PropertyChanged}"
-                         AutomationProperties.Name="Clause title" />
+                         AutomationProperties.Name="{loc:T Clause.TitleAutomation}" />
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Category" Style="{StaticResource BodyTextStyle}"
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:T Clause.CategoryLabel}" Style="{StaticResource BodyTextStyle}"
                            VerticalAlignment="Center" Margin="0,0,0,4" />
                 <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,12"
                          Text="{Binding SelectedClause.Category, UpdateSourceTrigger=PropertyChanged}"
-                         AutomationProperties.Name="Clause category" />
+                         AutomationProperties.Name="{loc:T Clause.CategoryAutomation}" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Body template" Style="{StaticResource BodyTextStyle}"
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:T Clause.BodyLabel}" Style="{StaticResource BodyTextStyle}"
                            VerticalAlignment="Top" Margin="0,0,0,4" />
                 <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,12"
                          Text="{Binding SelectedClause.BodyTemplate, UpdateSourceTrigger=PropertyChanged}"
-                         AutomationProperties.Name="Clause body template"
+                         AutomationProperties.Name="{loc:T Clause.BodyAutomation}"
                          AcceptsReturn="True" TextWrapping="Wrap" Height="140" VerticalScrollBarVisibility="Auto" />
 
                 <CheckBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,12"
                           IsChecked="{Binding SelectedClause.IsOptional}"
-                          Content="Optional clause" AutomationProperties.Name="Mark clause as optional" />
+                          Content="{loc:T Clause.Optional}" AutomationProperties.Name="{loc:T Clause.OptionalAutomation}" />
 
                 <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Margin="0,0,0,8"
                            Text="{Binding PlaceholderWarning}" Foreground="{DynamicResource DangerBrush}"
@@ -179,12 +180,12 @@
 
                 <!-- Action bar -->
                 <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Cancel" Margin="8,0,0,0" Padding="12,0"
-                            AutomationProperties.Name="Discard changes"
+                    <Button Content="{loc:T Clause.Cancel}" Margin="8,0,0,0" Padding="12,0"
+                            AutomationProperties.Name="{loc:T Clause.CancelAutomation}"
                             Command="{Binding CancelEditCommand}" />
-                    <Button Content="Save" Margin="8,0,0,0" Padding="12,0"
+                    <Button Content="{loc:T Clause.Save}" Margin="8,0,0,0" Padding="12,0"
                             Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="Save clause"
+                            AutomationProperties.Name="{loc:T Clause.SaveAutomation}"
                             Command="{Binding SaveCommand}"
                             IsEnabled="{Binding CanSave}" />
                 </StackPanel>
@@ -197,9 +198,9 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}"
                                VerticalAlignment="Center" />
-                    <Button Content="Try again" Height="28" Padding="10,0" FontSize="12"
+                    <Button Content="{loc:T Clause.TryAgain}" Height="28" Padding="10,0" FontSize="12"
                             Margin="12,0,0,0"
-                            AutomationProperties.Name="Retry loading clauses"
+                            AutomationProperties.Name="{loc:T Clause.TryAgainAutomation}"
                             Command="{Binding LoadCommand}" />
                 </StackPanel>
             </Border>

@@ -64,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Phase 4 — the localization/code audit (hardcoded strings, theme brushes, RTL, then translation status). Phase 3 is complete; evidence is under "Phase 3 — AI profiles (complete)" below. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
+NEXT STEP: Phase 5 — release preparation for 0.4.0: manual visual check of all four languages (including Arabic RTL), human translation review, version bump and release notes. Phase 4 is complete; evidence is under "Phase 4 — localization audit (complete)" below.
 
 (Historical, previous round) Phases 1–4 were complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
@@ -212,3 +212,12 @@ onboarding, About, licensing behind a flag.
 - **Backup.** Portable backups carry profile metadata (id, name, preset, base URL, model) without keys; restore merges them and keeps a local key only when the same profile id already exists on the machine.
 - **Azure/local.** Azure uses the `api-key` header; loopback base URLs may run without any key, while remote endpoints still require one.
 - **Evidence.** GATE 3: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **418 passed, 0 failed** (264 + 126 + 28), up from 399. New tests: `AiProviderClientTests` (12: parsing, 401/403-shaped access, quota, 5xx, network, wrong URL, model-not-found, keyless local, Azure header, chat fallback, base URL/model in chat), `AiProfileSettingsTests` (3), `AiConsentGateTests` (2), `EncryptedBackup_RestoresAiProfiles_WithoutKeys`. **Not visually verified** (Settings profile editor, preset picker, RTL layout).
+
+### Phase 4 — localization audit (complete, 2026-11-12)
+
+- **All screens migrated.** Clause Manager, Analyze, About and License Activation replaced every literal `Text`/`Content`/`ToolTip`/`Title`/`AutomationProperties.Name` with `{loc:T}` keys. `PendingMigration` is empty and `docs/i18n-baseline.txt` is **0**; the tests now forbid any literal user-facing string in any screen.
+- **New keys.** 84 keys added per language (About 18, Analyze 24, Clause 29, License 11, plus three page titles), for **499 keys per language** with parity, no empty values and every XAML key present in all four files.
+- **Page titles and license messages.** Clause Manager, Analyze and About page titles plus the license activation window's status sentences now come from resources (English fallback only if the localization service is unavailable).
+- **Theme/RTL audit.** No hardcoded colours remain in XAML (`Background`/`Foreground`/`BorderBrush`/`Fill="#…"`: none); every brush still resolves in Light, Dark and High Contrast (`ThemeDictionaryTests`), and RTL is applied through the shared window style's `FlowDirection` binding, so the migrated screens mirror with the sidebar.
+- **Known gaps recorded.** Remaining English C# status strings in `ClauseManagerViewModel`, `AnalyzeViewModel`, `AboutViewModel` and `LicenseService`, English-only clause/legal seed text, and human translation review are listed in `docs/TRANSLATION-STATUS.md` and `docs/I18N-INVENTORY.md`.
+- **Evidence.** GATE 4: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **418 passed, 0 failed** (264 + 126 + 28), including `LocalizationResourceTests`, `WpfPageOpenTests` and `ThemeDictionaryTests`. **Not visually verified** in any language; Arabic RTL has not been seen.

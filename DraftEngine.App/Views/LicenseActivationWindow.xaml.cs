@@ -23,7 +23,7 @@ public partial class LicenseActivationWindow : Window
         var key = LicenseKeyBox.Text?.Trim() ?? string.Empty;
         if (key.Length == 0)
         {
-            StatusText.Text = "Paste the license key you received.";
+            StatusText.Text = Text("License.PasteKey", "Paste the license key you received.");
             return;
         }
 
@@ -40,9 +40,15 @@ public partial class LicenseActivationWindow : Window
         }
         catch
         {
-            StatusText.Text = "The license could not be activated. Check the key and try again.";
+            StatusText.Text = Text(
+                "License.ActivationFailed",
+                "The license could not be activated. Check the key and try again.");
         }
     }
+
+    /// <summary>Localized string when the localization service is available, English fallback otherwise.</summary>
+    private static string Text(string key, string fallback) =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString(key) ?? fallback;
 
     private void OnQuitClick(object sender, RoutedEventArgs e) => DialogResult = false;
 }

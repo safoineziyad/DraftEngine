@@ -421,4 +421,86 @@
   <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (local)</value></data>
   <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (local)</value></data>
   <data name="Settings.PresetCustom" xml:space="preserve"><value>Custom endpoint</value></data>
+  <data name="About.PageTitle" xml:space="preserve"><value>About &amp; Help</value></data>
+  <data name="About.Subtitle" xml:space="preserve"><value>Version, help, privacy and licensing information.</value></data>
+  <data name="About.Tagline" xml:space="preserve"><value>DraftEngine drafts contracts locally from templates. Generation works fully offline and never requires an AI key.</value></data>
+  <data name="About.OpenLogs" xml:space="preserve"><value>Open log folder</value></data>
+  <data name="About.OpenData" xml:space="preserve"><value>Open data folder</value></data>
+  <data name="About.Diagnostics" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="About.DiagnosticsDescription" xml:space="preserve"><value>Version, Windows and .NET only. No contract data, paths or identifiers.</value></data>
+  <data name="About.CopyDiagnostics" xml:space="preserve"><value>Copy diagnostics</value></data>
+  <data name="About.CopyDiagnosticsAutomation" xml:space="preserve"><value>Copy version and OS diagnostics</value></data>
+  <data name="About.Privacy" xml:space="preserve"><value>Privacy summary</value></data>
+  <data name="About.PrivacyBody" xml:space="preserve"><value>Contracts, intake answers, chat history, settings and the API key stay on this computer and are encrypted with your Windows user profile. There is no telemetry, no account and no background upload.</value></data>
+  <data name="About.AiPrivacyBody" xml:space="preserve"><value>AI editing is optional. When you use it, the current contract text and your instruction are sent to the AI provider you configured. Enable “Hide party names and addresses from AI” in Settings to replace real party details with tokens before sending.</value></data>
+  <data name="About.Updates" xml:space="preserve"><value>Updates</value></data>
+  <data name="About.CheckUpdates" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="About.License" xml:space="preserve"><value>License</value></data>
+  <data name="About.LicenseKeyLabel" xml:space="preserve"><value>License key</value></data>
+  <data name="About.LicenseKeyTooltip" xml:space="preserve"><value>Paste the signed license key you received</value></data>
+  <data name="About.ActivateLicense" xml:space="preserve"><value>Activate license</value></data>
+  <data name="Analyze.PageTitle" xml:space="preserve"><value>Analyze</value></data>
+  <data name="Analyze.ImportTitle" xml:space="preserve"><value>1. Import a contract</value></data>
+  <data name="Analyze.ImportDescription" xml:space="preserve"><value>DOCX or text-based PDF. Scanned PDFs need OCR, which is not supported yet.</value></data>
+  <data name="Analyze.PlaybookLabel" xml:space="preserve"><value>Contract type (playbook)</value></data>
+  <data name="Analyze.PlaybookAutomation" xml:space="preserve"><value>Playbook contract type</value></data>
+  <data name="Analyze.ChooseFileAutomation" xml:space="preserve"><value>Choose a contract file</value></data>
+  <data name="Analyze.Analyze" xml:space="preserve"><value>Analyze</value></data>
+  <data name="Analyze.AnalyzeAutomation" xml:space="preserve"><value>Re-analyze the current file</value></data>
+  <data name="Analyze.AiReview" xml:space="preserve"><value>AI review (optional)</value></data>
+  <data name="Analyze.AiReviewAutomation" xml:space="preserve"><value>Enable AI review</value></data>
+  <data name="Analyze.GroupedHint" xml:space="preserve"><value>Grouped by severity. Select a finding to highlight its quote.</value></data>
+  <data name="Analyze.ExportDocx" xml:space="preserve"><value>Export report (DOCX)</value></data>
+  <data name="Analyze.ExportPdf" xml:space="preserve"><value>Export report (PDF)</value></data>
+  <data name="Analyze.FindingsAutomation" xml:space="preserve"><value>Review findings</value></data>
+  <data name="Analyze.AiBadge" xml:space="preserve"><value>AI</value></data>
+  <data name="Analyze.Saved" xml:space="preserve"><value>Saved analyses</value></data>
+  <data name="Analyze.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Analyze.ArchiveSelected" xml:space="preserve"><value>Archive selected</value></data>
+  <data name="Analyze.OpenSelected" xml:space="preserve"><value>Open selected analysis</value></data>
+  <data name="Analyze.Document" xml:space="preserve"><value>Document</value></data>
+  <data name="Analyze.DocumentAutomation" xml:space="preserve"><value>Imported contract text</value></data>
+  <data name="Analyze.SuggestedFix" xml:space="preserve"><value>Suggested fix</value></data>
+  <data name="Analyze.CopyFix" xml:space="preserve"><value>Copy suggested fix</value></data>
+  <data name="Clause.PageTitle" xml:space="preserve"><value>Clause Manager</value></data>
+  <data name="Clause.Subtitle" xml:space="preserve"><value>Create, edit and archive your clause templates.</value></data>
+  <data name="Clause.FilterType" xml:space="preserve"><value>Filter clauses by contract type</value></data>
+  <data name="Clause.FilterCategory" xml:space="preserve"><value>Filter clauses by category</value></data>
+  <data name="Clause.FilterSource" xml:space="preserve"><value>Filter clauses by source</value></data>
+  <data name="Clause.New" xml:space="preserve"><value>+ New</value></data>
+  <data name="Clause.NewAutomation" xml:space="preserve"><value>Create a new clause</value></data>
+  <data name="Clause.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Clause.EditAutomation" xml:space="preserve"><value>Edit the selected clause</value></data>
+  <data name="Clause.Duplicate" xml:space="preserve"><value>Duplicate</value></data>
+  <data name="Clause.DuplicateAutomation" xml:space="preserve"><value>Duplicate the selected clause</value></data>
+  <data name="Clause.Archive" xml:space="preserve"><value>Archive</value></data>
+  <data name="Clause.ArchiveAutomation" xml:space="preserve"><value>Archive the selected clause</value></data>
+  <data name="Clause.ListAutomation" xml:space="preserve"><value>Clause list</value></data>
+  <data name="Clause.Empty" xml:space="preserve"><value>No clauses yet — create your first one.</value></data>
+  <data name="Clause.NewLong" xml:space="preserve"><value>+ New Clause</value></data>
+  <data name="Clause.TitleLabel" xml:space="preserve"><value>Title</value></data>
+  <data name="Clause.TitleAutomation" xml:space="preserve"><value>Clause title</value></data>
+  <data name="Clause.CategoryLabel" xml:space="preserve"><value>Category</value></data>
+  <data name="Clause.CategoryAutomation" xml:space="preserve"><value>Clause category</value></data>
+  <data name="Clause.BodyLabel" xml:space="preserve"><value>Body template</value></data>
+  <data name="Clause.BodyAutomation" xml:space="preserve"><value>Clause body template</value></data>
+  <data name="Clause.Optional" xml:space="preserve"><value>Optional clause</value></data>
+  <data name="Clause.OptionalAutomation" xml:space="preserve"><value>Mark clause as optional</value></data>
+  <data name="Clause.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Clause.CancelAutomation" xml:space="preserve"><value>Discard changes</value></data>
+  <data name="Clause.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Clause.SaveAutomation" xml:space="preserve"><value>Save clause</value></data>
+  <data name="Clause.TryAgain" xml:space="preserve"><value>Try again</value></data>
+  <data name="Clause.TryAgainAutomation" xml:space="preserve"><value>Retry loading clauses</value></data>
+  <data name="License.WindowTitle" xml:space="preserve"><value>Activate DraftEngine</value></data>
+  <data name="License.Heading" xml:space="preserve"><value>Activate DraftEngine</value></data>
+  <data name="License.Description" xml:space="preserve"><value>Paste the signed license key you received. Activation is verified offline on this computer; no account or network connection is needed.</value></data>
+  <data name="License.KeyLabel" xml:space="preserve"><value>License key</value></data>
+  <data name="License.KeyAutomation" xml:space="preserve"><value>License key</value></data>
+  <data name="License.Quit" xml:space="preserve"><value>Quit</value></data>
+  <data name="License.QuitAutomation" xml:space="preserve"><value>Quit DraftEngine</value></data>
+  <data name="License.Activate" xml:space="preserve"><value>Activate</value></data>
+  <data name="License.ActivateAutomation" xml:space="preserve"><value>Activate license</value></data>
+  <data name="License.PasteKey" xml:space="preserve"><value>Paste the license key you received.</value></data>
+  <data name="License.ActivationFailed" xml:space="preserve"><value>The license could not be activated. Check the key and try again.</value></data>
 </root>

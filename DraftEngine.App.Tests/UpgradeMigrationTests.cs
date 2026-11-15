@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using DraftEngine.Data;
+using DraftEngine.Core.Models.ContractTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -196,7 +197,10 @@ public sealed class UpgradeMigrationTests
                 {
                     Assert.True(upgradedRow.TryGetValue(column, out var upgradedValue),
                         $"Table '{table}' lost the column '{column}'.");
-                    Assert.True(value == upgradedValue,
+                    var expectedAfterUpgrade = table == "Clauses" && column == "ContractType"
+                        ? ContractTypeRegistry.TryGetByDisplayName(value)?.Id ?? value
+                        : value;
+                    Assert.True(expectedAfterUpgrade == upgradedValue,
                         $"Table '{table}' row Id {expectedRow["Id"]} column '{column}' changed from '{value}' to '{upgradedValue}'.");
                 }
             }

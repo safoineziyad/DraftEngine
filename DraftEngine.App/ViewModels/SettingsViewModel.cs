@@ -55,8 +55,14 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>OpenAI chat model choices.</summary>
     public IReadOnlyList<string> ModelOptions { get; } = new[] { "gpt-4o-mini", "gpt-4o" };
 
-    /// <summary>Default governing law choices for new contracts.</summary>
-    public IReadOnlyList<string> GoverningLawOptions { get; } = new[] { "California", "New York", "Delaware", "Texas" };
+    /// <summary>Countries offered as the default governing law, sorted for the active culture.</summary>
+    public IReadOnlyList<DraftEngine.Core.Data.CountryInfo> GoverningLawOptions { get; } =
+        DraftEngine.Core.Data.CountryCatalog.Sort(
+            DraftEngine.Core.Data.CountryCatalog.All,
+            System.Globalization.CultureInfo.CurrentCulture);
+
+    /// <summary>Subdivisions offered for the selected default country.</summary>
+    public System.Collections.ObjectModel.ObservableCollection<string> GoverningLawSubdivisions { get; } = new();
 
     /// <summary>The OpenAI API key being edited (plaintext in memory only; encrypted at rest).</summary>
     [ObservableProperty]
@@ -74,9 +80,16 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string selectedModel = AppSettings.FallbackModel;
 
-    /// <summary>The default governing law for new contracts.</summary>
+    /// <summary>The default governing-law country for new contracts.</summary>
     [ObservableProperty]
-    private string selectedGoverningLaw = "California";
+    private DraftEngine.Core.Data.CountryInfo? selectedGoverningLawCountry;
+
+    /// <summary>The default governing-law subdivision (free text when the country has no list).</summary>
+    [ObservableProperty]
+    private string selectedGoverningLawSubdivision = string.Empty;
+
+    /// <summary>True when the selected country has a built-in subdivision list.</summary>
+    public bool HasGoverningLawSubdivisions => GoverningLawSubdivisions.Count > 0;
 
     /// <summary>The default contract term in months.</summary>
     [ObservableProperty]
@@ -461,7 +474,12 @@ public partial class SettingsViewModel : ObservableObject
             {
                 OpenAiApiKey = OpenAiApiKey?.Trim() ?? string.Empty,
                 OpenAiModel = SelectedModel,
-                DefaultGoverningLaw = SelectedGoverningLaw,
+                DefaultGoverningLaw = DraftEngine.Core.Data.JurisdictionResolver.Compose(
+                    SelectedGoverningLawCountry?.Code,
+                    SelectedGoverningLawSubdivision,
+                    _localization.CurrentLanguage),
+                DefaultGoverningLawCountry = SelectedGoverningLawCountry?.Code ?? string.Empty,
+                DefaultGoverningLawSubdivision = SelectedGoverningLawSubdivision?.Trim() ?? string.Empty,
                 DefaultTermMonths = termMonths,
                 // Preserve the AI data-sharing acknowledgement — editing settings must not
                 // silently withdraw the consent given during a chat edit.
@@ -508,7 +526,24 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnHidePartyNamesFromAiChanged(bool value) => MarkDirty();
 
-    partial void OnSelectedGoverningLawChanged(string value) => MarkDirty();
+    partial void OnSelectedGoverningLawCountryChanged(DraftEngine.Core.Data.CountryInfo? value)
+    {
+        RefreshGoverningLawSubdivisions();
+        MarkDirty();
+    }
+
+    partial void OnSelectedGoverningLawSubdivisionChanged(string value) => MarkDirty();
+
+    private void RefreshGoverningLawSubdivisions()
+    {
+        GoverningLawSubdivisions.Clear();
+        foreach (var subdivision in DraftEngine.Core.Data.SubdivisionCatalog.For(SelectedGoverningLawCountry?.Code))
+        {
+            GoverningLawSubdivisions.Add(subdivision);
+        }
+
+        OnPropertyChanged(nameof(HasGoverningLawSubdivisions));
+    }
 
     partial void OnDefaultTermMonthsChanged(int value)
     {
@@ -616,7 +651,10 @@ public partial class SettingsViewModel : ObservableObject
             OpenAiApiKey = saved.OpenAiApiKey;
             UpdateApiKeyStatus(saved.OpenAiApiKey);
             SelectedModel = ModelOptions.Contains(saved.OpenAiModel) ? saved.OpenAiModel : AppSettings.FallbackModel;
-            SelectedGoverningLaw = saved.DefaultGoverningLaw;
+            SelectedGoverningLawCountry = DraftEngine.Core.Data.CountryCatalog.Find(saved.DefaultGoverningLawCountry)
+                ?? DraftEngine.Core.Data.CountryCatalog.Find(DraftEngine.Core.Data.CountryCatalog.DefaultCode());
+            SelectedGoverningLawSubdivision = saved.DefaultGoverningLawSubdivision;
+            RefreshGoverningLawSubdivisions();
             _isApplyingTheme = true;
             SelectedTheme = ThemeResolver.Parse(saved.Theme);
             _isApplyingTheme = false;

@@ -25,6 +25,9 @@ public class AppSettings
     /// <summary>Default governing-law subdivision, when the country has a built-in list.</summary>
     public string DefaultGoverningLawSubdivision { get; set; } = string.Empty;
 
+    /// <summary>Recently used country codes, most recent first (max 5), for picker ordering.</summary>
+    public List<string> RecentCountryCodes { get; set; } = new();
+
     /// <summary>The default contract term length in months.</summary>
     public int DefaultTermMonths { get; set; } = 12;
 

@@ -398,4 +398,5 @@
   <data name="Startup.Error.Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copiés.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>Le presse-papiers est indisponible.</value></data>
+  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Les clauses sont des modèles génériques et n&apos;ont pas été adaptées au droit de la juridiction sélectionnée.</value></data>
 </root>

@@ -398,4 +398,5 @@
   <data name="Startup.Error.Close" xml:space="preserve"><value>Cerrar</value></data>
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnóstico copiado.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>El portapapeles no está disponible.</value></data>
+  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Las cláusulas son plantillas genéricas y no se han adaptado a la legislación de la jurisdicción seleccionada.</value></data>
 </root>

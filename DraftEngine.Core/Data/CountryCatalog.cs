@@ -29,6 +29,9 @@ public sealed class CountryInfo
     public string Name(string language) =>
         Names.TryGetValue(NormalizeLanguage(language), out var value) ? value : Names["en"];
 
+    /// <summary>The name for the current UI culture, used by WPF list bindings.</summary>
+    public string DisplayName => Name(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+
     internal static string NormalizeLanguage(string? language)
     {
         if (string.IsNullOrWhiteSpace(language))

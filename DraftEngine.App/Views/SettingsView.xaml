@@ -216,9 +216,29 @@
                         <!-- Governing law -->
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="{loc:T Settings.DefaultGoverningLaw}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,6" />
-                            <ComboBox ItemsSource="{Binding GoverningLawOptions}"
-                                      SelectedItem="{Binding SelectedGoverningLaw}"
+                            <ComboBox IsEditable="True" IsTextSearchEnabled="True"
+                                      ItemsSource="{Binding GoverningLawOptions}"
+                                      DisplayMemberPath="DisplayName"
+                                      SelectedItem="{Binding SelectedGoverningLawCountry}"
                                       AutomationProperties.Name="{loc:T Settings.DefaultGoverningLawAutomation}" />
+                            <ComboBox Margin="0,6,0,0" IsEditable="True"
+                                      ItemsSource="{Binding GoverningLawSubdivisions}"
+                                      Text="{Binding SelectedGoverningLawSubdivision, UpdateSourceTrigger=PropertyChanged}"
+                                      Visibility="{Binding HasGoverningLawSubdivisions, Converter={StaticResource BoolToVis}}"
+                                      AutomationProperties.Name="{loc:T Settings.DefaultGoverningLawAutomation}" />
+                            <TextBox Margin="0,6,0,0"
+                                     Text="{Binding SelectedGoverningLawSubdivision, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasGoverningLawSubdivisions}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
                         </StackPanel>
 
                         <!-- Term months -->

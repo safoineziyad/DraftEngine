@@ -57,6 +57,29 @@ public sealed class JurisdictionMigrationTests : IDisposable
         Assert.Equal(3, await verify.Contracts.CountAsync());
     }
 
+    [Fact]
+    public async Task GoverningLawClauses_AreReworded_AndFlaggedForLegalReview()
+    {
+        await using (var context = CreateContext())
+        {
+            await context.Database.MigrateAsync();
+        }
+
+        await using var verify = CreateContext();
+        var clauses = await verify.Clauses
+            .Where(clause => clause.Title == "Governing Law")
+            .ToListAsync();
+
+        Assert.Equal(4, clauses.Count);
+        Assert.All(clauses, clause =>
+        {
+            Assert.Equal(
+                "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
+                clause.BodyTemplate);
+            Assert.True(clause.NeedsLegalReview);
+        });
+    }
+
     private async Task CreateDatabaseAtAsync(string target)
     {
         await using var context = CreateContext();

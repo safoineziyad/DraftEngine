@@ -398,4 +398,5 @@
   <data name="Startup.Error.Close" xml:space="preserve"><value>إغلاق</value></data>
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>تم نسخ التشخيص.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>الحافظة غير متاحة.</value></data>
+  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>البنود قوالب عامة ولم تُكيَّف مع قانون الولاية القضائية المختارة.</value></data>
 </root>

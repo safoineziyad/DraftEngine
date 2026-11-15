@@ -64,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Phase 2 (in progress) — structured jurisdiction storage, migration, backup/export and tests are in; next reword the governing-law clause (NeedsLegalReview), replace the US-state-only wizard/settings pickers, add the review notice and localize it. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
+NEXT STEP: Phase 3 — AI profiles and model list. Phase 2 is complete; evidence is under "Phase 2 — jurisdictions (complete)" below. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
 
 (Historical, previous round) Phases 1–4 were complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
@@ -194,3 +194,11 @@ onboarding, About, licensing behind a flag.
 - Migration `20261115112708_AddJurisdictionFields` adds the columns and maps known legacy values (US states/DC, Canadian provinces, Australian states, UK nations and “England and Wales”) without altering the original text. Unknown values stay free text.
 - Portable backup, encrypted restore, JSON export and CSV export now carry the four fields; settings and `BackupSettings` gained default country/subdivision with a Windows-region default.
 - Tests: `JurisdictionMigrationTests.LegacyFreeText_IsMapped_AndUnchanged` (3 legacy contracts, including an unknown value) and `PortableBackupTests.EncryptedBackup_RoundTripsJurisdictionFields` pass. **Not visually verified.**
+
+### Phase 2 — jurisdictions (complete, 2026-11-12)
+
+- **Country data.** 264 CLDR country/territory entries in en/fr/ar/es bundled as `DraftEngine.Core/Data/countries.json` (Unicode License v3 in `docs/LICENSES.md`); no runtime network.
+- **Pickers.** The wizard's governing-law field is now a `Jurisdiction` picker: editable country combo with type-ahead, diacritic-insensitive filtering, culture-aware sort (Arabic included), recent countries first, Windows-region default, built-in subdivisions only for US (+DC), Canada, Australia and the four UK nations, free-text subdivision elsewhere. Courts/venue use a country picker plus free-text city. The Settings default governing law uses the same country list.
+- **Storage.** `GoverningLawCountry`, `GoverningLawSubdivision`, `VenueCountry`, `VenueCity` columns; migration `20261115112708_AddJurisdictionFields` maps old free text (US states, Canadian provinces, Australian states, UK nations, “England and Wales”) without changing it; unknown text stays free text. Backup, restore, JSON and CSV export carry the fields; settings persist the default country/subdivision and recent countries.
+- **Clause wording.** Governing-law clauses now read “This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.” and are flagged `NeedsLegalReview` by migration `20261115113011_AddClauseLegalReviewFlag` (no user-authored clause is touched). The review step shows the localized notice in EN/FR/AR/ES (`Wizard.JurisdictionDisclaimer`).
+- **Evidence.** GATE 2: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **399 passed, 0 failed** (251 + 120 + 28), up from 373. New tests: `CountryCatalogTests` (16), `JurisdictionMigrationTests` (2), `IntakeFieldViewModelTests` (7), `PortableBackupTests.EncryptedBackup_RoundTripsJurisdictionFields`; `ContractServiceTests` and the generation snapshot assert the reworded clause. **Not visually verified** (wizard/settings pickers, RTL layout).

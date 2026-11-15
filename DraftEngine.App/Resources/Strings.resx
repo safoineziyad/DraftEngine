@@ -398,4 +398,5 @@
   <data name="Startup.Error.Close" xml:space="preserve"><value>Close</value></data>
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copied.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>The clipboard is unavailable.</value></data>
+  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Clauses are generic templates and have not been adapted to the law of the selected jurisdiction.</value></data>
 </root>

@@ -16,8 +16,14 @@ public class AppSettings
     /// <summary>The selected OpenAI chat model id (e.g. "gpt-4o-mini" or "gpt-4o").</summary>
     public string OpenAiModel { get; set; } = FallbackModel;
 
-    /// <summary>The default governing law for new contracts.</summary>
+    /// <summary>The default governing law for new contracts (display text).</summary>
     public string DefaultGoverningLaw { get; set; } = "California";
+
+    /// <summary>Default governing-law country (ISO alpha-2), initially the Windows region.</summary>
+    public string DefaultGoverningLawCountry { get; set; } = DraftEngine.Core.Data.CountryCatalog.DefaultCode();
+
+    /// <summary>Default governing-law subdivision, when the country has a built-in list.</summary>
+    public string DefaultGoverningLawSubdivision { get; set; } = string.Empty;
 
     /// <summary>The default contract term length in months.</summary>
     public int DefaultTermMonths { get; set; } = 12;

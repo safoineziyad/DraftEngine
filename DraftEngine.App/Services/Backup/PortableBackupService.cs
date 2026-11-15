@@ -159,7 +159,7 @@ public sealed class PortableBackupService : IPortableBackupService
     {
         await using var writer = new StreamWriter(output, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), leaveOpen: true);
         await writer.WriteLineAsync(
-            "Title,ContractType,Status,ClientName,GoverningLaw,TermMonths,EffectiveDate,CreatedAt,UpdatedAt,Archived,IntakeAnswers");
+            "Title,ContractType,Status,ClientName,GoverningLaw,GoverningLawCountry,GoverningLawSubdivision,VenueCountry,VenueCity,TermMonths,EffectiveDate,CreatedAt,UpdatedAt,Archived,IntakeAnswers");
 
         await using var context = _contextFactory.CreateContext();
         var contracts = await context.Set<Contract>().AsNoTracking()
@@ -183,6 +183,10 @@ public sealed class PortableBackupService : IPortableBackupService
                 Csv(contract.Status.ToString()),
                 Csv(contract.ClientName),
                 Csv(contract.GoverningLaw),
+                Csv(contract.GoverningLawCountry),
+                Csv(contract.GoverningLawSubdivision),
+                Csv(contract.VenueCountry),
+                Csv(contract.VenueCity),
                 contract.TermMonths.ToString(CultureInfo.InvariantCulture),
                 Csv(contract.EffectiveDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
                 Csv(contract.CreatedAt.ToString("O", CultureInfo.InvariantCulture)),
@@ -221,6 +225,10 @@ public sealed class PortableBackupService : IPortableBackupService
                 PartiesJson = contract.PartiesJson,
                 EffectiveDate = contract.EffectiveDate,
                 GoverningLaw = contract.GoverningLaw,
+                GoverningLawCountry = contract.GoverningLawCountry,
+                GoverningLawSubdivision = contract.GoverningLawSubdivision,
+                VenueCountry = contract.VenueCountry,
+                VenueCity = contract.VenueCity,
                 TermMonths = contract.TermMonths,
                 CreatedAt = contract.CreatedAt,
                 UpdatedAt = contract.UpdatedAt,
@@ -305,6 +313,8 @@ public sealed class PortableBackupService : IPortableBackupService
                 OpenAiApiKey = includeApiKey && !string.IsNullOrEmpty(current.OpenAiApiKey) ? current.OpenAiApiKey : null,
                 OpenAiModel = current.OpenAiModel,
                 DefaultGoverningLaw = current.DefaultGoverningLaw,
+                DefaultGoverningLawCountry = current.DefaultGoverningLawCountry,
+                DefaultGoverningLawSubdivision = current.DefaultGoverningLawSubdivision,
                 DefaultTermMonths = current.DefaultTermMonths,
                 AiDataConsentAccepted = current.AiDataConsentAccepted,
                 OnboardingCompleted = current.OnboardingCompleted,
@@ -369,6 +379,10 @@ public sealed class PortableBackupService : IPortableBackupService
             PartiesJson = contract.PartiesJson,
             EffectiveDate = contract.EffectiveDate,
             GoverningLaw = contract.GoverningLaw,
+            GoverningLawCountry = contract.GoverningLawCountry,
+            GoverningLawSubdivision = contract.GoverningLawSubdivision,
+            VenueCountry = contract.VenueCountry,
+            VenueCity = contract.VenueCity,
             TermMonths = contract.TermMonths,
             CreatedAt = contract.CreatedAt,
             UpdatedAt = contract.UpdatedAt,
@@ -478,6 +492,8 @@ public sealed class PortableBackupService : IPortableBackupService
             OpenAiApiKey = backup.OpenAiApiKey ?? current.OpenAiApiKey,
             OpenAiModel = backup.OpenAiModel,
             DefaultGoverningLaw = backup.DefaultGoverningLaw,
+            DefaultGoverningLawCountry = backup.DefaultGoverningLawCountry,
+            DefaultGoverningLawSubdivision = backup.DefaultGoverningLawSubdivision,
             DefaultTermMonths = backup.DefaultTermMonths,
             AiDataConsentAccepted = backup.AiDataConsentAccepted,
             OnboardingCompleted = backup.OnboardingCompleted,

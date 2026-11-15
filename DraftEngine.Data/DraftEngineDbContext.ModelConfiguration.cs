@@ -44,6 +44,10 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.ClientName).HasMaxLength(200).IsRequired();
             entity.Property(contract => contract.ClientEmail).HasMaxLength(256).IsRequired();
             entity.Property(contract => contract.GoverningLaw).HasMaxLength(200).IsRequired();
+            entity.Property(contract => contract.GoverningLawCountry).HasMaxLength(2).IsRequired();
+            entity.Property(contract => contract.GoverningLawSubdivision).HasMaxLength(200).IsRequired();
+            entity.Property(contract => contract.VenueCountry).HasMaxLength(2).IsRequired();
+            entity.Property(contract => contract.VenueCity).HasMaxLength(200).IsRequired();
             entity.Property(contract => contract.FinalFilePath).HasMaxLength(1024).IsRequired();
             entity.Property(contract => contract.PartiesJson).IsRequired();
             entity.Property(contract => contract.AssembledText).IsRequired();

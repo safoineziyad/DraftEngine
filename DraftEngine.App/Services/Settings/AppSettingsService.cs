@@ -70,6 +70,10 @@ public sealed class AppSettingsService : IAppSettingsService
             DefaultGoverningLaw = string.IsNullOrWhiteSpace(settings.DefaultGoverningLaw)
                 ? "California"
                 : settings.DefaultGoverningLaw,
+            DefaultGoverningLawCountry = string.IsNullOrWhiteSpace(settings.DefaultGoverningLawCountry)
+                ? DraftEngine.Core.Data.CountryCatalog.DefaultCode()
+                : settings.DefaultGoverningLawCountry,
+            DefaultGoverningLawSubdivision = settings.DefaultGoverningLawSubdivision ?? string.Empty,
             DefaultTermMonths = settings.DefaultTermMonths <= 0 ? 12 : settings.DefaultTermMonths,
             AiDataConsentAccepted = settings.AiDataConsentAccepted,
             OnboardingCompleted = settings.OnboardingCompleted,
@@ -142,6 +146,10 @@ public sealed class AppSettingsService : IAppSettingsService
                 DefaultGoverningLaw = string.IsNullOrWhiteSpace(stored.DefaultGoverningLaw)
                     ? "California"
                     : stored.DefaultGoverningLaw,
+                DefaultGoverningLawCountry = string.IsNullOrWhiteSpace(stored.DefaultGoverningLawCountry)
+                    ? DraftEngine.Core.Data.CountryCatalog.DefaultCode()
+                    : stored.DefaultGoverningLawCountry,
+                DefaultGoverningLawSubdivision = stored.DefaultGoverningLawSubdivision ?? string.Empty,
                 DefaultTermMonths = stored.DefaultTermMonths <= 0 ? 12 : stored.DefaultTermMonths,
                 AiDataConsentAccepted = stored.AiDataConsentAccepted,
                 OnboardingCompleted = stored.OnboardingCompleted,
@@ -166,6 +174,8 @@ public sealed class AppSettingsService : IAppSettingsService
         public string OpenAiApiKeyProtected { get; set; } = string.Empty;
         public string OpenAiModel { get; set; } = AppSettings.FallbackModel;
         public string DefaultGoverningLaw { get; set; } = "California";
+        public string DefaultGoverningLawCountry { get; set; } = DraftEngine.Core.Data.CountryCatalog.DefaultCode();
+        public string DefaultGoverningLawSubdivision { get; set; } = string.Empty;
         public int DefaultTermMonths { get; set; } = 12;
         public bool AiDataConsentAccepted { get; set; }
         public bool OnboardingCompleted { get; set; }

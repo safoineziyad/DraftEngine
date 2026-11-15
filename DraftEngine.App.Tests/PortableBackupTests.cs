@@ -110,6 +110,44 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
     }
 
     [Fact]
+    public async Task EncryptedBackup_RoundTripsJurisdictionFields()
+    {
+        var contractId = Seed();
+        using (var context = _fixture.CreateContext())
+        {
+            var contract = await context.Contracts.SingleAsync(item => item.Id == contractId);
+            contract.GoverningLaw = "United States — California";
+            contract.GoverningLawCountry = "US";
+            contract.GoverningLawSubdivision = "California";
+            contract.VenueCountry = "CA";
+            contract.VenueCity = "Toronto";
+            await context.SaveChangesAsync();
+        }
+
+        var service = CreateService();
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        encrypted.Position = 0;
+
+        using (var context = _fixture.CreateContext())
+        {
+            await context.Set<Contract>().ExecuteDeleteAsync();
+        }
+
+        await service.ImportEncryptedAsync(
+            encrypted, Password, confirmReplace: true,
+            preImportBackupPath: Path.Combine(_fixture.Directory, "pre-import-jurisdiction.debk"));
+
+        using var verify = _fixture.CreateContext();
+        var restored = await verify.Contracts.SingleAsync(contract => contract.Id == contractId);
+        Assert.Equal("United States — California", restored.GoverningLaw);
+        Assert.Equal("US", restored.GoverningLawCountry);
+        Assert.Equal("California", restored.GoverningLawSubdivision);
+        Assert.Equal("CA", restored.VenueCountry);
+        Assert.Equal("Toronto", restored.VenueCity);
+    }
+
+    [Fact]
     public async Task WrongPassword_IsRejected()
     {
         Seed();

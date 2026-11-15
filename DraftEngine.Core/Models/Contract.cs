@@ -18,6 +18,18 @@ public class Contract
     public string PartiesJson { get; set; } = string.Empty;
     public DateTime? EffectiveDate { get; set; }
     public string GoverningLaw { get; set; } = string.Empty;
+
+    /// <summary>ISO 3166-1 alpha-2 code of the governing-law country; empty for legacy free text.</summary>
+    public string GoverningLawCountry { get; set; } = string.Empty;
+
+    /// <summary>Optional subdivision (state, province, nation) as display text.</summary>
+    public string GoverningLawSubdivision { get; set; } = string.Empty;
+
+    /// <summary>ISO 3166-1 alpha-2 code of the courts/venue country.</summary>
+    public string VenueCountry { get; set; } = string.Empty;
+
+    /// <summary>Free-text city for the courts/venue.</summary>
+    public string VenueCity { get; set; } = string.Empty;
     public int TermMonths { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

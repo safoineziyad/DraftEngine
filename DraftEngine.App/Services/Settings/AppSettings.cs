@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using DraftEngine.Core.Models;
+
 namespace DraftEngine.App.Services.Settings;
 
 /// <summary>
@@ -51,6 +56,38 @@ public class AppSettings
 
     /// <summary>When true, replace party names and addresses with placeholders before sending to AI.</summary>
     public bool HidePartyNamesFromAi { get; set; }
+
+    /// <summary>
+    /// Configured AI providers. <see cref="OpenAiApiKey"/> and <see cref="OpenAiModel"/> mirror
+    /// the active profile so older code paths keep working; the profile list is the source of truth.
+    /// </summary>
+    public List<AiProfile> AiProfiles { get; set; } = new();
+
+    /// <summary>Id of the profile used for drafting; empty means the first profile.</summary>
+    public string ActiveAiProfileId { get; set; } = string.Empty;
+
+    /// <summary>The profile in effect for AI calls, or null when none is configured.</summary>
+    public AiProfile? ActiveAiProfile =>
+        AiProfiles.FirstOrDefault(profile => string.Equals(profile.Id, ActiveAiProfileId, StringComparison.Ordinal))
+        ?? AiProfiles.FirstOrDefault();
+
+    /// <summary>
+    /// Copies the active profile's key/model into the legacy single-provider fields so every
+    /// existing consumer (backup, consent checks, AI service resolution) sees the same values.
+    /// </summary>
+    internal AppSettings MirrorActiveProfile()
+    {
+        if (ActiveAiProfile is { } active)
+        {
+            ActiveAiProfileId = active.Id;
+            OpenAiApiKey = active.ApiKey;
+            OpenAiModel = string.IsNullOrWhiteSpace(active.Model) ? FallbackModel : active.Model;
+            OpenAiBaseUrl = string.IsNullOrWhiteSpace(active.BaseUrl) ? null : active.BaseUrl;
+            UseCustomOpenAiEndpoint = active.Preset is AiProviderPreset.Custom;
+        }
+
+        return this;
+    }
 
     /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
     public string Language { get; set; } = "system";

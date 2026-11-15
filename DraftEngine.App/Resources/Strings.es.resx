@@ -399,4 +399,26 @@
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnóstico copiado.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>El portapapeles no está disponible.</value></data>
   <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Las cláusulas son plantillas genéricas y no se han adaptado a la legislación de la jurisdicción seleccionada.</value></data>
+  <data name="Settings.Profiles" xml:space="preserve"><value>Proveedores de IA</value></data>
+  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>Perfil de proveedor de IA</value></data>
+  <data name="Settings.AddProfile" xml:space="preserve"><value>Nuevo</value></data>
+  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>Añadir un perfil de proveedor de IA</value></data>
+  <data name="Settings.RemoveProfile" xml:space="preserve"><value>Quitar</value></data>
+  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>Quitar el perfil de proveedor de IA seleccionado</value></data>
+  <data name="Settings.ProfileName" xml:space="preserve"><value>Nombre del perfil</value></data>
+  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>Nombre del perfil de proveedor de IA</value></data>
+  <data name="Settings.ProviderPreset" xml:space="preserve"><value>Tipo de proveedor</value></data>
+  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>Tipo de proveedor de IA</value></data>
+  <data name="Settings.BaseUrl" xml:space="preserve"><value>URL base</value></data>
+  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>Endpoint compatible con OpenAI, normalmente termina en /v1/. Azure usa la ruta del despliegue; los servidores locales no necesitan clave.</value></data>
+  <data name="Settings.FetchModels" xml:space="preserve"><value>Cargar modelos</value></data>
+  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>Cargar la lista de modelos del proveedor</value></data>
+  <data name="Settings.NewProfileName" xml:space="preserve"><value>Nuevo proveedor</value></data>
+  <data name="Settings.ModelsFetched" xml:space="preserve"><value>Se cargaron {0} modelo(s) del proveedor.</value></data>
+  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>No se pudo cargar la lista de modelos. Comprueba la URL base y la clave.</value></data>
+  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / compatible</value></data>
+  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
+  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (local)</value></data>
+  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (local)</value></data>
+  <data name="Settings.PresetCustom" xml:space="preserve"><value>Endpoint personalizado</value></data>
 </root>

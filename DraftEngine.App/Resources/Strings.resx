@@ -399,4 +399,26 @@
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copied.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>The clipboard is unavailable.</value></data>
   <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Clauses are generic templates and have not been adapted to the law of the selected jurisdiction.</value></data>
+  <data name="Settings.Profiles" xml:space="preserve"><value>AI providers</value></data>
+  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>AI provider profile</value></data>
+  <data name="Settings.AddProfile" xml:space="preserve"><value>New</value></data>
+  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>Add a new AI provider profile</value></data>
+  <data name="Settings.RemoveProfile" xml:space="preserve"><value>Remove</value></data>
+  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>Remove the selected AI provider profile</value></data>
+  <data name="Settings.ProfileName" xml:space="preserve"><value>Profile name</value></data>
+  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>AI provider profile name</value></data>
+  <data name="Settings.ProviderPreset" xml:space="preserve"><value>Provider type</value></data>
+  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>AI provider type</value></data>
+  <data name="Settings.BaseUrl" xml:space="preserve"><value>Base URL</value></data>
+  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>OpenAI-compatible endpoint, usually ending in /v1/. Azure uses the deployment path; local servers need no key.</value></data>
+  <data name="Settings.FetchModels" xml:space="preserve"><value>Load models</value></data>
+  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>Load the model list from the provider</value></data>
+  <data name="Settings.NewProfileName" xml:space="preserve"><value>New provider</value></data>
+  <data name="Settings.ModelsFetched" xml:space="preserve"><value>Loaded {0} model(s) from the provider.</value></data>
+  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>Could not load the model list. Check the base URL and key.</value></data>
+  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / compatible</value></data>
+  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
+  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (local)</value></data>
+  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (local)</value></data>
+  <data name="Settings.PresetCustom" xml:space="preserve"><value>Custom endpoint</value></data>
 </root>

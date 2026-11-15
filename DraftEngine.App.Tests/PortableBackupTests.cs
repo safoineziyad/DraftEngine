@@ -390,6 +390,68 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
         return new MemoryStream(result);
     }
 
+    [Fact]
+    public async Task EncryptedBackup_RestoresAiProfiles_WithoutKeys()
+    {
+        var source = new CapturingSettingsService
+        {
+            Current = new AppSettings
+            {
+                AiProfiles =
+                {
+                    new AiProfile
+                    {
+                        Id = "p1",
+                        Name = "Local Ollama",
+                        Preset = AiProviderPreset.Ollama,
+                        BaseUrl = "http://localhost:11434/v1/",
+                        Model = "llama3.1:8b",
+                        ApiKey = "sk-never-exported",
+                    },
+                },
+                ActiveAiProfileId = "p1",
+            },
+        };
+        var service = new PortableBackupService(
+            _fixture.Provider.GetRequiredService<IDatabaseContextFactory>(), source);
+
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+
+        var target = new CapturingSettingsService();
+        var importing = new PortableBackupService(
+            _fixture.Provider.GetRequiredService<IDatabaseContextFactory>(), target);
+        encrypted.Position = 0;
+        await importing.ImportEncryptedAsync(encrypted, Password, confirmReplace: true);
+
+        Assert.NotNull(target.Saved);
+        var profile = Assert.Single(target.Saved!.AiProfiles);
+        Assert.Equal("Local Ollama", profile.Name);
+        Assert.Equal("llama3.1:8b", profile.Model);
+        Assert.Equal(AiProviderPreset.Ollama, profile.Preset);
+        Assert.Equal(string.Empty, profile.ApiKey);
+    }
+
+    private sealed class CapturingSettingsService : IAppSettingsService
+    {
+        public AppSettings Current { get; set; } = new();
+        public AppSettings? Saved { get; private set; }
+        public event Action? SettingsChanged { add { } remove { } }
+
+        public Task<AppSettings> ReloadAsync() => Task.FromResult(Current);
+
+        public Task SaveAsync(AppSettings settings)
+        {
+            Saved = settings;
+            Current = settings;
+            return Task.CompletedTask;
+        }
+
+        public Task<IContractAiService?> CreateAiServiceAsync() => Task.FromResult<IContractAiService?>(null);
+
+        public IContractAiService? CreateAiService(string apiKey, string model) => null;
+    }
+
     private sealed class FailingSettingsService : IAppSettingsService
     {
         public AppSettings Current { get; } = new();

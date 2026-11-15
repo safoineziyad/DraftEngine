@@ -317,6 +317,15 @@ public sealed class PortableBackupService : IPortableBackupService
                 DefaultGoverningLawSubdivision = current.DefaultGoverningLawSubdivision,
                 DefaultTermMonths = current.DefaultTermMonths,
                 AiDataConsentAccepted = current.AiDataConsentAccepted,
+                AiProfiles = current.AiProfiles.Select(profile => new BackupAiProfile
+                {
+                    Id = profile.Id,
+                    Name = profile.Name,
+                    Preset = profile.Preset,
+                    BaseUrl = profile.BaseUrl,
+                    Model = profile.Model,
+                }).ToList(),
+                ActiveAiProfileId = current.ActiveAiProfileId,
                 OnboardingCompleted = current.OnboardingCompleted,
                 OpenAiBaseUrl = current.OpenAiBaseUrl,
                 UseCustomOpenAiEndpoint = current.UseCustomOpenAiEndpoint,
@@ -484,6 +493,30 @@ public sealed class PortableBackupService : IPortableBackupService
         }
     }
 
+    /// <summary>
+    /// Restores provider profiles from a backup while keeping keys that already exist locally.
+    /// Keys are never part of a backup, so a restored profile starts keyless and keeps working
+    /// only if the same profile id was already configured on this machine.
+    /// </summary>
+    private static List<AiProfile> MergeProfiles(BackupSettings backup, AppSettings current)
+    {
+        if (backup.AiProfiles is not { Count: > 0 })
+        {
+            return current.AiProfiles;
+        }
+
+        var existing = current.AiProfiles.ToDictionary(profile => profile.Id, StringComparer.Ordinal);
+        return backup.AiProfiles.Select(profile => new AiProfile
+        {
+            Id = string.IsNullOrWhiteSpace(profile.Id) ? Guid.NewGuid().ToString("N") : profile.Id,
+            Name = profile.Name,
+            Preset = profile.Preset,
+            BaseUrl = profile.BaseUrl ?? string.Empty,
+            Model = profile.Model ?? string.Empty,
+            ApiKey = existing.TryGetValue(profile.Id, out var local) ? local.ApiKey : string.Empty,
+        }).ToList();
+    }
+
     private async Task RestoreSettingsAsync(BackupSettings backup)
     {
         var current = _settingsService!.Current;
@@ -496,6 +529,8 @@ public sealed class PortableBackupService : IPortableBackupService
             DefaultGoverningLawSubdivision = backup.DefaultGoverningLawSubdivision,
             DefaultTermMonths = backup.DefaultTermMonths,
             AiDataConsentAccepted = backup.AiDataConsentAccepted,
+            AiProfiles = MergeProfiles(backup, current),
+            ActiveAiProfileId = backup.ActiveAiProfileId ?? current.ActiveAiProfileId,
             OnboardingCompleted = backup.OnboardingCompleted,
             OpenAiBaseUrl = backup.OpenAiBaseUrl,
             UseCustomOpenAiEndpoint = backup.UseCustomOpenAiEndpoint,

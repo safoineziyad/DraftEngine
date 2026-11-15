@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,7 +12,9 @@ using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Localization;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.Themes;
+using DraftEngine.AI.Services;
 using DraftEngine.Core.Interfaces;
+using DraftEngine.Core.Models;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -26,6 +30,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IPortableBackupService? _backupService;
     private readonly ILocalizationService _localization;
     private readonly IThemeService? _themeService;
+    private readonly IHttpClientFactory? _httpClientFactory;
     private bool _isLoading;
     private bool _isApplyingLanguage;
     private bool _isApplyingTheme;
@@ -52,8 +57,33 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private ThemeMode selectedTheme = ThemeMode.System;
 
-    /// <summary>OpenAI chat model choices.</summary>
-    public IReadOnlyList<string> ModelOptions { get; } = new[] { "gpt-4o-mini", "gpt-4o" };
+    /// <summary>
+    /// Model ids offered in the picker: whatever the provider published plus the current manual
+    /// id. Nothing is hardcoded and no pricing is attached.
+    /// </summary>
+    public ObservableCollection<string> ModelOptions { get; } = new();
+
+    /// <summary>Configured providers; the active one is used for drafting.</summary>
+    public ObservableCollection<AiProfile> Profiles { get; } = new();
+
+    /// <summary>Preset choices with localized display names.</summary>
+    public IReadOnlyList<AiPresetChoice> PresetOptions { get; }
+
+    /// <summary>Profile currently being edited.</summary>
+    [ObservableProperty]
+    private AiProfile? selectedProfile;
+
+    /// <summary>Display name of the profile being edited.</summary>
+    [ObservableProperty]
+    private string profileName = string.Empty;
+
+    /// <summary>Transport preset of the profile being edited.</summary>
+    [ObservableProperty]
+    private AiPresetChoice? selectedPresetOption;
+
+    /// <summary>True while the provider's model list is being fetched.</summary>
+    [ObservableProperty]
+    private bool isFetchingModels;
 
     /// <summary>Countries offered as the default governing law, sorted for the active culture.</summary>
     public IReadOnlyList<DraftEngine.Core.Data.CountryInfo> GoverningLawOptions { get; } =
@@ -169,14 +199,24 @@ public partial class SettingsViewModel : ObservableObject
         IAiRedactionService? redactionService = null,
         IPortableBackupService? backupService = null,
         ILocalizationService? localization = null,
-        IThemeService? themeService = null)
+        IThemeService? themeService = null,
+        IHttpClientFactory? httpClientFactory = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
         _backupService = backupService;
         _themeService = themeService;
+        _httpClientFactory = httpClientFactory;
         _localization = localization ?? LocalizationSource.Current.Service
             ?? throw new ArgumentNullException(nameof(localization));
+        PresetOptions =
+        [
+            new AiPresetChoice(AiProviderPreset.OpenAiCompatible, "Settings.PresetOpenAi", _localization),
+            new AiPresetChoice(AiProviderPreset.AzureOpenAi, "Settings.PresetAzure", _localization),
+            new AiPresetChoice(AiProviderPreset.Ollama, "Settings.PresetOllama", _localization),
+            new AiPresetChoice(AiProviderPreset.LmStudio, "Settings.PresetLmStudio", _localization),
+            new AiPresetChoice(AiProviderPreset.Custom, "Settings.PresetCustom", _localization),
+        ];
         ThemeOptions =
         [
             new ThemeChoiceViewModel(ThemeMode.System, "Theme.System", _localization),
@@ -406,8 +446,8 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (IsTestingConnection) return;
 
-        var key = OpenAiApiKey?.Trim() ?? string.Empty;
-        if (key.Length == 0)
+        var profile = BuildProfileFromEditor();
+        if (string.IsNullOrWhiteSpace(profile.ApiKey) && !profile.AllowsMissingKey)
         {
             IsTestSuccessful = false;
             SetTestStatus("Settings.ErrorApiKeyMissing");
@@ -418,30 +458,29 @@ public partial class SettingsViewModel : ObservableObject
         SetTestStatus("Settings.Connecting");
         try
         {
-            var aiService = _settingsService.CreateAiService(key, SelectedModel);
-            if (aiService is null)
+            if (_httpClientFactory is null)
             {
-                IsTestSuccessful = false;
-                SetTestStatus("Settings.ErrorApiKeyMissing");
+                var aiService = _settingsService.CreateAiService(profile.ApiKey, profile.Model);
+                if (aiService is null)
+                {
+                    IsTestSuccessful = false;
+                    SetTestStatus("Settings.ErrorApiKeyMissing");
+                    return;
+                }
+
+                var legacy = await aiService.TestConnectionDetailedAsync();
+                ShowTestResult(legacy.Success, legacy.Message);
                 return;
             }
 
-            var result = await aiService.TestConnectionDetailedAsync();
-            IsTestSuccessful = result.Success;
-            if (result.Success)
+            var client = new AiProviderClient(_httpClientFactory.CreateClient("openai"));
+            var result = await client.TestConnectionAsync(profile, profile.Model);
+            if (result.Success && result.Models.Count > 0)
             {
-                SetTestStatus("Settings.Connected");
+                ApplyModelList(result.Models);
             }
-            else if (string.IsNullOrWhiteSpace(result.Message))
-            {
-                SetTestStatus("Settings.ErrorConnect");
-            }
-            else
-            {
-                // Provider/service message is shown as-is (not translated content).
-                _testStatusKey = null;
-                TestStatusMessage = result.Message;
-            }
+
+            ShowTestResult(result.Success, result.Message);
         }
         catch (Exception ex)
         {
@@ -453,6 +492,87 @@ public partial class SettingsViewModel : ObservableObject
         finally
         {
             IsTestingConnection = false;
+        }
+    }
+
+    /// <summary>Adds a new profile and starts editing it.</summary>
+    [RelayCommand]
+    private void AddProfile()
+    {
+        var profile = new AiProfile
+        {
+            Name = Text("Settings.NewProfileName"),
+            Preset = AiProviderPreset.OpenAiCompatible,
+            BaseUrl = AiProfile.DefaultBaseUrl(AiProviderPreset.OpenAiCompatible),
+        };
+        Profiles.Add(profile);
+        SelectedProfile = profile;
+        MarkDirty();
+    }
+
+    /// <summary>Removes the profile being edited; at least one profile is always kept.</summary>
+    [RelayCommand]
+    private void RemoveProfile()
+    {
+        if (SelectedProfile is null || Profiles.Count <= 1)
+        {
+            return;
+        }
+
+        var index = Profiles.IndexOf(SelectedProfile);
+        Profiles.Remove(SelectedProfile);
+        SelectedProfile = Profiles[Math.Max(0, Math.Min(index, Profiles.Count - 1))];
+        MarkDirty();
+    }
+
+    /// <summary>Fetches the provider's model list (never invents model ids).</summary>
+    [RelayCommand]
+    private async Task FetchModelsAsync()
+    {
+        if (IsFetchingModels)
+        {
+            return;
+        }
+
+        var profile = BuildProfileFromEditor();
+        if (string.IsNullOrWhiteSpace(profile.ApiKey) && !profile.AllowsMissingKey)
+        {
+            SetTestStatus("Settings.ErrorApiKeyMissing");
+            return;
+        }
+
+        if (_httpClientFactory is null)
+        {
+            SetTestStatus("Settings.ErrorFetchModels");
+            return;
+        }
+
+        IsFetchingModels = true;
+        try
+        {
+            var client = new AiProviderClient(_httpClientFactory.CreateClient("openai"));
+            var result = await client.TestConnectionAsync(profile, model: null);
+            if (!result.Success)
+            {
+                IsTestSuccessful = false;
+                _testStatusKey = null;
+                TestStatusMessage = result.Message;
+                return;
+            }
+
+            ApplyModelList(result.Models);
+            IsTestSuccessful = true;
+            SetTestStatus("Settings.ModelsFetched", result.Models.Count);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning("Model list fetch failed ({ExceptionType}).", ex.GetType().Name);
+            IsTestSuccessful = false;
+            SetTestStatus("Settings.ErrorFetchModels");
+        }
+        finally
+        {
+            IsFetchingModels = false;
         }
     }
 
@@ -481,6 +601,8 @@ public partial class SettingsViewModel : ObservableObject
                 DefaultGoverningLawCountry = SelectedGoverningLawCountry?.Code ?? string.Empty,
                 DefaultGoverningLawSubdivision = SelectedGoverningLawSubdivision?.Trim() ?? string.Empty,
                 DefaultTermMonths = termMonths,
+                AiProfiles = Profiles.Select(profile => profile.Clone()).ToList(),
+                ActiveAiProfileId = SelectedProfile?.Id ?? string.Empty,
                 // Preserve the AI data-sharing acknowledgement — editing settings must not
                 // silently withdraw the consent given during a chat edit.
                 AiDataConsentAccepted = AiConsentGranted,
@@ -516,13 +638,153 @@ public partial class SettingsViewModel : ObservableObject
     {
         MarkDirty();
         UpdateApiKeyStatus(value);
+        SyncEditorToProfile();
     }
 
-    partial void OnSelectedModelChanged(string value) => MarkDirty();
+    partial void OnSelectedModelChanged(string value)
+    {
+        MarkDirty();
+        SyncEditorToProfile();
+    }
 
     partial void OnUseCustomOpenAiEndpointChanged(bool value) => MarkDirty();
 
-    partial void OnOpenAiBaseUrlChanged(string value) => MarkDirty();
+    partial void OnOpenAiBaseUrlChanged(string value)
+    {
+        MarkDirty();
+        SyncEditorToProfile();
+    }
+
+    partial void OnProfileNameChanged(string value) => SyncEditorToProfile();
+
+    partial void OnSelectedProfileChanged(AiProfile? value) => LoadProfileIntoEditor(value);
+
+    partial void OnSelectedPresetOptionChanged(AiPresetChoice? value)
+    {
+        if (value is null || _isLoading)
+        {
+            return;
+        }
+
+        // Switching preset replaces a default URL with the new preset's default, but never
+        // overwrites a URL the user typed for a custom endpoint.
+        var current = OpenAiBaseUrl?.Trim() ?? string.Empty;
+        var isAnotherDefault = PresetOptions.Any(option =>
+            string.Equals(AiProfile.DefaultBaseUrl(option.Preset), current, StringComparison.OrdinalIgnoreCase));
+        var nextDefault = AiProfile.DefaultBaseUrl(value.Preset);
+        if (current.Length == 0 || isAnotherDefault)
+        {
+            OpenAiBaseUrl = nextDefault;
+        }
+
+        MarkDirty();
+        SyncEditorToProfile();
+    }
+
+    /// <summary>Copies the editor fields into the selected profile (no-op while loading).</summary>
+    private void SyncEditorToProfile()
+    {
+        if (_isLoading || SelectedProfile is null)
+        {
+            return;
+        }
+
+        SelectedProfile.Name = string.IsNullOrWhiteSpace(ProfileName) ? Text("Settings.NewProfileName") : ProfileName.Trim();
+        SelectedProfile.Preset = SelectedPresetOption?.Preset ?? SelectedProfile.Preset;
+        SelectedProfile.BaseUrl = OpenAiBaseUrl?.Trim() ?? string.Empty;
+        SelectedProfile.Model = SelectedModel?.Trim() ?? string.Empty;
+        SelectedProfile.ApiKey = OpenAiApiKey?.Trim() ?? string.Empty;
+        MarkDirty();
+    }
+
+    /// <summary>Shows a profile in the editor (also used when the selection changes).</summary>
+    private void LoadProfileIntoEditor(AiProfile? profile)
+    {
+        if (profile is null)
+        {
+            return;
+        }
+
+        var wasLoading = _isLoading;
+        _isLoading = true;
+        try
+        {
+            ProfileName = profile.Name;
+            SelectedPresetOption = PresetOptions.FirstOrDefault(option => option.Preset == profile.Preset) ?? PresetOptions[0];
+            OpenAiApiKey = profile.ApiKey;
+            OpenAiBaseUrl = profile.BaseUrl;
+            SelectedModel = profile.Model;
+            EnsureModelOption(profile.Model);
+        }
+        finally
+        {
+            _isLoading = wasLoading;
+        }
+    }
+
+    /// <summary>Builds a throwaway profile from the editor, for testing before saving.</summary>
+    private AiProfile BuildProfileFromEditor() => new()
+    {
+        Id = SelectedProfile?.Id ?? "editor",
+        Name = ProfileName,
+        Preset = SelectedPresetOption?.Preset ?? AiProviderPreset.OpenAiCompatible,
+        BaseUrl = OpenAiBaseUrl?.Trim() ?? string.Empty,
+        Model = SelectedModel?.Trim() ?? string.Empty,
+        ApiKey = OpenAiApiKey?.Trim() ?? string.Empty,
+    };
+
+    /// <summary>Replaces the model picker with the provider's list, keeping the current id.</summary>
+    private void ApplyModelList(IReadOnlyList<string> models)
+    {
+        var current = SelectedModel?.Trim() ?? string.Empty;
+        ModelOptions.Clear();
+        foreach (var model in models)
+        {
+            ModelOptions.Add(model);
+        }
+
+        if (current.Length > 0)
+        {
+            EnsureModelOption(current);
+            SelectedModel = current;
+        }
+        else if (ModelOptions.Count > 0)
+        {
+            SelectedModel = ModelOptions[0];
+        }
+    }
+
+    private void EnsureModelOption(string? model)
+    {
+        if (string.IsNullOrWhiteSpace(model))
+        {
+            return;
+        }
+
+        if (!ModelOptions.Contains(model))
+        {
+            ModelOptions.Add(model);
+        }
+    }
+
+    private void ShowTestResult(bool success, string? message)
+    {
+        IsTestSuccessful = success;
+        if (success)
+        {
+            SetTestStatus("Settings.Connected");
+        }
+        else if (string.IsNullOrWhiteSpace(message))
+        {
+            SetTestStatus("Settings.ErrorConnect");
+        }
+        else
+        {
+            // Provider message already carries a user-safe sentence (not translated content).
+            _testStatusKey = null;
+            TestStatusMessage = message;
+        }
+    }
 
     partial void OnHidePartyNamesFromAiChanged(bool value) => MarkDirty();
 
@@ -590,6 +852,11 @@ public partial class SettingsViewModel : ObservableObject
         }
         OnPropertyChanged(nameof(AiConsentStatusText));
         OnPropertyChanged(nameof(ShowHideKeyText));
+        OnPropertyChanged(nameof(PresetOptions));
+        foreach (var option in PresetOptions)
+        {
+            option.RefreshLocalization();
+        }
 
         // Re-render values composed from resource keys in the new language.
         UpdateApiKeyStatus(OpenAiApiKey);
@@ -648,9 +915,20 @@ public partial class SettingsViewModel : ObservableObject
         SetIsLoadingState(true);
         try
         {
+            Profiles.Clear();
+            foreach (var profile in saved.AiProfiles)
+            {
+                Profiles.Add(profile.Clone());
+            }
+
+            SelectedProfile = Profiles.FirstOrDefault(profile =>
+                    string.Equals(profile.Id, saved.ActiveAiProfileId, StringComparison.Ordinal))
+                ?? Profiles.FirstOrDefault();
+
             OpenAiApiKey = saved.OpenAiApiKey;
             UpdateApiKeyStatus(saved.OpenAiApiKey);
-            SelectedModel = ModelOptions.Contains(saved.OpenAiModel) ? saved.OpenAiModel : AppSettings.FallbackModel;
+            SelectedModel = saved.OpenAiModel;
+            EnsureModelOption(saved.OpenAiModel);
             SelectedGoverningLawCountry = DraftEngine.Core.Data.CountryCatalog.Find(saved.DefaultGoverningLawCountry)
                 ?? DraftEngine.Core.Data.CountryCatalog.Find(DraftEngine.Core.Data.CountryCatalog.DefaultCode());
             SelectedGoverningLawSubdivision = saved.DefaultGoverningLawSubdivision;

@@ -399,4 +399,26 @@
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnostics copiés.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>Le presse-papiers est indisponible.</value></data>
   <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Les clauses sont des modèles génériques et n&apos;ont pas été adaptées au droit de la juridiction sélectionnée.</value></data>
+  <data name="Settings.Profiles" xml:space="preserve"><value>Fournisseurs d'IA</value></data>
+  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>Profil de fournisseur d'IA</value></data>
+  <data name="Settings.AddProfile" xml:space="preserve"><value>Nouveau</value></data>
+  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>Ajouter un profil de fournisseur d'IA</value></data>
+  <data name="Settings.RemoveProfile" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>Supprimer le profil de fournisseur d'IA sélectionné</value></data>
+  <data name="Settings.ProfileName" xml:space="preserve"><value>Nom du profil</value></data>
+  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>Nom du profil de fournisseur d'IA</value></data>
+  <data name="Settings.ProviderPreset" xml:space="preserve"><value>Type de fournisseur</value></data>
+  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>Type de fournisseur d'IA</value></data>
+  <data name="Settings.BaseUrl" xml:space="preserve"><value>URL de base</value></data>
+  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>Point de terminaison compatible OpenAI, se terminant généralement par /v1/. Azure utilise le chemin du déploiement ; les serveurs locaux ne nécessitent pas de clé.</value></data>
+  <data name="Settings.FetchModels" xml:space="preserve"><value>Charger les modèles</value></data>
+  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>Charger la liste des modèles depuis le fournisseur</value></data>
+  <data name="Settings.NewProfileName" xml:space="preserve"><value>Nouveau fournisseur</value></data>
+  <data name="Settings.ModelsFetched" xml:space="preserve"><value>{0} modèle(s) chargé(s) depuis le fournisseur.</value></data>
+  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>Impossible de charger la liste des modèles. Vérifiez l'URL de base et la clé.</value></data>
+  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / compatible</value></data>
+  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
+  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (local)</value></data>
+  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (local)</value></data>
+  <data name="Settings.PresetCustom" xml:space="preserve"><value>Point de terminaison personnalisé</value></data>
 </root>

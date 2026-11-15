@@ -399,4 +399,26 @@
   <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>تم نسخ التشخيص.</value></data>
   <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>الحافظة غير متاحة.</value></data>
   <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>البنود قوالب عامة ولم تُكيَّف مع قانون الولاية القضائية المختارة.</value></data>
+  <data name="Settings.Profiles" xml:space="preserve"><value>موفرو الذكاء الاصطناعي</value></data>
+  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>ملف موفر الذكاء الاصطناعي</value></data>
+  <data name="Settings.AddProfile" xml:space="preserve"><value>جديد</value></data>
+  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>إضافة ملف موفر ذكاء اصطناعي جديد</value></data>
+  <data name="Settings.RemoveProfile" xml:space="preserve"><value>إزالة</value></data>
+  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>إزالة ملف الموفر المحدد</value></data>
+  <data name="Settings.ProfileName" xml:space="preserve"><value>اسم الملف</value></data>
+  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>اسم ملف موفر الذكاء الاصطناعي</value></data>
+  <data name="Settings.ProviderPreset" xml:space="preserve"><value>نوع الموفر</value></data>
+  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>نوع موفر الذكاء الاصطناعي</value></data>
+  <data name="Settings.BaseUrl" xml:space="preserve"><value>عنوان URL الأساسي</value></data>
+  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>نقطة نهاية متوافقة مع OpenAI تنتهي عادةً بـ /v1/. يستخدم Azure مسار النشر؛ ولا تحتاج الخوادم المحلية إلى مفتاح.</value></data>
+  <data name="Settings.FetchModels" xml:space="preserve"><value>تحميل النماذج</value></data>
+  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>تحميل قائمة النماذج من الموفر</value></data>
+  <data name="Settings.NewProfileName" xml:space="preserve"><value>موفر جديد</value></data>
+  <data name="Settings.ModelsFetched" xml:space="preserve"><value>تم تحميل {0} نموذجًا من الموفر.</value></data>
+  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>تعذر تحميل قائمة النماذج. تحقق من عنوان URL الأساسي والمفتاح.</value></data>
+  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / متوافق</value></data>
+  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
+  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (محلي)</value></data>
+  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (محلي)</value></data>
+  <data name="Settings.PresetCustom" xml:space="preserve"><value>نقطة نهاية مخصصة</value></data>
 </root>

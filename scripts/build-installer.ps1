@@ -9,7 +9,7 @@
     4. Prints the resulting setup .exe path
 
     Run from anywhere:
-        powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
+        powershell -ExecutionPolicy Bypass -File scriptsuild-installer.ps1
 
 .PARAMETER SkipPublish
     Reuse the existing .\publish folder and only recompile the installer.
@@ -22,7 +22,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # --- Resolve repo root from this script's location -------------------------
-$repoRoot = Split-Path -Parent $PSScriptRoot   # installer\.. = repo root
+$repoRoot = Split-Path -Parent $PSScriptRoot   # scripts\.. = repo root
 if (-not (Test-Path (Join-Path $repoRoot 'DraftEngine.sln'))) {
     throw "Could not find DraftEngine.sln in '$repoRoot'. Is this script inside <repo>\installer ?"
 }

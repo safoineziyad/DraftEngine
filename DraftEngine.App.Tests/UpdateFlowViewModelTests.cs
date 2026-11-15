@@ -156,6 +156,79 @@ public sealed class UpdateFlowViewModelTests : IDisposable
     }
 
     [Fact]
+    public async Task CheckNowCommand_IsEnabledWhenIdle_AndRunsTheCheck()
+    {
+        var viewModel = CreateViewModel();
+
+        Assert.True(viewModel.CheckNowCommand.CanExecute(null));
+        viewModel.CheckNowCommand.Execute(null);
+        await WaitUntilAsync(() => !viewModel.IsBusy && _handler.RequestCount > 0);
+
+        Assert.Equal(1, _handler.RequestCount);
+        Assert.True(viewModel.IsUpdateAvailable);
+        Assert.True(viewModel.CheckNowCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task CheckNowCommand_IsDisabledWhileACheckRuns()
+    {
+        _handler.ManifestGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var viewModel = CreateViewModel();
+
+        var check = viewModel.CheckAsync();
+
+        Assert.True(viewModel.IsBusy);
+        Assert.False(viewModel.CheckNowCommand.CanExecute(null));
+        Assert.False(viewModel.DownloadAndInstallCommand.CanExecute(null));
+
+        _handler.ManifestGate.SetResult();
+        await check;
+
+        Assert.False(viewModel.IsBusy);
+        Assert.True(viewModel.CheckNowCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task CheckNowCommand_IsDisabledWhileTheDownloadRuns()
+    {
+        _prompt.Answer = true;
+        var viewModel = CreateViewModel();
+        await viewModel.CheckAsync();
+        Assert.True(viewModel.DownloadAndInstallCommand.CanExecute(null));
+
+        _handler.InstallerGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var download = viewModel.DownloadAndInstallAsync();
+
+        Assert.True(viewModel.IsBusy);
+        Assert.False(viewModel.CanDownload);
+        Assert.False(viewModel.DownloadAndInstallCommand.CanExecute(null));
+        Assert.False(viewModel.CheckNowCommand.CanExecute(null));
+
+        _handler.InstallerGate.SetResult();
+        await download;
+
+        Assert.True(viewModel.CheckNowCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task BannerButtons_HaveTheExpectedEnabledState()
+    {
+        var viewModel = CreateViewModel();
+
+        Assert.False(viewModel.DownloadAndInstallCommand.CanExecute(null));
+        Assert.True(viewModel.RemindLaterCommand.CanExecute(null));
+        Assert.True(viewModel.SkipVersionCommand.CanExecute(null));
+        Assert.True(viewModel.ToggleReleaseNotesCommand.CanExecute(null));
+
+        await viewModel.CheckAsync();
+
+        Assert.True(viewModel.DownloadAndInstallCommand.CanExecute(null));
+        Assert.True(viewModel.RemindLaterCommand.CanExecute(null));
+        Assert.True(viewModel.SkipVersionCommand.CanExecute(null));
+        Assert.True(viewModel.ToggleReleaseNotesCommand.CanExecute(null));
+    }
+
+    [Fact]
     public void ToggleAutomaticChecks_PersistsInSettings()
     {
         var viewModel = CreateViewModel();
@@ -325,26 +398,46 @@ public sealed class UpdateFlowViewModelTests : IDisposable
         }
     }
 
+    private static async Task WaitUntilAsync(Func<bool> condition)
+    {
+        for (var attempt = 0; attempt < 100 && !condition(); attempt++)
+        {
+            await Task.Delay(20);
+        }
+    }
+
     private sealed class FakeHandler : HttpMessageHandler
     {
         public string? ManifestJson { get; set; }
         public int RequestCount { get; private set; }
+        public TaskCompletionSource? ManifestGate { get; set; }
+        public TaskCompletionSource? InstallerGate { get; set; }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             RequestCount++;
             if (request.RequestUri!.AbsolutePath.EndsWith("latest.json", StringComparison.Ordinal))
             {
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                if (ManifestGate is not null)
+                {
+                    await ManifestGate.Task;
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(ManifestJson ?? "{}", Encoding.UTF8, "application/json"),
-                });
+                };
             }
 
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            if (InstallerGate is not null)
+            {
+                await InstallerGate.Task;
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(InstallerBytes),
-            });
+            };
         }
     }
 

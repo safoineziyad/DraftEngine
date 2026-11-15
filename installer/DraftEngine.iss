@@ -4,7 +4,7 @@
 ; Consumes the published output of:
 ;   dotnet publish DraftEngine.App\DraftEngine.App.csproj -c Release -r win-x64 --self-contained false -o publish
 ;
-; Build via installer\Build-Installer.ps1, or directly:
+; Build via scriptsuild-installer.ps1, or directly:
 ;   ISCC.exe installer\DraftEngine.iss
 ;
 ; NOTE: relative paths below are resolved relative to THIS file (installer\),
@@ -12,7 +12,7 @@
 ; ============================================================================
 
 ; --- Single source of truth for the version --------------------------------
-; AppVersion is normally supplied by installer\Build-Installer.ps1 from Directory.Build.props:
+; AppVersion is normally supplied by scriptsuild-installer.ps1 from Directory.Build.props:
 ;   ISCC.exe /DAppVersion=0.4.0.1 installer\DraftEngine.iss
 ; The fallback below only keeps a manual ISCC run from failing.
 #ifndef AppVersion

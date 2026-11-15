@@ -82,7 +82,7 @@ xUnit tests (291 as of v0.4.0 — run the command for the current count). All AI
 A per-user Windows installer (Inno Setup 6, no admin/UAC prompt) is built with one command from the repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
+powershell -ExecutionPolicy Bypass -File scripts\build-installer.ps1
 ```
 
 See [installer/README.md](installer/README.md) for prerequisites, options, and the output location (`installer\Output\DraftEngine-Setup-<version>.exe`). Authenticode signing is optional: set `DRAFTENGINE_SIGN_CERT` (and `DRAFTENGINE_SIGN_PASSWORD`) before building to sign the application binary, installer and uninstaller; without them the build proceeds unsigned. See [docs/RELEASE.md](docs/RELEASE.md).

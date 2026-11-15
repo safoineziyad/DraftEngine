@@ -164,19 +164,23 @@ can be turned off in Settings, after which the app makes no update request at al
 
 1. Update `Directory.Build.props`: `DraftEngineVersion` (SemVer, e.g. `0.4.0-beta.2`) and
    `DraftEngineFileVersion` (numeric, must increase, e.g. `0.4.0.2`).
-2. Add release notes (English required; fr/ar/es optional) and run `scripts\release.ps1`
-   (Phase 4) with `-Version`, `-NotesFile`, `-Prerelease` and `-DryRun` first.
-3. The script runs the full suite, builds the installer via `scripts\build-installer.ps1`
-   (which passes the version to Inno Setup), computes SHA-256, writes `latest.json`, signs it with
-   `DRAFTENGINE_UPDATE_KEY`, verifies it, and prints the exact `gh release create` command.
-4. Upload the versioned installer, `DraftEngine-Setup-latest.exe`, `latest.json` and the
-   `.sha256` file. A prerelease must never be marked latest.
-5. After upload, re-download the public `latest.json` and verify its signature again.
+2. Run build and tests, then `scripts\build-installer.ps1` (it passes the version to Inno Setup).
+3. Write release notes JSON (English required; fr/ar/es optional).
+4. Run `scripts\release.ps1 -Version ... -NotesFile ... [-Prerelease] -DryRun` first. It validates
+   the version, notes and installer and writes a dry-run marker; it signs and uploads nothing.
+5. Real run without `-DryRun` (refused unless the marker exists). With
+   `$env:DRAFTENGINE_UPDATE_KEY` pointing at the external private key, it hashes the installer,
+   writes and signs `latest.json` with `tools\UpdateKeyTool`, verifies it against the configured
+   public key, and stages everything under `dist\<version>\`.
+6. Inspect the staged files, then create a **draft** GitHub release yourself (`-Publish` or the
+   printed `gh release create` command). A prerelease must never be marked latest.
+7. After upload, re-download the public `latest.json` and verify its signature again.
 
-Private key handling: generated once by `tools/UpdateKeyTool keygen` into a path outside the
-repository, backed up in two physically separate places, never committed, never printed, never
-copied into build output. Losing it means publishing a new public key in a signed app release
-before further updates can be trusted.
+Private key handling: generated once by `tools\UpdateKeyTool keygen` into a path outside the
+repository (the tool refuses in-repo paths and overwrites), backed up in two physically separate
+places, never committed and never copied into build output. Only the public key is printed and
+pasted into `appsettings.json` -> `Updates:PublicKey`. Losing the private key means publishing a
+new public key in a signed app release before further updates can be trusted.
 
 ## 5. Threat model
 

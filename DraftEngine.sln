@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraftEngine.Analysis", "Dra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraftEngine.Analysis.Tests", "DraftEngine.Analysis.Tests\DraftEngine.Analysis.Tests.csproj", "{2C574CD4-14C6-4558-98F7-CC74758F3A1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraftEngine.Updates", "DraftEngine.Updates\DraftEngine.Updates.csproj", "{E9603BD9-DE49-401F-99C3-E7D572AD0488}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,18 @@ Global
 		{2C574CD4-14C6-4558-98F7-CC74758F3A1C}.Release|x64.Build.0 = Release|Any CPU
 		{2C574CD4-14C6-4558-98F7-CC74758F3A1C}.Release|x86.ActiveCfg = Release|Any CPU
 		{2C574CD4-14C6-4558-98F7-CC74758F3A1C}.Release|x86.Build.0 = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|x64.Build.0 = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|x64.ActiveCfg = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|x64.Build.0 = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9603BD9-DE49-401F-99C3-E7D572AD0488}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

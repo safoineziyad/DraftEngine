@@ -63,3 +63,20 @@ publish/
 # Offline license signing material (never commit)
 .license-issuer/
 
+
+publish/
+dist/
+bin/
+obj/
+*.pfx
+*.snk
+.env
+DE-backup-*/
+DraftEngine-data-backup/
+
+# Update signing material and release staging (never commit)
+*.pem
+*.key
+update-signing-key*
+.release/
+dist/

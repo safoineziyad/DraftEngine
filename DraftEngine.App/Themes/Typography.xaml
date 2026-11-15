@@ -5,6 +5,9 @@
          so Arabic glyphs still render on machines with a trimmed Segoe UI. -->
     <FontFamily x:Key="UiFontFamily">Segoe UI, Tahoma, Arial, Traditional Arabic</FontFamily>
     <FontFamily x:Key="DocumentFontFamily">Georgia, 'Times New Roman', serif</FontFamily>
+    <!-- Navigation glyphs: Segoe Fluent Icons (Windows 11) with the Segoe MDL2 Assets
+         fallback (Windows 10). -->
+    <FontFamily x:Key="IconFontFamily">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <Style x:Key="PageTitleStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="20" />

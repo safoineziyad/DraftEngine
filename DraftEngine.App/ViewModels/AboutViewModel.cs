@@ -22,14 +22,19 @@ namespace DraftEngine.App.ViewModels;
 public partial class AboutViewModel : ObservableObject, INavigationAware
 {
     private readonly AppOptions _options;
-    private readonly IUpdateCheckService _updateCheckService;
+    private readonly UpdateFlowViewModel? _updates;
     private readonly ILicenseService _licenseService;
 
     /// <summary>Page title shown in the header.</summary>
-    public string PageTitle => "About & Help";
+    public string PageTitle =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("About.PageTitle")
+        ?? "About & Help";
 
     /// <summary>The running version (single source of truth: the csproj Version).</summary>
     public string VersionText => AppVersion.Display;
+
+    /// <summary>The commit and UTC build date embedded in the running assembly.</summary>
+    public string BuildStampText => AppVersion.BuildStamp;
 
     /// <summary>The folder that holds rolling log files.</summary>
     public string LogFolder => Path.Combine(
@@ -63,8 +68,8 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
         }
     }
 
-    /// <summary>True when the notify-only update check is enabled in configuration.</summary>
-    public bool IsUpdateCheckEnabled => _options.Features.UpdateCheckEnabled;
+    /// <summary>Signed update flow shared with the banner and Settings (null in unit tests).</summary>
+    public UpdateFlowViewModel? Updates => _updates;
 
     /// <summary>True when offline licensing is enabled in configuration.</summary>
     public bool IsLicensingEnabled => _options.Features.LicensingEnabled;
@@ -72,10 +77,6 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
     /// <summary>Status line for the last update check.</summary>
     [ObservableProperty]
     private string updateStatus = string.Empty;
-
-    /// <summary>True while the update manifest is being fetched.</summary>
-    [ObservableProperty]
-    private bool isCheckingForUpdates;
 
     /// <summary>The license key being entered (never logged).</summary>
     [ObservableProperty]
@@ -92,15 +93,12 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
     /// <summary>Creates the page.</summary>
     public AboutViewModel(
         AppOptions options,
-        IUpdateCheckService updateCheckService,
-        ILicenseService licenseService)
+        ILicenseService licenseService,
+        UpdateFlowViewModel? updates = null)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _updateCheckService = updateCheckService ?? throw new ArgumentNullException(nameof(updateCheckService));
         _licenseService = licenseService ?? throw new ArgumentNullException(nameof(licenseService));
-        UpdateStatus = IsUpdateCheckEnabled
-            ? "Check for updates when you are ready. Nothing is downloaded or installed."
-            : "Update checks are disabled in this build.";
+        _updates = updates;
     }
 
     /// <inheritdoc />
@@ -138,41 +136,6 @@ public partial class AboutViewModel : ObservableObject, INavigationAware
         {
             Log.Warning(ex, "Could not open the data folder.");
             UpdateStatus = "The data folder could not be opened.";
-        }
-    }
-
-    /// <summary>Checks the static HTTPS manifest; notify-only, no download or install.</summary>
-    [RelayCommand]
-    private async Task CheckForUpdatesAsync()
-    {
-        if (IsCheckingForUpdates)
-        {
-            return;
-        }
-
-        if (!IsUpdateCheckEnabled)
-        {
-            UpdateStatus = "Update checks are disabled in this build.";
-            return;
-        }
-
-        IsCheckingForUpdates = true;
-        UpdateStatus = "Checking for updates…";
-        try
-        {
-            var update = await _updateCheckService.CheckAsync();
-            UpdateStatus = update is null
-                ? $"You are running the latest version ({VersionText})."
-                : $"Version {update.Version} is available. Download it from the release page.";
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Update check failed.");
-            UpdateStatus = "The update check could not be completed. Try again later.";
-        }
-        finally
-        {
-            IsCheckingForUpdates = false;
         }
     }
 

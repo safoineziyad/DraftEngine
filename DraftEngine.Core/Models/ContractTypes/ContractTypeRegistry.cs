@@ -35,7 +35,7 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
             SupportedPlaceholderKeys = new()
             {
                 "Party1", "Party1Address", "Party2", "Party2Address", "ClientName", "ClientEmail",
-                "EffectiveDate", "GoverningLaw", "TermMonths", "Purpose", "ConfidentialInformation"
+                "EffectiveDate", "GoverningLaw", "VenueCountry", "VenueCity", "TermMonths", "Purpose", "ConfidentialInformation"
             },
             IntakeFields = new()
             {
@@ -44,7 +44,9 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
                 new() { Key = "Party2", Label = "Party 2 name", Kind = "Text", Required = true },
                 new() { Key = "Party2Address", Label = "Party 2 address", Kind = "Text", Required = true },
                 new() { Key = "EffectiveDate", Label = "Effective date", Kind = "Date", Required = true },
-                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Choice", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Jurisdiction", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "VenueCountry", Label = "Courts country", Kind = "Country", Required = false },
+                new() { Key = "VenueCity", Label = "Courts city", Kind = "Text", Required = false },
                 new() { Key = "TermMonths", Label = "Term (months)", Kind = "Number", Required = true, DefaultValueKey = "DefaultTermMonths" },
                 new() { Key = "Purpose", Label = "Purpose of disclosure", Kind = "Text", Required = false },
                 new() { Key = "ClientEmail", Label = "Client email", Kind = "Text", Required = false }
@@ -69,7 +71,7 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
             SupportedPlaceholderKeys = new()
             {
                 "Party1", "Party1Address", "Party2", "Party2Address", "ClientName", "ClientEmail",
-                "EffectiveDate", "GoverningLaw", "TermMonths", "Purpose", "ConfidentialInformation"
+                "EffectiveDate", "GoverningLaw", "VenueCountry", "VenueCity", "TermMonths", "Purpose", "ConfidentialInformation"
             },
             IntakeFields = new()
             {
@@ -78,7 +80,9 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
                 new() { Key = "Party2", Label = "Receiving party name", Kind = "Text", Required = true },
                 new() { Key = "Party2Address", Label = "Receiving party address", Kind = "Text", Required = true },
                 new() { Key = "EffectiveDate", Label = "Effective date", Kind = "Date", Required = true },
-                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Choice", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Jurisdiction", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "VenueCountry", Label = "Courts country", Kind = "Country", Required = false },
+                new() { Key = "VenueCity", Label = "Courts city", Kind = "Text", Required = false },
                 new() { Key = "TermMonths", Label = "Term (months)", Kind = "Number", Required = true, DefaultValueKey = "DefaultTermMonths" },
                 new() { Key = "Purpose", Label = "Purpose of disclosure", Kind = "Text", Required = false },
                 new() { Key = "ClientEmail", Label = "Client email", Kind = "Text", Required = false }
@@ -104,7 +108,7 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
             {
                 "ContractorName", "ContractorAddress", "ClientName", "ClientAddress", "ClientEmail",
                 "Party1", "Party1Address", "Party2", "Party2Address",
-                "EffectiveDate", "GoverningLaw", "TermMonths", "Purpose", "ConfidentialInformation"
+                "EffectiveDate", "GoverningLaw", "VenueCountry", "VenueCity", "TermMonths", "Purpose", "ConfidentialInformation"
             },
             IntakeFields = new()
             {
@@ -114,7 +118,9 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
                 new() { Key = "ClientAddress", Label = "Client address", Kind = "Text", Required = true },
                 new() { Key = "ClientEmail", Label = "Client email", Kind = "Text", Required = false },
                 new() { Key = "EffectiveDate", Label = "Effective date", Kind = "Date", Required = true },
-                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Choice", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Jurisdiction", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "VenueCountry", Label = "Courts country", Kind = "Country", Required = false },
+                new() { Key = "VenueCity", Label = "Courts city", Kind = "Text", Required = false },
                 new() { Key = "TermMonths", Label = "Term (months)", Kind = "Number", Required = true, DefaultValueKey = "DefaultTermMonths" },
                 new() { Key = "Purpose", Label = "Scope of work", Kind = "Text", Required = false }
             }
@@ -139,7 +145,7 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
             {
                 "ConsultantName", "ConsultantAddress", "ClientName", "ClientAddress", "ClientEmail",
                 "Party1", "Party1Address", "Party2", "Party2Address",
-                "EffectiveDate", "GoverningLaw", "TermMonths", "Purpose", "ConfidentialInformation"
+                "EffectiveDate", "GoverningLaw", "VenueCountry", "VenueCity", "TermMonths", "Purpose", "ConfidentialInformation"
             },
             IntakeFields = new()
             {
@@ -149,7 +155,9 @@ public sealed class ContractTypeRegistry : IContractTypeRegistry
                 new() { Key = "ClientAddress", Label = "Client address", Kind = "Text", Required = true },
                 new() { Key = "ClientEmail", Label = "Client email", Kind = "Text", Required = false },
                 new() { Key = "EffectiveDate", Label = "Effective date", Kind = "Date", Required = true },
-                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Choice", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "GoverningLaw", Label = "Governing law", Kind = "Jurisdiction", Required = true, DefaultValueKey = "DefaultGoverningLaw" },
+                new() { Key = "VenueCountry", Label = "Courts country", Kind = "Country", Required = false },
+                new() { Key = "VenueCity", Label = "Courts city", Kind = "Text", Required = false },
                 new() { Key = "TermMonths", Label = "Term (months)", Kind = "Number", Required = true, DefaultValueKey = "DefaultTermMonths" },
                 new() { Key = "Purpose", Label = "Scope of services", Kind = "Text", Required = false }
             }

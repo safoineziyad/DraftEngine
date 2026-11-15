@@ -6,6 +6,7 @@
     <ProjectReference Include="..\DraftEngine.AI\DraftEngine.AI.csproj" />
     <ProjectReference Include="..\DraftEngine.Documents\DraftEngine.Documents.csproj" />
     <ProjectReference Include="..\DraftEngine.Analysis\DraftEngine.Analysis.csproj" />
+    <ProjectReference Include="..\DraftEngine.Updates\DraftEngine.Updates.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,13 +29,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <!-- Release version: stamped into the assembly and displayed by the UI via AppVersion.Display. -->
-    <Version>0.4.0</Version>
-    <AssemblyVersion>0.4.0.0</AssemblyVersion>
-    <FileVersion>0.4.0.0</FileVersion>
+    <!-- Versions come from Directory.Build.props (single source of truth). -->
+    <BuildCommitHash Condition="'$(BuildCommitHash)' == ''">local</BuildCommitHash>
+    <BuildDateUtc Condition="'$(BuildDateUtc)' == ''">not stamped</BuildDateUtc>
     <Product>DraftEngine</Product>
     <AssemblyTitle>DraftEngine</AssemblyTitle>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="BuildCommitHash" Value="$(BuildCommitHash)" />
+    <AssemblyMetadata Include="BuildDateUtc" Value="$(BuildDateUtc)" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.json">

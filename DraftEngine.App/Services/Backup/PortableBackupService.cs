@@ -159,7 +159,7 @@ public sealed class PortableBackupService : IPortableBackupService
     {
         await using var writer = new StreamWriter(output, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), leaveOpen: true);
         await writer.WriteLineAsync(
-            "Title,ContractType,Status,ClientName,GoverningLaw,TermMonths,EffectiveDate,CreatedAt,UpdatedAt,Archived,IntakeAnswers");
+            "Title,ContractType,Status,ClientName,GoverningLaw,GoverningLawCountry,GoverningLawSubdivision,VenueCountry,VenueCity,TermMonths,EffectiveDate,CreatedAt,UpdatedAt,Archived,IntakeAnswers");
 
         await using var context = _contextFactory.CreateContext();
         var contracts = await context.Set<Contract>().AsNoTracking()
@@ -183,6 +183,10 @@ public sealed class PortableBackupService : IPortableBackupService
                 Csv(contract.Status.ToString()),
                 Csv(contract.ClientName),
                 Csv(contract.GoverningLaw),
+                Csv(contract.GoverningLawCountry),
+                Csv(contract.GoverningLawSubdivision),
+                Csv(contract.VenueCountry),
+                Csv(contract.VenueCity),
                 contract.TermMonths.ToString(CultureInfo.InvariantCulture),
                 Csv(contract.EffectiveDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
                 Csv(contract.CreatedAt.ToString("O", CultureInfo.InvariantCulture)),
@@ -221,6 +225,10 @@ public sealed class PortableBackupService : IPortableBackupService
                 PartiesJson = contract.PartiesJson,
                 EffectiveDate = contract.EffectiveDate,
                 GoverningLaw = contract.GoverningLaw,
+                GoverningLawCountry = contract.GoverningLawCountry,
+                GoverningLawSubdivision = contract.GoverningLawSubdivision,
+                VenueCountry = contract.VenueCountry,
+                VenueCity = contract.VenueCity,
                 TermMonths = contract.TermMonths,
                 CreatedAt = contract.CreatedAt,
                 UpdatedAt = contract.UpdatedAt,
@@ -305,8 +313,19 @@ public sealed class PortableBackupService : IPortableBackupService
                 OpenAiApiKey = includeApiKey && !string.IsNullOrEmpty(current.OpenAiApiKey) ? current.OpenAiApiKey : null,
                 OpenAiModel = current.OpenAiModel,
                 DefaultGoverningLaw = current.DefaultGoverningLaw,
+                DefaultGoverningLawCountry = current.DefaultGoverningLawCountry,
+                DefaultGoverningLawSubdivision = current.DefaultGoverningLawSubdivision,
                 DefaultTermMonths = current.DefaultTermMonths,
                 AiDataConsentAccepted = current.AiDataConsentAccepted,
+                AiProfiles = current.AiProfiles.Select(profile => new BackupAiProfile
+                {
+                    Id = profile.Id,
+                    Name = profile.Name,
+                    Preset = profile.Preset,
+                    BaseUrl = profile.BaseUrl,
+                    Model = profile.Model,
+                }).ToList(),
+                ActiveAiProfileId = current.ActiveAiProfileId,
                 OnboardingCompleted = current.OnboardingCompleted,
                 OpenAiBaseUrl = current.OpenAiBaseUrl,
                 UseCustomOpenAiEndpoint = current.UseCustomOpenAiEndpoint,
@@ -369,6 +388,10 @@ public sealed class PortableBackupService : IPortableBackupService
             PartiesJson = contract.PartiesJson,
             EffectiveDate = contract.EffectiveDate,
             GoverningLaw = contract.GoverningLaw,
+            GoverningLawCountry = contract.GoverningLawCountry,
+            GoverningLawSubdivision = contract.GoverningLawSubdivision,
+            VenueCountry = contract.VenueCountry,
+            VenueCity = contract.VenueCity,
             TermMonths = contract.TermMonths,
             CreatedAt = contract.CreatedAt,
             UpdatedAt = contract.UpdatedAt,
@@ -470,6 +493,30 @@ public sealed class PortableBackupService : IPortableBackupService
         }
     }
 
+    /// <summary>
+    /// Restores provider profiles from a backup while keeping keys that already exist locally.
+    /// Keys are never part of a backup, so a restored profile starts keyless and keeps working
+    /// only if the same profile id was already configured on this machine.
+    /// </summary>
+    private static List<AiProfile> MergeProfiles(BackupSettings backup, AppSettings current)
+    {
+        if (backup.AiProfiles is not { Count: > 0 })
+        {
+            return current.AiProfiles;
+        }
+
+        var existing = current.AiProfiles.ToDictionary(profile => profile.Id, StringComparer.Ordinal);
+        return backup.AiProfiles.Select(profile => new AiProfile
+        {
+            Id = string.IsNullOrWhiteSpace(profile.Id) ? Guid.NewGuid().ToString("N") : profile.Id,
+            Name = profile.Name,
+            Preset = profile.Preset,
+            BaseUrl = profile.BaseUrl ?? string.Empty,
+            Model = profile.Model ?? string.Empty,
+            ApiKey = existing.TryGetValue(profile.Id, out var local) ? local.ApiKey : string.Empty,
+        }).ToList();
+    }
+
     private async Task RestoreSettingsAsync(BackupSettings backup)
     {
         var current = _settingsService!.Current;
@@ -478,8 +525,12 @@ public sealed class PortableBackupService : IPortableBackupService
             OpenAiApiKey = backup.OpenAiApiKey ?? current.OpenAiApiKey,
             OpenAiModel = backup.OpenAiModel,
             DefaultGoverningLaw = backup.DefaultGoverningLaw,
+            DefaultGoverningLawCountry = backup.DefaultGoverningLawCountry,
+            DefaultGoverningLawSubdivision = backup.DefaultGoverningLawSubdivision,
             DefaultTermMonths = backup.DefaultTermMonths,
             AiDataConsentAccepted = backup.AiDataConsentAccepted,
+            AiProfiles = MergeProfiles(backup, current),
+            ActiveAiProfileId = backup.ActiveAiProfileId ?? current.ActiveAiProfileId,
             OnboardingCompleted = backup.OnboardingCompleted,
             OpenAiBaseUrl = backup.OpenAiBaseUrl,
             UseCustomOpenAiEndpoint = backup.UseCustomOpenAiEndpoint,

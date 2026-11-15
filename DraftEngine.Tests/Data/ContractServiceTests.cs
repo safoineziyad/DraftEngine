@@ -151,7 +151,7 @@ public class ContractServiceTests : IDisposable
         Assert.Contains("1. Term", result);
         Assert.Contains("12 months from the Effective Date (January 15, 2026)", result);
         Assert.Contains("2. Governing Law", result);
-        Assert.Contains("the laws of Delaware", result);
+        Assert.Contains("following jurisdiction: Delaware", result);
         Assert.DoesNotContain("{{", result);
 
         var stored = await _dbContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contract.Id);
@@ -190,7 +190,7 @@ public class ContractServiceTests : IDisposable
         var result = await _service.GenerateContractAsync(contract.Id, new List<int> { 5 }, useAiPolish: true);
 
         // A failing AI must not break generation: the deterministic template text is used.
-        Assert.Contains("the laws of Delaware", result);
+        Assert.Contains("following jurisdiction: Delaware", result);
         Assert.DoesNotContain("{{", result);
     }
 

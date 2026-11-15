@@ -25,7 +25,6 @@ public sealed class StartupFixture : IDisposable
         // Disable network/commercial features so tests never contact external services.
         Options.Features.LicensingEnabled = false;
         Options.Features.AutoUpdateEnabled = false;
-        Options.Features.UpdateCheckEnabled = false;
         Options.Features.OnboardingEnabled = false;
         Options.Features.AboutEnabled = true;
 

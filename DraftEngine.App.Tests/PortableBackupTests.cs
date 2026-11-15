@@ -110,6 +110,44 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
     }
 
     [Fact]
+    public async Task EncryptedBackup_RoundTripsJurisdictionFields()
+    {
+        var contractId = Seed();
+        using (var context = _fixture.CreateContext())
+        {
+            var contract = await context.Contracts.SingleAsync(item => item.Id == contractId);
+            contract.GoverningLaw = "United States — California";
+            contract.GoverningLawCountry = "US";
+            contract.GoverningLawSubdivision = "California";
+            contract.VenueCountry = "CA";
+            contract.VenueCity = "Toronto";
+            await context.SaveChangesAsync();
+        }
+
+        var service = CreateService();
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        encrypted.Position = 0;
+
+        using (var context = _fixture.CreateContext())
+        {
+            await context.Set<Contract>().ExecuteDeleteAsync();
+        }
+
+        await service.ImportEncryptedAsync(
+            encrypted, Password, confirmReplace: true,
+            preImportBackupPath: Path.Combine(_fixture.Directory, "pre-import-jurisdiction.debk"));
+
+        using var verify = _fixture.CreateContext();
+        var restored = await verify.Contracts.SingleAsync(contract => contract.Id == contractId);
+        Assert.Equal("United States — California", restored.GoverningLaw);
+        Assert.Equal("US", restored.GoverningLawCountry);
+        Assert.Equal("California", restored.GoverningLawSubdivision);
+        Assert.Equal("CA", restored.VenueCountry);
+        Assert.Equal("Toronto", restored.VenueCity);
+    }
+
+    [Fact]
     public async Task WrongPassword_IsRejected()
     {
         Seed();
@@ -350,6 +388,68 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
         resultOffset += tagLength;
         changedCiphertext.CopyTo(result, resultOffset);
         return new MemoryStream(result);
+    }
+
+    [Fact]
+    public async Task EncryptedBackup_RestoresAiProfiles_WithoutKeys()
+    {
+        var source = new CapturingSettingsService
+        {
+            Current = new AppSettings
+            {
+                AiProfiles =
+                {
+                    new AiProfile
+                    {
+                        Id = "p1",
+                        Name = "Local Ollama",
+                        Preset = AiProviderPreset.Ollama,
+                        BaseUrl = "http://localhost:11434/v1/",
+                        Model = "llama3.1:8b",
+                        ApiKey = "sk-never-exported",
+                    },
+                },
+                ActiveAiProfileId = "p1",
+            },
+        };
+        var service = new PortableBackupService(
+            _fixture.Provider.GetRequiredService<IDatabaseContextFactory>(), source);
+
+        using var encrypted = new MemoryStream();
+        await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+
+        var target = new CapturingSettingsService();
+        var importing = new PortableBackupService(
+            _fixture.Provider.GetRequiredService<IDatabaseContextFactory>(), target);
+        encrypted.Position = 0;
+        await importing.ImportEncryptedAsync(encrypted, Password, confirmReplace: true);
+
+        Assert.NotNull(target.Saved);
+        var profile = Assert.Single(target.Saved!.AiProfiles);
+        Assert.Equal("Local Ollama", profile.Name);
+        Assert.Equal("llama3.1:8b", profile.Model);
+        Assert.Equal(AiProviderPreset.Ollama, profile.Preset);
+        Assert.Equal(string.Empty, profile.ApiKey);
+    }
+
+    private sealed class CapturingSettingsService : IAppSettingsService
+    {
+        public AppSettings Current { get; set; } = new();
+        public AppSettings? Saved { get; private set; }
+        public event Action? SettingsChanged { add { } remove { } }
+
+        public Task<AppSettings> ReloadAsync() => Task.FromResult(Current);
+
+        public Task SaveAsync(AppSettings settings)
+        {
+            Saved = settings;
+            Current = settings;
+            return Task.CompletedTask;
+        }
+
+        public Task<IContractAiService?> CreateAiServiceAsync() => Task.FromResult<IContractAiService?>(null);
+
+        public IContractAiService? CreateAiService(string apiKey, string model) => null;
     }
 
     private sealed class FailingSettingsService : IAppSettingsService

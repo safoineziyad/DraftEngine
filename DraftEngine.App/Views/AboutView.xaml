@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              xmlns:converters="clr-namespace:DraftEngine.App.Converters"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
@@ -14,7 +15,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel MaxWidth="720" HorizontalAlignment="Left">
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-            <TextBlock Text="Version, help, privacy and licensing information."
+            <TextBlock Text="{loc:T About.Subtitle}"
                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,20" />
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
@@ -23,14 +24,16 @@
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding VersionText, StringFormat=Version {0}}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,12" />
-                    <TextBlock Text="DraftEngine drafts contracts locally from templates. Generation works fully offline and never requires an AI key."
+                    <TextBlock Text="{Binding BuildStampText}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,12" />
+                    <TextBlock Text="{loc:T About.Tagline}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
                     <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                        <Button Content="Open log folder" Padding="12,0" Height="30"
-                                AutomationProperties.Name="Open the log folder"
+                        <Button Content="{loc:T About.OpenLogs}" Padding="12,0" Height="30"
+                                AutomationProperties.Name="{loc:T About.OpenLogs}"
                                 Command="{Binding OpenLogFolderCommand}" />
-                        <Button Content="Open data folder" Padding="12,0" Height="30" Margin="8,0,0,0"
-                                AutomationProperties.Name="Open the data folder"
+                        <Button Content="{loc:T About.OpenData}" Padding="12,0" Height="30" Margin="8,0,0,0"
+                                AutomationProperties.Name="{loc:T About.OpenData}"
                                 Command="{Binding OpenDataFolderCommand}" />
                     </StackPanel>
                 </StackPanel>
@@ -38,56 +41,59 @@
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="Diagnostics" FontWeight="SemiBold" FontSize="15"
+                    <TextBlock Text="{loc:T About.Diagnostics}" FontWeight="SemiBold" FontSize="15"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="Version, Windows and .NET only. No contract data, paths or identifiers."
+                    <TextBlock Text="{loc:T About.DiagnosticsDescription}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,8" />
                     <TextBlock Text="{Binding DiagnosticsText}" Style="{StaticResource SecondaryTextStyle}"
                                TextWrapping="Wrap" Margin="0,0,0,8" />
-                    <Button Content="Copy diagnostics" HorizontalAlignment="Left"
+                    <Button Content="{loc:T About.CopyDiagnostics}" HorizontalAlignment="Left"
                             Command="{Binding CopyDiagnosticsCommand}"
-                            AutomationProperties.Name="Copy version and OS diagnostics" />
+                            AutomationProperties.Name="{loc:T About.CopyDiagnosticsAutomation}" />
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="Privacy summary" FontWeight="SemiBold" FontSize="15"
+                    <TextBlock Text="{loc:T About.Privacy}" FontWeight="SemiBold" FontSize="15"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="Contracts, intake answers, chat history, settings and the API key stay on this computer and are encrypted with your Windows user profile. There is no telemetry, no account and no background upload."
+                    <TextBlock Text="{loc:T About.PrivacyBody}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,6" />
-                    <TextBlock Text="AI editing is optional. When you use it, the current contract text and your instruction are sent to the AI provider you configured. Enable 'Hide party names and addresses from AI' in Settings to replace real party details with tokens before sending."
+                    <TextBlock Text="{loc:T About.AiPrivacyBody}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>
-                    <TextBlock Text="Updates" FontWeight="SemiBold" FontSize="15"
+                    <TextBlock Text="{loc:T About.Updates}" FontWeight="SemiBold" FontSize="15"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="{Binding UpdateStatus}"
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,10" />
-                    <Button Content="Check for updates" Padding="12,0" Height="30"
+                    <TextBlock Text="{Binding Updates.StatusMessage}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,4" />
+                    <TextBlock Text="{Binding Updates.LastCheckedText}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Updates.CurrentVersion, StringFormat={}{0}}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                    <Button Content="{loc:T About.CheckUpdates}" Padding="12,0" Height="30"
                             HorizontalAlignment="Left"
-                            AutomationProperties.Name="Check for updates"
-                            Command="{Binding CheckForUpdatesCommand}"
-                            IsEnabled="{Binding IsUpdateCheckEnabled}" />
+                            AutomationProperties.Name="{loc:T About.CheckUpdates}"
+                            Command="{Binding Updates.CheckNowCommand}" />
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Card}"
                     Visibility="{Binding IsLicensingEnabled, Converter={StaticResource BoolToVis}}">
                 <StackPanel>
-                    <TextBlock Text="License" FontWeight="SemiBold" FontSize="15"
+                    <TextBlock Text="{loc:T About.License}" FontWeight="SemiBold" FontSize="15"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="{Binding LicenseStatus}"
                                Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,10" />
                     <TextBox Text="{Binding LicenseKey, UpdateSourceTrigger=PropertyChanged}"
-                             AutomationProperties.Name="License key"
-                             ToolTip="Paste the signed license key you received" />
-                    <Button Content="Activate license" Padding="12,0" Height="30" Margin="0,8,0,0"
+                             AutomationProperties.Name="{loc:T About.LicenseKeyLabel}"
+                             ToolTip="{loc:T About.LicenseKeyTooltip}" />
+                    <Button Content="{loc:T About.ActivateLicense}" Padding="12,0" Height="30" Margin="0,8,0,0"
                             HorizontalAlignment="Left"
-                            AutomationProperties.Name="Activate license"
+                            AutomationProperties.Name="{loc:T About.ActivateLicense}"
                             Command="{Binding ActivateLicenseCommand}" />
                 </StackPanel>
             </Border>

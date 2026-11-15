@@ -34,6 +34,12 @@ public class Clause
     public string Source { get; set; } = "System";
 
     /// <summary>
+    /// True when the clause wording was rephrased by the product and still needs review by a
+    /// qualified lawyer before it is relied on. Shown in the Clause Manager.
+    /// </summary>
+    public bool NeedsLegalReview { get; set; }
+
+    /// <summary>
     /// Gets the contract clause selections that reference this clause template.
     /// </summary>
     public ICollection<ContractClause> ContractClauses { get; set; } = new List<ContractClause>();

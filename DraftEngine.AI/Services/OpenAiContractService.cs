@@ -51,7 +51,8 @@ public class OpenAiContractService : IContractAiService
     /// <param name="log">Optional sink for diagnostic lines (already redacted).</param>
     /// <param name="maxRetries">Maximum retry attempts for transient failures (429 rate limit, 5xx, network blips). Defaults to 2; pass 0 to disable retries.</param>
     /// <param name="retryBaseDelay">Base delay for exponential backoff. Defaults to 500 ms; small jitter is always added.</param>
-    /// <exception cref="OpenAiApiKeyMissingException">Thrown when <paramref name="apiKey"/> is null or empty.</exception>
+    /// <param name="apiKeyHeader">Header carrying the key: Bearer by default, <c>api-key</c> for Azure OpenAI.</param>
+    /// <exception cref="OpenAiApiKeyMissingException">Thrown when <paramref name="apiKey"/> is null or empty and the endpoint is not local.</exception>
     public OpenAiContractService(
         HttpClient httpClient,
         string apiKey,
@@ -59,9 +60,10 @@ public class OpenAiContractService : IContractAiService
         Action<string>? log = null,
         int maxRetries = 2,
         TimeSpan? retryBaseDelay = null,
-        string? baseUrl = null)
+        string? baseUrl = null,
+        string? apiKeyHeader = null)
     {
-        if (string.IsNullOrWhiteSpace(apiKey))
+        if (string.IsNullOrWhiteSpace(apiKey) && !IsLoopbackEndpoint(baseUrl))
             throw new OpenAiApiKeyMissingException("The configured OpenAI API key is null or empty.");
         if (maxRetries < 0)
             throw new ArgumentOutOfRangeException(nameof(maxRetries), "Max retries cannot be negative.");
@@ -84,9 +86,21 @@ public class OpenAiContractService : IContractAiService
         {
             _httpClient.BaseAddress ??= new Uri("https://api.openai.com/v1/");
         }
-        if (_httpClient.DefaultRequestHeaders.Authorization is null)
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+        if (string.Equals(apiKeyHeader, "api-key", StringComparison.OrdinalIgnoreCase))
+        {
+            // Azure OpenAI authenticates with an api-key header rather than a Bearer token.
+            if (!string.IsNullOrWhiteSpace(_apiKey))
+                _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("api-key", _apiKey);
+        }
+        else if (!string.IsNullOrWhiteSpace(_apiKey))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization ??= new AuthenticationHeaderValue("Bearer", _apiKey);
+        }
     }
+
+    /// <summary>True for http(s) URLs pointing at localhost, where local servers run without a key.</summary>
+    private static bool IsLoopbackEndpoint(string? baseUrl)
+        => Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) && uri.IsLoopback;
 
     /// <inheritdoc />
     public async Task<string> GenerateClauseBodyAsync(Clause clause, Dictionary<string, string> fieldValues)

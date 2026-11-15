@@ -24,6 +24,7 @@
     <ProjectReference Include="..\DraftEngine.Data\DraftEngine.Data.csproj" />
     <ProjectReference Include="..\DraftEngine.Documents\DraftEngine.Documents.csproj" />
     <ProjectReference Include="..\DraftEngine.App\DraftEngine.App.csproj" />
+    <ProjectReference Include="..\DraftEngine.Updates\DraftEngine.Updates.csproj" />
   </ItemGroup>
 
 </Project>

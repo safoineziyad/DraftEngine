@@ -1,21 +1,48 @@
 using System.Reflection;
+using System;
+using System.Linq;
 
 namespace DraftEngine.App;
 
 /// <summary>
-/// Exposes the application version to the UI. The single source of truth is the
-/// <c>&lt;Version&gt;</c> element in DraftEngine.App.csproj: the compiler stamps it into the
-/// assembly, and XAML labels bind to <see cref="Display"/> so the window can never drift
-/// from the real release version (audit Finding #9).
+/// Exposes the application version and build metadata stamped into the assembly.
 /// </summary>
 public static class AppVersion
 {
-    /// <summary>The three-part version string shown in the UI, e.g. <c>"0.2.0"</c>.</summary>
+    /// <summary>The release version shown in the UI, including prerelease suffixes.</summary>
     public static string Display { get; } = ResolveDisplayVersion();
+
+    /// <summary>Commit and UTC build date supplied by the installer build script.</summary>
+    public static string BuildStamp { get; } =
+        $"Commit {GetMetadata("BuildCommitHash")} · {GetMetadata("BuildDateUtc")}";
+
+    /// <summary>The git commit hash stamped at build time, or "local"/"unknown" when absent.</summary>
+    public static string CommitHash { get; } = GetMetadata("BuildCommitHash");
+
+    /// <summary>True when a real commit hash was stamped (not the local/unknown placeholder).</summary>
+    public static bool HasCommitHash { get; } =
+        !string.IsNullOrWhiteSpace(CommitHash) &&
+        !string.Equals(CommitHash, "local", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(CommitHash, "unknown", StringComparison.OrdinalIgnoreCase);
 
     private static string ResolveDisplayVersion()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        return version is null ? "0.0.0" : version.ToString(3);
+        var assembly = Assembly.GetExecutingAssembly();
+        var informationalVersion = assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+
+        if (!string.IsNullOrWhiteSpace(informationalVersion))
+        {
+            return informationalVersion.Split('+', 2)[0];
+        }
+
+        return assembly.GetName().Version?.ToString(3) ?? "unknown";
     }
+
+    private static string GetMetadata(string key) =>
+        Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(attribute => string.Equals(attribute.Key, key, StringComparison.Ordinal))
+            ?.Value ?? "unknown";
 }

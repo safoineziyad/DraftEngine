@@ -403,6 +403,16 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
 
                 current.EffectiveDate = GetEffectiveDate(values, definition, current.EffectiveDate);
                 current.GoverningLaw = GetMetadataValue(values, "GoverningLaw", fallback: current.GoverningLaw);
+                var jurisdiction = IntakeFields.FirstOrDefault(field => field.Kind == IntakeFieldKind.Jurisdiction);
+                if (jurisdiction is not null)
+                {
+                    current.GoverningLawCountry = jurisdiction.CountryCode;
+                    current.GoverningLawSubdivision = jurisdiction.Subdivision;
+                }
+
+                var venueCountry = IntakeFields.FirstOrDefault(field => field.Key == "VenueCountry");
+                current.VenueCountry = venueCountry?.CountryCode ?? string.Empty;
+                current.VenueCity = GetMetadataValue(values, "VenueCity", fallback: current.VenueCity);
 
                 var termMonths = GetMetadataValue(values, "TermMonths", fallback: string.Empty);
                 if (int.TryParse(termMonths, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedTerm) &&
@@ -510,9 +520,19 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 "Date" => IntakeFieldKind.Date,
                 "Choice" => IntakeFieldKind.Choice,
                 "Number" => IntakeFieldKind.Number,
+                "Jurisdiction" => IntakeFieldKind.Jurisdiction,
+                "Country" => IntakeFieldKind.Country,
                 _ => IntakeFieldKind.Text
             };
             var initial = GetInitialFieldValue(intake.Key, storedValues, partyValues, contract, definition);
+            var countryCode = contract.GoverningLawCountry;
+            var subdivision = contract.GoverningLawSubdivision;
+            if (string.IsNullOrWhiteSpace(countryCode) &&
+                DraftEngine.Core.Data.JurisdictionResolver.TryMapLegacy(contract.GoverningLaw, out var mappedCountry, out var mappedSubdivision))
+            {
+                countryCode = mappedCountry;
+                subdivision = mappedSubdivision;
+            }
             var choices = intake.Choices ?? Array.Empty<string>();
             if (kind == IntakeFieldKind.Choice &&
                 !string.IsNullOrWhiteSpace(initial) &&
@@ -531,7 +551,11 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
                 kind == IntakeFieldKind.Date && DateTime.TryParse(initial, CultureInfo.CurrentCulture, DateTimeStyles.None, out var date)
                     ? date
                     : null,
-                _localization);
+                _localization,
+                defaultCountryCode: kind == IntakeFieldKind.Jurisdiction
+                    ? countryCode
+                    : (kind == IntakeFieldKind.Country ? contract.VenueCountry : countryCode),
+                defaultSubdivision: kind == IntakeFieldKind.Jurisdiction ? subdivision : null);
             if (kind is IntakeFieldKind.Text or IntakeFieldKind.Number)
             {
                 field.Value = initial;

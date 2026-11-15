@@ -29,6 +29,10 @@
     <None Include="..\DraftEngine.App\MainWindow.xaml" Link="Xaml\MainWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\DraftEngine.App\Views\*.xaml" Link="Xaml\Views\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\DraftEngine.App\Resources\Strings*.resx" Link="Resources\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Themes\Light.xaml" Link="Themes\Light.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Themes\Dark.xaml" Link="Themes\Dark.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Themes\Styles.xaml" Link="Themes\Styles.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\DraftEngine.App\Themes\HighContrast.xaml" Link="Themes\HighContrast.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\docs\i18n-baseline.txt" Link="i18n-baseline.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

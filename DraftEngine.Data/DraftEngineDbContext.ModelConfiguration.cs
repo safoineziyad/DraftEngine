@@ -25,11 +25,13 @@ public partial class DraftEngineDbContext
 
             entity.HasIndex(user => user.Email).IsUnique();
 
-            // A user owns their contracts: removing the user removes everything they created.
+            // Never cascade from Users: deleting (or replacing) the single local user row
+            // must not silently delete every contract they own. User data is preserved and
+            // a user deletion is blocked while contracts still reference it.
             entity.HasMany(user => user.Contracts)
                 .WithOne(contract => contract.User)
                 .HasForeignKey(contract => contract.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Contract>(entity =>
@@ -42,6 +44,10 @@ public partial class DraftEngineDbContext
             entity.Property(contract => contract.ClientName).HasMaxLength(200).IsRequired();
             entity.Property(contract => contract.ClientEmail).HasMaxLength(256).IsRequired();
             entity.Property(contract => contract.GoverningLaw).HasMaxLength(200).IsRequired();
+            entity.Property(contract => contract.GoverningLawCountry).HasMaxLength(2).IsRequired();
+            entity.Property(contract => contract.GoverningLawSubdivision).HasMaxLength(200).IsRequired();
+            entity.Property(contract => contract.VenueCountry).HasMaxLength(2).IsRequired();
+            entity.Property(contract => contract.VenueCity).HasMaxLength(200).IsRequired();
             entity.Property(contract => contract.FinalFilePath).HasMaxLength(1024).IsRequired();
             entity.Property(contract => contract.PartiesJson).IsRequired();
             entity.Property(contract => contract.AssembledText).IsRequired();
@@ -86,6 +92,7 @@ public partial class DraftEngineDbContext
             entity.Property(clause => clause.Title).HasMaxLength(300).IsRequired();
             entity.Property(clause => clause.BodyTemplate).IsRequired();
             entity.Property(clause => clause.Source).HasMaxLength(50).IsRequired();
+            entity.Property(clause => clause.NeedsLegalReview).HasDefaultValue(false);
             entity.Property(clause => clause.IsArchived).HasDefaultValue(false);
             entity.Property(clause => clause.IsUserDefined).HasDefaultValue(false);
             // BodyTemplate: unbounded template text, deliberately no max length.
@@ -233,7 +240,8 @@ public partial class DraftEngineDbContext
                 ContractType = ContractTypeRegistry.MutualNdaId,
                 Category = "Governing Law",
                 Title = "Governing Law",
-                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
+                NeedsLegalReview = true,
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 5
@@ -389,7 +397,8 @@ public partial class DraftEngineDbContext
                 ContractType = ContractTypeRegistry.OneWayNdaId,
                 Category = "Governing Law",
                 Title = "Governing Law",
-                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
+                NeedsLegalReview = true,
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 7
@@ -523,7 +532,8 @@ public partial class DraftEngineDbContext
                 ContractType = ContractTypeRegistry.ContractorAgreementId,
                 Category = "Governing Law",
                 Title = "Governing Law",
-                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
+                NeedsLegalReview = true,
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 9
@@ -635,7 +645,8 @@ public partial class DraftEngineDbContext
                 ContractType = ContractTypeRegistry.ConsultingAgreementId,
                 Category = "Governing Law",
                 Title = "Governing Law",
-                BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
+                NeedsLegalReview = true,
                 IsOptional = false,
                 IsDefaultSelected = true,
                 SortOrder = 9

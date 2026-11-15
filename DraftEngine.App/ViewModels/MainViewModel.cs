@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
-using DraftEngine.App.Services.Updates;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -18,40 +17,55 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly INavigationService _navigation;
     private readonly AppOptions? _appOptions;
-    private readonly IUpdateService? _updateService;
-    private UpdateInfo? _availableUpdate;
+    private readonly UpdateFlowViewModel? _updateFlow;
+    private readonly ILocalizationService? _localization;
+    private readonly NavigationItemViewModel? _aboutItem;
+
+    /// <summary>Segoe Fluent Icons glyphs with a Segoe MDL2 Assets fallback for older Windows.</summary>
+    private const string IconHome = "\uE80F";
+    private const string IconAdd = "\uE710";
+    private const string IconList = "\uE8FD";
+    private const string IconArchive = "\uE7B8";
+    private const string IconAnalyze = "\uE9D2";
+    private const string IconClauses = "\uE8F1";
+    private const string IconSettings = "\uE713";
+    private const string IconInfo = "\uE946";
 
     /// <summary>The view model of the page currently displayed in the content area.</summary>
     public object? CurrentViewModel => _navigation.CurrentViewModel;
 
-    /// <summary>Whether the update banner is currently visible.</summary>
-    public bool IsUpdateBannerVisible => IsUpdateAvailable && !IsUpdateDismissed;
+    /// <summary>The key of the page currently shown (drives the sidebar active marker).</summary>
+    public string CurrentPageKey => _navigation.CurrentKey;
 
-    /// <summary>Banner text including the version found on GitHub.</summary>
-    public string UpdateBannerText => _availableUpdate is null
-        ? string.Empty
-        : FormatLocalized("Update.Available", $"A new version ({_availableUpdate.Version}) is available!", _availableUpdate.Version);
+    /// <summary>Workspace group: dashboard, contract creation and the contract lists.</summary>
+    public IReadOnlyList<NavigationItemViewModel> WorkspaceItems { get; }
 
-    /// <summary>Update button text reflecting download progress.</summary>
-    public string UpdateButtonText => GetLocalized(
-        IsDownloadingUpdate ? "Update.Downloading" : "Update.Now",
-        IsDownloadingUpdate ? "Downloading..." : "Update Now");
+    /// <summary>Tools group: analysis and clause management.</summary>
+    public IReadOnlyList<NavigationItemViewModel> ToolsItems { get; }
 
-    /// <summary>Whether the update can currently be started.</summary>
-    public bool CanDownloadUpdate => IsUpdateBannerVisible && !IsDownloadingUpdate;
+    /// <summary>Bottom group: settings and about, pinned below the scrollable list.</summary>
+    public IReadOnlyList<NavigationItemViewModel> BottomItems { get; }
 
-    /// <summary>Download/install error shown in the update banner.</summary>
-    [ObservableProperty]
-    private string updateErrorMessage = string.Empty;
+    /// <summary>Every navigation item in sidebar order (for tests and keyboard traversal).</summary>
+    public IReadOnlyList<NavigationItemViewModel> AllItems { get; }
 
-    [ObservableProperty]
-    private bool isUpdateAvailable;
+    /// <summary>Version label from the assembly version, localized ("Version 0.4.0…").</summary>
+    public string VersionDisplay =>
+        FormatLocalized("Common.Version", $"Version {AppVersion.Display}", AppVersion.Display);
 
-    [ObservableProperty]
-    private bool isUpdateDismissed;
+    /// <summary>Commit label plus hash, or empty when no real hash was stamped.</summary>
+    public string CommitDisplay => AppVersion.HasCommitHash
+        ? $"{GetLocalized("Main.CommitLabel", "Commit")} {AppVersion.CommitHash}"
+        : string.Empty;
 
-    [ObservableProperty]
-    private bool isDownloadingUpdate;
+    /// <summary>True when a build commit hash is available to show in the footer.</summary>
+    public bool HasCommit => AppVersion.HasCommitHash;
+
+    /// <summary>The signed update flow (banner, notes, download progress, install confirmation).</summary>
+    public UpdateFlowViewModel? UpdateFlow => _updateFlow;
+
+    /// <summary>True when the About sidebar entry shows an update indicator dot.</summary>
+    public bool HasUpdateBadge => _updateFlow?.IsUpdateAvailable ?? false;
 
     /// <summary>The window title (from appsettings.json App:DisplayName).</summary>
     public string Title => _appOptions?.App.DisplayName ?? "DraftEngine";
@@ -63,28 +77,87 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         INavigationService navigation,
         AppOptions? appOptions = null,
-        IUpdateService? updateService = null)
+        UpdateFlowViewModel? updateFlow = null,
+        ILocalizationService? localization = null)
     {
         _navigation = navigation;
         _appOptions = appOptions;
-        _updateService = updateService;
-        _navigation.CurrentViewModelChanged += _ => OnPropertyChanged(nameof(CurrentViewModel));
+        _updateFlow = updateFlow;
+        if (_updateFlow is not null)
+        {
+            _updateFlow.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName is nameof(UpdateFlowViewModel.IsUpdateAvailable) or null)
+                {
+                    OnPropertyChanged(nameof(HasUpdateBadge));
+                    if (_aboutItem is not null)
+                    {
+                        _aboutItem.HasUpdateBadge = _updateFlow.IsUpdateAvailable;
+                    }
+                }
+            };
+            _updateFlow.ShutdownRequested += () => Application.Current?.Shutdown();
+        }
+        _localization = localization ?? LocalizationSource.Current.Service;
+
+        WorkspaceItems =
+        [
+            new NavigationItemViewModel("dashboard", "Nav.Dashboard", IconHome, NavigateDashboardCommand, _localization),
+            new NavigationItemViewModel("new-contract", "Nav.NewContract", IconAdd, NavigateNewContractCommand, _localization),
+            new NavigationItemViewModel("contracts", "Nav.Contracts", IconList, NavigateContractsCommand, _localization),
+            new NavigationItemViewModel("archived-contracts", "Nav.Archived", IconArchive, NavigateArchivedContractsCommand, _localization),
+        ];
+        ToolsItems =
+        [
+            new NavigationItemViewModel("analyze", "Nav.Analyze", IconAnalyze, NavigateAnalyzeCommand, _localization),
+            new NavigationItemViewModel("clause-management", "Nav.ClauseManager", IconClauses, NavigateClauseManagementCommand, _localization),
+        ];
+        var bottomItems = new List<NavigationItemViewModel>
+        {
+            new("settings", "Nav.Settings", IconSettings, NavigateSettingsCommand, _localization),
+        };
+        if (AboutEnabled)
+        {
+            _aboutItem = new NavigationItemViewModel("about", "Nav.About", IconInfo, NavigateAboutCommand, _localization);
+            bottomItems.Add(_aboutItem);
+        }
+
+        BottomItems = bottomItems;
+        AllItems = WorkspaceItems.Concat(ToolsItems).Concat(BottomItems).ToArray();
+
+        _navigation.CurrentViewModelChanged += _ => OnCurrentViewModelChanged();
         _navigation.Navigate("dashboard");
-        if (LocalizationSource.Current.Service is { } localizationService)
+        OnCurrentViewModelChanged();
+        if (_localization is { } localizationService)
         {
             localizationService.LanguageChanged += OnLanguageChanged;
         }
 
-        if (_appOptions?.Features.AutoUpdateEnabled == true && _updateService is not null)
+        if (_updateFlow is not null)
         {
-            _ = CheckForUpdatesAsync();
+            // Never blocks startup: the flow waits, then checks at most once per 24 hours.
+            _ = _updateFlow.CheckOnStartupAsync();
+        }
+    }
+
+    private void OnCurrentViewModelChanged()
+    {
+        OnPropertyChanged(nameof(CurrentViewModel));
+        OnPropertyChanged(nameof(CurrentPageKey));
+        foreach (var item in AllItems)
+        {
+            item.IsActive = string.Equals(item.Key, _navigation.CurrentKey, StringComparison.OrdinalIgnoreCase);
         }
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
-        OnPropertyChanged(nameof(UpdateBannerText));
-        OnPropertyChanged(nameof(UpdateButtonText));
+        OnPropertyChanged(nameof(VersionDisplay));
+        OnPropertyChanged(nameof(CommitDisplay));
+        foreach (var item in AllItems)
+        {
+            item.RefreshLocalization();
+        }
     }
 
     private static string GetLocalized(string key, string fallback) =>
@@ -93,83 +166,7 @@ public partial class MainViewModel : ObservableObject
     private static string FormatLocalized(string key, string fallback, object argument) =>
         LocalizationSource.Current.Service?.GetString(key, argument) ?? fallback;
 
-    partial void OnIsUpdateAvailableChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsUpdateBannerVisible));
-        OnPropertyChanged(nameof(UpdateBannerText));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
 
-    partial void OnIsUpdateDismissedChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsUpdateBannerVisible));
-        OnPropertyChanged(nameof(CanDownloadUpdate));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnIsDownloadingUpdateChanged(bool value)
-    {
-        OnPropertyChanged(nameof(UpdateButtonText));
-        OnPropertyChanged(nameof(CanDownloadUpdate));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
-
-    private async Task CheckForUpdatesAsync()
-    {
-        try
-        {
-            _availableUpdate = await _updateService!.CheckForUpdateAsync();
-            IsUpdateAvailable = _availableUpdate is not null;
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "GitHub release update check failed.");
-        }
-    }
-
-    /// <summary>Downloads and launches the silent installer, then closes the app.</summary>
-    [RelayCommand(CanExecute = nameof(CanDownloadUpdate))]
-    private async Task DownloadAndInstallUpdateAsync()
-    {
-        if (_updateService is null || _availableUpdate is null)
-        {
-            return;
-        }
-
-        IsDownloadingUpdate = true;
-        UpdateErrorMessage = string.Empty;
-        try
-        {
-            var installerPath = Path.Combine(Path.GetTempPath(), "DraftEngineUpdate.exe");
-            await _updateService.DownloadInstallerAsync(_availableUpdate, installerPath);
-
-            var installer = Process.Start(new ProcessStartInfo
-            {
-                FileName = installerPath,
-                Arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS",
-                UseShellExecute = true,
-            });
-            if (installer is null)
-            {
-                throw new InvalidOperationException("The update installer could not be started.");
-            }
-
-            Application.Current.Shutdown();
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "The downloaded GitHub update could not be installed.");
-            UpdateErrorMessage = FormatLocalized(
-                "Update.InstallFailed",
-                $"The update could not be installed: {ex.Message}",
-                ex.Message);
-            IsDownloadingUpdate = false;
-        }
-    }
-
-    /// <summary>Hides the update banner until the next application session.</summary>
-    [RelayCommand]
-    private void DismissUpdate() => IsUpdateDismissed = true;
 
     /// <summary>Navigates to the dashboard page.</summary>
     [RelayCommand]

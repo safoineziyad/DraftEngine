@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0-beta.1 (local candidate)
+- Local test installer uses Windows upgrade version 0.4.0.1 and retains the v0.2.2 installer AppId.
+- About displays the assembly version plus its build commit and UTC timestamp.
+- Added an automated app-startup upgrade check for a copied v0.2.2-era database and its pre-migration backup.
+- The uninstaller now leaves `%APPDATA%\DraftEngine` untouched.
+
 ## 0.4.0
 - New UI-agnostic `DraftEngine.Analysis` engine: DOCX/PDF/TXT import into a normalized document with offsets, clause segmentation, seeded playbooks for all four contract types, deterministic checks (missing clauses, required facts, red flags, placeholders), fact extraction and document comparison.
 - Optional AI review behind consent, using the existing redaction and endpoint; every AI finding must quote the source verbatim or it is discarded, and citation-like text is filtered out.

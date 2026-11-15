@@ -40,6 +40,10 @@ public sealed class BackupContract
     public string PartiesJson { get; set; } = string.Empty;
     public DateTime? EffectiveDate { get; set; }
     public string GoverningLaw { get; set; } = string.Empty;
+    public string GoverningLawCountry { get; set; } = string.Empty;
+    public string GoverningLawSubdivision { get; set; } = string.Empty;
+    public string VenueCountry { get; set; } = string.Empty;
+    public string VenueCity { get; set; } = string.Empty;
     public int TermMonths { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -122,14 +126,32 @@ public sealed class BackupWizardDraft
     public DateTime UpdatedAt { get; set; }
 }
 
+/// <summary>Provider profile metadata in a backup. Deliberately excludes the API key.</summary>
+public sealed class BackupAiProfile
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public DraftEngine.Core.Models.AiProviderPreset Preset { get; set; }
+    public string? BaseUrl { get; set; }
+    public string? Model { get; set; }
+}
+
 /// <summary>Settings copied into a backup; API key only when explicitly included.</summary>
 public sealed class BackupSettings
 {
     public string? OpenAiApiKey { get; set; }
     public string OpenAiModel { get; set; } = AppSettings.FallbackModel;
     public string DefaultGoverningLaw { get; set; } = "California";
+    public string DefaultGoverningLawCountry { get; set; } = "US";
+    public string DefaultGoverningLawSubdivision { get; set; } = "California";
     public int DefaultTermMonths { get; set; } = 12;
     public bool AiDataConsentAccepted { get; set; }
+
+    /// <summary>Provider profiles without API keys; keys are never exported by this backup.</summary>
+    public List<BackupAiProfile>? AiProfiles { get; set; }
+
+    /// <summary>Active provider profile id at the time of the backup.</summary>
+    public string? ActiveAiProfileId { get; set; }
     public bool OnboardingCompleted { get; set; }
     public string? OpenAiBaseUrl { get; set; }
     public bool UseCustomOpenAiEndpoint { get; set; }

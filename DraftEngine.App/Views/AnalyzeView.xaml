@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100">
     <UserControl.Resources>
@@ -17,7 +18,7 @@
 
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
-            <TextBlock Text="Review a contract against a playbook. Deterministic checks work offline; AI review is optional and consent-gated."
+            <TextBlock Text="{loc:T Analyze.Subtitle}"
                        Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" TextWrapping="Wrap" />
             <Border Background="{DynamicResource PanelBrush}" CornerRadius="6" Padding="10,8" Margin="0,10,0,0">
                 <TextBlock Text="{Binding Disclaimer}" FontWeight="SemiBold"
@@ -37,33 +38,33 @@
                 <StackPanel>
                     <Border Style="{StaticResource Card}" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="1. Import a contract" FontWeight="SemiBold" FontSize="15"
+                            <TextBlock Text="{loc:T Analyze.ImportTitle}" FontWeight="SemiBold" FontSize="15"
                                        Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="DOCX or text-based PDF. Scanned PDFs need OCR, which is not supported yet."
+                            <TextBlock Text="{loc:T Analyze.ImportDescription}"
                                        Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,4,0,10" />
 
-                            <TextBlock Text="Contract type (playbook)" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4" />
+                            <TextBlock Text="{loc:T Analyze.PlaybookLabel}" Style="{StaticResource BodyTextStyle}" Margin="0,0,0,4" />
                             <ComboBox ItemsSource="{Binding ContractTypes}" DisplayMemberPath="DisplayName"
                                       SelectedItem="{Binding SelectedContractType}"
-                                      AutomationProperties.Name="Playbook contract type" Margin="0,0,0,10" />
+                                      AutomationProperties.Name="{loc:T Analyze.PlaybookAutomation}" Margin="0,0,0,10" />
 
                             <WrapPanel>
-                                <Button Content="Choose file..." Padding="12,0" Height="30"
+                                <Button Content="{loc:T Analyze.ChooseFile}" Padding="12,0" Height="30"
                                         Style="{StaticResource PrimaryButtonStyle}"
                                         Command="{Binding ChooseFileCommand}"
-                                        AutomationProperties.Name="Choose a contract file" />
-                                <Button Content="Analyze" Padding="12,0" Height="30" Margin="8,0,0,0"
+                                        AutomationProperties.Name="{loc:T Analyze.ChooseFileAutomation}" />
+                                <Button Content="{loc:T Analyze.Analyze}" Padding="12,0" Height="30" Margin="8,0,0,0"
                                         Command="{Binding AnalyzeCommand}"
                                         IsEnabled="{Binding HasResult}"
-                                        AutomationProperties.Name="Re-analyze the current file" />
+                                        AutomationProperties.Name="{loc:T Analyze.AnalyzeAutomation}" />
                             </WrapPanel>
 
                             <TextBlock Text="{Binding CurrentFilePath}" Style="{StaticResource SecondaryTextStyle}"
                                        TextWrapping="Wrap" Margin="0,8,0,0" />
 
-                            <CheckBox Content="AI review (optional)" IsChecked="{Binding UseAi}"
+                            <CheckBox Content="{loc:T Analyze.AiReview}" IsChecked="{Binding UseAi}"
                                       IsEnabled="{Binding CanUseAi}" Margin="0,12,0,0"
-                                      AutomationProperties.Name="Enable AI review" />
+                                      AutomationProperties.Name="{loc:T Analyze.AiReviewAutomation}" />
                             <TextBlock Text="{Binding AiConsentHint}" Style="{StaticResource SecondaryTextStyle}"
                                        TextWrapping="Wrap" Margin="0,4,0,0" />
 
@@ -80,20 +81,20 @@
                         <StackPanel>
                             <TextBlock Text="{Binding FindingCountText}" FontWeight="SemiBold" FontSize="15"
                                        Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Grouped by severity. Select a finding to highlight its quote."
+                            <TextBlock Text="{loc:T Analyze.GroupedHint}"
                                        Style="{StaticResource SecondaryTextStyle}" Margin="0,2,0,8" />
                             <WrapPanel Margin="0,0,0,8">
-                                <Button Content="Export report (DOCX)" Height="26" Padding="8,0"
+                                <Button Content="{loc:T Analyze.ExportDocx}" Height="26" Padding="8,0"
                                         Style="{StaticResource QuietButtonStyle}"
                                         Command="{Binding ExportReportCommand}" CommandParameter="docx" />
-                                <Button Content="Export report (PDF)" Height="26" Padding="8,0" Margin="6,0,0,0"
+                                <Button Content="{loc:T Analyze.ExportPdf}" Height="26" Padding="8,0" Margin="6,0,0,0"
                                         Style="{StaticResource QuietButtonStyle}"
                                         Command="{Binding ExportReportCommand}" CommandParameter="pdf" />
                             </WrapPanel>
 
                             <ListBox ItemsSource="{Binding Findings}" SelectedItem="{Binding SelectedFinding}"
                                      MaxHeight="260" BorderThickness="0" Background="Transparent"
-                                     AutomationProperties.Name="Review findings">
+                                     AutomationProperties.Name="{loc:T Analyze.FindingsAutomation}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="0,4">
@@ -103,7 +104,7 @@
                                                 </Border>
                                                 <TextBlock Text="{Binding Category}" Margin="6,0,0,0"
                                                            Style="{StaticResource SecondaryTextStyle}" />
-                                                <TextBlock Text="AI" Margin="6,0,0,0" FontSize="10" FontWeight="SemiBold"
+                                                <TextBlock Text="{loc:T Analyze.AiBadge}" Margin="6,0,0,0" FontSize="10" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource AccentBrush}"
                                                            Visibility="{Binding IsAi, Converter={StaticResource BoolToVis}}" />
                                             </StackPanel>
@@ -118,12 +119,12 @@
                     <Border Style="{StaticResource Card}">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Saved analyses" FontWeight="SemiBold" FontSize="15"
+                                <TextBlock Text="{loc:T Analyze.Saved}" FontWeight="SemiBold" FontSize="15"
                                            Foreground="{DynamicResource TextPrimaryBrush}" />
-                                <Button Content="Refresh" Margin="10,0,0,0" Height="24" Padding="8,0"
+                                <Button Content="{loc:T Analyze.Refresh}" Margin="10,0,0,0" Height="24" Padding="8,0"
                                         Style="{StaticResource QuietButtonStyle}"
                                         Command="{Binding ReloadRecentCommand}" />
-                                <Button Content="Archive selected" Margin="6,0,0,0" Height="24" Padding="8,0"
+                                <Button Content="{loc:T Analyze.ArchiveSelected}" Margin="6,0,0,0" Height="24" Padding="8,0"
                                         Style="{StaticResource QuietButtonStyle}"
                                         Command="{Binding ArchiveCurrentCommand}" />
                             </StackPanel>
@@ -141,7 +142,7 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            <Button Content="Open selected analysis" HorizontalAlignment="Left" Margin="0,6,0,0"
+                            <Button Content="{loc:T Analyze.OpenSelected}" HorizontalAlignment="Left" Margin="0,6,0,0"
                                     Command="{Binding OpenRecentCommand}" CommandParameter="{Binding SelectedRecent}" />
                         </StackPanel>
                     </Border>
@@ -156,7 +157,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="Document" FontWeight="SemiBold" FontSize="15"
+                <TextBlock Grid.Row="0" Text="{loc:T Analyze.Document}" FontWeight="SemiBold" FontSize="15"
                            Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6" />
 
                 <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0">
@@ -164,7 +165,7 @@
                              IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                              BorderThickness="0" Background="Transparent" Padding="12"
-                             AutomationProperties.Name="Imported contract text" />
+                             AutomationProperties.Name="{loc:T Analyze.DocumentAutomation}" />
                 </Border>
 
                 <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,12,0,0"
@@ -173,10 +174,10 @@
                         <TextBlock Text="{Binding SelectedFinding.Title}" FontWeight="SemiBold" FontSize="14"
                                    Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
                         <TextBlock Text="{Binding SelectedFinding.Explanation}" TextWrapping="Wrap" Margin="0,4,0,0" />
-                        <TextBlock Text="Suggested fix" FontWeight="SemiBold" Margin="0,8,0,2" />
+                        <TextBlock Text="{loc:T Analyze.SuggestedFix}" FontWeight="SemiBold" Margin="0,8,0,2" />
                         <TextBlock Text="{Binding SelectedFinding.SuggestedFix}" TextWrapping="Wrap"
                                    Style="{StaticResource SecondaryTextStyle}" />
-                        <Button Content="Copy suggested fix" HorizontalAlignment="Left" Margin="0,8,0,0"
+                        <Button Content="{loc:T Analyze.CopyFix}" HorizontalAlignment="Left" Margin="0,8,0,0"
                                 Command="{Binding CopySuggestedFixCommand}"
                                 Visibility="{Binding SelectedFinding.HasFix, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>

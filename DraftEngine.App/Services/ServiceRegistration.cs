@@ -2,6 +2,7 @@ using DraftEngine.AI.Services;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Themes;
 using DraftEngine.App.ViewModels;
 using DraftEngine.Core.Interfaces;
 using DraftEngine.Core.Models.ContractTypes;
@@ -72,20 +73,29 @@ public static class ServiceRegistration
         services.AddSingleton<
             DraftEngine.App.Services.Licensing.ILicenseService,
             DraftEngine.App.Services.Licensing.LicenseService>();
-        services.AddSingleton<
-            DraftEngine.App.Services.Updates.IUpdateCheckService,
-            DraftEngine.App.Services.Updates.UpdateCheckService>();
-        services.AddHttpClient<DraftEngine.App.Services.Updates.IUpdateService,
-            DraftEngine.App.Services.Updates.UpdateService>(client =>
+        // Signed update flow: one shared HTTP client, confirmation prompts and a pre-update snapshot.
+        services.AddHttpClient("updates", client => client.Timeout = TimeSpan.FromSeconds(30));
+        services.AddSingleton<DraftEngine.App.Services.Updates.IUpdatePrompt,
+            DraftEngine.App.Services.Updates.WpfUpdatePrompt>();
+        services.AddSingleton(provider =>
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("DraftEngine-Updater");
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-            client.Timeout = TimeSpan.FromMinutes(5);
+            var options = provider.GetRequiredService<AppOptions>();
+            return new DraftEngine.App.Services.Updates.UpdateSnapshotService(
+                options.Data.ConnectionString,
+                System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "DraftEngine",
+                    "updates"));
         });
+        services.AddSingleton<UpdateFlowViewModel>();
 
         // Localization: resx-backed strings, live language switching and persistence.
         services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+
+        // Theme: Light/Dark/Follow-Windows, applied live and persisted.
+        services.AddSingleton<ISystemThemeProvider, RegistrySystemThemeProvider>();
+        services.AddSingleton<IThemeService, ThemeService>();
 
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();

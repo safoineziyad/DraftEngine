@@ -26,7 +26,9 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
     private readonly List<Clause> _allClauses = new();
     private int _loadVersion;
 
-    public string PageTitle => "Clause Manager";
+    public string PageTitle =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("Clause.PageTitle")
+        ?? "Clause Manager";
     public ObservableCollection<Clause> Clauses { get; } = new();
     public ObservableCollection<string> ContractTypes { get; } =
         new(ContractTypeRegistry.All.Select(type => type.DisplayName));

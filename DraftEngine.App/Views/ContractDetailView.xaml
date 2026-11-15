@@ -65,14 +65,14 @@
         <Border Grid.Row="1" Background="{DynamicResource DangerBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="White" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource DangerForegroundBrush}" TextWrapping="Wrap" />
         </Border>
 
         <!-- Success banner -->
         <Border Grid.Row="2" Background="{DynamicResource SuccessBrush}" CornerRadius="6"
                 Padding="12" Margin="0,0,0,12"
                 Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
-            <TextBlock Text="{Binding InfoMessage}" Foreground="White" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding InfoMessage}" Foreground="{DynamicResource SuccessForegroundBrush}" TextWrapping="Wrap" />
         </Border>
 
         <!-- Main content: document panel + AI chat panel -->
@@ -325,7 +325,7 @@
                                                                 <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
-                                                                        <Setter Property="Foreground" Value="White" />
+                                                                        <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
@@ -337,7 +337,7 @@
                                                                 <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding IsUser}" Value="True">
-                                                                        <Setter Property="Foreground" Value="#DCE7FF" />
+                                                                        <Setter Property="Foreground" Value="{DynamicResource AccentMutedForegroundBrush}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
@@ -375,10 +375,10 @@
                                                             <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsAdded}" Value="True">
-                                                                    <Setter Property="Foreground" Value="#1B5E20" />
+                                                                    <Setter Property="Foreground" Value="{DynamicResource DiffAddedForegroundBrush}" />
                                                                 </DataTrigger>
                                                                 <DataTrigger Binding="{Binding IsRemoved}" Value="True">
-                                                                    <Setter Property="Foreground" Value="#B71C1C" />
+                                                                    <Setter Property="Foreground" Value="{DynamicResource DiffRemovedForegroundBrush}" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -404,11 +404,11 @@
 
                     <!-- API key warning -->
                     <Border Grid.Row="3" Margin="0,8,0,8" Padding="10,8"
-                            Background="#FFF4E5" CornerRadius="6" BorderBrush="#FFB74D" BorderThickness="1"
+                            Background="{DynamicResource WarningBackgroundBrush}" CornerRadius="6" BorderBrush="{DynamicResource WarningBorderBrush}" BorderThickness="1"
                             Visibility="{Binding ShowApiKeyWarning, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <TextBlock Text="{loc:T ContractDetail.ApiKeyWarning}"
-                                       TextWrapping="Wrap" Foreground="#E65100" FontSize="12" />
+                                       TextWrapping="Wrap" Foreground="{DynamicResource WarningForegroundBrush}" FontSize="12" />
                             <Button Content="{loc:T ContractDetail.GoToSettings}" Margin="0,6,0,0" Padding="10,4" HorizontalAlignment="Left"
                                     Command="{Binding GoToSettingsCommand}" FontSize="11" />
                         </StackPanel>

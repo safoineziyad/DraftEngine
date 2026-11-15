@@ -9,7 +9,7 @@
     4. Prints the resulting setup .exe path
 
     Run from anywhere:
-        powershell -ExecutionPolicy Bypass -File installer\Build-Installer.ps1
+        powershell -ExecutionPolicy Bypass -File scriptsuild-installer.ps1
 
 .PARAMETER SkipPublish
     Reuse the existing .\publish folder and only recompile the installer.
@@ -22,7 +22,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # --- Resolve repo root from this script's location -------------------------
-$repoRoot = Split-Path -Parent $PSScriptRoot   # installer\.. = repo root
+$repoRoot = Split-Path -Parent $PSScriptRoot   # scripts\.. = repo root
 if (-not (Test-Path (Join-Path $repoRoot 'DraftEngine.sln'))) {
     throw "Could not find DraftEngine.sln in '$repoRoot'. Is this script inside <repo>\installer ?"
 }
@@ -138,14 +138,21 @@ Write-Host "ISCC: $iscc"
 $issPath = Join-Path $repoRoot 'installer\DraftEngine.iss'
 if (-not (Test-Path -LiteralPath $issPath)) { throw "Installer script not found: $issPath" }
 
+# The version lives in Directory.Build.props; pass it to Inno Setup so the installer name,
+# upgrade ordering and the app's informational version cannot drift apart.
+$propsPath = Join-Path $repoRoot 'Directory.Build.props'
+if (-not (Test-Path -LiteralPath $propsPath)) { throw "Version source not found: $propsPath" }
+$versionMatch = Select-String -Path $propsPath -Pattern '<DraftEngineFileVersion>([^<]+)</DraftEngineFileVersion>' | Select-Object -First 1
+if (-not $versionMatch) { throw 'Directory.Build.props does not define DraftEngineFileVersion.' }
+$appVersion = $versionMatch.Matches[0].Groups[1].Value.Trim()
+Write-Host "App version (from Directory.Build.props): $appVersion"
+
 Write-Host "Compiling '$issPath'..."
-& $iscc $issPath
+& $iscc "/DAppVersion=$appVersion" $issPath
 Test-LastExitCode 'ISCC (Inno Setup compile)'
 
 # --- 4. Report the result ---------------------------------------------------
-$version = 'unknown'
-$match = Select-String -Path $issPath -Pattern '^\s*#define\s+AppVersion\s+"([^"]+)"' | Select-Object -First 1
-if ($match) { $version = $match.Matches[0].Groups[1].Value }
+$version = $appVersion
 
 $setupPath = Join-Path $repoRoot ("installer\Output\DraftEngine-Setup-{0}.exe" -f $version)
 if (-not (Test-Path -LiteralPath $setupPath)) {

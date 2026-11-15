@@ -1,0 +1,1850 @@
+[
+  {
+    "code": "AF",
+    "en": "Afghanistan",
+    "fr": "Afghanistan",
+    "ar": "\u0623\u0641\u063A\u0627\u0646\u0633\u062A\u0627\u0646",
+    "es": "Afganist\u00E1n"
+  },
+  {
+    "code": "AL",
+    "en": "Albania",
+    "fr": "Albanie",
+    "ar": "\u0623\u0644\u0628\u0627\u0646\u064A\u0627",
+    "es": "Albania"
+  },
+  {
+    "code": "DZ",
+    "en": "Algeria",
+    "fr": "Alg\u00E9rie",
+    "ar": "\u0627\u0644\u062C\u0632\u0627\u0626\u0631",
+    "es": "Argelia"
+  },
+  {
+    "code": "AS",
+    "en": "American Samoa",
+    "fr": "Samoa am\u00E9ricaines",
+    "ar": "\u0633\u0627\u0645\u0648\u0627 \u0627\u0644\u0623\u0645\u0631\u064A\u0643\u064A\u0629",
+    "es": "Samoa Americana"
+  },
+  {
+    "code": "AD",
+    "en": "Andorra",
+    "fr": "Andorre",
+    "ar": "\u0623\u0646\u062F\u0648\u0631\u0627",
+    "es": "Andorra"
+  },
+  {
+    "code": "AO",
+    "en": "Angola",
+    "fr": "Angola",
+    "ar": "\u0623\u0646\u063A\u0648\u0644\u0627",
+    "es": "Angola"
+  },
+  {
+    "code": "AI",
+    "en": "Anguilla",
+    "fr": "Anguilla",
+    "ar": "\u0623\u0646\u063A\u0648\u064A\u0644\u0627",
+    "es": "Anguila"
+  },
+  {
+    "code": "AQ",
+    "en": "Antarctica",
+    "fr": "Antarctique",
+    "ar": "\u0623\u0646\u062A\u0627\u0631\u0643\u062A\u064A\u0643\u0627",
+    "es": "Ant\u00E1rtida"
+  },
+  {
+    "code": "AG",
+    "en": "Antigua \u0026 Barbuda",
+    "fr": "Antigua-et-Barbuda",
+    "ar": "\u0623\u0646\u062A\u064A\u063A\u0648\u0627 \u0648\u0628\u0631\u0628\u0648\u062F\u0627",
+    "es": "Antigua y Barbuda"
+  },
+  {
+    "code": "AR",
+    "en": "Argentina",
+    "fr": "Argentine",
+    "ar": "\u0627\u0644\u0623\u0631\u062C\u0646\u062A\u064A\u0646",
+    "es": "Argentina"
+  },
+  {
+    "code": "AM",
+    "en": "Armenia",
+    "fr": "Arm\u00E9nie",
+    "ar": "\u0623\u0631\u0645\u064A\u0646\u064A\u0627",
+    "es": "Armenia"
+  },
+  {
+    "code": "AW",
+    "en": "Aruba",
+    "fr": "Aruba",
+    "ar": "\u0623\u0631\u0648\u0628\u0627",
+    "es": "Aruba"
+  },
+  {
+    "code": "AC",
+    "en": "Ascension Island",
+    "fr": "\u00CEle de l\u2019Ascension",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0623\u0633\u064A\u0646\u0634\u064A\u0648\u0646",
+    "es": "Isla de la Ascensi\u00F3n"
+  },
+  {
+    "code": "AU",
+    "en": "Australia",
+    "fr": "Australie",
+    "ar": "\u0623\u0633\u062A\u0631\u0627\u0644\u064A\u0627",
+    "es": "Australia"
+  },
+  {
+    "code": "AT",
+    "en": "Austria",
+    "fr": "Autriche",
+    "ar": "\u0627\u0644\u0646\u0645\u0633\u0627",
+    "es": "Austria"
+  },
+  {
+    "code": "AZ",
+    "en": "Azerbaijan",
+    "fr": "Azerba\u00EFdjan",
+    "ar": "\u0623\u0630\u0631\u0628\u064A\u062C\u0627\u0646",
+    "es": "Azerbaiy\u00E1n"
+  },
+  {
+    "code": "BS",
+    "en": "Bahamas",
+    "fr": "Bahamas",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0628\u0647\u0627\u0645\u0627",
+    "es": "Bahamas"
+  },
+  {
+    "code": "BH",
+    "en": "Bahrain",
+    "fr": "Bahre\u00EFn",
+    "ar": "\u0627\u0644\u0628\u062D\u0631\u064A\u0646",
+    "es": "Bar\u00E9in"
+  },
+  {
+    "code": "BD",
+    "en": "Bangladesh",
+    "fr": "Bangladesh",
+    "ar": "\u0628\u0646\u063A\u0644\u0627\u062F\u064A\u0634",
+    "es": "Banglad\u00E9s"
+  },
+  {
+    "code": "BB",
+    "en": "Barbados",
+    "fr": "Barbade",
+    "ar": "\u0628\u0631\u0628\u0627\u062F\u0648\u0633",
+    "es": "Barbados"
+  },
+  {
+    "code": "BY",
+    "en": "Belarus",
+    "fr": "Bi\u00E9lorussie",
+    "ar": "\u0628\u064A\u0644\u0627\u0631\u0648\u0633",
+    "es": "Bielorrusia"
+  },
+  {
+    "code": "BE",
+    "en": "Belgium",
+    "fr": "Belgique",
+    "ar": "\u0628\u0644\u062C\u064A\u0643\u0627",
+    "es": "B\u00E9lgica"
+  },
+  {
+    "code": "BZ",
+    "en": "Belize",
+    "fr": "Belize",
+    "ar": "\u0628\u0644\u064A\u0632",
+    "es": "Belice"
+  },
+  {
+    "code": "BJ",
+    "en": "Benin",
+    "fr": "B\u00E9nin",
+    "ar": "\u0628\u0646\u064A\u0646",
+    "es": "Ben\u00EDn"
+  },
+  {
+    "code": "BM",
+    "en": "Bermuda",
+    "fr": "Bermudes",
+    "ar": "\u0628\u0631\u0645\u0648\u062F\u0627",
+    "es": "Bermudas"
+  },
+  {
+    "code": "BT",
+    "en": "Bhutan",
+    "fr": "Bhoutan",
+    "ar": "\u0628\u0648\u062A\u0627\u0646",
+    "es": "But\u00E1n"
+  },
+  {
+    "code": "BO",
+    "en": "Bolivia",
+    "fr": "Bolivie",
+    "ar": "\u0628\u0648\u0644\u064A\u0641\u064A\u0627",
+    "es": "Bolivia"
+  },
+  {
+    "code": "BA",
+    "en": "Bosnia \u0026 Herzegovina",
+    "fr": "Bosnie-Herz\u00E9govine",
+    "ar": "\u0627\u0644\u0628\u0648\u0633\u0646\u0629 \u0648\u0627\u0644\u0647\u0631\u0633\u0643",
+    "es": "Bosnia y Herzegovina"
+  },
+  {
+    "code": "BW",
+    "en": "Botswana",
+    "fr": "Botswana",
+    "ar": "\u0628\u0648\u062A\u0633\u0648\u0627\u0646\u0627",
+    "es": "Botsuana"
+  },
+  {
+    "code": "BV",
+    "en": "Bouvet Island",
+    "fr": "\u00CEle Bouvet",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0628\u0648\u0641\u064A\u0647",
+    "es": "Isla Bouvet"
+  },
+  {
+    "code": "BR",
+    "en": "Brazil",
+    "fr": "Br\u00E9sil",
+    "ar": "\u0627\u0644\u0628\u0631\u0627\u0632\u064A\u0644",
+    "es": "Brasil"
+  },
+  {
+    "code": "IO",
+    "en": "British Indian Ocean Territory",
+    "fr": "Territoire britannique de l\u2019oc\u00E9an Indien",
+    "ar": "\u0627\u0644\u0625\u0642\u0644\u064A\u0645 \u0627\u0644\u0628\u0631\u064A\u0637\u0627\u0646\u064A \u0641\u064A \u0627\u0644\u0645\u062D\u064A\u0637 \u0627\u0644\u0647\u0646\u062F\u064A",
+    "es": "Territorio Brit\u00E1nico del Oc\u00E9ano \u00CDndico"
+  },
+  {
+    "code": "VG",
+    "en": "British Virgin Islands",
+    "fr": "\u00CEles Vierges britanniques",
+    "ar": "\u062C\u0632\u0631 \u0641\u064A\u0631\u062C\u0646 \u0627\u0644\u0628\u0631\u064A\u0637\u0627\u0646\u064A\u0629",
+    "es": "Islas V\u00EDrgenes Brit\u00E1nicas"
+  },
+  {
+    "code": "BN",
+    "en": "Brunei",
+    "fr": "Brunei",
+    "ar": "\u0628\u0631\u0648\u0646\u0627\u064A",
+    "es": "Brun\u00E9i"
+  },
+  {
+    "code": "BG",
+    "en": "Bulgaria",
+    "fr": "Bulgarie",
+    "ar": "\u0628\u0644\u063A\u0627\u0631\u064A\u0627",
+    "es": "Bulgaria"
+  },
+  {
+    "code": "BF",
+    "en": "Burkina Faso",
+    "fr": "Burkina Faso",
+    "ar": "\u0628\u0648\u0631\u0643\u064A\u0646\u0627 \u0641\u0627\u0633\u0648",
+    "es": "Burkina Faso"
+  },
+  {
+    "code": "BI",
+    "en": "Burundi",
+    "fr": "Burundi",
+    "ar": "\u0628\u0648\u0631\u0648\u0646\u062F\u064A",
+    "es": "Burundi"
+  },
+  {
+    "code": "KH",
+    "en": "Cambodia",
+    "fr": "Cambodge",
+    "ar": "\u0643\u0645\u0628\u0648\u062F\u064A\u0627",
+    "es": "Camboya"
+  },
+  {
+    "code": "CM",
+    "en": "Cameroon",
+    "fr": "Cameroun",
+    "ar": "\u0627\u0644\u0643\u0627\u0645\u064A\u0631\u0648\u0646",
+    "es": "Camer\u00FAn"
+  },
+  {
+    "code": "CA",
+    "en": "Canada",
+    "fr": "Canada",
+    "ar": "\u0643\u0646\u062F\u0627",
+    "es": "Canad\u00E1"
+  },
+  {
+    "code": "IC",
+    "en": "Canary Islands",
+    "fr": "\u00CEles Canaries",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0643\u0646\u0627\u0631\u064A",
+    "es": "Canarias"
+  },
+  {
+    "code": "CV",
+    "en": "Cape Verde",
+    "fr": "Cap-Vert",
+    "ar": "\u0627\u0644\u0631\u0623\u0633 \u0627\u0644\u0623\u062E\u0636\u0631",
+    "es": "Cabo Verde"
+  },
+  {
+    "code": "BQ",
+    "en": "Caribbean Netherlands",
+    "fr": "Pays-Bas carib\u00E9ens",
+    "ar": "\u0647\u0648\u0644\u0646\u062F\u0627 \u0627\u0644\u0643\u0627\u0631\u064A\u0628\u064A\u0629",
+    "es": "Caribe neerland\u00E9s"
+  },
+  {
+    "code": "KY",
+    "en": "Cayman Islands",
+    "fr": "\u00CEles Ca\u00EFmans",
+    "ar": "\u062C\u0632\u0631 \u0643\u0627\u064A\u0645\u0627\u0646",
+    "es": "Islas Caim\u00E1n"
+  },
+  {
+    "code": "CF",
+    "en": "Central African Republic",
+    "fr": "R\u00E9publique centrafricaine",
+    "ar": "\u062C\u0645\u0647\u0648\u0631\u064A\u0629 \u0623\u0641\u0631\u064A\u0642\u064A\u0627 \u0627\u0644\u0648\u0633\u0637\u0649",
+    "es": "Rep\u00FAblica Centroafricana"
+  },
+  {
+    "code": "EA",
+    "en": "Ceuta \u0026 Melilla",
+    "fr": "Ceuta et Melilla",
+    "ar": "\u0633\u064A\u0648\u062A\u0627 \u0648\u0645\u064A\u0644\u064A\u0644\u0627",
+    "es": "Ceuta y Melilla"
+  },
+  {
+    "code": "TD",
+    "en": "Chad",
+    "fr": "Tchad",
+    "ar": "\u062A\u0634\u0627\u062F",
+    "es": "Chad"
+  },
+  {
+    "code": "CL",
+    "en": "Chile",
+    "fr": "Chili",
+    "ar": "\u062A\u0634\u064A\u0644\u064A",
+    "es": "Chile"
+  },
+  {
+    "code": "CN",
+    "en": "China",
+    "fr": "Chine",
+    "ar": "\u0627\u0644\u0635\u064A\u0646",
+    "es": "China"
+  },
+  {
+    "code": "CX",
+    "en": "Christmas Island",
+    "fr": "\u00CEle Christmas",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0643\u0631\u064A\u0633\u0645\u0627\u0633",
+    "es": "Isla de Navidad"
+  },
+  {
+    "code": "CP",
+    "en": "Clipperton Island",
+    "fr": "\u00CEle Clipperton",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0643\u0644\u064A\u0628\u064A\u0631\u062A\u0648\u0646",
+    "es": "Isla Clipperton"
+  },
+  {
+    "code": "CC",
+    "en": "Cocos (Keeling) Islands",
+    "fr": "\u00CEles Cocos",
+    "ar": "\u062C\u0632\u0631 \u0643\u0648\u0643\u0648\u0633 (\u0643\u064A\u0644\u064A\u0646\u063A)",
+    "es": "Islas Cocos"
+  },
+  {
+    "code": "CO",
+    "en": "Colombia",
+    "fr": "Colombie",
+    "ar": "\u0643\u0648\u0644\u0648\u0645\u0628\u064A\u0627",
+    "es": "Colombia"
+  },
+  {
+    "code": "KM",
+    "en": "Comoros",
+    "fr": "Comores",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0642\u0645\u0631",
+    "es": "Comoras"
+  },
+  {
+    "code": "CG",
+    "en": "Congo - Brazzaville",
+    "fr": "Congo-Brazzaville",
+    "ar": "\u0627\u0644\u0643\u0648\u0646\u063A\u0648 - \u0628\u0631\u0627\u0632\u0627\u0641\u064A\u0644",
+    "es": "Congo"
+  },
+  {
+    "code": "CD",
+    "en": "Congo - Kinshasa",
+    "fr": "Congo-Kinshasa",
+    "ar": "\u0627\u0644\u0643\u0648\u0646\u063A\u0648 - \u0643\u064A\u0646\u0634\u0627\u0633\u0627",
+    "es": "Rep\u00FAblica Democr\u00E1tica del Congo"
+  },
+  {
+    "code": "CK",
+    "en": "Cook Islands",
+    "fr": "\u00CEles Cook",
+    "ar": "\u062C\u0632\u0631 \u0643\u0648\u0643",
+    "es": "Islas Cook"
+  },
+  {
+    "code": "CR",
+    "en": "Costa Rica",
+    "fr": "Costa Rica",
+    "ar": "\u0643\u0648\u0633\u062A\u0627\u0631\u064A\u0643\u0627",
+    "es": "Costa Rica"
+  },
+  {
+    "code": "HR",
+    "en": "Croatia",
+    "fr": "Croatie",
+    "ar": "\u0643\u0631\u0648\u0627\u062A\u064A\u0627",
+    "es": "Croacia"
+  },
+  {
+    "code": "CU",
+    "en": "Cuba",
+    "fr": "Cuba",
+    "ar": "\u0643\u0648\u0628\u0627",
+    "es": "Cuba"
+  },
+  {
+    "code": "CW",
+    "en": "Cura\u00E7ao",
+    "fr": "Cura\u00E7ao",
+    "ar": "\u0643\u0648\u0631\u0627\u0633\u0627\u0648",
+    "es": "Curazao"
+  },
+  {
+    "code": "CY",
+    "en": "Cyprus",
+    "fr": "Chypre",
+    "ar": "\u0642\u0628\u0631\u0635",
+    "es": "Chipre"
+  },
+  {
+    "code": "CZ",
+    "en": "Czechia",
+    "fr": "Tch\u00E9quie",
+    "ar": "\u0627\u0644\u062A\u0634\u064A\u0643",
+    "es": "Chequia"
+  },
+  {
+    "code": "CI",
+    "en": "C\u00F4te d\u2019Ivoire",
+    "fr": "C\u00F4te d\u2019Ivoire",
+    "ar": "\u0633\u0627\u062D\u0644 \u0627\u0644\u0639\u0627\u062C",
+    "es": "C\u00F4te d\u2019Ivoire"
+  },
+  {
+    "code": "DK",
+    "en": "Denmark",
+    "fr": "Danemark",
+    "ar": "\u0627\u0644\u062F\u0627\u0646\u0645\u0631\u0643",
+    "es": "Dinamarca"
+  },
+  {
+    "code": "DG",
+    "en": "Diego Garcia",
+    "fr": "Diego Garcia",
+    "ar": "\u062F\u064A\u064A\u063A\u0648 \u063A\u0627\u0631\u0633\u064A\u0627",
+    "es": "Diego Garc\u00EDa"
+  },
+  {
+    "code": "DJ",
+    "en": "Djibouti",
+    "fr": "Djibouti",
+    "ar": "\u062C\u064A\u0628\u0648\u062A\u064A",
+    "es": "Yibuti"
+  },
+  {
+    "code": "DM",
+    "en": "Dominica",
+    "fr": "Dominique",
+    "ar": "\u062F\u0648\u0645\u064A\u0646\u064A\u0643\u0627",
+    "es": "Dominica"
+  },
+  {
+    "code": "DO",
+    "en": "Dominican Republic",
+    "fr": "R\u00E9publique dominicaine",
+    "ar": "\u062C\u0645\u0647\u0648\u0631\u064A\u0629 \u0627\u0644\u062F\u0648\u0645\u064A\u0646\u064A\u0643\u0627\u0646",
+    "es": "Rep\u00FAblica Dominicana"
+  },
+  {
+    "code": "EC",
+    "en": "Ecuador",
+    "fr": "\u00C9quateur",
+    "ar": "\u0627\u0644\u0625\u0643\u0648\u0627\u062F\u0648\u0631",
+    "es": "Ecuador"
+  },
+  {
+    "code": "EG",
+    "en": "Egypt",
+    "fr": "\u00C9gypte",
+    "ar": "\u0645\u0635\u0631",
+    "es": "Egipto"
+  },
+  {
+    "code": "SV",
+    "en": "El Salvador",
+    "fr": "Salvador",
+    "ar": "\u0627\u0644\u0633\u0644\u0641\u0627\u062F\u0648\u0631",
+    "es": "El Salvador"
+  },
+  {
+    "code": "GQ",
+    "en": "Equatorial Guinea",
+    "fr": "Guin\u00E9e \u00E9quatoriale",
+    "ar": "\u063A\u064A\u0646\u064A\u0627 \u0627\u0644\u0627\u0633\u062A\u0648\u0627\u0626\u064A\u0629",
+    "es": "Guinea Ecuatorial"
+  },
+  {
+    "code": "ER",
+    "en": "Eritrea",
+    "fr": "\u00C9rythr\u00E9e",
+    "ar": "\u0625\u0631\u064A\u062A\u0631\u064A\u0627",
+    "es": "Eritrea"
+  },
+  {
+    "code": "EE",
+    "en": "Estonia",
+    "fr": "Estonie",
+    "ar": "\u0625\u0633\u062A\u0648\u0646\u064A\u0627",
+    "es": "Estonia"
+  },
+  {
+    "code": "SZ",
+    "en": "Eswatini",
+    "fr": "Eswatini",
+    "ar": "\u0625\u0633\u0648\u0627\u062A\u064A\u0646\u064A",
+    "es": "Esuatini"
+  },
+  {
+    "code": "ET",
+    "en": "Ethiopia",
+    "fr": "\u00C9thiopie",
+    "ar": "\u0625\u062B\u064A\u0648\u0628\u064A\u0627",
+    "es": "Etiop\u00EDa"
+  },
+  {
+    "code": "EU",
+    "en": "European Union",
+    "fr": "Union europ\u00E9enne",
+    "ar": "\u0627\u0644\u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0623\u0648\u0631\u0648\u0628\u064A",
+    "es": "Uni\u00F3n Europea"
+  },
+  {
+    "code": "EZ",
+    "en": "Eurozone",
+    "fr": "zone euro",
+    "ar": "\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u064A\u0648\u0631\u0648",
+    "es": "zona del euro"
+  },
+  {
+    "code": "FK",
+    "en": "Falkland Islands",
+    "fr": "\u00CEles Malouines",
+    "ar": "\u062C\u0632\u0631 \u0641\u0648\u0643\u0644\u0627\u0646\u062F",
+    "es": "Islas Malvinas"
+  },
+  {
+    "code": "FO",
+    "en": "Faroe Islands",
+    "fr": "\u00CEles F\u00E9ro\u00E9",
+    "ar": "\u062C\u0632\u0631 \u0641\u0627\u0631\u0648",
+    "es": "Islas Feroe"
+  },
+  {
+    "code": "FJ",
+    "en": "Fiji",
+    "fr": "Fidji",
+    "ar": "\u0641\u064A\u062C\u064A",
+    "es": "Fiyi"
+  },
+  {
+    "code": "FI",
+    "en": "Finland",
+    "fr": "Finlande",
+    "ar": "\u0641\u0646\u0644\u0646\u062F\u0627",
+    "es": "Finlandia"
+  },
+  {
+    "code": "FR",
+    "en": "France",
+    "fr": "France",
+    "ar": "\u0641\u0631\u0646\u0633\u0627",
+    "es": "Francia"
+  },
+  {
+    "code": "GF",
+    "en": "French Guiana",
+    "fr": "Guyane fran\u00E7aise",
+    "ar": "\u063A\u0648\u064A\u0627\u0646\u0627 \u0627\u0644\u0641\u0631\u0646\u0633\u064A\u0629",
+    "es": "Guayana Francesa"
+  },
+  {
+    "code": "PF",
+    "en": "French Polynesia",
+    "fr": "Polyn\u00E9sie fran\u00E7aise",
+    "ar": "\u0628\u0648\u0644\u064A\u0646\u064A\u0632\u064A\u0627 \u0627\u0644\u0641\u0631\u0646\u0633\u064A\u0629",
+    "es": "Polinesia Francesa"
+  },
+  {
+    "code": "TF",
+    "en": "French Southern and Antarctic Lands",
+    "fr": "Terres australes fran\u00E7aises",
+    "ar": "\u0627\u0644\u0623\u0642\u0627\u0644\u064A\u0645 \u0627\u0644\u062C\u0646\u0648\u0628\u064A\u0629 \u0627\u0644\u0641\u0631\u0646\u0633\u064A\u0629",
+    "es": "Territorios Australes Franceses"
+  },
+  {
+    "code": "GA",
+    "en": "Gabon",
+    "fr": "Gabon",
+    "ar": "\u0627\u0644\u063A\u0627\u0628\u0648\u0646",
+    "es": "Gab\u00F3n"
+  },
+  {
+    "code": "GM",
+    "en": "Gambia",
+    "fr": "Gambie",
+    "ar": "\u063A\u0627\u0645\u0628\u064A\u0627",
+    "es": "Gambia"
+  },
+  {
+    "code": "GE",
+    "en": "Georgia",
+    "fr": "G\u00E9orgie",
+    "ar": "\u062C\u0648\u0631\u062C\u064A\u0627",
+    "es": "Georgia"
+  },
+  {
+    "code": "DE",
+    "en": "Germany",
+    "fr": "Allemagne",
+    "ar": "\u0623\u0644\u0645\u0627\u0646\u064A\u0627",
+    "es": "Alemania"
+  },
+  {
+    "code": "GH",
+    "en": "Ghana",
+    "fr": "Ghana",
+    "ar": "\u063A\u0627\u0646\u0627",
+    "es": "Ghana"
+  },
+  {
+    "code": "GI",
+    "en": "Gibraltar",
+    "fr": "Gibraltar",
+    "ar": "\u062C\u0628\u0644 \u0637\u0627\u0631\u0642",
+    "es": "Gibraltar"
+  },
+  {
+    "code": "GR",
+    "en": "Greece",
+    "fr": "Gr\u00E8ce",
+    "ar": "\u0627\u0644\u064A\u0648\u0646\u0627\u0646",
+    "es": "Grecia"
+  },
+  {
+    "code": "GL",
+    "en": "Greenland",
+    "fr": "Groenland",
+    "ar": "\u063A\u0631\u064A\u0646\u0644\u0627\u0646\u062F",
+    "es": "Groenlandia"
+  },
+  {
+    "code": "GD",
+    "en": "Grenada",
+    "fr": "Grenade",
+    "ar": "\u063A\u0631\u064A\u0646\u0627\u062F\u0627",
+    "es": "Granada"
+  },
+  {
+    "code": "GP",
+    "en": "Guadeloupe",
+    "fr": "Guadeloupe",
+    "ar": "\u063A\u0648\u0627\u062F\u0644\u0648\u0628",
+    "es": "Guadalupe"
+  },
+  {
+    "code": "GU",
+    "en": "Guam",
+    "fr": "Guam",
+    "ar": "\u063A\u0648\u0627\u0645",
+    "es": "Guam"
+  },
+  {
+    "code": "GT",
+    "en": "Guatemala",
+    "fr": "Guatemala",
+    "ar": "\u063A\u0648\u0627\u062A\u064A\u0645\u0627\u0644\u0627",
+    "es": "Guatemala"
+  },
+  {
+    "code": "GG",
+    "en": "Guernsey",
+    "fr": "Guernesey",
+    "ar": "\u063A\u064A\u0631\u0646\u0632\u064A",
+    "es": "Guernesey"
+  },
+  {
+    "code": "GN",
+    "en": "Guinea",
+    "fr": "Guin\u00E9e",
+    "ar": "\u063A\u064A\u0646\u064A\u0627",
+    "es": "Guinea"
+  },
+  {
+    "code": "GW",
+    "en": "Guinea-Bissau",
+    "fr": "Guin\u00E9e-Bissau",
+    "ar": "\u063A\u064A\u0646\u064A\u0627 \u0628\u064A\u0633\u0627\u0648",
+    "es": "Guinea-Bis\u00E1u"
+  },
+  {
+    "code": "GY",
+    "en": "Guyana",
+    "fr": "Guyana",
+    "ar": "\u063A\u064A\u0627\u0646\u0627",
+    "es": "Guyana"
+  },
+  {
+    "code": "HT",
+    "en": "Haiti",
+    "fr": "Ha\u00EFti",
+    "ar": "\u0647\u0627\u064A\u062A\u064A",
+    "es": "Hait\u00ED"
+  },
+  {
+    "code": "HM",
+    "en": "Heard Island \u0026 McDonald Islands",
+    "fr": "\u00CEles Heard-et-MacDonald",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0647\u064A\u0631\u062F \u0648\u062C\u0632\u0631 \u0645\u0627\u0643\u062F\u0648\u0646\u0627\u0644\u062F",
+    "es": "Islas Heard y McDonald"
+  },
+  {
+    "code": "HN",
+    "en": "Honduras",
+    "fr": "Honduras",
+    "ar": "\u0647\u0646\u062F\u0648\u0631\u0627\u0633",
+    "es": "Honduras"
+  },
+  {
+    "code": "HK",
+    "en": "Hong Kong SAR China",
+    "fr": "R.A.S. chinoise de Hong Kong",
+    "ar": "\u0647\u0648\u0646\u063A \u0643\u0648\u0646\u063A \u0627\u0644\u0635\u064A\u0646\u064A\u0629 (\u0645\u0646\u0637\u0642\u0629 \u0625\u062F\u0627\u0631\u064A\u0629 \u062E\u0627\u0635\u0629)",
+    "es": "RAE de Hong Kong (China)"
+  },
+  {
+    "code": "HU",
+    "en": "Hungary",
+    "fr": "Hongrie",
+    "ar": "\u0647\u0646\u063A\u0627\u0631\u064A\u0627",
+    "es": "Hungr\u00EDa"
+  },
+  {
+    "code": "IS",
+    "en": "Iceland",
+    "fr": "Islande",
+    "ar": "\u0622\u064A\u0633\u0644\u0646\u062F\u0627",
+    "es": "Islandia"
+  },
+  {
+    "code": "IN",
+    "en": "India",
+    "fr": "Inde",
+    "ar": "\u0627\u0644\u0647\u0646\u062F",
+    "es": "India"
+  },
+  {
+    "code": "ID",
+    "en": "Indonesia",
+    "fr": "Indon\u00E9sie",
+    "ar": "\u0625\u0646\u062F\u0648\u0646\u064A\u0633\u064A\u0627",
+    "es": "Indonesia"
+  },
+  {
+    "code": "IR",
+    "en": "Iran",
+    "fr": "Iran",
+    "ar": "\u0625\u064A\u0631\u0627\u0646",
+    "es": "Ir\u00E1n"
+  },
+  {
+    "code": "IQ",
+    "en": "Iraq",
+    "fr": "Irak",
+    "ar": "\u0627\u0644\u0639\u0631\u0627\u0642",
+    "es": "Irak"
+  },
+  {
+    "code": "IE",
+    "en": "Ireland",
+    "fr": "Irlande",
+    "ar": "\u0623\u064A\u0631\u0644\u0646\u062F\u0627",
+    "es": "Irlanda"
+  },
+  {
+    "code": "IM",
+    "en": "Isle of Man",
+    "fr": "\u00CEle de Man",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0645\u0627\u0646",
+    "es": "Isla de Man"
+  },
+  {
+    "code": "IL",
+    "en": "Israel",
+    "fr": "Isra\u00EBl",
+    "ar": "\u0625\u0633\u0631\u0627\u0626\u064A\u0644",
+    "es": "Israel"
+  },
+  {
+    "code": "IT",
+    "en": "Italy",
+    "fr": "Italie",
+    "ar": "\u0625\u064A\u0637\u0627\u0644\u064A\u0627",
+    "es": "Italia"
+  },
+  {
+    "code": "JM",
+    "en": "Jamaica",
+    "fr": "Jama\u00EFque",
+    "ar": "\u062C\u0627\u0645\u0627\u064A\u0643\u0627",
+    "es": "Jamaica"
+  },
+  {
+    "code": "JP",
+    "en": "Japan",
+    "fr": "Japon",
+    "ar": "\u0627\u0644\u064A\u0627\u0628\u0627\u0646",
+    "es": "Jap\u00F3n"
+  },
+  {
+    "code": "JE",
+    "en": "Jersey",
+    "fr": "Jersey",
+    "ar": "\u062C\u064A\u0631\u0633\u064A",
+    "es": "Jersey"
+  },
+  {
+    "code": "JO",
+    "en": "Jordan",
+    "fr": "Jordanie",
+    "ar": "\u0627\u0644\u0623\u0631\u062F\u0646",
+    "es": "Jordania"
+  },
+  {
+    "code": "KZ",
+    "en": "Kazakhstan",
+    "fr": "Kazakhstan",
+    "ar": "\u0643\u0627\u0632\u0627\u062E\u0633\u062A\u0627\u0646",
+    "es": "Kazajist\u00E1n"
+  },
+  {
+    "code": "KE",
+    "en": "Kenya",
+    "fr": "Kenya",
+    "ar": "\u0643\u064A\u0646\u064A\u0627",
+    "es": "Kenia"
+  },
+  {
+    "code": "KI",
+    "en": "Kiribati",
+    "fr": "Kiribati",
+    "ar": "\u0643\u064A\u0631\u064A\u0628\u0627\u062A\u064A",
+    "es": "Kiribati"
+  },
+  {
+    "code": "XK",
+    "en": "Kosovo",
+    "fr": "Kosovo",
+    "ar": "\u0643\u0648\u0633\u0648\u0641\u0648",
+    "es": "Kosovo"
+  },
+  {
+    "code": "KW",
+    "en": "Kuwait",
+    "fr": "Kowe\u00EFt",
+    "ar": "\u0627\u0644\u0643\u0648\u064A\u062A",
+    "es": "Kuwait"
+  },
+  {
+    "code": "KG",
+    "en": "Kyrgyzstan",
+    "fr": "Kirghizstan",
+    "ar": "\u0642\u064A\u0631\u063A\u064A\u0632\u0633\u062A\u0627\u0646",
+    "es": "Kirguist\u00E1n"
+  },
+  {
+    "code": "LA",
+    "en": "Laos",
+    "fr": "Laos",
+    "ar": "\u0644\u0627\u0648\u0633",
+    "es": "Laos"
+  },
+  {
+    "code": "LV",
+    "en": "Latvia",
+    "fr": "Lettonie",
+    "ar": "\u0644\u0627\u062A\u0641\u064A\u0627",
+    "es": "Letonia"
+  },
+  {
+    "code": "LB",
+    "en": "Lebanon",
+    "fr": "Liban",
+    "ar": "\u0644\u0628\u0646\u0627\u0646",
+    "es": "L\u00EDbano"
+  },
+  {
+    "code": "LS",
+    "en": "Lesotho",
+    "fr": "Lesotho",
+    "ar": "\u0644\u064A\u0633\u0648\u062A\u0648",
+    "es": "Lesoto"
+  },
+  {
+    "code": "LR",
+    "en": "Liberia",
+    "fr": "Liberia",
+    "ar": "\u0644\u064A\u0628\u064A\u0631\u064A\u0627",
+    "es": "Liberia"
+  },
+  {
+    "code": "LY",
+    "en": "Libya",
+    "fr": "Libye",
+    "ar": "\u0644\u064A\u0628\u064A\u0627",
+    "es": "Libia"
+  },
+  {
+    "code": "LI",
+    "en": "Liechtenstein",
+    "fr": "Liechtenstein",
+    "ar": "\u0644\u064A\u062E\u062A\u0646\u0634\u062A\u0627\u064A\u0646",
+    "es": "Liechtenstein"
+  },
+  {
+    "code": "LT",
+    "en": "Lithuania",
+    "fr": "Lituanie",
+    "ar": "\u0644\u064A\u062A\u0648\u0627\u0646\u064A\u0627",
+    "es": "Lituania"
+  },
+  {
+    "code": "LU",
+    "en": "Luxembourg",
+    "fr": "Luxembourg",
+    "ar": "\u0644\u0648\u0643\u0633\u0645\u0628\u0648\u0631\u063A",
+    "es": "Luxemburgo"
+  },
+  {
+    "code": "MO",
+    "en": "Macao SAR China",
+    "fr": "R.A.S. chinoise de Macao",
+    "ar": "\u0645\u0646\u0637\u0642\u0629 \u0645\u0627\u0643\u0627\u0648 \u0627\u0644\u0625\u062F\u0627\u0631\u064A\u0629 \u0627\u0644\u062E\u0627\u0635\u0629",
+    "es": "RAE de Macao (China)"
+  },
+  {
+    "code": "MG",
+    "en": "Madagascar",
+    "fr": "Madagascar",
+    "ar": "\u0645\u062F\u063A\u0634\u0642\u0631",
+    "es": "Madagascar"
+  },
+  {
+    "code": "MW",
+    "en": "Malawi",
+    "fr": "Malawi",
+    "ar": "\u0645\u0644\u0627\u0648\u064A",
+    "es": "Malaui"
+  },
+  {
+    "code": "MY",
+    "en": "Malaysia",
+    "fr": "Malaisie",
+    "ar": "\u0645\u0627\u0644\u064A\u0632\u064A\u0627",
+    "es": "Malasia"
+  },
+  {
+    "code": "MV",
+    "en": "Maldives",
+    "fr": "Maldives",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0645\u0627\u0644\u062F\u064A\u0641",
+    "es": "Maldivas"
+  },
+  {
+    "code": "ML",
+    "en": "Mali",
+    "fr": "Mali",
+    "ar": "\u0645\u0627\u0644\u064A",
+    "es": "Mali"
+  },
+  {
+    "code": "MT",
+    "en": "Malta",
+    "fr": "Malte",
+    "ar": "\u0645\u0627\u0644\u0637\u0627",
+    "es": "Malta"
+  },
+  {
+    "code": "MH",
+    "en": "Marshall Islands",
+    "fr": "\u00CEles Marshall",
+    "ar": "\u062C\u0632\u0631 \u0645\u0627\u0631\u0634\u0627\u0644",
+    "es": "Islas Marshall"
+  },
+  {
+    "code": "MQ",
+    "en": "Martinique",
+    "fr": "Martinique",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0645\u0627\u0631\u062A\u064A\u0646\u064A\u0643",
+    "es": "Martinica"
+  },
+  {
+    "code": "MR",
+    "en": "Mauritania",
+    "fr": "Mauritanie",
+    "ar": "\u0645\u0648\u0631\u064A\u062A\u0627\u0646\u064A\u0627",
+    "es": "Mauritania"
+  },
+  {
+    "code": "MU",
+    "en": "Mauritius",
+    "fr": "Maurice",
+    "ar": "\u0645\u0648\u0631\u064A\u0634\u064A\u0648\u0633",
+    "es": "Mauricio"
+  },
+  {
+    "code": "YT",
+    "en": "Mayotte",
+    "fr": "Mayotte",
+    "ar": "\u0645\u0627\u064A\u0648\u062A",
+    "es": "Mayotte"
+  },
+  {
+    "code": "MX",
+    "en": "Mexico",
+    "fr": "Mexique",
+    "ar": "\u0627\u0644\u0645\u0643\u0633\u064A\u0643",
+    "es": "M\u00E9xico"
+  },
+  {
+    "code": "FM",
+    "en": "Micronesia",
+    "fr": "Micron\u00E9sie",
+    "ar": "\u0645\u064A\u0643\u0631\u0648\u0646\u064A\u0632\u064A\u0627",
+    "es": "Micronesia"
+  },
+  {
+    "code": "MD",
+    "en": "Moldova",
+    "fr": "Moldavie",
+    "ar": "\u0645\u0648\u0644\u062F\u0648\u0641\u0627",
+    "es": "Moldavia"
+  },
+  {
+    "code": "MC",
+    "en": "Monaco",
+    "fr": "Monaco",
+    "ar": "\u0645\u0648\u0646\u0627\u0643\u0648",
+    "es": "M\u00F3naco"
+  },
+  {
+    "code": "MN",
+    "en": "Mongolia",
+    "fr": "Mongolie",
+    "ar": "\u0645\u0646\u063A\u0648\u0644\u064A\u0627",
+    "es": "Mongolia"
+  },
+  {
+    "code": "ME",
+    "en": "Montenegro",
+    "fr": "Mont\u00E9n\u00E9gro",
+    "ar": "\u0627\u0644\u062C\u0628\u0644 \u0627\u0644\u0623\u0633\u0648\u062F",
+    "es": "Montenegro"
+  },
+  {
+    "code": "MS",
+    "en": "Montserrat",
+    "fr": "Montserrat",
+    "ar": "\u0645\u0648\u0646\u062A\u0633\u0631\u0627\u062A",
+    "es": "Montserrat"
+  },
+  {
+    "code": "MA",
+    "en": "Morocco",
+    "fr": "Maroc",
+    "ar": "\u0627\u0644\u0645\u063A\u0631\u0628",
+    "es": "Marruecos"
+  },
+  {
+    "code": "MZ",
+    "en": "Mozambique",
+    "fr": "Mozambique",
+    "ar": "\u0645\u0648\u0632\u0645\u0628\u064A\u0642",
+    "es": "Mozambique"
+  },
+  {
+    "code": "MM",
+    "en": "Myanmar (Burma)",
+    "fr": "Myanmar (Birmanie)",
+    "ar": "\u0645\u064A\u0627\u0646\u0645\u0627\u0631 (\u0628\u0648\u0631\u0645\u0627)",
+    "es": "Myanmar (Birmania)"
+  },
+  {
+    "code": "NA",
+    "en": "Namibia",
+    "fr": "Namibie",
+    "ar": "\u0646\u0627\u0645\u064A\u0628\u064A\u0627",
+    "es": "Namibia"
+  },
+  {
+    "code": "NR",
+    "en": "Nauru",
+    "fr": "Nauru",
+    "ar": "\u0646\u0627\u0648\u0631\u0648",
+    "es": "Nauru"
+  },
+  {
+    "code": "NP",
+    "en": "Nepal",
+    "fr": "N\u00E9pal",
+    "ar": "\u0646\u064A\u0628\u0627\u0644",
+    "es": "Nepal"
+  },
+  {
+    "code": "NL",
+    "en": "Netherlands",
+    "fr": "Pays-Bas",
+    "ar": "\u0647\u0648\u0644\u0646\u062F\u0627",
+    "es": "Pa\u00EDses Bajos"
+  },
+  {
+    "code": "NC",
+    "en": "New Caledonia",
+    "fr": "Nouvelle-Cal\u00E9donie",
+    "ar": "\u0643\u0627\u0644\u064A\u062F\u0648\u0646\u064A\u0627 \u0627\u0644\u062C\u062F\u064A\u062F\u0629",
+    "es": "Nueva Caledonia"
+  },
+  {
+    "code": "NZ",
+    "en": "New Zealand",
+    "fr": "Nouvelle-Z\u00E9lande",
+    "ar": "\u0646\u064A\u0648\u0632\u064A\u0644\u0646\u062F\u0627",
+    "es": "Nueva Zelanda"
+  },
+  {
+    "code": "NI",
+    "en": "Nicaragua",
+    "fr": "Nicaragua",
+    "ar": "\u0646\u064A\u0643\u0627\u0631\u0627\u063A\u0648\u0627",
+    "es": "Nicaragua"
+  },
+  {
+    "code": "NE",
+    "en": "Niger",
+    "fr": "Niger",
+    "ar": "\u0627\u0644\u0646\u064A\u062C\u0631",
+    "es": "N\u00EDger"
+  },
+  {
+    "code": "NG",
+    "en": "Nigeria",
+    "fr": "Nigeria",
+    "ar": "\u0646\u064A\u062C\u064A\u0631\u064A\u0627",
+    "es": "Nigeria"
+  },
+  {
+    "code": "NU",
+    "en": "Niue",
+    "fr": "Niue",
+    "ar": "\u0646\u064A\u0648\u064A",
+    "es": "Niue"
+  },
+  {
+    "code": "NF",
+    "en": "Norfolk Island",
+    "fr": "\u00CEle Norfolk",
+    "ar": "\u062C\u0632\u064A\u0631\u0629 \u0646\u0648\u0631\u0641\u0648\u0644\u0643",
+    "es": "Isla Norfolk"
+  },
+  {
+    "code": "KP",
+    "en": "North Korea",
+    "fr": "Cor\u00E9e du Nord",
+    "ar": "\u0643\u0648\u0631\u064A\u0627 \u0627\u0644\u0634\u0645\u0627\u0644\u064A\u0629",
+    "es": "Corea del Norte"
+  },
+  {
+    "code": "MK",
+    "en": "North Macedonia",
+    "fr": "Mac\u00E9doine du Nord",
+    "ar": "\u0645\u0642\u062F\u0648\u0646\u064A\u0627 \u0627\u0644\u0634\u0645\u0627\u0644\u064A\u0629",
+    "es": "Macedonia del Norte"
+  },
+  {
+    "code": "MP",
+    "en": "Northern Mariana Islands",
+    "fr": "\u00CEles Mariannes du Nord",
+    "ar": "\u062C\u0632\u0631 \u0645\u0627\u0631\u064A\u0627\u0646\u0627 \u0627\u0644\u0634\u0645\u0627\u0644\u064A\u0629",
+    "es": "Islas Marianas del Norte"
+  },
+  {
+    "code": "NO",
+    "en": "Norway",
+    "fr": "Norv\u00E8ge",
+    "ar": "\u0627\u0644\u0646\u0631\u0648\u064A\u062C",
+    "es": "Noruega"
+  },
+  {
+    "code": "OM",
+    "en": "Oman",
+    "fr": "Oman",
+    "ar": "\u0639\u064F\u0645\u0627\u0646",
+    "es": "Om\u00E1n"
+  },
+  {
+    "code": "QO",
+    "en": "Outlying Oceania",
+    "fr": "r\u00E9gions \u00E9loign\u00E9es de l\u2019Oc\u00E9anie",
+    "ar": "\u0623\u0648\u0642\u064A\u0627\u0646\u0648\u0633\u064A\u0627 \u0627\u0644\u0646\u0627\u0626\u064A\u0629",
+    "es": "Territorios alejados de Ocean\u00EDa"
+  },
+  {
+    "code": "PK",
+    "en": "Pakistan",
+    "fr": "Pakistan",
+    "ar": "\u0628\u0627\u0643\u0633\u062A\u0627\u0646",
+    "es": "Pakist\u00E1n"
+  },
+  {
+    "code": "PW",
+    "en": "Palau",
+    "fr": "Palaos",
+    "ar": "\u0628\u0627\u0644\u0627\u0648",
+    "es": "Palaos"
+  },
+  {
+    "code": "PS",
+    "en": "Palestinian Territories",
+    "fr": "Territoires palestiniens",
+    "ar": "\u0627\u0644\u0623\u0631\u0627\u0636\u064A \u0627\u0644\u0641\u0644\u0633\u0637\u064A\u0646\u064A\u0629",
+    "es": "Territorios Palestinos"
+  },
+  {
+    "code": "PA",
+    "en": "Panama",
+    "fr": "Panama",
+    "ar": "\u0628\u0646\u0645\u0627",
+    "es": "Panam\u00E1"
+  },
+  {
+    "code": "PG",
+    "en": "Papua New Guinea",
+    "fr": "Papouasie-Nouvelle-Guin\u00E9e",
+    "ar": "\u0628\u0627\u0628\u0648\u0627 \u063A\u064A\u0646\u064A\u0627 \u0627\u0644\u062C\u062F\u064A\u062F\u0629",
+    "es": "Pap\u00FAa Nueva Guinea"
+  },
+  {
+    "code": "PY",
+    "en": "Paraguay",
+    "fr": "Paraguay",
+    "ar": "\u0628\u0627\u0631\u0627\u063A\u0648\u0627\u064A",
+    "es": "Paraguay"
+  },
+  {
+    "code": "PE",
+    "en": "Peru",
+    "fr": "P\u00E9rou",
+    "ar": "\u0628\u064A\u0631\u0648",
+    "es": "Per\u00FA"
+  },
+  {
+    "code": "PH",
+    "en": "Philippines",
+    "fr": "Philippines",
+    "ar": "\u0627\u0644\u0641\u0644\u0628\u064A\u0646",
+    "es": "Filipinas"
+  },
+  {
+    "code": "PN",
+    "en": "Pitcairn Islands",
+    "fr": "\u00CEles Pitcairn",
+    "ar": "\u062C\u0632\u0631 \u0628\u064A\u062A\u0643\u064A\u0631\u0646",
+    "es": "Islas Pitcairn"
+  },
+  {
+    "code": "PL",
+    "en": "Poland",
+    "fr": "Pologne",
+    "ar": "\u0628\u0648\u0644\u0646\u062F\u0627",
+    "es": "Polonia"
+  },
+  {
+    "code": "PT",
+    "en": "Portugal",
+    "fr": "Portugal",
+    "ar": "\u0627\u0644\u0628\u0631\u062A\u063A\u0627\u0644",
+    "es": "Portugal"
+  },
+  {
+    "code": "XA",
+    "en": "Pseudo-Accents",
+    "fr": "pseudo-accents",
+    "ar": "\u0644\u0643\u0646\u0627\u062A \u062A\u062C\u0631\u064A\u0628\u064A\u0629 \u063A\u064A\u0631 \u0623\u0635\u0644\u064A\u0629",
+    "es": "Pseudoacentos"
+  },
+  {
+    "code": "XB",
+    "en": "Pseudo-Bidi",
+    "fr": "pseudo-bidi",
+    "ar": "\u0644\u0643\u0646\u0627\u062A \u062A\u062C\u0631\u064A\u0628\u064A\u0629 \u062B\u0646\u0627\u0626\u064A\u0629 \u0627\u0644\u0627\u062A\u062C\u0627\u0647",
+    "es": "Pseudobidi"
+  },
+  {
+    "code": "PR",
+    "en": "Puerto Rico",
+    "fr": "Porto Rico",
+    "ar": "\u0628\u0648\u0631\u062A\u0648\u0631\u064A\u0643\u0648",
+    "es": "Puerto Rico"
+  },
+  {
+    "code": "QA",
+    "en": "Qatar",
+    "fr": "Qatar",
+    "ar": "\u0642\u0637\u0631",
+    "es": "Catar"
+  },
+  {
+    "code": "RO",
+    "en": "Romania",
+    "fr": "Roumanie",
+    "ar": "\u0631\u0648\u0645\u0627\u0646\u064A\u0627",
+    "es": "Ruman\u00EDa"
+  },
+  {
+    "code": "RU",
+    "en": "Russia",
+    "fr": "Russie",
+    "ar": "\u0631\u0648\u0633\u064A\u0627",
+    "es": "Rusia"
+  },
+  {
+    "code": "RW",
+    "en": "Rwanda",
+    "fr": "Rwanda",
+    "ar": "\u0631\u0648\u0627\u0646\u062F\u0627",
+    "es": "Ruanda"
+  },
+  {
+    "code": "RE",
+    "en": "R\u00E9union",
+    "fr": "La R\u00E9union",
+    "ar": "\u0631\u0648\u064A\u0646\u064A\u0648\u0646",
+    "es": "Reuni\u00F3n"
+  },
+  {
+    "code": "WS",
+    "en": "Samoa",
+    "fr": "Samoa",
+    "ar": "\u0633\u0627\u0645\u0648\u0627",
+    "es": "Samoa"
+  },
+  {
+    "code": "SM",
+    "en": "San Marino",
+    "fr": "Saint-Marin",
+    "ar": "\u0633\u0627\u0646 \u0645\u0627\u0631\u064A\u0646\u0648",
+    "es": "San Marino"
+  },
+  {
+    "code": "CQ",
+    "en": "Sark",
+    "fr": "Sercq",
+    "ar": "\u0633\u0627\u0631\u0643",
+    "es": "Sark"
+  },
+  {
+    "code": "SA",
+    "en": "Saudi Arabia",
+    "fr": "Arabie saoudite",
+    "ar": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064A\u0629 \u0627\u0644\u0633\u0639\u0648\u062F\u064A\u0629",
+    "es": "Arabia Saud\u00ED"
+  },
+  {
+    "code": "SN",
+    "en": "Senegal",
+    "fr": "S\u00E9n\u00E9gal",
+    "ar": "\u0627\u0644\u0633\u0646\u063A\u0627\u0644",
+    "es": "Senegal"
+  },
+  {
+    "code": "RS",
+    "en": "Serbia",
+    "fr": "Serbie",
+    "ar": "\u0635\u0631\u0628\u064A\u0627",
+    "es": "Serbia"
+  },
+  {
+    "code": "SC",
+    "en": "Seychelles",
+    "fr": "Seychelles",
+    "ar": "\u0633\u064A\u0634\u0644",
+    "es": "Seychelles"
+  },
+  {
+    "code": "SL",
+    "en": "Sierra Leone",
+    "fr": "Sierra Leone",
+    "ar": "\u0633\u064A\u0631\u0627\u0644\u064A\u0648\u0646",
+    "es": "Sierra Leona"
+  },
+  {
+    "code": "SG",
+    "en": "Singapore",
+    "fr": "Singapour",
+    "ar": "\u0633\u0646\u063A\u0627\u0641\u0648\u0631\u0629",
+    "es": "Singapur"
+  },
+  {
+    "code": "SX",
+    "en": "Sint Maarten",
+    "fr": "Saint-Martin (partie n\u00E9erlandaise)",
+    "ar": "\u0633\u0627\u0646\u062A \u0645\u0627\u0631\u062A\u0646",
+    "es": "Sint Maarten"
+  },
+  {
+    "code": "SK",
+    "en": "Slovakia",
+    "fr": "Slovaquie",
+    "ar": "\u0633\u0644\u0648\u0641\u0627\u0643\u064A\u0627",
+    "es": "Eslovaquia"
+  },
+  {
+    "code": "SI",
+    "en": "Slovenia",
+    "fr": "Slov\u00E9nie",
+    "ar": "\u0633\u0644\u0648\u0641\u064A\u0646\u064A\u0627",
+    "es": "Eslovenia"
+  },
+  {
+    "code": "SB",
+    "en": "Solomon Islands",
+    "fr": "\u00CEles Salomon",
+    "ar": "\u062C\u0632\u0631 \u0633\u0644\u064A\u0645\u0627\u0646",
+    "es": "Islas Salom\u00F3n"
+  },
+  {
+    "code": "SO",
+    "en": "Somalia",
+    "fr": "Somalie",
+    "ar": "\u0627\u0644\u0635\u0648\u0645\u0627\u0644",
+    "es": "Somalia"
+  },
+  {
+    "code": "ZA",
+    "en": "South Africa",
+    "fr": "Afrique du Sud",
+    "ar": "\u062C\u0646\u0648\u0628 \u0623\u0641\u0631\u064A\u0642\u064A\u0627",
+    "es": "Sud\u00E1frica"
+  },
+  {
+    "code": "GS",
+    "en": "South Georgia \u0026 South Sandwich Islands",
+    "fr": "G\u00E9orgie du Sud-et-les \u00CEles Sandwich du Sud",
+    "ar": "\u062C\u0648\u0631\u062C\u064A\u0627 \u0627\u0644\u062C\u0646\u0648\u0628\u064A\u0629 \u0648\u062C\u0632\u0631 \u0633\u0627\u0646\u062F\u0648\u064A\u062A\u0634 \u0627\u0644\u062C\u0646\u0648\u0628\u064A\u0629",
+    "es": "Islas Georgia del Sur y Sandwich del Sur"
+  },
+  {
+    "code": "KR",
+    "en": "South Korea",
+    "fr": "Cor\u00E9e du Sud",
+    "ar": "\u0643\u0648\u0631\u064A\u0627 \u0627\u0644\u062C\u0646\u0648\u0628\u064A\u0629",
+    "es": "Corea del Sur"
+  },
+  {
+    "code": "SS",
+    "en": "South Sudan",
+    "fr": "Soudan du Sud",
+    "ar": "\u062C\u0646\u0648\u0628 \u0627\u0644\u0633\u0648\u062F\u0627\u0646",
+    "es": "Sud\u00E1n del Sur"
+  },
+  {
+    "code": "ES",
+    "en": "Spain",
+    "fr": "Espagne",
+    "ar": "\u0625\u0633\u0628\u0627\u0646\u064A\u0627",
+    "es": "Espa\u00F1a"
+  },
+  {
+    "code": "LK",
+    "en": "Sri Lanka",
+    "fr": "Sri Lanka",
+    "ar": "\u0633\u0631\u064A\u0644\u0627\u0646\u0643\u0627",
+    "es": "Sri Lanka"
+  },
+  {
+    "code": "BL",
+    "en": "St. Barth\u00E9lemy",
+    "fr": "Saint-Barth\u00E9lemy",
+    "ar": "\u0633\u0627\u0646 \u0628\u0627\u0631\u062A\u0644\u064A\u0645\u064A",
+    "es": "San Bartolom\u00E9"
+  },
+  {
+    "code": "SH",
+    "en": "St. Helena, Ascension \u0026 Tristan da Cunha",
+    "fr": "Sainte-H\u00E9l\u00E8ne",
+    "ar": "\u0633\u0627\u0646\u062A \u0647\u064A\u0644\u064A\u0646\u0627",
+    "es": "Santa Elena"
+  },
+  {
+    "code": "KN",
+    "en": "St. Kitts \u0026 Nevis",
+    "fr": "Saint-Christophe-et-Ni\u00E9v\u00E8s",
+    "ar": "\u0633\u0627\u0646\u062A \u0643\u064A\u062A\u0633 \u0648\u0646\u064A\u0641\u064A\u0633",
+    "es": "San Crist\u00F3bal y Nieves"
+  },
+  {
+    "code": "LC",
+    "en": "St. Lucia",
+    "fr": "Sainte-Lucie",
+    "ar": "\u0633\u0627\u0646\u062A \u0644\u0648\u0633\u064A\u0627",
+    "es": "Santa Luc\u00EDa"
+  },
+  {
+    "code": "MF",
+    "en": "St. Martin",
+    "fr": "Saint-Martin",
+    "ar": "\u0633\u0627\u0646 \u0645\u0627\u0631\u062A\u0646",
+    "es": "San Mart\u00EDn"
+  },
+  {
+    "code": "PM",
+    "en": "St. Pierre \u0026 Miquelon",
+    "fr": "Saint-Pierre-et-Miquelon",
+    "ar": "\u0633\u0627\u0646 \u0628\u064A\u064A\u0631 \u0648\u0645\u0643\u0648\u064A\u0644\u0648\u0646",
+    "es": "San Pedro y Miquel\u00F3n"
+  },
+  {
+    "code": "VC",
+    "en": "St. Vincent \u0026 Grenadines",
+    "fr": "Saint-Vincent-et-les Grenadines",
+    "ar": "\u0633\u0627\u0646\u062A \u0641\u0646\u0633\u0646\u062A \u0648\u062C\u0632\u0631 \u063A\u0631\u064A\u0646\u0627\u062F\u064A\u0646",
+    "es": "San Vicente y las Granadinas"
+  },
+  {
+    "code": "SD",
+    "en": "Sudan",
+    "fr": "Soudan",
+    "ar": "\u0627\u0644\u0633\u0648\u062F\u0627\u0646",
+    "es": "Sud\u00E1n"
+  },
+  {
+    "code": "SR",
+    "en": "Suriname",
+    "fr": "Suriname",
+    "ar": "\u0633\u0648\u0631\u064A\u0646\u0627\u0645",
+    "es": "Surinam"
+  },
+  {
+    "code": "SJ",
+    "en": "Svalbard \u0026 Jan Mayen",
+    "fr": "Svalbard et Jan Mayen",
+    "ar": "\u0633\u0641\u0627\u0644\u0628\u0627\u0631\u062F \u0648\u062C\u0627\u0646 \u0645\u0627\u064A\u0646",
+    "es": "Svalbard y Jan Mayen"
+  },
+  {
+    "code": "SE",
+    "en": "Sweden",
+    "fr": "Su\u00E8de",
+    "ar": "\u0627\u0644\u0633\u0648\u064A\u062F",
+    "es": "Suecia"
+  },
+  {
+    "code": "CH",
+    "en": "Switzerland",
+    "fr": "Suisse",
+    "ar": "\u0633\u0648\u064A\u0633\u0631\u0627",
+    "es": "Suiza"
+  },
+  {
+    "code": "SY",
+    "en": "Syria",
+    "fr": "Syrie",
+    "ar": "\u0633\u0648\u0631\u064A\u0627",
+    "es": "Siria"
+  },
+  {
+    "code": "ST",
+    "en": "S\u00E3o Tom\u00E9 \u0026 Pr\u00EDncipe",
+    "fr": "Sao Tom\u00E9-et-Principe",
+    "ar": "\u0633\u0627\u0648 \u062A\u0648\u0645\u064A \u0648\u0628\u0631\u064A\u0646\u0633\u064A\u0628\u064A",
+    "es": "Santo Tom\u00E9 y Pr\u00EDncipe"
+  },
+  {
+    "code": "TW",
+    "en": "Taiwan",
+    "fr": "Ta\u00EFwan",
+    "ar": "\u062A\u0627\u064A\u0648\u0627\u0646",
+    "es": "Taiw\u00E1n"
+  },
+  {
+    "code": "TJ",
+    "en": "Tajikistan",
+    "fr": "Tadjikistan",
+    "ar": "\u0637\u0627\u062C\u064A\u0643\u0633\u062A\u0627\u0646",
+    "es": "Tayikist\u00E1n"
+  },
+  {
+    "code": "TZ",
+    "en": "Tanzania",
+    "fr": "Tanzanie",
+    "ar": "\u062A\u0646\u0632\u0627\u0646\u064A\u0627",
+    "es": "Tanzania"
+  },
+  {
+    "code": "TH",
+    "en": "Thailand",
+    "fr": "Tha\u00EFlande",
+    "ar": "\u062A\u0627\u064A\u0644\u0627\u0646\u062F",
+    "es": "Tailandia"
+  },
+  {
+    "code": "TL",
+    "en": "Timor-Leste",
+    "fr": "Timor oriental",
+    "ar": "\u062A\u064A\u0645\u0648\u0631 - \u0644\u064A\u0634\u062A\u064A",
+    "es": "Timor-Leste"
+  },
+  {
+    "code": "TG",
+    "en": "Togo",
+    "fr": "Togo",
+    "ar": "\u062A\u0648\u063A\u0648",
+    "es": "Togo"
+  },
+  {
+    "code": "TK",
+    "en": "Tokelau",
+    "fr": "Tokelau",
+    "ar": "\u062A\u0648\u0643\u064A\u0644\u0627\u0648",
+    "es": "Tokelau"
+  },
+  {
+    "code": "TO",
+    "en": "Tonga",
+    "fr": "Tonga",
+    "ar": "\u062A\u0648\u0646\u063A\u0627",
+    "es": "Tonga"
+  },
+  {
+    "code": "TT",
+    "en": "Trinidad \u0026 Tobago",
+    "fr": "Trinit\u00E9-et-Tobago",
+    "ar": "\u062A\u0631\u064A\u0646\u064A\u062F\u0627\u062F \u0648\u062A\u0648\u0628\u0627\u063A\u0648",
+    "es": "Trinidad y Tobago"
+  },
+  {
+    "code": "TA",
+    "en": "Tristan da Cunha",
+    "fr": "Tristan da Cunha",
+    "ar": "\u062A\u0631\u064A\u0633\u062A\u0627\u0646 \u062F\u0627 \u0643\u0648\u0646\u0627",
+    "es": "Trist\u00E1n de Acu\u00F1a"
+  },
+  {
+    "code": "TN",
+    "en": "Tunisia",
+    "fr": "Tunisie",
+    "ar": "\u062A\u0648\u0646\u0633",
+    "es": "T\u00FAnez"
+  },
+  {
+    "code": "TM",
+    "en": "Turkmenistan",
+    "fr": "Turkm\u00E9nistan",
+    "ar": "\u062A\u0631\u0643\u0645\u0627\u0646\u0633\u062A\u0627\u0646",
+    "es": "Turkmenist\u00E1n"
+  },
+  {
+    "code": "TC",
+    "en": "Turks \u0026 Caicos Islands",
+    "fr": "\u00CEles Turques-et-Ca\u00EFques",
+    "ar": "\u062C\u0632\u0631 \u062A\u0648\u0631\u0643\u0633 \u0648\u0643\u0627\u064A\u0643\u0648\u0633",
+    "es": "Islas Turcas y Caicos"
+  },
+  {
+    "code": "TV",
+    "en": "Tuvalu",
+    "fr": "Tuvalu",
+    "ar": "\u062A\u0648\u0641\u0627\u0644\u0648",
+    "es": "Tuvalu"
+  },
+  {
+    "code": "TR",
+    "en": "T\u00FCrkiye",
+    "fr": "Turquie",
+    "ar": "\u062A\u0631\u0643\u064A\u0627",
+    "es": "Turqu\u00EDa"
+  },
+  {
+    "code": "UM",
+    "en": "U.S. Outlying Islands",
+    "fr": "\u00CEles mineures \u00E9loign\u00E9es des \u00C9tats-Unis",
+    "ar": "\u062C\u0632\u0631 \u0627\u0644\u0648\u0644\u0627\u064A\u0627\u062A \u0627\u0644\u0645\u062A\u062D\u062F\u0629 \u0627\u0644\u0646\u0627\u0626\u064A\u0629",
+    "es": "Islas menores alejadas de EE. UU."
+  },
+  {
+    "code": "VI",
+    "en": "U.S. Virgin Islands",
+    "fr": "\u00CEles Vierges des \u00C9tats-Unis",
+    "ar": "\u062C\u0632\u0631 \u0641\u064A\u0631\u062C\u0646 \u0627\u0644\u0623\u0645\u0631\u064A\u0643\u064A\u0629",
+    "es": "Islas V\u00EDrgenes de EE. UU."
+  },
+  {
+    "code": "UG",
+    "en": "Uganda",
+    "fr": "Ouganda",
+    "ar": "\u0623\u0648\u063A\u0646\u062F\u0627",
+    "es": "Uganda"
+  },
+  {
+    "code": "UA",
+    "en": "Ukraine",
+    "fr": "Ukraine",
+    "ar": "\u0623\u0648\u0643\u0631\u0627\u0646\u064A\u0627",
+    "es": "Ucrania"
+  },
+  {
+    "code": "AE",
+    "en": "United Arab Emirates",
+    "fr": "\u00C9mirats arabes unis",
+    "ar": "\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062A \u0627\u0644\u0639\u0631\u0628\u064A\u0629 \u0627\u0644\u0645\u062A\u062D\u062F\u0629",
+    "es": "Emiratos \u00C1rabes Unidos"
+  },
+  {
+    "code": "GB",
+    "en": "United Kingdom",
+    "fr": "Royaume-Uni",
+    "ar": "\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0645\u062A\u062D\u062F\u0629",
+    "es": "Reino Unido"
+  },
+  {
+    "code": "UN",
+    "en": "United Nations",
+    "fr": "Nations Unies",
+    "ar": "\u0627\u0644\u0623\u0645\u0645 \u0627\u0644\u0645\u062A\u062D\u062F\u0629",
+    "es": "Naciones Unidas"
+  },
+  {
+    "code": "US",
+    "en": "United States",
+    "fr": "\u00C9tats-Unis",
+    "ar": "\u0627\u0644\u0648\u0644\u0627\u064A\u0627\u062A \u0627\u0644\u0645\u062A\u062D\u062F\u0629",
+    "es": "Estados Unidos"
+  },
+  {
+    "code": "ZZ",
+    "en": "Unknown Region",
+    "fr": "r\u00E9gion inconnue",
+    "ar": "\u0645\u0646\u0637\u0642\u0629 \u063A\u064A\u0631 \u0645\u0639\u0631\u0648\u0641\u0629",
+    "es": "Regi\u00F3n desconocida"
+  },
+  {
+    "code": "UY",
+    "en": "Uruguay",
+    "fr": "Uruguay",
+    "ar": "\u0623\u0648\u0631\u063A\u0648\u0627\u064A",
+    "es": "Uruguay"
+  },
+  {
+    "code": "UZ",
+    "en": "Uzbekistan",
+    "fr": "Ouzb\u00E9kistan",
+    "ar": "\u0623\u0648\u0632\u0628\u0643\u0633\u062A\u0627\u0646",
+    "es": "Uzbekist\u00E1n"
+  },
+  {
+    "code": "VU",
+    "en": "Vanuatu",
+    "fr": "Vanuatu",
+    "ar": "\u0641\u0627\u0646\u0648\u0627\u062A\u0648",
+    "es": "Vanuatu"
+  },
+  {
+    "code": "VA",
+    "en": "Vatican City",
+    "fr": "\u00C9tat de la Cit\u00E9 du Vatican",
+    "ar": "\u0627\u0644\u0641\u0627\u062A\u064A\u0643\u0627\u0646",
+    "es": "Ciudad del Vaticano"
+  },
+  {
+    "code": "VE",
+    "en": "Venezuela",
+    "fr": "Venezuela",
+    "ar": "\u0641\u0646\u0632\u0648\u064A\u0644\u0627",
+    "es": "Venezuela"
+  },
+  {
+    "code": "VN",
+    "en": "Vietnam",
+    "fr": "Vi\u00EAt Nam",
+    "ar": "\u0641\u064A\u062A\u0646\u0627\u0645",
+    "es": "Vietnam"
+  },
+  {
+    "code": "WF",
+    "en": "Wallis \u0026 Futuna",
+    "fr": "Wallis-et-Futuna",
+    "ar": "\u062C\u0632\u0631 \u0648\u0627\u0644\u0633 \u0648\u0641\u0648\u062A\u0648\u0646\u0627",
+    "es": "Wallis y Futuna"
+  },
+  {
+    "code": "EH",
+    "en": "Western Sahara",
+    "fr": "Sahara occidental",
+    "ar": "\u0627\u0644\u0635\u062D\u0631\u0627\u0621 \u0627\u0644\u063A\u0631\u0628\u064A\u0629",
+    "es": "S\u00E1hara Occidental"
+  },
+  {
+    "code": "YE",
+    "en": "Yemen",
+    "fr": "Y\u00E9men",
+    "ar": "\u0627\u0644\u064A\u0645\u0646",
+    "es": "Yemen"
+  },
+  {
+    "code": "ZM",
+    "en": "Zambia",
+    "fr": "Zambie",
+    "ar": "\u0632\u0627\u0645\u0628\u064A\u0627",
+    "es": "Zambia"
+  },
+  {
+    "code": "ZW",
+    "en": "Zimbabwe",
+    "fr": "Zimbabwe",
+    "ar": "\u0632\u064A\u0645\u0628\u0627\u0628\u0648\u064A",
+    "es": "Zimbabue"
+  },
+  {
+    "code": "AX",
+    "en": "\u00C5land Islands",
+    "fr": "\u00CEles \u00C5land",
+    "ar": "\u062C\u0632\u0631 \u0622\u0644\u0627\u0646\u062F",
+    "es": "Islas Aland"
+  }
+]

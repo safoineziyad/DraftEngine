@@ -64,7 +64,7 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: Phase 2 — bundle the offline ISO 3166-1 country list and replace US-state-only jurisdiction inputs. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
+NEXT STEP: Phase 2 (in progress) — country catalog is bundled and tested; next add the structured jurisdiction columns, corrective migration, backup/export coverage and the wizard/settings pickers. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
 
 (Historical, previous round) Phases 1–4 were complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
@@ -179,3 +179,11 @@ onboarding, About, licensing behind a flag.
 
 - New test `DatabaseBackupTests.WalDatabase_BackupAndRestore_PreservesEveryTable`: builds the real schema, inserts into `Contracts`, `ContractFields`, `ContractClauses`, `ChatMessages`, `ContractVersions`, `GeneratedDocuments` with `journal_mode=WAL` and `wal_autocheckpoint=0` (asserts a non-empty `-wal`), snapshots, damages the live database, restores through `RestoreSnapshot`, and asserts row counts are identical for **every** table in `sqlite_master`.
 - Affected tests: 9/9 pass. **Not visually verified** (no UI change).
+
+### Phase 2 — country catalog (2026-11-12, batch 3)
+
+- Bundled `DraftEngine.Core/Data/countries.json`: 264 CLDR country/territory entries with alpha-2 codes and names in en/fr/ar/es, embedded as a resource (no runtime network). Source and Unicode License v3 recorded in `docs/LICENSES.md`.
+- `CountryCatalog`: culture-aware sorting (Arabic included), diacritic-insensitive prefix/word search, Windows-region default with a US fallback.
+- `SubdivisionCatalog`: US states + DC (51), Canadian provinces/territories (13), Australian states/territories (8), UK nations (4); every other country uses free text.
+- `JurisdictionResolver`: composes the "Country — Subdivision" noun phrase and maps legacy values (`California`, `Ontario`, `England and Wales`, localized country names); unknown text is never discarded.
+- Tests: `CountryCatalogTests` 16/16 pass (four-language coverage, no duplicate codes, per-culture sort order, diacritic and Arabic search, subdivision counts, legacy mapping). **Not visually verified.**

@@ -106,6 +106,10 @@ public sealed class AppSettingsService : IAppSettingsService
             OpenAiBaseUrl = string.IsNullOrWhiteSpace(settings.OpenAiBaseUrl) ? null : settings.OpenAiBaseUrl,
             UseCustomOpenAiEndpoint = settings.UseCustomOpenAiEndpoint,
             HidePartyNamesFromAi = settings.HidePartyNamesFromAi,
+            UpdateChecksEnabled = settings.UpdateChecksEnabled,
+            UpdateIncludeBeta = settings.UpdateIncludeBeta,
+            SkippedUpdateVersion = settings.SkippedUpdateVersion ?? string.Empty,
+            LastUpdateCheckUtc = settings.LastUpdateCheckUtc,
             Language = settings.Language,
             Theme = settings.Theme,
         };
@@ -187,6 +191,10 @@ public sealed class AppSettingsService : IAppSettingsService
                 OpenAiBaseUrl = string.IsNullOrWhiteSpace(stored.OpenAiBaseUrl) ? null : stored.OpenAiBaseUrl,
                 UseCustomOpenAiEndpoint = stored.UseCustomOpenAiEndpoint,
                 HidePartyNamesFromAi = stored.HidePartyNamesFromAi,
+                UpdateChecksEnabled = stored.UpdateChecksEnabled,
+                UpdateIncludeBeta = stored.UpdateIncludeBeta,
+                SkippedUpdateVersion = stored.SkippedUpdateVersion ?? string.Empty,
+                LastUpdateCheckUtc = stored.LastUpdateCheckUtc,
                 Language = string.IsNullOrWhiteSpace(stored.Language) ? "system" : stored.Language,
                 Theme = string.IsNullOrWhiteSpace(stored.Theme) ? "System" : stored.Theme,
                 AiProfiles = LoadProfiles(stored),
@@ -265,6 +273,10 @@ public sealed class AppSettingsService : IAppSettingsService
         public string? OpenAiBaseUrl { get; set; }
         public bool UseCustomOpenAiEndpoint { get; set; }
         public bool HidePartyNamesFromAi { get; set; }
+        public bool UpdateChecksEnabled { get; set; } = true;
+        public bool UpdateIncludeBeta { get; set; }
+        public string? SkippedUpdateVersion { get; set; } = string.Empty;
+        public DateTimeOffset? LastUpdateCheckUtc { get; set; }
         public string Language { get; set; } = "system";
         public string Theme { get; set; } = "System";
     }

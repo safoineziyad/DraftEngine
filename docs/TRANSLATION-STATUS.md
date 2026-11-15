@@ -31,6 +31,16 @@ The XAML literal baseline is now **0**: Clause Manager, Analyze, About and Licen
 were migrated in Phase 4, so every screen uses `{loc:T}` keys. `docs/i18n-baseline.txt` and
 `LocalizationResourceTests.PendingLiteralCount_DoesNotExceedBaseline` keep it at zero.
 
+## Update flow (Phase 3, machine-drafted)
+
+48 new `Update.*`, `Settings.*` and `Onboarding.Step1.Bullet4` keys were added in EN/FR/AR/ES
+for the signed update banner, release notes, buttons, install confirmation, status lines and the
+18 `Update.Error.*` messages. `UpdateFlowViewModelTests.EveryUpdateString_ExistsInAllFourLanguages`
+and the existing parity/empty-value/loc-markup guards verify coverage only. The privacy disclosure
+sentence was appended to `About.PrivacyBody`, `Settings.PrivacyDescription` and the first onboarding
+step in all four languages. **All values are machine-drafted and not human-reviewed; the update UI
+has not been viewed in any language, including Arabic RTL.**
+
 ## Remaining known gaps (Phase 4)
 
 - **C# UI strings.** `ClauseManagerViewModel`, `AnalyzeViewModel`, `AboutViewModel` and

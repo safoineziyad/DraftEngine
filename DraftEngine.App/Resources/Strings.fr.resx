@@ -138,7 +138,7 @@
   <data name="Settings.ModelAutomation" xml:space="preserve"><value>Modèle OpenAI</value></data>
   <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini est plus rapide et moins cher ; gpt-4o est plus performant.</value></data>
   <data name="Settings.PrivacySection" xml:space="preserve"><value>Confidentialité et point de terminaison IA</value></data>
-  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Reste sur cet ordinateur : contrats, réponses du questionnaire, sélections de clauses, historique du chat, paramètres et clé API (tous chiffrés avec votre profil utilisateur Windows). Envoyés au fournisseur d&apos;IA uniquement lorsque vous utilisez une fonction d&apos;IA : le texte du contrat en cours, votre instruction et le nom du modèle. Aucune télémétrie n&apos;est collectée.</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Reste sur cet ordinateur : contrats, réponses du questionnaire, sélections de clauses, historique du chat, paramètres et clé API (tous chiffrés avec votre profil utilisateur Windows). Envoyés au fournisseur d&apos;IA uniquement lorsque vous utilisez une fonction d&apos;IA : le texte du contrat en cours, votre instruction et le nom du modèle. Aucune télémétrie n&apos;est collectée. La recherche de mises à jour est activée par défaut : une simple requête HTTPS avec la version de l'application, sans identifiant, et peut être désactivée ici.</value></data>
   <data name="Settings.HidePartyNames" xml:space="preserve"><value>Masquer les noms et adresses des parties à l&apos;IA</value></data>
   <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>Lorsque cette option est activée, les noms, adresses et adresses e-mail réels des parties sont remplacés par des jetons avant chaque requête d&apos;IA et restaurés dans la réponse.</value></data>
   <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Utiliser un point de terminaison compatible OpenAI personnalisé</value></data>
@@ -431,7 +431,7 @@
   <data name="About.CopyDiagnostics" xml:space="preserve"><value>Copier le diagnostic</value></data>
   <data name="About.CopyDiagnosticsAutomation" xml:space="preserve"><value>Copier le diagnostic de version et de système d'exploitation</value></data>
   <data name="About.Privacy" xml:space="preserve"><value>Résumé de confidentialité</value></data>
-  <data name="About.PrivacyBody" xml:space="preserve"><value>Les contrats, réponses de saisie, historiques de discussion, paramètres et la clé API restent sur cet ordinateur et sont chiffrés avec votre profil Windows. Aucune télémétrie, aucun compte et aucun envoi en arrière-plan.</value></data>
+  <data name="About.PrivacyBody" xml:space="preserve"><value>Les contrats, réponses de saisie, historiques de discussion, paramètres et la clé API restent sur cet ordinateur et sont chiffrés avec votre profil Windows. Aucune télémétrie, aucun compte et aucun envoi en arrière-plan. La recherche de mises à jour est activée par défaut : une simple requête HTTPS avec la version de l'application, sans identifiant, et peut être désactivée ici.</value></data>
   <data name="About.AiPrivacyBody" xml:space="preserve"><value>La retouche par IA est facultative. Lorsque vous l'utilisez, le texte du contrat et votre instruction sont envoyés au fournisseur d'IA configuré. Activez « Masquer les noms et adresses des parties pour l'IA » dans les paramètres pour remplacer les données réelles par des jetons.</value></data>
   <data name="About.Updates" xml:space="preserve"><value>Mises à jour</value></data>
   <data name="About.CheckUpdates" xml:space="preserve"><value>Rechercher des mises à jour</value></data>
@@ -503,4 +503,51 @@
   <data name="License.ActivateAutomation" xml:space="preserve"><value>Activer la licence</value></data>
   <data name="License.PasteKey" xml:space="preserve"><value>Collez la clé de licence que vous avez reçue.</value></data>
   <data name="License.ActivationFailed" xml:space="preserve"><value>Impossible d'activer la licence. Vérifiez la clé et réessayez.</value></data>
+  <data name="Update.Banner" xml:space="preserve"><value>La version {0} est disponible.</value></data>
+  <data name="Update.WhatsNew" xml:space="preserve"><value>Nouveautés</value></data>
+  <data name="Update.WhatsNewAutomation" xml:space="preserve"><value>Afficher les notes de version</value></data>
+  <data name="Update.Install" xml:space="preserve"><value>Mettre à jour</value></data>
+  <data name="Update.InstallAutomation" xml:space="preserve"><value>Télécharger et installer la mise à jour</value></data>
+  <data name="Update.Later" xml:space="preserve"><value>Plus tard</value></data>
+  <data name="Update.LaterAutomation" xml:space="preserve"><value>Me rappeler plus tard</value></data>
+  <data name="Update.Skip" xml:space="preserve"><value>Ignorer cette version</value></data>
+  <data name="Update.SkipAutomation" xml:space="preserve"><value>Ignorer cette version</value></data>
+  <data name="Update.AboutBadgeAutomation" xml:space="preserve"><value>Mise à jour disponible</value></data>
+  <data name="Update.ConfirmTitle" xml:space="preserve"><value>Installer la mise à jour</value></data>
+  <data name="Update.ConfirmBody" xml:space="preserve"><value>DraftEngine va se fermer, l'installateur va s'exécuter et l'application redémarrera. Un instantané de la base de données est enregistré au préalable. Installer la version {0} maintenant ?</value></data>
+  <data name="Update.Installing" xml:space="preserve"><value>Installation…</value></data>
+  <data name="Update.Cancelled" xml:space="preserve"><value>Mise à jour annulée. Aucune modification n'a été faite.</value></data>
+  <data name="Update.Skipped" xml:space="preserve"><value>Cette version ne sera plus proposée.</value></data>
+  <data name="Update.UpToDate" xml:space="preserve"><value>Vous utilisez la dernière version.</value></data>
+  <data name="Update.Checking" xml:space="preserve"><value>Vérification des mises à jour…</value></data>
+  <data name="Update.LastCheckedNever" xml:space="preserve"><value>Aucune vérification effectuée.</value></data>
+  <data name="Update.LastCheckedAt" xml:space="preserve"><value>Dernière vérification : {0}</value></data>
+  <data name="Update.ChecksOn" xml:space="preserve"><value>La vérification automatique des mises à jour est activée.</value></data>
+  <data name="Update.ChecksOff" xml:space="preserve"><value>La vérification automatique des mises à jour est désactivée.</value></data>
+  <data name="Update.ErrorTitle" xml:space="preserve"><value>Mise à jour</value></data>
+  <data name="Update.Error.Disabled" xml:space="preserve"><value>La vérification des mises à jour est désactivée.</value></data>
+  <data name="Update.Error.Offline" xml:space="preserve"><value>Impossible de joindre le serveur de mises à jour. Vérifiez votre connexion et réessayez.</value></data>
+  <data name="Update.Error.Timeout" xml:space="preserve"><value>Le serveur de mises à jour n'a pas répondu à temps. Réessayez plus tard.</value></data>
+  <data name="Update.Error.NotFound" xml:space="preserve"><value>Aucun manifeste de mise à jour n'a été trouvé à l'adresse configurée.</value></data>
+  <data name="Update.Error.Http" xml:space="preserve"><value>Le serveur de mises à jour a renvoyé une erreur. Réessayez plus tard.</value></data>
+  <data name="Update.Error.Malformed" xml:space="preserve"><value>Le manifeste de mise à jour est incorrect et a été ignoré.</value></data>
+  <data name="Update.Error.Schema" xml:space="preserve"><value>Le manifeste de mise à jour utilise un schéma non pris en charge.</value></data>
+  <data name="Update.Error.Signature" xml:space="preserve"><value>La mise à jour n'a pas pu être vérifiée et a été ignorée.</value></data>
+  <data name="Update.Error.Downgrade" xml:space="preserve"><value>La version proposée est antérieure à celle installée ; elle a été refusée.</value></data>
+  <data name="Update.Error.BlockedHost" xml:space="preserve"><value>La mise à jour pointe vers une adresse non autorisée.</value></data>
+  <data name="Update.Error.Hash" xml:space="preserve"><value>L'installateur téléchargé ne correspond pas à son empreinte. Il a été supprimé.</value></data>
+  <data name="Update.Error.Truncated" xml:space="preserve"><value>Le téléchargement était incomplet. Il a été supprimé ; réessayez.</value></data>
+  <data name="Update.Error.DiskFull" xml:space="preserve"><value>L'espace disque est insuffisant pour télécharger la mise à jour.</value></data>
+  <data name="Update.Error.Authenticode" xml:space="preserve"><value>L'installateur téléchargé n'est pas correctement signé.</value></data>
+  <data name="Update.Error.Snapshot" xml:space="preserve"><value>L'instantané de la base de données a échoué ; la mise à jour n'a pas démarré.</value></data>
+  <data name="Update.Error.Launch" xml:space="preserve"><value>L'installateur n'a pas pu être démarré. DraftEngine fonctionne toujours.</value></data>
+  <data name="Update.Error.Cancelled" xml:space="preserve"><value>La mise à jour a été annulée.</value></data>
+  <data name="Update.Error.Generic" xml:space="preserve"><value>La mise à jour n'a pas pu être terminée. Réessayez plus tard.</value></data>
+  <data name="Settings.UpdatesSection" xml:space="preserve"><value>Mises à jour</value></data>
+  <data name="Settings.AutomaticUpdateChecks" xml:space="preserve"><value>Rechercher les mises à jour automatiquement</value></data>
+  <data name="Settings.AutomaticUpdateChecksDescription" xml:space="preserve"><value>Une requête HTTPS au plus une fois par jour, envoyant uniquement la version de l'application. Rien n'est téléchargé ni installé sans votre clic.</value></data>
+  <data name="Settings.IncludeBetaVersions" xml:space="preserve"><value>Inclure les versions bêta</value></data>
+  <data name="Settings.CheckNow" xml:space="preserve"><value>Vérifier maintenant</value></data>
+  <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Vérifier les mises à jour maintenant</value></data>
+  <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La recherche de mises à jour est activée par défaut : une simple requête HTTPS avec la version de l'application, sans identifiant, désactivable dans les paramètres.</value></data>
 </root>

@@ -138,7 +138,7 @@
   <data name="Settings.ModelAutomation" xml:space="preserve"><value>Modelo de OpenAI</value></data>
   <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini es más rápido y económico; gpt-4o es más capaz.</value></data>
   <data name="Settings.PrivacySection" xml:space="preserve"><value>Privacidad y punto de conexión de IA</value></data>
-  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Permanece en este equipo: contratos, respuestas del cuestionario, selecciones de cláusulas, historial del chat, configuración y clave API (todo cifrado con su perfil de usuario de Windows). Se envía al proveedor de IA solo cuando usa una función de IA: el texto del contrato actual, su instrucción y el nombre del modelo. No se recopila telemetría.</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Permanece en este equipo: contratos, respuestas del cuestionario, selecciones de cláusulas, historial del chat, configuración y clave API (todo cifrado con su perfil de usuario de Windows). Se envía al proveedor de IA solo cuando usa una función de IA: el texto del contrato actual, su instrucción y el nombre del modelo. No se recopila telemetría. La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse aquí.</value></data>
   <data name="Settings.HidePartyNames" xml:space="preserve"><value>Ocultar nombres y direcciones de las partes a la IA</value></data>
   <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>Cuando está activado, los nombres, direcciones y direcciones de correo electrónico reales de las partes se sustituyen por tokens antes de cada solicitud de IA y se restauran en la respuesta.</value></data>
   <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Usar un punto de conexión personalizado compatible con OpenAI</value></data>
@@ -431,7 +431,7 @@
   <data name="About.CopyDiagnostics" xml:space="preserve"><value>Copiar diagnóstico</value></data>
   <data name="About.CopyDiagnosticsAutomation" xml:space="preserve"><value>Copiar el diagnóstico de versión y sistema operativo</value></data>
   <data name="About.Privacy" xml:space="preserve"><value>Resumen de privacidad</value></data>
-  <data name="About.PrivacyBody" xml:space="preserve"><value>Los contratos, las respuestas, el historial de chat, la configuración y la clave API permanecen en este equipo y se cifran con tu perfil de Windows. Sin telemetría, sin cuenta y sin cargas en segundo plano.</value></data>
+  <data name="About.PrivacyBody" xml:space="preserve"><value>Los contratos, las respuestas, el historial de chat, la configuración y la clave API permanecen en este equipo y se cifran con tu perfil de Windows. Sin telemetría, sin cuenta y sin cargas en segundo plano. La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse aquí.</value></data>
   <data name="About.AiPrivacyBody" xml:space="preserve"><value>La edición con IA es opcional. Cuando la usas, el texto actual del contrato y tu instrucción se envían al proveedor de IA que configuraste. Activa «Ocultar nombres y direcciones de las partes a la IA» en Ajustes para sustituir los datos reales por tokens.</value></data>
   <data name="About.Updates" xml:space="preserve"><value>Actualizaciones</value></data>
   <data name="About.CheckUpdates" xml:space="preserve"><value>Buscar actualizaciones</value></data>
@@ -503,4 +503,51 @@
   <data name="License.ActivateAutomation" xml:space="preserve"><value>Activar licencia</value></data>
   <data name="License.PasteKey" xml:space="preserve"><value>Pega la clave de licencia que recibiste.</value></data>
   <data name="License.ActivationFailed" xml:space="preserve"><value>No se pudo activar la licencia. Comprueba la clave e inténtalo de nuevo.</value></data>
+  <data name="Update.Banner" xml:space="preserve"><value>La versión {0} está disponible.</value></data>
+  <data name="Update.WhatsNew" xml:space="preserve"><value>Novedades</value></data>
+  <data name="Update.WhatsNewAutomation" xml:space="preserve"><value>Mostrar las notas de la versión</value></data>
+  <data name="Update.Install" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="Update.InstallAutomation" xml:space="preserve"><value>Descargar e instalar la actualización</value></data>
+  <data name="Update.Later" xml:space="preserve"><value>Más tarde</value></data>
+  <data name="Update.LaterAutomation" xml:space="preserve"><value>Recuérdamelo más tarde</value></data>
+  <data name="Update.Skip" xml:space="preserve"><value>Omitir esta versión</value></data>
+  <data name="Update.SkipAutomation" xml:space="preserve"><value>Omitir esta versión</value></data>
+  <data name="Update.AboutBadgeAutomation" xml:space="preserve"><value>Actualización disponible</value></data>
+  <data name="Update.ConfirmTitle" xml:space="preserve"><value>Instalar actualización</value></data>
+  <data name="Update.ConfirmBody" xml:space="preserve"><value>DraftEngine se cerrará, el instalador se ejecutará y la aplicación se reiniciará. Primero se guarda una instantánea de la base de datos. ¿Instalar la versión {0} ahora?</value></data>
+  <data name="Update.Installing" xml:space="preserve"><value>Instalando…</value></data>
+  <data name="Update.Cancelled" xml:space="preserve"><value>Actualización cancelada. No se cambió nada.</value></data>
+  <data name="Update.Skipped" xml:space="preserve"><value>Esta versión no se volverá a ofrecer.</value></data>
+  <data name="Update.UpToDate" xml:space="preserve"><value>Estás usando la última versión.</value></data>
+  <data name="Update.Checking" xml:space="preserve"><value>Buscando actualizaciones…</value></data>
+  <data name="Update.LastCheckedNever" xml:space="preserve"><value>Nunca se han buscado actualizaciones.</value></data>
+  <data name="Update.LastCheckedAt" xml:space="preserve"><value>Última comprobación: {0}</value></data>
+  <data name="Update.ChecksOn" xml:space="preserve"><value>La búsqueda automática de actualizaciones está activada.</value></data>
+  <data name="Update.ChecksOff" xml:space="preserve"><value>La búsqueda automática de actualizaciones está desactivada.</value></data>
+  <data name="Update.ErrorTitle" xml:space="preserve"><value>Actualización</value></data>
+  <data name="Update.Error.Disabled" xml:space="preserve"><value>La búsqueda de actualizaciones está desactivada.</value></data>
+  <data name="Update.Error.Offline" xml:space="preserve"><value>No se pudo contactar con el servidor de actualizaciones. Comprueba tu conexión e inténtalo de nuevo.</value></data>
+  <data name="Update.Error.Timeout" xml:space="preserve"><value>El servidor de actualizaciones no respondió a tiempo. Inténtalo más tarde.</value></data>
+  <data name="Update.Error.NotFound" xml:space="preserve"><value>No se encontró ningún manifiesto de actualización en la dirección configurada.</value></data>
+  <data name="Update.Error.Http" xml:space="preserve"><value>El servidor de actualizaciones devolvió un error. Inténtalo más tarde.</value></data>
+  <data name="Update.Error.Malformed" xml:space="preserve"><value>El manifiesto de actualización está mal formado y se ignoró.</value></data>
+  <data name="Update.Error.Schema" xml:space="preserve"><value>El manifiesto de actualización usa un esquema no compatible.</value></data>
+  <data name="Update.Error.Signature" xml:space="preserve"><value>No se pudo verificar la actualización y se ignoró.</value></data>
+  <data name="Update.Error.Downgrade" xml:space="preserve"><value>La versión ofrecida es anterior a la instalada; se rechazó.</value></data>
+  <data name="Update.Error.BlockedHost" xml:space="preserve"><value>La actualización apunta a una dirección no permitida.</value></data>
+  <data name="Update.Error.Hash" xml:space="preserve"><value>El instalador descargado no coincide con su suma de comprobación. Se eliminó.</value></data>
+  <data name="Update.Error.Truncated" xml:space="preserve"><value>La descarga estaba incompleta. Se eliminó; inténtalo de nuevo.</value></data>
+  <data name="Update.Error.DiskFull" xml:space="preserve"><value>No hay espacio suficiente en disco para descargar la actualización.</value></data>
+  <data name="Update.Error.Authenticode" xml:space="preserve"><value>El instalador descargado no tiene una firma válida.</value></data>
+  <data name="Update.Error.Snapshot" xml:space="preserve"><value>Falló la instantánea de la base de datos, así que no se inició la actualización.</value></data>
+  <data name="Update.Error.Launch" xml:space="preserve"><value>No se pudo iniciar el instalador. DraftEngine sigue en ejecución.</value></data>
+  <data name="Update.Error.Cancelled" xml:space="preserve"><value>La actualización se canceló.</value></data>
+  <data name="Update.Error.Generic" xml:space="preserve"><value>No se pudo completar la actualización. Inténtalo más tarde.</value></data>
+  <data name="Settings.UpdatesSection" xml:space="preserve"><value>Actualizaciones</value></data>
+  <data name="Settings.AutomaticUpdateChecks" xml:space="preserve"><value>Buscar actualizaciones automáticamente</value></data>
+  <data name="Settings.AutomaticUpdateChecksDescription" xml:space="preserve"><value>Una solicitud HTTPS como máximo una vez al día, enviando solo la versión de la aplicación. Nada se descarga ni se instala sin tu clic.</value></data>
+  <data name="Settings.IncludeBetaVersions" xml:space="preserve"><value>Incluir versiones beta</value></data>
+  <data name="Settings.CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
+  <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Buscar actualizaciones ahora</value></data>
+  <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse en Ajustes.</value></data>
 </root>

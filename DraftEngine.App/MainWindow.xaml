@@ -28,12 +28,18 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="{Binding Icon}" Style="{StaticResource NavIconStyle}" />
                     <TextBlock Grid.Column="2"
                                Text="{Binding Label}"
                                VerticalAlignment="Center"
                                TextTrimming="CharacterEllipsis" />
+                    <Ellipse Grid.Column="3" Width="7" Height="7" Margin="8,0,0,0"
+                             VerticalAlignment="Center"
+                             Fill="{DynamicResource AccentBrush}"
+                             Visibility="{Binding HasUpdateBadge, Converter={StaticResource BoolToVis}}"
+                             AutomationProperties.Name="{loc:T Update.AboutBadgeAutomation}" />
                 </Grid>
             </Button>
         </DataTemplate>
@@ -49,35 +55,62 @@
         <Border DockPanel.Dock="Top"
                 Background="{DynamicResource PrimaryBrush}"
                 Padding="16,10"
-                Visibility="{Binding IsUpdateBannerVisible, Converter={StaticResource BoolToVis}}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="{Binding UpdateBannerText}"
-                               Foreground="{DynamicResource ForegroundBrush}"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding UpdateErrorMessage}"
-                               Foreground="{DynamicResource ForegroundBrush}"
+                Visibility="{Binding UpdateFlow.IsBannerVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding UpdateFlow.BannerText}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding UpdateFlow.StatusMessage}"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   Opacity="0.85"
+                                   TextWrapping="Wrap" />
+                        <ProgressBar Height="4" Margin="0,6,0,0" Maximum="1"
+                                     Value="{Binding UpdateFlow.DownloadProgress}"
+                                     Foreground="{DynamicResource ForegroundBrush}"
+                                     Background="{DynamicResource BorderSubtleBrush}"
+                                     BorderThickness="0"
+                                     Visibility="{Binding UpdateFlow.IsBusy, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                    <Button Grid.Column="1"
+                            Content="{loc:T Update.WhatsNew}"
+                            Command="{Binding UpdateFlow.ToggleReleaseNotesCommand}"
+                            Margin="12,0,0,0" Padding="10,6"
+                            AutomationProperties.Name="{loc:T Update.WhatsNewAutomation}" />
+                    <Button Grid.Column="2"
+                            Content="{Binding UpdateFlow.UpdateButtonText}"
+                            Command="{Binding UpdateFlow.DownloadAndInstallCommand}"
+                            IsEnabled="{Binding UpdateFlow.CanDownload}"
+                            Margin="8,0,0,0" Padding="14,6"
+                            AutomationProperties.Name="{loc:T Update.InstallAutomation}" />
+                    <Button Grid.Column="3"
+                            Content="{loc:T Update.Later}"
+                            Command="{Binding UpdateFlow.RemindLaterCommand}"
+                            Margin="8,0,0,0" Padding="10,6"
+                            AutomationProperties.Name="{loc:T Update.LaterAutomation}" />
+                    <Button Grid.Column="4"
+                            Content="{loc:T Update.Skip}"
+                            Command="{Binding UpdateFlow.SkipVersionCommand}"
+                            Margin="8,0,0,0" Padding="10,6"
+                            AutomationProperties.Name="{loc:T Update.SkipAutomation}" />
+                </Grid>
+                <Border Margin="0,10,0,0" Padding="12,8" CornerRadius="6"
+                        Background="{DynamicResource PanelBrush}"
+                        Visibility="{Binding UpdateFlow.ShowNotesPanel, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding UpdateFlow.ReleaseNotes}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
                                TextWrapping="Wrap" />
-                </StackPanel>
-                <Button Grid.Column="1"
-                        Content="{Binding UpdateButtonText}"
-                        Command="{Binding DownloadAndInstallUpdateCommand}"
-                        IsEnabled="{Binding CanDownloadUpdate}"
-                        Margin="12,0"
-                        Padding="14,6"
-                        AutomationProperties.Name="{loc:T Update.Now}" />
-                <Button Grid.Column="2"
-                        Content="{loc:T Update.Dismiss}"
-                        Command="{Binding DismissUpdateCommand}"
-                        Padding="10,6"
-                        AutomationProperties.Name="{loc:T Update.DismissAutomation}" />
-            </Grid>
+                </Border>
+            </StackPanel>
         </Border>
 
         <Grid>

@@ -129,7 +129,7 @@ public sealed class SidebarTests : IDisposable
         }
 
         var navigation = new FakeNavigationService();
-        var viewModel = new MainViewModel(navigation, options, updateService: null, localization: service);
+        var viewModel = new MainViewModel(navigation, options, updateFlow: null, localization: service);
         return (viewModel, navigation);
     }
 

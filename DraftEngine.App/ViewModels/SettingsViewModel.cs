@@ -31,6 +31,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localization;
     private readonly IThemeService? _themeService;
     private readonly IHttpClientFactory? _httpClientFactory;
+    private readonly UpdateFlowViewModel? _updateFlow;
     private bool _isLoading;
     private bool _isApplyingLanguage;
     private bool _isApplyingTheme;
@@ -157,6 +158,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool hidePartyNamesFromAi;
 
+    /// <summary>Signed update flow shared with the banner and About (null in unit tests).</summary>
+    public UpdateFlowViewModel? Updates => _updateFlow;
+
     /// <summary>True when the user has granted AI data-sharing consent.</summary>
     [ObservableProperty]
     private bool aiConsentGranted;
@@ -200,13 +204,15 @@ public partial class SettingsViewModel : ObservableObject
         IPortableBackupService? backupService = null,
         ILocalizationService? localization = null,
         IThemeService? themeService = null,
-        IHttpClientFactory? httpClientFactory = null)
+        IHttpClientFactory? httpClientFactory = null,
+        UpdateFlowViewModel? updateFlow = null)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
         _backupService = backupService;
         _themeService = themeService;
         _httpClientFactory = httpClientFactory;
+        _updateFlow = updateFlow;
         _localization = localization ?? LocalizationSource.Current.Service
             ?? throw new ArgumentNullException(nameof(localization));
         PresetOptions =
@@ -610,6 +616,11 @@ public partial class SettingsViewModel : ObservableObject
                 OpenAiBaseUrl = string.IsNullOrWhiteSpace(OpenAiBaseUrl) ? null : OpenAiBaseUrl.Trim(),
                 UseCustomOpenAiEndpoint = UseCustomOpenAiEndpoint,
                 HidePartyNamesFromAi = HidePartyNamesFromAi,
+                // Update choices live on the shared update flow; preserve them so Save never resets them.
+                UpdateChecksEnabled = _settingsService.Current.UpdateChecksEnabled,
+                UpdateIncludeBeta = _settingsService.Current.UpdateIncludeBeta,
+                SkippedUpdateVersion = _settingsService.Current.SkippedUpdateVersion,
+                LastUpdateCheckUtc = _settingsService.Current.LastUpdateCheckUtc,
                 // Persisted elsewhere (theme service / language store); preserve them so a
                 // manual Save never resets the user's language or theme choice.
                 Theme = _settingsService.Current.Theme,

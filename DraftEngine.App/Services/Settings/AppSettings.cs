@@ -89,6 +89,18 @@ public class AppSettings
         return this;
     }
 
+    /// <summary>True when automatic update checks run at startup (default on, notify-only).</summary>
+    public bool UpdateChecksEnabled { get; set; } = true;
+
+    /// <summary>True when the beta channel is used (stable is the default).</summary>
+    public bool UpdateIncludeBeta { get; set; }
+
+    /// <summary>Version the user chose to skip; that exact version is not offered again.</summary>
+    public string SkippedUpdateVersion { get; set; } = string.Empty;
+
+    /// <summary>UTC timestamp of the last update check (null when never checked).</summary>
+    public DateTimeOffset? LastUpdateCheckUtc { get; set; }
+
     /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
     public string Language { get; set; } = "system";
 

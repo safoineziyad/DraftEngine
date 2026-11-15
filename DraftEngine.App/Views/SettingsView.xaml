@@ -215,6 +215,34 @@
                 </StackPanel>
             </Border>
 
+            <!-- Updates section -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{loc:T Settings.UpdatesSection}" FontWeight="SemiBold" FontSize="15"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <CheckBox Content="{loc:T Settings.AutomaticUpdateChecks}"
+                              IsChecked="{Binding Updates.AutomaticChecksEnabled, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.AutomaticUpdateChecks}"
+                              Margin="0,10,0,4" />
+                    <TextBlock Text="{loc:T Settings.AutomaticUpdateChecksDescription}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                    <CheckBox Content="{loc:T Settings.IncludeBetaVersions}"
+                              IsChecked="{Binding Updates.IncludeBeta, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.IncludeBetaVersions}"
+                              Margin="0,0,0,10" />
+                    <TextBlock Text="{Binding Updates.LastCheckedText}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,2" />
+                    <TextBlock Text="{Binding Updates.CurrentVersion}"
+                               Style="{StaticResource SecondaryTextStyle}" Margin="0,0,0,8" />
+                    <TextBlock Text="{Binding Updates.StatusMessage}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                    <Button Content="{loc:T Settings.CheckNow}" Padding="12,0" Height="30"
+                            HorizontalAlignment="Left"
+                            AutomationProperties.Name="{loc:T Settings.CheckNowAutomation}"
+                            Command="{Binding Updates.CheckCommand}" />
+                </StackPanel>
+            </Border>
+
             <!-- Privacy section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <StackPanel>

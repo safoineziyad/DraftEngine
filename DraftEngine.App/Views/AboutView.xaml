@@ -68,13 +68,16 @@
                 <StackPanel>
                     <TextBlock Text="{loc:T About.Updates}" FontWeight="SemiBold" FontSize="15"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="{Binding UpdateStatus}"
-                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,10" />
+                    <TextBlock Text="{Binding Updates.StatusMessage}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,6,0,4" />
+                    <TextBlock Text="{Binding Updates.LastCheckedText}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding Updates.CurrentVersion, StringFormat={}{0}}"
+                               Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" Margin="0,0,0,10" />
                     <Button Content="{loc:T About.CheckUpdates}" Padding="12,0" Height="30"
                             HorizontalAlignment="Left"
                             AutomationProperties.Name="{loc:T About.CheckUpdates}"
-                            Command="{Binding CheckForUpdatesCommand}"
-                            IsEnabled="{Binding IsUpdateCheckEnabled}" />
+                            Command="{Binding Updates.CheckCommand}" />
                 </StackPanel>
             </Border>
 

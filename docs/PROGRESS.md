@@ -64,7 +64,9 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: none — Phases 1–4 are complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
+NEXT STEP: Phase 2 — bundle the offline ISO 3166-1 country list and replace US-state-only jurisdiction inputs. Phase 1 audit is recorded under "Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)" below.
+
+(Historical, previous round) Phases 1–4 were complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
 ### Final verification (2026-11-10)
 
@@ -162,3 +164,18 @@ onboarding, About, licensing behind a flag.
 - Published `v0.4.0-beta.1` as a **pre-release** from `feature/i18n-theme` with the installer and checksum assets; `v0.2.2` remains Latest. Release notes: `docs/RELEASE-NOTES-0.4.0-beta.1.md`.
 - `installer/Output/`, `publish/` and `dist/` are git-ignored; no installer, `.pdb`, key or secret is committed. Release upload was slow but completed; asset digest matches the local hash.
 - **Not visually verified:** the installer wizard (including the runtime check), the installed app, and the localized startup error window.
+
+### Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)
+
+| Path | Code | Mechanism | WAL-safe |
+|---|---|---|---|
+| Pre-migration snapshot | `DatabaseService.BackupBeforePendingMigrations` → `CreateSnapshot` | `SqliteConnection.BackupDatabase` | Yes |
+| Migration-failure restore | `DatabaseService.TryRestoreBackup` → `RestoreSnapshot` | Opens/validates the snapshot, deletes the live file and `-wal`/`-shm`, then `BackupDatabase` into a fresh destination (was `File.Copy`) | Yes |
+| Portable encrypted backup | `PortableBackupService.ExportEncryptedAsync` → `CollectAsync` | Reads entities/rows into an encrypted JSON payload; never copies the file | Yes (no file copy) |
+| Portable restore | `PortableBackupService.ImportEncryptedAsync` → `ReplaceAllAsync` | Row deletes/inserts in one transaction plus an encrypted pre-import payload | Yes (no file copy) |
+| “Export my data” (JSON / CSV) | `PortableBackupService.WriteJsonAsync` / `WriteCsvAsync` | Queries rows through EF; no database file access | Yes (no file copy) |
+| Diagnostics | `StartupDiagnostics` | Version/OS/.NET/exception types only; no database access | N/A |
+| Tests | `UpgradeMigrationTests.CopyDatabase`, `DatabaseService.CreateSnapshot` in `UpgradeDataPreservationTests` / `DatabaseBackupTests` | `BackupDatabase` | Yes |
+
+- New test `DatabaseBackupTests.WalDatabase_BackupAndRestore_PreservesEveryTable`: builds the real schema, inserts into `Contracts`, `ContractFields`, `ContractClauses`, `ChatMessages`, `ContractVersions`, `GeneratedDocuments` with `journal_mode=WAL` and `wal_autocheckpoint=0` (asserts a non-empty `-wal`), snapshots, damages the live database, restores through `RestoreSnapshot`, and asserts row counts are identical for **every** table in `sqlite_master`.
+- Affected tests: 9/9 pass. **Not visually verified** (no UI change).

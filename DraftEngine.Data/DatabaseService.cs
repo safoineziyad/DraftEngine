@@ -212,11 +212,7 @@ public static class DatabaseService
     {
         try
         {
-            // Release every pooled handle before replacing the files.
-            SqliteConnection.ClearAllPools();
-            DeleteIfExists(databasePath + "-wal");
-            DeleteIfExists(databasePath + "-shm");
-            File.Copy(backupPath, databasePath, overwrite: true);
+            RestoreSnapshot(databasePath, backupPath);
 
             Log(services, LogLevel.Warning,
                 $"The database upgrade failed; restored the pre-upgrade snapshot '{backupPath}'.");
@@ -228,6 +224,42 @@ public static class DatabaseService
                 $"The database upgrade failed and the snapshot '{backupPath}' could not be restored.", ex);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Replaces a database file with a standalone snapshot through the SQLite backup API.
+    /// The snapshot is opened first so an unreadable backup can never delete live data; the
+    /// destination and its <c>-wal</c>/<c>-shm</c> sidecars are then removed so no stale WAL
+    /// frame can replay over the restored pages.
+    /// </summary>
+    internal static void RestoreSnapshot(string databasePath, string backupPath)
+    {
+        if (!File.Exists(backupPath))
+        {
+            throw new FileNotFoundException("The pre-upgrade database snapshot no longer exists.", backupPath);
+        }
+
+        // Release every pooled handle before touching the files.
+        SqliteConnection.ClearAllPools();
+
+        using var snapshot = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = backupPath,
+            Pooling = false
+        }.ConnectionString);
+        snapshot.Open();
+
+        DeleteIfExists(databasePath);
+        DeleteIfExists(databasePath + "-wal");
+        DeleteIfExists(databasePath + "-shm");
+
+        using var destination = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = databasePath,
+            Pooling = false
+        }.ConnectionString);
+        destination.Open();
+        snapshot.BackupDatabase(destination);
     }
 
     private static void DeleteIfExists(string path)

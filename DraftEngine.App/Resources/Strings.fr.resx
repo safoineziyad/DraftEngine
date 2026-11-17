@@ -550,4 +550,5 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Vérifier maintenant</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Vérifier les mises à jour maintenant</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La recherche de mises à jour est activée par défaut : une simple requête HTTPS avec la version de l'application, sans identifiant, désactivable dans les paramètres.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>Ces données ont été protégées sous un autre compte Windows et ne peuvent pas être ouvertes ici. Restaurez-les depuis une sauvegarde portable.</value></data>
 </root>

@@ -550,4 +550,5 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Check now</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Check for updates now</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>Update checks are on by default: one plain HTTPS request with the app version, no identifiers, and can be turned off in Settings.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>This data was protected under a different Windows account and cannot be opened here. Restore it from a portable backup.</value></data>
 </root>

@@ -550,4 +550,5 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>تحقق الآن</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>التحقق من التحديثات الآن</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>التحقق من التحديثات مفعّل افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه من الإعدادات.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>تمت حماية هذه البيانات تحت حساب Windows آخر ولا يمكن فتحها هنا. استعدها من نسخة احتياطية محمولة.</value></data>
 </root>

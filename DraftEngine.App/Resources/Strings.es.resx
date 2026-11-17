@@ -550,4 +550,5 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Buscar actualizaciones ahora</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse en Ajustes.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>Estos datos se protegieron con otra cuenta de Windows y no se pueden abrir aquí. Restáuralos desde una copia de seguridad portátil.</value></data>
 </root>

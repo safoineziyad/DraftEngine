@@ -177,6 +177,60 @@ public sealed class ContractEditServiceTests : IDisposable
         Assert.True(await _dbContext.Clauses.AnyAsync(item => item.Id == clause.Id));
     }
 
+    [Fact]
+    public async Task DuplicateContractAsync_CopiesJurisdictionFields()
+    {
+        var source = await CreateContractAsync("owner@example.com", "jurisdiction source");
+        source.GoverningLaw = "Canada — Ontario";
+        source.GoverningLawCountry = "CA";
+        source.GoverningLawSubdivision = "ON";
+        source.VenueCountry = "CA";
+        source.VenueCity = "Toronto";
+        await _dbContext.SaveChangesAsync();
+
+        var copy = await _editService.DuplicateContractAsync(source.Id, "jurisdiction copy");
+
+        Assert.NotNull(copy);
+        Assert.Equal("CA", copy!.GoverningLawCountry);
+        Assert.Equal("ON", copy.GoverningLawSubdivision);
+        Assert.Equal("CA", copy.VenueCountry);
+        Assert.Equal("Toronto", copy.VenueCity);
+        Assert.Equal("Canada — Ontario", copy.GoverningLaw);
+    }
+
+    [Fact]
+    public void DuplicateContract_EveryPersistedPropertyIsEitherCopiedOrExplicitlyExcluded()
+    {
+        var copied = new HashSet<string>(StringComparer.Ordinal)
+        {
+            nameof(Contract.UserId), nameof(Contract.Title), nameof(Contract.ContractType),
+            nameof(Contract.ClientName), nameof(Contract.ClientEmail), nameof(Contract.PartiesJson),
+            nameof(Contract.EffectiveDate), nameof(Contract.GoverningLaw),
+            nameof(Contract.GoverningLawCountry), nameof(Contract.GoverningLawSubdivision),
+            nameof(Contract.VenueCountry), nameof(Contract.VenueCity), nameof(Contract.TermMonths),
+        };
+        var notCopied = new HashSet<string>(StringComparer.Ordinal)
+        {
+            nameof(Contract.Id), nameof(Contract.Status), nameof(Contract.CreatedAt),
+            nameof(Contract.UpdatedAt), nameof(Contract.LastGeneratedAt), nameof(Contract.FinalFilePath),
+            nameof(Contract.AssembledText), nameof(Contract.IsDeleted), nameof(Contract.DeletedAt),
+            nameof(Contract.IsArchived), nameof(Contract.ArchivedAt), nameof(Contract.User),
+            nameof(Contract.ContractClauses), nameof(Contract.ContractFields), nameof(Contract.ChatMessages),
+            nameof(Contract.GeneratedDocuments), nameof(Contract.Versions),
+        };
+
+        Assert.Empty(copied.Intersect(notCopied, StringComparer.Ordinal));
+        var missing = typeof(Contract).GetProperties()
+            .Where(property => property.SetMethod is not null)
+            .Select(property => property.Name)
+            .Where(name => !copied.Contains(name) && !notCopied.Contains(name))
+            .ToArray();
+
+        Assert.True(
+            missing.Length == 0,
+            "Contract properties missing from the duplicate contract coverage list: " + string.Join(", ", missing));
+    }
+
     private async Task<Contract> CreateContractAsync(string email, string title, bool archived = false)
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(item => item.Email == email);

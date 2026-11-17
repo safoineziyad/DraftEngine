@@ -66,8 +66,7 @@ public sealed class StartupResolutionTests : IClassFixture<StartupFixture>
         typeof(IPdfBuilder),
         typeof(IDocumentExportService),
         typeof(DraftEngine.App.Services.Licensing.ILicenseService),
-        typeof(DraftEngine.App.Services.Updates.IUpdateCheckService),
-        typeof(DraftEngine.App.Services.Updates.IUpdateService),
+        typeof(UpdateFlowViewModel),
     }.Select(type => new object[] { type });
 
     [Theory]

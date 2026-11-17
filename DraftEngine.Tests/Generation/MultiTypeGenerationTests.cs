@@ -360,7 +360,7 @@ public class MultiTypeGenerationTests : IDisposable
         This Agreement shall remain in effect for 24 months from the Effective Date (January 15, 2026).
 
         5. Governing Law
-        This Agreement shall be governed by and construed in accordance with the laws of Delaware.
+        This Agreement is governed by the laws of the following jurisdiction: Delaware.
 
         6. Entire Agreement
         This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof.

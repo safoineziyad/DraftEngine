@@ -138,7 +138,7 @@
   <data name="Settings.ModelAutomation" xml:space="preserve"><value>OpenAI model</value></data>
   <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini is faster and cheaper; gpt-4o is more capable.</value></data>
   <data name="Settings.PrivacySection" xml:space="preserve"><value>Privacy and AI endpoint</value></data>
-  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Stays on this computer: contracts, intake answers, clause selections, chat history, settings and the API key (all encrypted with your Windows user profile). Sent to the AI provider only when you use an AI feature: the current contract text, your instruction, and the model name. No telemetry is collected.</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>Stays on this computer: contracts, intake answers, clause selections, chat history, settings and the API key (all encrypted with your Windows user profile). Sent to the AI provider only when you use an AI feature: the current contract text, your instruction, and the model name. No telemetry is collected. Update checks are on by default: one plain HTTPS request with the app version, no identifiers, and they can be turned off here.</value></data>
   <data name="Settings.HidePartyNames" xml:space="preserve"><value>Hide party names and addresses from AI</value></data>
   <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>When on, real party names, addresses and e-mail addresses are replaced with tokens before every AI request and restored in the reply.</value></data>
   <data name="Settings.CustomEndpoint" xml:space="preserve"><value>Use a custom OpenAI-compatible endpoint</value></data>

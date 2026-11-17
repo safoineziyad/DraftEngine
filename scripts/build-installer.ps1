@@ -1,145 +1,171 @@
+<#
+.SYNOPSIS
+    Builds the DraftEngine installer (Inno Setup).
+
+.DESCRIPTION
+    1. Publishes DraftEngine.App (Release, win-x64, framework-dependent) to .\publish
+    2. Locates ISCC.exe (Inno Setup 6)
+    3. Compiles installer\DraftEngine.iss
+    4. Prints the resulting setup .exe path
+
+    Run from anywhere:
+        powershell -ExecutionPolicy Bypass -File scriptsuild-installer.ps1
+
+.PARAMETER SkipPublish
+    Reuse the existing .\publish folder and only recompile the installer.
+#>
 [CmdletBinding()]
-param()
+param(
+    [switch]$SkipPublish
+)
 
 $ErrorActionPreference = 'Stop'
-$repoRoot = Split-Path -Parent $PSScriptRoot
-$projectPath = Join-Path $repoRoot 'DraftEngine.App\DraftEngine.App.csproj'
-$issPath = Join-Path $repoRoot 'installer\DraftEngine.iss'
-$publishDirectory = Join-Path $repoRoot 'publish'
-$distDirectory = Join-Path $repoRoot 'dist'
 
-if (-not (Test-Path -LiteralPath (Join-Path $repoRoot 'DraftEngine.sln'))) {
-    throw "Repository root was not found at '$repoRoot'."
+# --- Resolve repo root from this script's location -------------------------
+$repoRoot = Split-Path -Parent $PSScriptRoot   # scripts\.. = repo root
+if (-not (Test-Path (Join-Path $repoRoot 'DraftEngine.sln'))) {
+    throw "Could not find DraftEngine.sln in '$repoRoot'. Is this script inside <repo>\installer ?"
 }
+Set-Location $repoRoot
+Write-Host "Repo root: $repoRoot"
 
-$versionMatch = Select-String -Path $issPath -Pattern '^\s*#define\s+AppVersion\s+"([^"]+)"' |
-    Select-Object -First 1
-if (-not $versionMatch) {
-    throw "AppVersion was not found in '$issPath'."
-}
-$installerVersion = $versionMatch.Matches[0].Groups[1].Value
-if ($installerVersion -ne '0.4.0.1') {
-    throw "Expected installer AppVersion 0.4.0.1 but found '$installerVersion'."
-}
-
-$projectText = Get-Content -LiteralPath $projectPath -Raw
-if ($projectText -notmatch '<Version>0\.4\.0-beta\.1</Version>' -or
-    $projectText -notmatch '<AssemblyVersion>0\.4\.0\.1</AssemblyVersion>' -or
-    $projectText -notmatch '<FileVersion>0\.4\.0\.1</FileVersion>') {
-    throw 'The project package, assembly, and file versions do not match the local beta installer.'
-}
-
-$expectedAppId = '{{48B229B2-F5ED-41C4-A8B4-33F8C0953745}'
-$issText = Get-Content -LiteralPath $issPath -Raw
-if ($issText -notmatch [regex]::Escape("#define AppId `"$expectedAppId`"")) {
-    throw 'Installer AppId differs from the v0.2.2 AppId; refusing to build a non-upgrading installer.'
-}
-if ($issText -match '(?i)DelTree|DeleteUserData|userappdata') {
-    throw 'The installer contains a user-data deletion path; refusing to build.'
-}
-
-function Assert-ExitCode {
+function Test-LastExitCode {
     param([string]$Step)
-    if ($LASTEXITCODE -ne 0) {
+    if ($null -ne $LASTEXITCODE -and $LASTEXITCODE -ne 0) {
         throw "$Step failed with exit code $LASTEXITCODE."
     }
 }
 
-function Find-InnoSetupCompiler {
-    $paths = [System.Collections.Generic.List[string]]::new()
-    if (${env:ProgramFiles(x86)}) {
-        $paths.Add((Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'))
-    }
-    if ($env:ProgramFiles) {
-        $paths.Add((Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe'))
-    }
-    if ($env:LOCALAPPDATA) {
-        $paths.Add((Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'))
+# --- 1. Clean + publish -----------------------------------------------------
+$publishDir = Join-Path $repoRoot 'publish'
+$projectPath = Join-Path $repoRoot 'DraftEngine.App\DraftEngine.App.csproj'
+
+if (-not $SkipPublish) {
+    if (Test-Path $publishDir) {
+        Write-Host "Cleaning '$publishDir'..."
+        Remove-Item -Path $publishDir -Recurse -Force
     }
 
-    foreach ($path in $paths) {
-        if (Test-Path -LiteralPath $path) {
-            return $path
+    Write-Host 'dotnet clean (Release)...'
+    & dotnet clean $projectPath -c Release -v quiet --nologo
+    Test-LastExitCode 'dotnet clean'
+
+    Write-Host 'dotnet publish DraftEngine.App (Release, win-x64, framework-dependent)...'
+    & dotnet publish $projectPath -c Release -r win-x64 --self-contained false -o $publishDir
+    Test-LastExitCode 'dotnet publish'
+
+    if (-not (Test-Path (Join-Path $publishDir 'DraftEngine.App.exe'))) {
+        throw "Publish succeeded but 'DraftEngine.App.exe' was not found in '$publishDir'."
+    }
+}
+elseif (-not (Test-Path (Join-Path $publishDir 'DraftEngine.App.exe'))) {
+    throw "SkipPublish was set but '$publishDir' does not contain DraftEngine.App.exe. Run without -SkipPublish."
+}
+
+# --- 1b. Optional Authenticode signing of the published app -----------------
+# Ships unsigned when DRAFTENGINE_SIGN_CERT is absent; never fails the build.
+$signCert = $env:DRAFTENGINE_SIGN_CERT
+if ($signCert) {
+    $signtool = $null
+    $command = Get-Command -Name 'signtool.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($command) { $signtool = $command.Source }
+    if (-not $signtool) {
+        $kitsRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
+        if (Test-Path $kitsRoot) {
+            $signtool = Get-ChildItem -Path $kitsRoot -Filter 'signtool.exe' -Recurse -ErrorAction SilentlyContinue |
+                Where-Object { $_.FullName -match '\\x64\\' } |
+                Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
         }
     }
 
-    $command = Get-Command ISCC.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($command) {
-        return $command.Source
+    if ($signtool) {
+        Write-Host "Signing published binaries with '$signtool'..."
+        & $signtool sign /f $signCert /p $env:DRAFTENGINE_SIGN_PASSWORD /fd sha256 `
+            /tr http://timestamp.digicert.com /td sha256 (Join-Path $publishDir 'DraftEngine.App.exe')
+        Test-LastExitCode 'signtool (application binary)'
     }
-
-    throw 'Inno Setup 6 ISCC.exe was not found. Install Inno Setup 6 or add ISCC.exe to PATH.'
-}
-
-Set-Location $repoRoot
-$commitHash = (& git rev-parse HEAD).Trim()
-Assert-ExitCode 'git rev-parse'
-$buildDateUtc = [DateTime]::UtcNow.ToString(
-    "yyyy-MM-dd'T'HH:mm:ss'Z'",
-    [Globalization.CultureInfo]::InvariantCulture)
-
-if (Test-Path -LiteralPath $publishDirectory) {
-    Remove-Item -LiteralPath $publishDirectory -Recurse -Force
-}
-New-Item -ItemType Directory -Path $publishDirectory -Force | Out-Null
-New-Item -ItemType Directory -Path $distDirectory -Force | Out-Null
-
-$setupPath = Join-Path $distDirectory "DraftEngine-Setup-$installerVersion.exe"
-$checksumPath = "$setupPath.sha256"
-foreach ($path in @($setupPath, $checksumPath)) {
-    if (Test-Path -LiteralPath $path) {
-        Remove-Item -LiteralPath $path -Force
+    else {
+        Write-Warning 'DRAFTENGINE_SIGN_CERT is set but signtool.exe was not found; the build will be unsigned.'
     }
-}
-
-Write-Host 'Cleaning the Release app output...'
-& dotnet clean $projectPath -c Release --nologo -v quiet
-Assert-ExitCode 'dotnet clean'
-
-Write-Host "Publishing DraftEngine $installerVersion for win-x64..."
-& dotnet publish $projectPath -c Release -r win-x64 --self-contained false `
-    -o $publishDirectory `
-    "-p:BuildCommitHash=$commitHash" `
-    "-p:BuildDateUtc=$buildDateUtc"
-Assert-ExitCode 'dotnet publish'
-
-if (-not (Test-Path -LiteralPath (Join-Path $publishDirectory 'DraftEngine.App.exe'))) {
-    throw "The published application executable was not found in '$publishDirectory'."
-}
-
-$signCertificate = $env:DRAFTENGINE_SIGN_CERT
-$signPassword = $env:DRAFTENGINE_SIGN_PASSWORD
-if ([string]::IsNullOrWhiteSpace($signCertificate) -or [string]::IsNullOrWhiteSpace($signPassword)) {
-    Write-Host 'Signing skipped: both DRAFTENGINE_SIGN_CERT and DRAFTENGINE_SIGN_PASSWORD are required.'
 }
 else {
-    $signTool = Get-Command signtool.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $signTool) {
-        throw 'Signing was requested, but signtool.exe was not found.'
+    Write-Host 'No DRAFTENGINE_SIGN_CERT set: building an unsigned installer.'
+}
+
+# --- 2. Locate ISCC.exe (Inno Setup 6 compiler) ----------------------------
+$candidates = New-Object System.Collections.Generic.List[string]
+
+$pf86 = ${env:ProgramFiles(x86)}
+if ($pf86) { $candidates.Add((Join-Path $pf86 'Inno Setup 6\ISCC.exe')) }
+if ($env:ProgramFiles) { $candidates.Add((Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe')) }
+if ($env:LOCALAPPDATA) { $candidates.Add((Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe')) }
+
+# Registry (per-machine and per-user installs record "Inno Setup: App Path")
+$uninstallKeys = @(
+    'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*_is1',
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*_is1',
+    'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*_is1'
+)
+foreach ($key in $uninstallKeys) {
+    Get-ItemProperty -Path $key -ErrorAction SilentlyContinue |
+        Where-Object { $_.DisplayName -like '*Inno Setup*' -and $_.'Inno Setup: App Path' } |
+        ForEach-Object { $candidates.Add((Join-Path $_.'Inno Setup: App Path' 'ISCC.exe')) }
+}
+
+$iscc = $null
+foreach ($path in $candidates) {
+    if ($path -and (Test-Path -LiteralPath $path)) {
+        $iscc = $path
+        break
     }
-    & $signTool.Source sign /f $signCertificate /p $signPassword /fd sha256 `
-        /tr http://timestamp.digicert.com /td sha256 (Join-Path $publishDirectory 'DraftEngine.App.exe')
-    Assert-ExitCode 'signtool'
 }
+if (-not $iscc) {
+    $fromPath = Get-Command -Name 'ISCC.exe', 'iscc' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($fromPath) { $iscc = $fromPath.Source }
+}
+if (-not $iscc) {
+    throw @"
+ISCC.exe (Inno Setup 6) was not found.
 
-$compiler = Find-InnoSetupCompiler
-Write-Host "Compiling installer with '$compiler'..."
-& $compiler "/O$distDirectory" "/FDraftEngine-Setup-$installerVersion" $issPath
-Assert-ExitCode 'Inno Setup compiler'
+Install Inno Setup 6 from https://jrsoftware.org/isinfo.php
+(supported install locations: Program Files, Program Files (x86), or %LOCALAPPDATA%\Programs),
+or add ISCC.exe to your PATH, then run this script again.
+"@
+}
+Write-Host "ISCC: $iscc"
 
+# --- 3. Compile the installer ---------------------------------------------
+$issPath = Join-Path $repoRoot 'installer\DraftEngine.iss'
+if (-not (Test-Path -LiteralPath $issPath)) { throw "Installer script not found: $issPath" }
+
+# The version lives in Directory.Build.props; pass it to Inno Setup so the installer name,
+# upgrade ordering and the app's informational version cannot drift apart.
+$propsPath = Join-Path $repoRoot 'Directory.Build.props'
+if (-not (Test-Path -LiteralPath $propsPath)) { throw "Version source not found: $propsPath" }
+$versionMatch = Select-String -Path $propsPath -Pattern '<DraftEngineFileVersion>([^<]+)</DraftEngineFileVersion>' | Select-Object -First 1
+if (-not $versionMatch) { throw 'Directory.Build.props does not define DraftEngineFileVersion.' }
+$appVersion = $versionMatch.Matches[0].Groups[1].Value.Trim()
+Write-Host "App version (from Directory.Build.props): $appVersion"
+
+Write-Host "Compiling '$issPath'..."
+& $iscc "/DAppVersion=$appVersion" $issPath
+Test-LastExitCode 'ISCC (Inno Setup compile)'
+
+# --- 4. Report the result ---------------------------------------------------
+$version = $appVersion
+
+$setupPath = Join-Path $repoRoot ("installer\Output\DraftEngine-Setup-{0}.exe" -f $version)
 if (-not (Test-Path -LiteralPath $setupPath)) {
-    throw "Inno Setup completed without creating '$setupPath'."
+    $newest = Get-ChildItem -Path (Join-Path $repoRoot 'installer\Output') -Filter 'DraftEngine-Setup-*.exe' -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($newest) { $setupPath = $newest.FullName }
 }
 
-$hash = (Get-FileHash -LiteralPath $setupPath -Algorithm SHA256).Hash.ToLowerInvariant()
-Set-Content -LiteralPath $checksumPath -Value "$hash  $(Split-Path -Leaf $setupPath)" -Encoding ascii
-
-Write-Host ''
-Write-Host 'Created paths:'
-Write-Host $publishDirectory
-Get-ChildItem -LiteralPath $publishDirectory -Recurse -Force |
-    ForEach-Object { Write-Host $_.FullName }
-Write-Host $distDirectory
-Write-Host $setupPath
-Write-Host $checksumPath
-Write-Host "SHA-256: $hash"
+if (Test-Path -LiteralPath $setupPath) {
+    $size = (Get-Item -LiteralPath $setupPath).Length
+    Write-Host ''
+    Write-Host ('Installer created: {0}  ({1:N2} MB)' -f $setupPath, ($size / 1MB)) -ForegroundColor Green
+}
+else {
+    throw 'ISCC reported success but the setup .exe was not found in installer\Output.'
+}

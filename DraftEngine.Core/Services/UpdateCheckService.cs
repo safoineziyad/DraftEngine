@@ -10,11 +10,11 @@ namespace DraftEngine.Core.Services;
 public class UpdateCheckService : IUpdateCheckService
 {
     private readonly string _manifestUrl;
-    public UpdateCheckService(string manifestUrl = null) => _manifestUrl = manifestUrl;
+    public UpdateCheckService(string? manifestUrl = null) => _manifestUrl = manifestUrl ?? string.Empty;
     public bool Enabled => !string.IsNullOrWhiteSpace(_manifestUrl);
-    public Task<string> CheckForUpdatesAsync()
+    public Task<string?> CheckForUpdatesAsync()
     {
-        if (!Enabled) return Task.FromResult<string>(null);
-        return Task.FromResult<string>(null); // notify-only; no silent install
+        // Notify-only: there is never a download URL, so no silent install is possible.
+        return Task.FromResult<string?>(null);
     }
 }

@@ -53,6 +53,10 @@ public sealed partial class NavigationItemViewModel : ObservableObject
     [ObservableProperty]
     private bool isActive;
 
+    /// <summary>True when this entry shows a small indicator dot (e.g. an update on About).</summary>
+    [ObservableProperty]
+    private bool hasUpdateBadge;
+
     /// <summary>Re-resolves the localized label after a language change.</summary>
     public void RefreshLocalization()
     {

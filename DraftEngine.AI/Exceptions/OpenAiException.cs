@@ -20,6 +20,19 @@ public class OpenAiException : Exception
     }
 }
 
+/// <summary>
+/// Thrown when AI is used before the user has consented to sending contract content to the
+/// selected provider. No request is made in this state.
+/// </summary>
+public class OpenAiConsentRequiredException : OpenAiException
+{
+    /// <summary>Creates the exception with the consent guidance message.</summary>
+    public OpenAiConsentRequiredException(string? technicalMessage = null)
+        : base("AI features are off until you give consent in Settings to send contract content to your AI provider.", technicalMessage)
+    {
+    }
+}
+
 /// <summary>Thrown when the configured OpenAI API key is null or empty. The UI uses this type to guide the user to Settings.</summary>
 public class OpenAiApiKeyMissingException : OpenAiException
 {

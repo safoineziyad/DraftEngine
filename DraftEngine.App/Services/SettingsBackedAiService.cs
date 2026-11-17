@@ -57,7 +57,17 @@ public sealed class SettingsBackedAiService : IContractAiService
         }
     }
 
-    private IContractAiService Require() => Resolve() ?? throw new OpenAiApiKeyMissingException();
+    private IContractAiService Require()
+    {
+        // Consent is enforced here as the last line of defence: even a caller that forgot its own
+        // check cannot put contract text on the wire before the user has agreed.
+        if (!_settings.Current.AiDataConsentAccepted)
+        {
+            throw new OpenAiConsentRequiredException();
+        }
+
+        return Resolve() ?? throw new OpenAiApiKeyMissingException();
+    }
 
     /// <inheritdoc />
     public Task<string> GenerateClauseBodyAsync(Clause clause, Dictionary<string, string> fieldValues)

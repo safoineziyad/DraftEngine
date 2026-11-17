@@ -1,0 +1,23 @@
+<Project>
+
+  <!--
+    Single source of truth for the DraftEngine version.
+
+    - DraftEngineVersion is the SemVer release version, including any prerelease tag
+      (for example 0.4.0-beta.2). It drives AssemblyInformationalVersion and the value the
+      update flow compares against the signed manifest.
+    - DraftEngineFileVersion is the numeric Windows assembly/file version. Windows uses it for
+      upgrade ordering, so it must always increase and cannot carry a prerelease tag.
+    - scripts/release.ps1 updates these two values (and nothing else) when cutting a release.
+    - scripts/build-installer.ps1 reads DraftEngineFileVersion and passes it to Inno Setup as
+      the AppVersion preprocessor define, so the installer name and the app always agree.
+  -->
+  <PropertyGroup>
+    <DraftEngineVersion>0.4.0-beta.1</DraftEngineVersion>
+    <DraftEngineFileVersion>0.4.0.1</DraftEngineFileVersion>
+    <Version>$(DraftEngineVersion)</Version>
+    <AssemblyVersion>$(DraftEngineFileVersion)</AssemblyVersion>
+    <FileVersion>$(DraftEngineFileVersion)</FileVersion>
+  </PropertyGroup>
+
+</Project>

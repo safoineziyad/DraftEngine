@@ -49,6 +49,7 @@ public partial class NewContractViewModel
         {
             var values = GetFieldValues();
             var definition = SelectedDefinition;
+            var jurisdiction = IntakeFields.FirstOrDefault(field => field.Kind == IntakeFieldKind.Jurisdiction);
             var contract = new Contract
             {
                 UserId = CurrentUserId,
@@ -59,7 +60,11 @@ public partial class NewContractViewModel
                 PartiesJson = BuildPartiesJson(definition, values), // array of {"name","address"}
                 EffectiveDate = IntakeFields
                     .FirstOrDefault(field => field.Kind == IntakeFieldKind.Date)?.DateValue,
-                GoverningLaw = FirstNonEmpty(values, "GoverningLaw"),
+                GoverningLaw = jurisdiction?.EffectiveValue ?? FirstNonEmpty(values, "GoverningLaw"),
+                GoverningLawCountry = jurisdiction?.CountryCode ?? string.Empty,
+                GoverningLawSubdivision = jurisdiction?.Subdivision ?? string.Empty,
+                VenueCountry = FirstNonEmpty(values, "VenueCountry"),
+                VenueCity = FirstNonEmpty(values, "VenueCity"),
                 TermMonths = int.TryParse(
                     FirstNonEmpty(values, "TermMonths"),
                     System.Globalization.NumberStyles.Integer,
@@ -71,6 +76,11 @@ public partial class NewContractViewModel
 
             var created = await _contractService.CreateAsync(contract);
             createdId = created.Id;
+
+            if (!string.IsNullOrWhiteSpace(contract.GoverningLawCountry))
+            {
+                RememberCountry(contract.GoverningLawCountry);
+            }
             await _fieldService.MapFieldsAsync(created.Id, values);
 
             var selectedClauseIds = AllClauseOptions()
@@ -97,6 +107,24 @@ public partial class NewContractViewModel
     }
 
     private bool CanGenerate() => !IsBusy && SelectedClauseCount > 0;
+
+    /// <summary>Remembers the chosen country so it appears first next time; never blocks generation.</summary>
+    private void RememberCountry(string countryCode)
+    {
+        try
+        {
+            var settings = _appSettings.Current;
+            var recents = new System.Collections.Generic.List<string> { countryCode };
+            recents.AddRange(settings.RecentCountryCodes.Where(code =>
+                !string.Equals(code, countryCode, StringComparison.OrdinalIgnoreCase)));
+            settings.RecentCountryCodes = recents.Take(5).ToList();
+            _ = _appSettings.SaveAsync(settings);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning("Could not remember the recently used country ({ExceptionType}).", ex.GetType().Name);
+        }
+    }
 
     /// <summary>
     /// Builds the <c>PartiesJson</c> payload stored on the contract.

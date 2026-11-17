@@ -220,7 +220,7 @@ public sealed class AnalyzerTests : IDisposable
     }
 
     [Fact]
-    public async Task Playbooks_ExistForAllFourContractTypes()
+    public void Playbooks_ExistForAllFourContractTypes()
     {
         Assert.Equal(4, PlaybookCatalog.All.Count);
         foreach (var type in new[]

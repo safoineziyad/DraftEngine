@@ -23,6 +23,7 @@ public class SensitiveDataEncryptionTests : IDisposable
 
     /// <summary>Interceptor-free options, used to inspect what actually lands on disk.</summary>
     private readonly DbContextOptions<DraftEngineDbContext> _plainOptions;
+    private readonly SensitiveDataInterceptor _interceptor = new();
 
     public SensitiveDataEncryptionTests()
     {
@@ -31,7 +32,7 @@ public class SensitiveDataEncryptionTests : IDisposable
 
         _encryptedOptions = new DbContextOptionsBuilder<DraftEngineDbContext>()
             .UseSqlite(_connection)
-            .AddInterceptors(new SensitiveDataInterceptor())
+            .AddInterceptors(_interceptor)
             .Options;
 
         _plainOptions = new DbContextOptionsBuilder<DraftEngineDbContext>()
@@ -286,6 +287,47 @@ public class SensitiveDataEncryptionTests : IDisposable
         using var reloadContext = new DraftEngineDbContext(_encryptedOptions);
         var reloaded = await reloadContext.ContractFields.AsNoTracking().SingleAsync();
         Assert.Equal("Revised purpose", reloaded.Value);
+    }
+
+    /// <summary>
+    /// A value encrypted under another Windows account (or with damaged ciphertext) must never be
+    /// replaced by an empty string and then overwritten. The original ciphertext stays byte-for-byte
+    /// intact even when the entity is saved through a path that marks every property modified.
+    /// </summary>
+    [Fact]
+    public async Task UndecryptableCiphertext_IsPreservedWhenAnUnrelatedFieldIsSaved()
+    {
+        var contractId = await SaveContractAsync("Text that belongs to another Windows profile");
+        const string damagedCiphertext = "DEENC1:AAAA";
+
+        using (var rawContext = new DraftEngineDbContext(_plainOptions))
+        {
+            await rawContext.Database.ExecuteSqlRawAsync(
+                "UPDATE Contracts SET AssembledText = {0} WHERE Id = {1}",
+                damagedCiphertext,
+                contractId);
+        }
+
+        using var appContext = new DraftEngineDbContext(_encryptedOptions);
+        var contract = await appContext.Contracts.SingleAsync(c => c.Id == contractId);
+
+        // The undecryptable value is exposed as ciphertext, never as an empty string, so a later
+        // save cannot erase it.
+        Assert.Equal(damagedCiphertext, contract.AssembledText);
+        Assert.Contains(
+            _interceptor.UnavailableColumns,
+            issue => issue.PropertyName == nameof(Contract.AssembledText));
+
+        // Simulate a service that attaches the entity and marks every property modified.
+        contract.Title = "Renamed after the failed decryption";
+        appContext.Contracts.Update(contract);
+        await appContext.SaveChangesAsync();
+
+        using var verifyContext = new DraftEngineDbContext(_plainOptions);
+        var stored = await verifyContext.Contracts.AsNoTracking().SingleAsync(c => c.Id == contractId);
+        Assert.Equal(damagedCiphertext, stored.AssembledText);
+        Assert.Equal("Renamed after the failed decryption", stored.Title);
+        Assert.StartsWith(SensitiveDataInterceptor.MarkerPrefix, stored.ClientName, StringComparison.Ordinal);
     }
 
     /// <summary>Saves a contract through the production-shaped (encrypted) context.</summary>

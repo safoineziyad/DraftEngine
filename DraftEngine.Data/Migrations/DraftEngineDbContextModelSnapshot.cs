@@ -82,6 +82,11 @@ namespace DraftEngine.Data.Migrations
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("NeedsLegalReview")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
                     b.Property<int?>("OwnerUserId")
                         .HasColumnType("INTEGER");
 
@@ -120,6 +125,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Confidentiality"
@@ -135,6 +141,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Definition of Confidential Information"
@@ -150,6 +157,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Exclusions"
@@ -165,6 +173,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Term"
@@ -172,7 +181,7 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 5,
-                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
                             Category = "Governing Law",
                             ContractType = "MutualNda",
                             IsArchived = false,
@@ -180,6 +189,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = true,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Governing Law"
@@ -195,6 +205,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Entire Agreement"
@@ -210,6 +221,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "No License"
@@ -225,6 +237,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Return of Materials"
@@ -240,6 +253,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Remedies"
@@ -255,6 +269,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = true,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Assignment"
@@ -270,6 +285,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = true,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 11,
                             Source = "System",
                             Title = "Severability"
@@ -285,6 +301,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = true,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 12,
                             Source = "System",
                             Title = "Counterparts"
@@ -300,6 +317,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Confidentiality"
@@ -315,6 +333,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Definition of Confidential Information"
@@ -330,6 +349,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Exclusions"
@@ -345,6 +365,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Obligations of Receiving Party"
@@ -360,6 +381,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Term / Duration"
@@ -375,6 +397,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Return or Destruction of Information"
@@ -382,7 +405,7 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 19,
-                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
                             Category = "Governing Law",
                             ContractType = "OneWayNda",
                             IsArchived = false,
@@ -390,6 +413,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = true,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Governing Law"
@@ -405,6 +429,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Remedies"
@@ -420,6 +445,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Entire Agreement"
@@ -435,6 +461,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = true,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Severability"
@@ -450,6 +477,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Engagement / Scope of Work"
@@ -465,6 +493,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Independent Contractor Status"
@@ -480,6 +509,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Fees and Payment"
@@ -495,6 +525,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Term and Termination"
@@ -510,6 +541,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Intellectual Property Rights"
@@ -525,6 +557,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Confidentiality"
@@ -540,6 +573,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Limitation of Liability"
@@ -555,6 +589,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Indemnification"
@@ -562,7 +597,7 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 31,
-                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
                             Category = "Governing Law",
                             ContractType = "IndependentContractorAgreement",
                             IsArchived = false,
@@ -570,6 +605,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = true,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Governing Law"
@@ -585,6 +621,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Entire Agreement / Severability"
@@ -600,6 +637,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 1,
                             Source = "System",
                             Title = "Services"
@@ -615,6 +653,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 2,
                             Source = "System",
                             Title = "Fees and Expenses"
@@ -630,6 +669,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 3,
                             Source = "System",
                             Title = "Term and Termination"
@@ -645,6 +685,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 4,
                             Source = "System",
                             Title = "Independent Contractor Relationship"
@@ -660,6 +701,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 5,
                             Source = "System",
                             Title = "Confidentiality"
@@ -675,6 +717,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 6,
                             Source = "System",
                             Title = "Intellectual Property"
@@ -690,6 +733,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = true,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 7,
                             Source = "System",
                             Title = "Non-Solicitation"
@@ -705,6 +749,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 8,
                             Source = "System",
                             Title = "Limitation of Liability"
@@ -712,7 +757,7 @@ namespace DraftEngine.Data.Migrations
                         new
                         {
                             Id = 41,
-                            BodyTemplate = "This Agreement shall be governed by and construed in accordance with the laws of {{GoverningLaw}}.",
+                            BodyTemplate = "This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.",
                             Category = "Governing Law",
                             ContractType = "ConsultingAgreement",
                             IsArchived = false,
@@ -720,6 +765,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = true,
                             SortOrder = 9,
                             Source = "System",
                             Title = "Governing Law"
@@ -735,6 +781,7 @@ namespace DraftEngine.Data.Migrations
                             IsOptional = false,
                             IsSystem = true,
                             IsUserDefined = false,
+                            NeedsLegalReview = false,
                             SortOrder = 10,
                             Source = "System",
                             Title = "Miscellaneous"
@@ -788,6 +835,16 @@ namespace DraftEngine.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GoverningLawCountry")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GoverningLawSubdivision")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsArchived")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -821,6 +878,16 @@ namespace DraftEngine.Data.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("VenueCity")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VenueCountry")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

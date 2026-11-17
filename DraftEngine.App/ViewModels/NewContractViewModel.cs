@@ -34,10 +34,6 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     // Draft key used to persist the in-progress wizard across navigation.
     private const string NewContractDraftKey = "new-contract";
 
-    // Default governing law offered on step 2. (Hook up to the Settings page when it
-    // exposes a user preference; "California" is the built-in fallback.)
-    private static readonly string[] GoverningLawChoices = { "California", "New York", "Delaware", "Texas" };
-
     private readonly IContractService _contractService;
     private readonly IClauseService _clauseService;
     private readonly IFieldService _fieldService;
@@ -293,7 +289,6 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // Contract defaults come from the Settings page. This method runs from the
         // constructor *and* from ResetWizard (on every navigation), so the latest saved
         // defaults are applied every time the wizard opens (A3).
-        var governingLaw = ResolveDefaultGoverningLaw(out var governingLawChoices);
         var termMonths = _appSettings.Current.DefaultTermMonths.ToString(CultureInfo.InvariantCulture);
         var definition = SelectedDefinition;
 
@@ -301,16 +296,14 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         // which placeholder keys they map to; the wizard only adapts them to input kinds.
         foreach (var intake in definition.IntakeFields)
         {
-            var field = BuildIntakeField(intake, governingLaw, governingLawChoices, termMonths, _localization);
+            var field = BuildIntakeField(intake, termMonths, _localization);
             field.PropertyChanged += OnIntakeFieldChanged;
             IntakeFields.Add(field);
         }
     }
 
-    private static IntakeFieldViewModel BuildIntakeField(
+    private IntakeFieldViewModel BuildIntakeField(
         ContractTypeIntakeField intake,
-        string governingLaw,
-        string[] governingLawChoices,
         string termMonths,
         ILocalizationService localization)
     {
@@ -319,6 +312,8 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
             "Date" => IntakeFieldKind.Date,
             "Choice" => IntakeFieldKind.Choice,
             "Number" => IntakeFieldKind.Number,
+            "Jurisdiction" => IntakeFieldKind.Jurisdiction,
+            "Country" => IntakeFieldKind.Country,
             _ => IntakeFieldKind.Text
         };
 
@@ -326,16 +321,12 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         var defaultValue = intake.DefaultValue;
         var defaultDate = kind == IntakeFieldKind.Date ? DateTime.Today : (DateTime?)null;
 
-        if (string.Equals(intake.DefaultValueKey, "DefaultGoverningLaw", StringComparison.OrdinalIgnoreCase))
-        {
-            choices = governingLawChoices;
-            defaultValue = governingLaw;
-        }
-        else if (string.Equals(intake.DefaultValueKey, "DefaultTermMonths", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(intake.DefaultValueKey, "DefaultTermMonths", StringComparison.OrdinalIgnoreCase))
         {
             defaultValue = termMonths;
         }
 
+        var settings = _appSettings.Current;
         return new IntakeFieldViewModel(
             intake.Key,
             intake.Label,
@@ -344,36 +335,10 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
             choices,
             defaultValue,
             defaultDate,
-            localization);
-    }
-
-    /// <summary>
-    /// Resolves the governing law pre-selected on step 2 and the options offered for it (A3).
-    /// </summary>
-    /// <remarks>
-    /// The configured default is appended to the built-in options when it is not already
-    /// one, so a custom value saved on the Settings page is still shown and stays selected.
-    /// </remarks>
-    private string ResolveDefaultGoverningLaw(out string[] choices)
-    {
-        var preferred = _appSettings.Current.DefaultGoverningLaw;
-        choices = GoverningLawChoices;
-
-        if (string.IsNullOrWhiteSpace(preferred))
-        {
-            return GoverningLawChoices[0];
-        }
-
-        var known = GoverningLawChoices.FirstOrDefault(
-            choice => string.Equals(choice, preferred, StringComparison.OrdinalIgnoreCase));
-
-        if (known is not null)
-        {
-            return known;
-        }
-
-        choices = GoverningLawChoices.Append(preferred).ToArray();
-        return preferred;
+            localization,
+            defaultCountryCode: settings.DefaultGoverningLawCountry,
+            defaultSubdivision: settings.DefaultGoverningLawSubdivision,
+            recentCountryCodes: settings.RecentCountryCodes);
     }
 
     private void OnIntakeFieldChanged(object? sender, PropertyChangedEventArgs e)

@@ -58,7 +58,7 @@ public sealed class ExportTests : IDisposable
         await new AnalysisReportBuilder().BuildDocxAsync(result, output);
 
         using var document = WordprocessingDocument.Open(output, false);
-        var text = document.MainDocumentPart!.Document.Body!.InnerText;
+        var text = document.MainDocumentPart!.Document!.Body!.InnerText;
         Assert.Contains(AnalysisResult.Disclaimer, text, StringComparison.Ordinal);
         Assert.Contains("Contract review report", text, StringComparison.Ordinal);
         Assert.Contains("Confidentiality", text, StringComparison.Ordinal);

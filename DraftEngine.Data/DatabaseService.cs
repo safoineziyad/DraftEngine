@@ -17,6 +17,13 @@ public static class DatabaseService
     private const int BackupFileCount = 3;
 
     /// <summary>
+    /// Exception <see cref="Exception.Data"/> key set to true when a failed upgrade was rolled
+    /// back by restoring the pre-migration snapshot. Startup uses it to choose a localized
+    /// message without parsing the English message text.
+    /// </summary>
+    public const string RestoredDataKey = "DraftEngine.DatabaseRestored";
+
+    /// <summary>
     /// Creates the database directory if needed (e.g. %APPDATA%\DraftEngine), takes a
     /// consistent snapshot of the database when pending migrations are about to be applied,
     /// and then applies those migrations. If a migration fails, the pre-migration snapshot is
@@ -54,7 +61,9 @@ public static class DatabaseService
                   "Check that the application data folder is writable, then restart the application.";
 
             Log(services, LogLevel.Error, friendlyMessage, ex);
-            throw new InvalidOperationException(friendlyMessage, ex);
+            var error = new InvalidOperationException(friendlyMessage, ex);
+            error.Data[RestoredDataKey] = restored;
+            throw error;
         }
     }
 
@@ -203,11 +212,7 @@ public static class DatabaseService
     {
         try
         {
-            // Release every pooled handle before replacing the files.
-            SqliteConnection.ClearAllPools();
-            DeleteIfExists(databasePath + "-wal");
-            DeleteIfExists(databasePath + "-shm");
-            File.Copy(backupPath, databasePath, overwrite: true);
+            RestoreSnapshot(databasePath, backupPath);
 
             Log(services, LogLevel.Warning,
                 $"The database upgrade failed; restored the pre-upgrade snapshot '{backupPath}'.");
@@ -219,6 +224,42 @@ public static class DatabaseService
                 $"The database upgrade failed and the snapshot '{backupPath}' could not be restored.", ex);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Replaces a database file with a standalone snapshot through the SQLite backup API.
+    /// The snapshot is opened first so an unreadable backup can never delete live data; the
+    /// destination and its <c>-wal</c>/<c>-shm</c> sidecars are then removed so no stale WAL
+    /// frame can replay over the restored pages.
+    /// </summary>
+    internal static void RestoreSnapshot(string databasePath, string backupPath)
+    {
+        if (!File.Exists(backupPath))
+        {
+            throw new FileNotFoundException("The pre-upgrade database snapshot no longer exists.", backupPath);
+        }
+
+        // Release every pooled handle before touching the files.
+        SqliteConnection.ClearAllPools();
+
+        using var snapshot = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = backupPath,
+            Pooling = false
+        }.ConnectionString);
+        snapshot.Open();
+
+        DeleteIfExists(databasePath);
+        DeleteIfExists(databasePath + "-wal");
+        DeleteIfExists(databasePath + "-shm");
+
+        using var destination = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = databasePath,
+            Pooling = false
+        }.ConnectionString);
+        destination.Open();
+        snapshot.BackupDatabase(destination);
     }
 
     private static void DeleteIfExists(string path)

@@ -24,6 +24,9 @@ public sealed class AppOptions
     /// <summary>Gets the commercial-readiness feature switches.</summary>
     public FeatureOptions Features { get; } = new();
 
+    /// <summary>Gets the signed update-manifest configuration (public key, URLs, hosts).</summary>
+    public UpdateOptions Updates { get; } = new();
+
     /// <summary>
     /// Loads the options from configuration and applies environment-variable overrides.
     /// The <c>OPENAI_API_KEY</c> environment variable wins over <c>OpenAI:ApiKey</c> so a
@@ -52,8 +55,19 @@ public sealed class AppOptions
             configuration, "Features:LicenseGracePeriodDays", options.Features.LicenseGracePeriodDays);
         options.Features.AutoUpdateEnabled = ReadBool(
             configuration, "Features:AutoUpdateEnabled", options.Features.AutoUpdateEnabled);
-        options.Features.UpdateCheckEnabled = ReadBool(configuration, "Features:UpdateCheckEnabled");
-        options.Features.UpdateManifestUrl = configuration["Features:UpdateManifestUrl"] ?? options.Features.UpdateManifestUrl;
+        options.Updates.ManifestUrl = configuration["Updates:ManifestUrl"] ?? options.Updates.ManifestUrl;
+        options.Updates.BetaManifestUrl = configuration["Updates:BetaManifestUrl"] ?? options.Updates.BetaManifestUrl;
+        options.Updates.PublicKey = configuration["Updates:PublicKey"] ?? options.Updates.PublicKey;
+        options.Updates.RequireAuthenticode = ReadBool(
+            configuration, "Updates:RequireAuthenticode", options.Updates.RequireAuthenticode);
+        options.Updates.EnableBetaChannel = ReadBool(
+            configuration, "Updates:EnableBetaChannel", options.Updates.EnableBetaChannel);
+        var hosts = configuration["Updates:AllowedInstallerHosts"];
+        if (!string.IsNullOrWhiteSpace(hosts))
+        {
+            options.Updates.AllowedInstallerHosts = hosts
+                .Split([';', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        }
         options.Features.OnboardingEnabled = ReadBool(configuration, "Features:OnboardingEnabled");
         options.Features.AboutEnabled = ReadBool(configuration, "Features:AboutEnabled");
 
@@ -134,6 +148,33 @@ public sealed class SerilogOptions
 /// Commercial-readiness switches. The GitHub auto-update check is enabled by default; all
 /// other feature flags remain disabled.
 /// </summary>
+/// <summary>
+/// Signed update flow configuration. The public key is embedded here (not a secret); the private
+/// signing key stays offline with the founder. URLs may be pointed at a separate releases
+/// repository without a code change.
+/// </summary>
+public sealed class UpdateOptions
+{
+    /// <summary>Stable-channel manifest URL.</summary>
+    public string ManifestUrl { get; set; } =
+        "https://github.com/safoineziyad/DraftEngine/releases/latest/download/latest.json";
+
+    /// <summary>Beta-channel manifest URL (empty disables the beta option).</summary>
+    public string BetaManifestUrl { get; set; } = string.Empty;
+
+    /// <summary>ECDSA P-256 public key (SPKI, base64). Paste the value printed by UpdateKeyTool keygen.</summary>
+    public string PublicKey { get; set; } = string.Empty;
+
+    /// <summary>Exact installer hosts allowed by policy.</summary>
+    public string[] AllowedInstallerHosts { get; set; } = { "github.com", "objects.githubusercontent.com" };
+
+    /// <summary>Verify Authenticode as well as the manifest hash (off until installers are signed).</summary>
+    public bool RequireAuthenticode { get; set; }
+
+    /// <summary>Whether the beta channel may be selected on this build.</summary>
+    public bool EnableBetaChannel { get; set; }
+}
+
 public sealed class FeatureOptions
 {
     /// <summary>Gets or sets whether the offline license check/activation screen is enabled.</summary>
@@ -142,14 +183,8 @@ public sealed class FeatureOptions
     /// <summary>Gets or sets how many days after expiry the app keeps working offline.</summary>
     public int LicenseGracePeriodDays { get; set; } = 14;
 
-    /// <summary>Gets or sets whether the GitHub auto-update check runs at startup.</summary>
+    /// <summary>Gets or sets whether update checking is available at all in this build.</summary>
     public bool AutoUpdateEnabled { get; set; } = true;
-
-    /// <summary>Gets or sets whether the legacy manifest check is available on the About page.</summary>
-    public bool UpdateCheckEnabled { get; set; }
-
-    /// <summary>Gets or sets the HTTPS URL of the static update manifest.</summary>
-    public string UpdateManifestUrl { get; set; } = string.Empty;
 
     /// <summary>Gets or sets whether the first-run onboarding dialog is shown.</summary>
     public bool OnboardingEnabled { get; set; }

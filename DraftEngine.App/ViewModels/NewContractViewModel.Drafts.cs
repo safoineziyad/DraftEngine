@@ -138,6 +138,23 @@ public partial class NewContractViewModel
                 case IntakeFieldKind.Choice:
                     field.SelectedChoice = value;
                     break;
+                case IntakeFieldKind.Jurisdiction:
+                    if (DraftEngine.Core.Data.JurisdictionResolver.TryMapLegacy(
+                            value, out var countryCode, out var subdivision))
+                    {
+                        field.SelectedCountry = DraftEngine.Core.Data.CountryCatalog.Find(countryCode)
+                            ?? DraftEngine.Core.Data.CountryCatalog.Find(DraftEngine.Core.Data.CountryCatalog.DefaultCode());
+                        field.SubdivisionText = subdivision;
+                    }
+                    else
+                    {
+                        field.SubdivisionText = value;
+                    }
+                    break;
+                case IntakeFieldKind.Country:
+                    field.SelectedCountry = DraftEngine.Core.Data.CountryCatalog.Find(value)
+                        ?? field.SelectedCountry;
+                    break;
                 default:
                     field.Value = value;
                     break;

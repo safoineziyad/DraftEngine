@@ -63,7 +63,8 @@ public static class ServiceRegistration
         // Portable encrypted backup/restore and plain data export.
         services.AddSingleton<IPortableBackupService>(provider => new PortableBackupService(
             provider.GetRequiredService<IDatabaseContextFactory>(),
-            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>()));
+            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>(),
+            protector: provider.GetRequiredService<DraftEngine.App.Services.Settings.ISecretProtector>()));
 
         // Wizard draft persistence, licensing (disabled by default), update check (off by default).
         services.AddTransient<IWizardDraftService, WizardDraftService>();
@@ -73,16 +74,21 @@ public static class ServiceRegistration
         services.AddSingleton<
             DraftEngine.App.Services.Licensing.ILicenseService,
             DraftEngine.App.Services.Licensing.LicenseService>();
-        services.AddSingleton<
-            DraftEngine.App.Services.Updates.IUpdateCheckService,
-            DraftEngine.App.Services.Updates.UpdateCheckService>();
-        services.AddHttpClient<DraftEngine.App.Services.Updates.IUpdateService,
-            DraftEngine.App.Services.Updates.UpdateService>(client =>
+        // Signed update flow: one shared HTTP client, confirmation prompts and a pre-update snapshot.
+        services.AddHttpClient("updates", client => client.Timeout = TimeSpan.FromSeconds(30));
+        services.AddSingleton<DraftEngine.App.Services.Updates.IUpdatePrompt,
+            DraftEngine.App.Services.Updates.WpfUpdatePrompt>();
+        services.AddSingleton(provider =>
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("DraftEngine-Updater");
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-            client.Timeout = TimeSpan.FromMinutes(5);
+            var options = provider.GetRequiredService<AppOptions>();
+            return new DraftEngine.App.Services.Updates.UpdateSnapshotService(
+                options.Data.ConnectionString,
+                System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "DraftEngine",
+                    "updates"));
         });
+        services.AddSingleton<UpdateFlowViewModel>();
 
         // Localization: resx-backed strings, live language switching and persistence.
         services.AddSingleton<ILanguagePreferenceStore, RegistryLanguagePreferenceStore>();

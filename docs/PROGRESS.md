@@ -64,7 +64,9 @@ Historical checkpoint next step (superseded): migrate MainWindow and sidebar lit
 - Resource count: 207 keys per language. The pending-XAML literal guard finds 158 candidates across seven pending screens; this excludes C# literals and is not a complete user-facing string count.
 - Release build/test evidence is from `dotnet test DraftEngine.sln -c Release --no-restore`; no UI was visually verified.
 
-NEXT STEP: none for this batch — Tasks 1–4 are implemented. Remaining known work: the pre-existing 0.2.2 upgrade data loss (see Task 1 note) and migrating Clause Manager / Analyze / About / License Activation.
+NEXT STEP: Update work complete through Phase 5. Next: the maintainer generates the release key with `UpdateKeyTool keygen` (outside the repo), pastes the public key into `Updates:PublicKey`, runs `scripts\release.ps1 ... -DryRun`, then cuts a signed release. No update UI has been visually verified, and the update strings are machine-drafted.
+
+(Historical, previous round) Phases 1–4 were complete (GATE 1: 372/372; GATE 2: installer + SHA-256; pushed to `feature/i18n-theme`; `v0.4.0-beta.1` published as a pre-release with `v0.2.2` still Latest). Remaining known work: migrate Clause Manager / Analyze / About / License Activation, human translation review, code signing, and click-through of the installed beta (not visually verified).
 
 ### Final verification (2026-11-10)
 
@@ -131,3 +133,116 @@ Verified baseline on `feature/i18n-theme` before any edits: Release build 0 erro
 
 Complete: 222 tests, multi-type generation, clause manager, drafts, archive, AI diff/redaction,
 onboarding, About, licensing behind a flag.
+
+### Phase 1 — 0.2.2 upgrade data-loss fix (2026-11-12)
+
+**Root cause (reproduced, not the reported one).** No migration deletes or re-inserts the user and no cascade fires. `dotnet ef migrations script` contains no `DELETE FROM "Users"` / `DROP TABLE "Users"` (0 matches; only the `InitialCreate` seed insert). A step-by-step migration harness kept `Contracts = 1` after every migration. The loss happened earlier: EF `Migrate()` leaves SQLite in WAL mode (`PRAGMA journal_mode = wal`, `-wal` file 457,352 bytes), and the test's `File.Copy` of only `draftengine.db` produced a stale/incomplete database, so the verifier saw `Contracts = 0`. Fresh databases default to `journal_mode = delete`; only after the first `Migrate()` does WAL appear.
+
+**Fixes.**
+- All database copies/snapshots now use the SQLite online backup API (`SqliteConnection.BackupDatabase`), never `File.Copy`.
+- `DatabaseService.EnsureDatabaseCreated` takes the snapshot **before** any migration, aborts the upgrade if the snapshot cannot be created, and restores the snapshot (clearing pools, `-wal`, `-shm`) if a migration throws. The exception carries `DatabaseService.RestoredDataKey = true`.
+- Startup shows a localized `StartupErrorWindow` with a “Copy diagnostics” button that copies only version, Windows, .NET, exception type and the restored flag (`StartupDiagnostics`); no messages, paths or contract data.
+- `Contracts.UserId → Users.Id` is now `DeleteBehavior.Restrict` via the new corrective migration `20261110212129_RestrictUserCascade` (released migrations untouched; `Clauses.OwnerUserId` was already Restrict).
+
+**Test evidence.** Full suite **372 passed, 0 failed** (232 `DraftEngine.Tests`, 112 `DraftEngine.App.Tests`, 28 `DraftEngine.Analysis.Tests`), up from 363 with 1 failure. New/updated coverage:
+- `UpgradeMigrationTests` passes and compares every user table row-by-row, by column name and row Id, between the pre-upgrade snapshot and the upgraded database (byte equality is invalid because SQLite rebuilds tables). The seeded `Clauses` library may grow/normalize; every original clause Id must survive.
+- `UpgradeDataPreservationTests`: real 0.2.2 schema fixture (3 contracts, fields, clauses, versions, chat messages, generated documents) and a 0.3.x-era fixture; identical row counts for every user table and retained contract text/clause ids.
+- `DatabaseBackupTests.CreateSnapshot_FromWalDatabase_IncludesCommittedRows` reproduces the WAL root cause.
+- `DatabaseUpgradeFailureTests`: a deliberately failing migration restores the original database, keeps the contract row and reports the restore.
+- `MigrationUserSafetyTests`: scans every migration `UpOperation` and fails on `DeleteData`/`DropTable`/SQL delete targeting Users or Contracts.
+- `CascadeProtectionTests`: every FK to `User` is `Restrict`; deleting the user throws and the contract survives.
+- `StartupDiagnosticsTests`: diagnostics contain no contract text, key or path.
+
+**Real data-folder copy check (counts only).** A copy of `DE-backup-20261110-2126` was migrated through `DatabaseService` in a temp folder (source untouched): Users 1→1, Contracts 1→1, ContractFields 9→9, ContractClauses 9→9, ContractVersions 1→1, Clauses 42→42, ChatMessages 0→0, GeneratedDocuments 0→0, ContractAnalyses 0→0; `__EFMigrationsHistory` 10→11. **Not visually verified.**
+
+### Phases 2–4 — installer and beta pre-release (2026-11-12)
+
+- Versions agree: assembly/file `0.4.0.1`, informational `0.4.0-beta.1`, installer `AppVersion 0.4.0.1`; the UI reads the assembly. Installer `AppId` is the v0.2.2 GUID and there is no `[UninstallDelete]`, so `%APPDATA%\DraftEngine` is never removed. The build script fails if either invariant changes.
+- Kept the framework-dependent publish (`--self-contained false`): the installer is 14.2 MB instead of ~70 MB+, and `InitializeSetup` now checks for the x64 .NET 8 Desktop Runtime, stops with a clear message and opens the download page when it is missing.
+- `installer/DraftEngine.iss` excludes `*.pdb`; `scripts/build-installer.ps1` cleans, publishes, locates ISCC, skips signing cleanly, writes the `.sha256` and prints every path. Output moved from `dist/` to `installer/Output/` (both ignored).
+- Installer: `installer/Output/DraftEngine-Setup-0.4.0.1.exe` (14,256,171 bytes), SHA-256 `40aaee43fe6c98e896114fe3eacacd03c5c0b023fbf52cca11b2d4d9902e5948`.
+- Published `v0.4.0-beta.1` as a **pre-release** from `feature/i18n-theme` with the installer and checksum assets; `v0.2.2` remains Latest. Release notes: `docs/RELEASE-NOTES-0.4.0-beta.1.md`.
+- `installer/Output/`, `publish/` and `dist/` are git-ignored; no installer, `.pdb`, key or secret is committed. Release upload was slow but completed; asset digest matches the local hash.
+- **Not visually verified:** the installer wizard (including the runtime check), the installed app, and the localized startup error window.
+
+### Phase 1 — SQLite backup safety audit (2026-11-12, batch 2)
+
+| Path | Code | Mechanism | WAL-safe |
+|---|---|---|---|
+| Pre-migration snapshot | `DatabaseService.BackupBeforePendingMigrations` → `CreateSnapshot` | `SqliteConnection.BackupDatabase` | Yes |
+| Migration-failure restore | `DatabaseService.TryRestoreBackup` → `RestoreSnapshot` | Opens/validates the snapshot, deletes the live file and `-wal`/`-shm`, then `BackupDatabase` into a fresh destination (was `File.Copy`) | Yes |
+| Portable encrypted backup | `PortableBackupService.ExportEncryptedAsync` → `CollectAsync` | Reads entities/rows into an encrypted JSON payload; never copies the file | Yes (no file copy) |
+| Portable restore | `PortableBackupService.ImportEncryptedAsync` → `ReplaceAllAsync` | Row deletes/inserts in one transaction plus an encrypted pre-import payload | Yes (no file copy) |
+| “Export my data” (JSON / CSV) | `PortableBackupService.WriteJsonAsync` / `WriteCsvAsync` | Queries rows through EF; no database file access | Yes (no file copy) |
+| Diagnostics | `StartupDiagnostics` | Version/OS/.NET/exception types only; no database access | N/A |
+| Tests | `UpgradeMigrationTests.CopyDatabase`, `DatabaseService.CreateSnapshot` in `UpgradeDataPreservationTests` / `DatabaseBackupTests` | `BackupDatabase` | Yes |
+
+- New test `DatabaseBackupTests.WalDatabase_BackupAndRestore_PreservesEveryTable`: builds the real schema, inserts into `Contracts`, `ContractFields`, `ContractClauses`, `ChatMessages`, `ContractVersions`, `GeneratedDocuments` with `journal_mode=WAL` and `wal_autocheckpoint=0` (asserts a non-empty `-wal`), snapshots, damages the live database, restores through `RestoreSnapshot`, and asserts row counts are identical for **every** table in `sqlite_master`.
+- Affected tests: 9/9 pass. **Not visually verified** (no UI change).
+
+### Phase 2 — country catalog (2026-11-12, batch 3)
+
+- Bundled `DraftEngine.Core/Data/countries.json`: 264 CLDR country/territory entries with alpha-2 codes and names in en/fr/ar/es, embedded as a resource (no runtime network). Source and Unicode License v3 recorded in `docs/LICENSES.md`.
+- `CountryCatalog`: culture-aware sorting (Arabic included), diacritic-insensitive prefix/word search, Windows-region default with a US fallback.
+- `SubdivisionCatalog`: US states + DC (51), Canadian provinces/territories (13), Australian states/territories (8), UK nations (4); every other country uses free text.
+- `JurisdictionResolver`: composes the "Country — Subdivision" noun phrase and maps legacy values (`California`, `Ontario`, `England and Wales`, localized country names); unknown text is never discarded.
+- Tests: `CountryCatalogTests` 16/16 pass (four-language coverage, no duplicate codes, per-culture sort order, diacritic and Arabic search, subdivision counts, legacy mapping). **Not visually verified.**
+
+### Phase 2 — structured jurisdiction storage (2026-11-12, batch 4)
+
+- `Contract` gains `GoverningLawCountry` (ISO alpha-2), `GoverningLawSubdivision`, `VenueCountry` and `VenueCity`; the original `GoverningLaw` display text is retained.
+- Migration `20261115112708_AddJurisdictionFields` adds the columns and maps known legacy values (US states/DC, Canadian provinces, Australian states, UK nations and “England and Wales”) without altering the original text. Unknown values stay free text.
+- Portable backup, encrypted restore, JSON export and CSV export now carry the four fields; settings and `BackupSettings` gained default country/subdivision with a Windows-region default.
+- Tests: `JurisdictionMigrationTests.LegacyFreeText_IsMapped_AndUnchanged` (3 legacy contracts, including an unknown value) and `PortableBackupTests.EncryptedBackup_RoundTripsJurisdictionFields` pass. **Not visually verified.**
+
+### Phase 2 — jurisdictions (complete, 2026-11-12)
+
+- **Country data.** 264 CLDR country/territory entries in en/fr/ar/es bundled as `DraftEngine.Core/Data/countries.json` (Unicode License v3 in `docs/LICENSES.md`); no runtime network.
+- **Pickers.** The wizard's governing-law field is now a `Jurisdiction` picker: editable country combo with type-ahead, diacritic-insensitive filtering, culture-aware sort (Arabic included), recent countries first, Windows-region default, built-in subdivisions only for US (+DC), Canada, Australia and the four UK nations, free-text subdivision elsewhere. Courts/venue use a country picker plus free-text city. The Settings default governing law uses the same country list.
+- **Storage.** `GoverningLawCountry`, `GoverningLawSubdivision`, `VenueCountry`, `VenueCity` columns; migration `20261115112708_AddJurisdictionFields` maps old free text (US states, Canadian provinces, Australian states, UK nations, “England and Wales”) without changing it; unknown text stays free text. Backup, restore, JSON and CSV export carry the fields; settings persist the default country/subdivision and recent countries.
+- **Clause wording.** Governing-law clauses now read “This Agreement is governed by the laws of the following jurisdiction: {{GoverningLaw}}.” and are flagged `NeedsLegalReview` by migration `20261115113011_AddClauseLegalReviewFlag` (no user-authored clause is touched). The review step shows the localized notice in EN/FR/AR/ES (`Wizard.JurisdictionDisclaimer`).
+- **Evidence.** GATE 2: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **399 passed, 0 failed** (251 + 120 + 28), up from 373. New tests: `CountryCatalogTests` (16), `JurisdictionMigrationTests` (2), `IntakeFieldViewModelTests` (7), `PortableBackupTests.EncryptedBackup_RoundTripsJurisdictionFields`; `ContractServiceTests` and the generation snapshot assert the reworded clause. **Not visually verified** (wizard/settings pickers, RTL layout).
+
+### Phase 3 — AI profiles (complete, 2026-11-12)
+
+- **Profiles.** `AiProfile` (Core) stores name, preset, base URL, model and key. Presets: OpenAI-compatible, Azure OpenAI, Ollama, LM Studio, custom. Settings persists any number of profiles with each key DPAPI-encrypted; the legacy single key/model/custom-URL file migrates into one profile on load, and callers that save a fresh settings object cannot wipe the list.
+- **No hardcoded models or prices.** The model picker is editable and populated only from the provider's `GET {base}/models` (OpenAI `data[].id` and Ollama `models[].name` shapes) plus whatever id the user types. Azure deployments that expose no model list are verified with one minimal chat request.
+- **Connection test.** `AiProviderClient` classifies invalid key (401), access denied (403), quota vs rate limit (429 body), network/timeout, wrong URL (404 without a model error), model not found, and 5xx, with human-readable sentences and no key or response body in the message.
+- **Consent.** `SettingsBackedAiService` now refuses every AI call with `OpenAiConsentRequiredException` until `AiDataConsentAccepted` is true, so no request can be sent without consent even if a caller forgets its own check.
+- **Backup.** Portable backups carry profile metadata (id, name, preset, base URL, model) without keys; restore merges them and keeps a local key only when the same profile id already exists on the machine.
+- **Azure/local.** Azure uses the `api-key` header; loopback base URLs may run without any key, while remote endpoints still require one.
+- **Evidence.** GATE 3: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **418 passed, 0 failed** (264 + 126 + 28), up from 399. New tests: `AiProviderClientTests` (12: parsing, 401/403-shaped access, quota, 5xx, network, wrong URL, model-not-found, keyless local, Azure header, chat fallback, base URL/model in chat), `AiProfileSettingsTests` (3), `AiConsentGateTests` (2), `EncryptedBackup_RestoresAiProfiles_WithoutKeys`. **Not visually verified** (Settings profile editor, preset picker, RTL layout).
+
+### Phase 4 — localization audit (complete, 2026-11-12)
+
+- **All screens migrated.** Clause Manager, Analyze, About and License Activation replaced every literal `Text`/`Content`/`ToolTip`/`Title`/`AutomationProperties.Name` with `{loc:T}` keys. `PendingMigration` is empty and `docs/i18n-baseline.txt` is **0**; the tests now forbid any literal user-facing string in any screen.
+- **New keys.** 84 keys added per language (About 18, Analyze 24, Clause 29, License 11, plus three page titles), for **499 keys per language** with parity, no empty values and every XAML key present in all four files.
+- **Page titles and license messages.** Clause Manager, Analyze and About page titles plus the license activation window's status sentences now come from resources (English fallback only if the localization service is unavailable).
+- **Theme/RTL audit.** No hardcoded colours remain in XAML (`Background`/`Foreground`/`BorderBrush`/`Fill="#…"`: none); every brush still resolves in Light, Dark and High Contrast (`ThemeDictionaryTests`), and RTL is applied through the shared window style's `FlowDirection` binding, so the migrated screens mirror with the sidebar.
+- **Known gaps recorded.** Remaining English C# status strings in `ClauseManagerViewModel`, `AnalyzeViewModel`, `AboutViewModel` and `LicenseService`, English-only clause/legal seed text, and human translation review are listed in `docs/TRANSLATION-STATUS.md` and `docs/I18N-INVENTORY.md`.
+- **Evidence.** GATE 4: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **418 passed, 0 failed** (264 + 126 + 28), including `LocalizationResourceTests`, `WpfPageOpenTests` and `ThemeDictionaryTests`. **Not visually verified** in any language; Arabic RTL has not been seen.
+
+### Update work Phase 1 — audit and design (complete, 2026-11-12)
+
+- **Baseline recorded at HEAD before any update change:** `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **418 passed, 0 failed** (264 + 126 + 28).
+- **Audit.** `UpdateService` (commit `0d94c21`) pulled `api.github.com/repos/safoineziyad/DraftEngine/releases/latest`, downloaded the first `DraftEngine-Setup-*.exe` from `github.com` and launched it with `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS`, then exited — silent install, no hash, no signature, no Authenticode check, no snapshot, no confirmation, no skip/remind, no cadence, hardcoded repo URLs. `UpdateCheckService` was a notify-only static-manifest check (off by default) with HTTPS but no host allowlist, signature or integrity. `UpdateVersionComparer` ignored prerelease tags. The Inno script hardcoded `AppVersion`. Recorded in `docs/UPDATES.md` §1; those paths are replaced in Phases 2–3.
+- **Design of record** written to `docs/UPDATES.md`: manifest schema (schemaVersion, version, publishedAt, minimumSupportedVersion, per-language releaseNotes, installer {url, fileName, sizeBytes, sha256}, signature), canonical UTF-8 serialization and ECDSA P-256 signature, HTTPS plus exact-host allowlist, downgrade refusal, 15-second/24-hour cadence, verified `.partial` download, snapshot + `/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS` launch after explicit confirmation, error taxonomy, privacy, release process and threat model.
+- **Single version source.** New `Directory.Build.props` holds `DraftEngineVersion` (0.4.0-beta.1) and `DraftEngineFileVersion` (0.4.0.1); the app csproj consumes them for Version/AssemblyVersion/FileVersion/InformationalVersion, and `scripts/build-installer.ps1` passes the numeric version to Inno Setup as `/DAppVersion`, with an `#ifndef` fallback in the .iss.
+- **Invariant updated.** `docs/INVARIANTS.md` #9 now states update checks are on by default and notify-only, can be disabled (zero requests), and are disclosed.
+- **GATE 1:** full suite green at 418/418, exit 0. **Not visually verified.**
+
+### Update work Phase 2 — core logic (complete, 2026-11-12)
+
+- **New UI-free library `DraftEngine.Updates`** (net8.0, references Core only, no WPF): `SemanticVersion` (SemVer 2.0.0, prerelease ordering, build metadata ignored), `UpdateManifest` + `ManifestCanonicalizer`, `EcdsaManifestVerifier` (P-256, SPKI public key), `UpdateManifestParser` + `UpdateHostPolicy`, `UpdateService`, `ProcessInstallerLauncher`, `WinVerifyTrustAuthenticodeVerifier`, `UpdateOptions`, clock/state abstractions and the `UpdateErrorCode` taxonomy mapped to resource keys.
+- **Behaviour.** Checks: disabled → zero HTTP; automatic checks throttled to 24 h; manual bypasses cadence; 10 s manifest timeout with no retries; 1 MiB manifest cap; stable channel ignores prereleases; downgrades refused; skipped version remembered; logs contain only versions and error types. Downloads: HTTPS + exact-host allowlist, `.partial` streaming with progress, size and SHA-256 verification, Authenticode when configured, deletion on every failure, atomic move into `%LOCALAPPDATA%\DraftEngine\updates`. Install: caller-supplied snapshot callback runs first, then `/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS`; a declined UAC prompt or launch failure returns a typed error and never exits the app by itself.
+- **Tests.** New suites `DraftEngine.Tests/Updates/SemanticVersionTests` (ordering matrix, invalid versions, build metadata) and `UpdateFlowTests` (parser validation incl. look-alike hosts/HTTP, canonical stability, valid/tampered/wrong-key/missing signatures, cadence, manual override, disabled zero-request, downgrade, skip, 404/timeout/offline/malformed, hash mismatch, truncation, blocked host, Authenticode-required, snapshot-then-launch ordering, snapshot/launch failures, log hygiene): **73 new tests, all passing**.
+- **Evidence.** GATE 2: `dotnet test DraftEngine.sln -c Release --nologo -v q` → exit 0, **491 passed, 0 failed** (337 + 126 + 28), up from 418. The previous App `UpdateService`/`UpdateCheckService` are still present and unused by the new library; Phase 3 removes them from the UI path.
+
+### Update work Phase 3 — UI flow and privacy (complete, 2026-11-15, not visually verified)
+
+- **Old path removed.** `UpdateService`/`IUpdateService` (GitHub API, silent `/VERYSILENT` install) and `UpdateCheckService`/`IUpdateCheckService` were deleted, along with their tests; `ServiceRegistration` now registers a named `updates` HttpClient, `WpfUpdatePrompt`, `UpdateSnapshotService` and the singleton `UpdateFlowViewModel`. `StartupResolutionTests` resolves the new graph.
+- **UI.** `UpdateFlowViewModel` drives the banner (version line, "What's new" notes panel in the selected language with English fallback, Update/Later/Skip, progress bar), About and Settings controls (check now, automatic checks toggle, beta toggle, last checked, current version), and localized error text from `Update.Error.*`; the About sidebar item gets a dot. Installation requires `IUpdatePrompt.ConfirmInstall` (defaults to No); declining leaves the app running and never launches the installer. `UpdateSnapshotService` copies the live SQLite database with `BackupDatabase` before launch. Settings persist `UpdateChecksEnabled`, `UpdateIncludeBeta`, `SkippedUpdateVersion`, `LastUpdateCheckUtc`; `SettingsViewModel.SaveAsync` preserves them.
+- **Startup behaviour.** 15-second delayed check, at most one automatic check per 24 hours, no retries; disabled means zero HTTP. `appsettings.json` has an empty `Updates:PublicKey` until the release key is generated, so every manifest fails verification and no update is offered.
+- **Privacy.** The disclosure sentence was appended to `About.PrivacyBody`, `Settings.PrivacyDescription` and a new onboarding bullet in all four languages; 48 new update/settings keys per language remain machine-drafted.
+- **Tests.** New `UpdateFlowViewModelTests` (banner/notes, decline never launches, confirm launches verified installer after snapshot, disabled zero requests, skip/remind persistence, invalid-signature localized error, settings toggles, 24 h throttle, language switch, four-language key parity). **GATE 3: exit 0, 493 passed, 0 failed** (335 + 130 + 28), up from 491.
+- **Not verified:** no update UI was opened or visually checked; the real signing key and release manifest do not exist yet (Phase 4).

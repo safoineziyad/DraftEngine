@@ -19,7 +19,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly INavigationService _navigation;
     private readonly AppOptions? _appOptions;
-    private readonly IUpdateService? _updateService;
+    private readonly UpdateFlowViewModel? _updateFlow;
     private readonly ILocalizationService? _localization;
     private readonly IProfileService? _profileService;
     private readonly NavigationItemViewModel[] _workspaceMaster;
@@ -68,40 +68,49 @@ public partial class MainViewModel : ObservableObject
     /// <summary>True when a build commit hash is available to show in the footer.</summary>
     public bool HasCommit => AppVersion.HasCommitHash;
 
-    /// <summary>Whether the update banner is currently visible.</summary>
-    public bool IsUpdateBannerVisible => IsUpdateAvailable && !IsUpdateDismissed;
+    /// <summary>The signed update flow (banner, notes, download progress, install confirmation).</summary>
+    public UpdateFlowViewModel? UpdateFlow => _updateFlow;
 
-    /// <summary>Banner text including the version found on GitHub.</summary>
-    public string UpdateBannerText => _availableUpdate is null
-        ? string.Empty
-        : FormatLocalized("Update.Available", $"A new version ({_availableUpdate.Version}) is available!", _availableUpdate.Version);
-
-    /// <summary>Update button text reflecting download progress.</summary>
-    public string UpdateButtonText => GetLocalized(
-        IsDownloadingUpdate ? "Update.Downloading" : "Update.Now",
-        IsDownloadingUpdate ? "Downloading..." : "Update Now");
-
-    /// <summary>Whether the update can currently be started.</summary>
-    public bool CanDownloadUpdate => IsUpdateBannerVisible && !IsDownloadingUpdate;
-
-    /// <summary>Download/install error shown in the update banner.</summary>
-    [ObservableProperty]
-    private string updateErrorMessage = string.Empty;
-
-    [ObservableProperty]
-    private bool isUpdateAvailable;
-
-    [ObservableProperty]
-    private bool isUpdateDismissed;
-
-    [ObservableProperty]
-    private bool isDownloadingUpdate;
+    /// <summary>True when the About sidebar entry shows an update indicator dot.</summary>
+    public bool HasUpdateBadge => _updateFlow?.IsUpdateAvailable ?? false;
 
     /// <summary>The window title (from appsettings.json App:DisplayName).</summary>
     public string Title => _appOptions?.App.DisplayName ?? "DraftEngine";
 
     /// <summary>True when the About/Help page should appear in the sidebar.</summary>
     public bool AboutEnabled => _appOptions?.Features.AboutEnabled ?? false;
+
+    /// <summary>
+    /// Content-free warning shown when saved data could not be decrypted under this Windows
+    /// account. It never names values; only the affected entity and column come from the error.
+    /// </summary>
+    public string? ProtectedDataWarning
+    {
+        get => _protectedDataWarning;
+        private set
+        {
+            if (SetProperty(ref _protectedDataWarning, value))
+            {
+                OnPropertyChanged(nameof(HasProtectedDataWarning));
+            }
+        }
+    }
+
+    /// <summary>Whether the protected-data banner is visible.</summary>
+    public bool HasProtectedDataWarning => !string.IsNullOrEmpty(ProtectedDataWarning);
+
+    /// <summary>Shows the localized banner for data that could not be decrypted.</summary>
+    public void ReportProtectedDataUnavailable(ProtectedDataUnavailableException unavailable)
+    {
+        ArgumentNullException.ThrowIfNull(unavailable);
+        ProtectedDataWarning = (_localization ?? LocalizationSource.Current.Service)
+            ?.GetString("Audit.ProtectedDataUnavailable")
+            ?? "This data was protected under a different Windows account and cannot be opened here. Restore it from a portable backup.";
+    }
+
+    /// <summary>Hides the protected-data banner for the current session.</summary>
+    [RelayCommand]
+    private void DismissProtectedDataWarning() => ProtectedDataWarning = null;
 
     /// <summary>Creates the main shell view model and navigates to the dashboard.</summary>
     public MainViewModel(
@@ -112,8 +121,29 @@ public partial class MainViewModel : ObservableObject
         IProfileService? profileService = null)
     {
         _navigation = navigation;
+        _sensitiveData = sensitiveData;
+        if (_sensitiveData is not null)
+        {
+            _sensitiveData.ProtectedDataUnavailable += (_, unavailable) =>
+                ReportProtectedDataUnavailable(unavailable);
+        }
         _appOptions = appOptions;
-        _updateService = updateService;
+        _updateFlow = updateFlow;
+        if (_updateFlow is not null)
+        {
+            _updateFlow.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName is nameof(UpdateFlowViewModel.IsUpdateAvailable) or null)
+                {
+                    OnPropertyChanged(nameof(HasUpdateBadge));
+                    if (_aboutItem is not null)
+                    {
+                        _aboutItem.HasUpdateBadge = _updateFlow.IsUpdateAvailable;
+                    }
+                }
+            };
+            _updateFlow.ShutdownRequested += () => Application.Current?.Shutdown();
+        }
         _localization = localization ?? LocalizationSource.Current.Service;
         _profileService = profileService;
 
@@ -135,7 +165,8 @@ public partial class MainViewModel : ObservableObject
         };
         if (AboutEnabled)
         {
-            bottomItems.Add(new NavigationItemViewModel("about", "Nav.About", IconInfo, NavigateAboutCommand, _localization));
+            _aboutItem = new NavigationItemViewModel("about", "Nav.About", IconInfo, NavigateAboutCommand, _localization);
+            bottomItems.Add(_aboutItem);
         }
         _bottomMaster = bottomItems.ToArray();
 
@@ -152,9 +183,10 @@ public partial class MainViewModel : ObservableObject
             localizationService.LanguageChanged += OnLanguageChanged;
         }
 
-        if (_appOptions?.Features.AutoUpdateEnabled == true && _updateService is not null)
+        if (_updateFlow is not null)
         {
-            _ = CheckForUpdatesAsync();
+            // Never blocks startup: the flow waits, then checks at most once per 24 hours.
+            _ = _updateFlow.CheckOnStartupAsync();
         }
     }
 
@@ -205,8 +237,6 @@ public partial class MainViewModel : ObservableObject
 
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
-        OnPropertyChanged(nameof(UpdateBannerText));
-        OnPropertyChanged(nameof(UpdateButtonText));
         OnPropertyChanged(nameof(VersionDisplay));
         OnPropertyChanged(nameof(CommitDisplay));
         foreach (var item in AllItems)
@@ -221,83 +251,7 @@ public partial class MainViewModel : ObservableObject
     private static string FormatLocalized(string key, string fallback, object argument) =>
         LocalizationSource.Current.Service?.GetString(key, argument) ?? fallback;
 
-    partial void OnIsUpdateAvailableChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsUpdateBannerVisible));
-        OnPropertyChanged(nameof(UpdateBannerText));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
 
-    partial void OnIsUpdateDismissedChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsUpdateBannerVisible));
-        OnPropertyChanged(nameof(CanDownloadUpdate));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnIsDownloadingUpdateChanged(bool value)
-    {
-        OnPropertyChanged(nameof(UpdateButtonText));
-        OnPropertyChanged(nameof(CanDownloadUpdate));
-        DownloadAndInstallUpdateCommand.NotifyCanExecuteChanged();
-    }
-
-    private async Task CheckForUpdatesAsync()
-    {
-        try
-        {
-            _availableUpdate = await _updateService!.CheckForUpdateAsync();
-            IsUpdateAvailable = _availableUpdate is not null;
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "GitHub release update check failed.");
-        }
-    }
-
-    /// <summary>Downloads and launches the silent installer, then closes the app.</summary>
-    [RelayCommand(CanExecute = nameof(CanDownloadUpdate))]
-    private async Task DownloadAndInstallUpdateAsync()
-    {
-        if (_updateService is null || _availableUpdate is null)
-        {
-            return;
-        }
-
-        IsDownloadingUpdate = true;
-        UpdateErrorMessage = string.Empty;
-        try
-        {
-            var installerPath = Path.Combine(Path.GetTempPath(), "DraftEngineUpdate.exe");
-            await _updateService.DownloadInstallerAsync(_availableUpdate, installerPath);
-
-            var installer = Process.Start(new ProcessStartInfo
-            {
-                FileName = installerPath,
-                Arguments = "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS",
-                UseShellExecute = true,
-            });
-            if (installer is null)
-            {
-                throw new InvalidOperationException("The update installer could not be started.");
-            }
-
-            Application.Current.Shutdown();
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "The downloaded GitHub update could not be installed.");
-            UpdateErrorMessage = FormatLocalized(
-                "Update.InstallFailed",
-                $"The update could not be installed: {ex.Message}",
-                ex.Message);
-            IsDownloadingUpdate = false;
-        }
-    }
-
-    /// <summary>Hides the update banner until the next application session.</summary>
-    [RelayCommand]
-    private void DismissUpdate() => IsUpdateDismissed = true;
 
     /// <summary>Navigates to the dashboard page.</summary>
     [RelayCommand]

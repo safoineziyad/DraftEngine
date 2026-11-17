@@ -87,6 +87,7 @@ public partial class OnboardingViewModel : ObservableObject
                 "Onboarding.Step1.Bullet1",
                 "Onboarding.Step1.Bullet2",
                 "Onboarding.Step1.Bullet3",
+                "Onboarding.Step1.Bullet4",
             ]),
         new(
             "Onboarding.Profile.Title",

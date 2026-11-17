@@ -132,6 +132,8 @@ public class ContractContentBuilderTests
             ["ClientEmail"] = "legal@globex.example",
             ["EffectiveDate"] = "January 15, 2026",
             ["GoverningLaw"] = "Delaware",
+            ["VenueCountry"] = "US",
+            ["VenueCity"] = "San Francisco",
             ["TermMonths"] = "24",
             ["Purpose"] = "software development",
         };

@@ -138,7 +138,7 @@
   <data name="Settings.ModelAutomation" xml:space="preserve"><value>نموذج OpenAI</value></data>
   <data name="Settings.ModelDescription" xml:space="preserve"><value>gpt-4o-mini أسرع وأقل تكلفة؛ gpt-4o أكثر قدرة.</value></data>
   <data name="Settings.PrivacySection" xml:space="preserve"><value>الخصوصية ونقطة اتصال الذكاء الاصطناعي</value></data>
-  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>يبقى على هذا الكمبيوتر: العقود وإجابات الاستبيان واختيارات البنود وسجل المحادثة والإعدادات ومفتاح API (جميعها مشفَّرة بملف تعريف مستخدم Windows). تُرسَل إلى مزوّد الذكاء الاصطناعي فقط عند استخدام ميزة ذكاء اصطناعي: نص العقد الحالي وتعليمك واسم النموذج. لا تُجمَع أي بيانات تتبع.</value></data>
+  <data name="Settings.PrivacyDescription" xml:space="preserve"><value>يبقى على هذا الكمبيوتر: العقود وإجابات الاستبيان واختيارات البنود وسجل المحادثة والإعدادات ومفتاح API (جميعها مشفَّرة بملف تعريف مستخدم Windows). تُرسَل إلى مزوّد الذكاء الاصطناعي فقط عند استخدام ميزة ذكاء اصطناعي: نص العقد الحالي وتعليمك واسم النموذج. لا تُجمَع أي بيانات تتبع. يُفعَّل التحقق من التحديثات افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه هنا.</value></data>
   <data name="Settings.HidePartyNames" xml:space="preserve"><value>إخفاء أسماء وعناوين الأطراف عن الذكاء الاصطناعي</value></data>
   <data name="Settings.HidePartyNamesDescription" xml:space="preserve"><value>عند التفعيل، تُستبدَل أسماء الأطراف وعناوينها وعناوين بريدها الإلكتروني برموز قبل كل طلب ذكاء اصطناعي وتُستعاد في الرد.</value></data>
   <data name="Settings.CustomEndpoint" xml:space="preserve"><value>استخدام نقطة اتصال مخصصة متوافقة مع OpenAI</value></data>

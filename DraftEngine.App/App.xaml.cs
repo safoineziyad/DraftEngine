@@ -37,7 +37,9 @@ public partial class App : Application
     /// Any startup failure is logged and shown to the user instead of crashing silently.
     /// A missing OpenAI API key never prevents startup (see ServiceRegistration).
     /// </summary>
-    protected override void OnStartup(StartupEventArgs e)
+    // async void is the WPF entry point contract (OnStartup is void); the whole body is
+    // wrapped in try/catch so no exception escapes the synchronization context.
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         var upgradeVerification = e.Args.Contains("--verify-upgrade", StringComparer.Ordinal);
@@ -105,7 +107,7 @@ public partial class App : Application
             // language, expose a bindable source for {loc:T Key}, and set the WPF text
             // language so shaping and digit substitution use the right culture.
             var locService = _host.Services.GetRequiredService<ILocalizationService>();
-            locService.InitializeAsync().GetAwaiter().GetResult();
+            await locService.InitializeAsync();
             LocalizationSource.Initialize(locService);
             Application.Current.Resources["LocalizationService"] = locService;
             ApplyWpfLanguage(locService.Culture);
@@ -130,7 +132,7 @@ public partial class App : Application
             {
                 var licenseService = _host.Services.GetRequiredService<
                     DraftEngine.App.Services.Licensing.ILicenseService>();
-                var evaluation = licenseService.LoadAsync().GetAwaiter().GetResult();
+                var evaluation = await licenseService.LoadAsync();
                 if (!evaluation.IsUsable)
                 {
                     var activation = new LicenseActivationWindow(licenseService);
@@ -162,7 +164,7 @@ public partial class App : Application
                     onboarding.ShowDialog();
                     var updated = settingsService.Current;
                     updated.OnboardingCompleted = true;
-                    settingsService.SaveAsync(updated).GetAwaiter().GetResult();
+                    await settingsService.SaveAsync(updated);
                 }
                 catch (Exception ex)
                 {
@@ -184,7 +186,7 @@ public partial class App : Application
                 return;
             }
 
-            ShowStartupError(ex);
+            await ShowStartupErrorAsync(ex);
             Shutdown(-1);
         }
     }
@@ -194,9 +196,9 @@ public partial class App : Application
     /// bootstrap failures are curated and may say the pre-upgrade snapshot was restored;
     /// any other exception only contributes its type to the diagnostics.
     /// </summary>
-    private void ShowStartupError(Exception exception)
+    private async Task ShowStartupErrorAsync(Exception exception)
     {
-        var localization = ResolveLocalizationForStartupError();
+        var localization = await ResolveLocalizationForStartupErrorAsync();
         var restored = exception.Data[DatabaseService.RestoredDataKey] is true;
         var diagnostics = StartupDiagnostics.Build(exception, restored);
 
@@ -216,7 +218,7 @@ public partial class App : Application
     }
 
     /// <summary>Loads the saved language so the failure window is localized, if possible.</summary>
-    private ILocalizationService? ResolveLocalizationForStartupError()
+    private async Task<ILocalizationService?> ResolveLocalizationForStartupErrorAsync()
     {
         try
         {
@@ -226,7 +228,7 @@ public partial class App : Application
                 return null;
             }
 
-            localization.InitializeAsync().GetAwaiter().GetResult();
+            await localization.InitializeAsync();
             LocalizationSource.Initialize(localization);
             ApplyWpfLanguage(localization.Culture);
             return localization;

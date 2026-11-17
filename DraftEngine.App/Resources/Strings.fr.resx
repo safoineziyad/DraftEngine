@@ -551,4 +551,14 @@
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Vérifier les mises à jour maintenant</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La recherche de mises à jour est activée par défaut : une simple requête HTTPS avec la version de l'application, sans identifiant, désactivable dans les paramètres.</value></data>
   <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>Ces données ont été protégées sous un autre compte Windows et ne peuvent pas être ouvertes ici. Restaurez-les depuis une sauvegarde portable.</value></data>
+  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>Impossible de charger les clauses. Veuillez réessayer.</value></data>
+  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>Impossible de dupliquer la clause. Veuillez réessayer.</value></data>
+  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>Impossible d'archiver la clause. Veuillez réessayer.</value></data>
+  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>Impossible d'enregistrer la clause. Veuillez réessayer.</value></data>
+  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>Archiver la clause</value></data>
+  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>Archiver « {0} » ? Cela la masque de la sélection des clauses.</value></data>
+  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>Saisissez un titre et un modèle de corps de clause.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Espaces réservés inconnus : {0}. Ils ne seront pas résolus lors de la rédaction.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Espaces réservés inconnus</value></data>
+  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>Continuer quand même ?</value></data>
 </root>

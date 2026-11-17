@@ -551,4 +551,14 @@
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>التحقق من التحديثات الآن</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>التحقق من التحديثات مفعّل افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه من الإعدادات.</value></data>
   <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>تمت حماية هذه البيانات تحت حساب Windows آخر ولا يمكن فتحها هنا. استعدها من نسخة احتياطية محمولة.</value></data>
+  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>تعذر تحميل الشروط. حاول مرة أخرى.</value></data>
+  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>تعذر تكرار الشرط. حاول مرة أخرى.</value></data>
+  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>تعذر أرشفة الشرط. حاول مرة أخرى.</value></data>
+  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>تعذر حفظ الشرط. حاول مرة أخرى.</value></data>
+  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>أرشفة الشرط</value></data>
+  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>أرشفة «{0}»؟ سيُخفى من اختيار الشروط.</value></data>
+  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>أدخل عنوان الشرط ونموذج النص.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>عناصر نائبة غير معروفة: {0}. لن يتم استبدالها عند الصياغة.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>عناصر نائبة غير معروفة</value></data>
+  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>المتابعة على أي حال؟</value></data>
 </root>

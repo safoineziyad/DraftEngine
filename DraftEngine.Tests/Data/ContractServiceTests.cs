@@ -137,6 +137,79 @@ public class ContractServiceTests : IDisposable
         Assert.Empty(await _dbContext.ContractClauses.Where(cc => cc.ContractId == contract.Id).ToListAsync());
     }
 
+    [Fact]
+    public async Task DeleteAsync_RemovesContractAnalyses_AndLeavesOtherContractsIntact()
+    {
+        var doomed = await SeedContractAsync();
+        var survivor = await SeedContractAsync(email: "survivor@example.com");
+        _dbContext.ContractAnalyses.Add(new ContractAnalysis
+        {
+            ContractId = doomed.Id,
+            FileName = "review.docx",
+            ResultJson = "{}",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        });
+        _dbContext.ContractAnalyses.Add(new ContractAnalysis
+        {
+            ContractId = survivor.Id,
+            FileName = "survivor.docx",
+            ResultJson = "{}",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        });
+        _dbContext.ContractAnalyses.Add(new ContractAnalysis
+        {
+            ContractId = null,
+            FileName = "standalone.docx",
+            ResultJson = "{}",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        });
+        _dbContext.ContractVersions.Add(new ContractVersion
+        {
+            ContractId = doomed.Id,
+            VersionNumber = 1,
+            Text = "version",
+            Reason = "test",
+            CreatedAt = DateTime.UtcNow,
+        });
+        _dbContext.ChatMessages.Add(new ChatMessage
+        {
+            ContractId = doomed.Id,
+            Role = MessageRole.User,
+            Content = "message",
+            CreatedAt = DateTime.UtcNow,
+        });
+        _dbContext.GeneratedDocuments.Add(new GeneratedDocument
+        {
+            ContractId = doomed.Id,
+            FilePath = "export.docx",
+            FileType = FileType.Docx,
+            GeneratedAt = DateTime.UtcNow,
+            Version = 1,
+        });
+        await _dbContext.SaveChangesAsync();
+
+        // Archived-then-permanent-delete uses the same delete path.
+        doomed.IsArchived = true;
+        doomed.ArchivedAt = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+
+        await _service.DeleteAsync(doomed.Id);
+
+        _dbContext.ChangeTracker.Clear();
+        Assert.Null(await _dbContext.Contracts.FindAsync(doomed.Id));
+        Assert.Empty(await _dbContext.ContractAnalyses.Where(a => a.ContractId == doomed.Id).ToListAsync());
+        Assert.Empty(await _dbContext.ContractVersions.Where(v => v.ContractId == doomed.Id).ToListAsync());
+        Assert.Empty(await _dbContext.ChatMessages.Where(m => m.ContractId == doomed.Id).ToListAsync());
+        Assert.Empty(await _dbContext.GeneratedDocuments.Where(d => d.ContractId == doomed.Id).ToListAsync());
+
+        Assert.NotNull(await _dbContext.Contracts.FindAsync(survivor.Id));
+        Assert.Single(await _dbContext.ContractAnalyses.Where(a => a.ContractId == survivor.Id).ToListAsync());
+        Assert.Single(await _dbContext.ContractAnalyses.Where(a => a.ContractId == null).ToListAsync());
+    }
+
     // ---------------------------------------------------------------- GenerateContractAsync
 
     [Fact]

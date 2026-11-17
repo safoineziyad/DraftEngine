@@ -166,11 +166,19 @@ public class ContractService : IContractService
             return; // Already gone: deleting is idempotent.
         }
 
+        // Saved analyses reference the contract with a restricted foreign key; they are child
+        // rows and must leave in the same transaction as the contract. Standalone analyses
+        // (ContractId null) are untouched.
+        var analyses = await database.Set<ContractAnalysis>()
+            .Where(analysis => analysis.ContractId == id)
+            .ToListAsync();
+
         database.Set<ContractClause>().RemoveRange(contract.ContractClauses);
         database.Set<ContractField>().RemoveRange(contract.ContractFields);
         database.Set<ChatMessage>().RemoveRange(contract.ChatMessages);
         database.Set<GeneratedDocument>().RemoveRange(contract.GeneratedDocuments);
         database.Set<ContractVersion>().RemoveRange(contract.Versions);
+        database.Set<ContractAnalysis>().RemoveRange(analyses);
         database.Set<Contract>().Remove(contract);
 
         await database.SaveChangesAsync();

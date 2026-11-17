@@ -550,4 +550,17 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Check now</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Check for updates now</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>Update checks are on by default: one plain HTTPS request with the app version, no identifiers, and can be turned off in Settings.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>This data was protected under a different Windows account and cannot be opened here. Restore it from a portable backup.</value></data>
+  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>We couldn't load clauses. Please try again.</value></data>
+  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>We couldn't duplicate the clause. Please try again.</value></data>
+  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>We couldn't archive the clause. Please try again.</value></data>
+  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>We couldn't save the clause. Please try again.</value></data>
+  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>Archive clause</value></data>
+  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>Archive "{0}"? This hides it from clause selection.</value></data>
+  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>Please enter a clause title and body template.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Unknown placeholder(s): {0}. These won't be resolved when drafting.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Unknown placeholders</value></data>
+  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>Continue anyway?</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Dismiss</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

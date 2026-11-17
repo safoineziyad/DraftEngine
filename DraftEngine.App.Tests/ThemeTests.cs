@@ -110,12 +110,12 @@ public sealed class ThemeTests
     }
 
     [Fact]
-    public void SettingsViewModel_ThemeSelection_AppliesAndPersists()
+    public async Task SettingsViewModel_ThemeSelection_AppliesAndPersists()
     {
         var settings = new FakeSettingsService();
         var localization = new LocalizationService(
             new MemoryLanguageStore(), () => CultureInfo.GetCultureInfo("en-US"));
-        localization.InitializeAsync().GetAwaiter().GetResult();
+        await localization.InitializeAsync();
         var system = new FakeSystemThemeProvider(usesLight: true);
         var theme = new ThemeService(settings, system);
         var viewModel = new SettingsViewModel(settings, localization: localization, themeService: theme);

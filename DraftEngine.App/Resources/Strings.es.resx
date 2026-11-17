@@ -550,4 +550,17 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Buscar actualizaciones ahora</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse en Ajustes.</value></data>
+  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>Estos datos se protegieron con otra cuenta de Windows y no se pueden abrir aquí. Restáuralos desde una copia de seguridad portátil.</value></data>
+  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>No se pudieron cargar las cláusulas. Inténtalo de nuevo.</value></data>
+  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>No se pudo duplicar la cláusula. Inténtalo de nuevo.</value></data>
+  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>No se pudo archivar la cláusula. Inténtalo de nuevo.</value></data>
+  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>No se pudo guardar la cláusula. Inténtalo de nuevo.</value></data>
+  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>Archivar cláusula</value></data>
+  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>¿Archivar «{0}»? Se ocultará de la selección de cláusulas.</value></data>
+  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>Introduce un título y una plantilla de cuerpo para la cláusula.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Marcadores desconocidos: {0}. No se resolverán al redactar.</value></data>
+  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Marcadores desconocidos</value></data>
+  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>¿Continuar de todos modos?</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Descartar</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

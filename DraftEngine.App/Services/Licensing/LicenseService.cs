@@ -113,7 +113,7 @@ public sealed class LicenseService : ILicenseService
             // Keep the rollback guard useful across restarts, then mirror the signed tier
             // into the existing local user row (no new subscription model).
             stored.LastVerifiedUtc = DateTimeOffset.UtcNow;
-            TryPersist(stored);
+            await TryPersistAsync(stored);
             await SyncSubscriptionAsync(evaluation, cancellationToken);
         }
 
@@ -170,11 +170,11 @@ public sealed class LicenseService : ILicenseService
         await File.WriteAllTextAsync(_licensePath, protectedText, cancellationToken);
     }
 
-    private void TryPersist(StoredLicense stored)
+    private async Task TryPersistAsync(StoredLicense stored)
     {
         try
         {
-            PersistAsync(stored, CancellationToken.None).GetAwaiter().GetResult();
+            await PersistAsync(stored, CancellationToken.None);
         }
         catch (Exception ex)
         {

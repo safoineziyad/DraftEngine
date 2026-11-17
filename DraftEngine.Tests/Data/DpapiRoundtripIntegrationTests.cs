@@ -172,14 +172,15 @@ public class DpapiRoundtripIntegrationTests
     }
 
     [Fact]
-    public async Task DecryptFailure_WithCorruptedCiphertext_ScrubsValueInsteadOfLeakingCiphertext()
+    public async Task DecryptFailure_WithCorruptedCiphertext_PreservesTheStoredValueAndFlagsIt()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"draftengine_dpapi_{Guid.NewGuid():N}.db");
         try
         {
+            var interceptor = new SensitiveDataInterceptor();
             var options = new DbContextOptionsBuilder<DraftEngineDbContext>()
                 .UseSqlite($"Data Source={dbPath}")
-                .AddInterceptors(new SensitiveDataInterceptor())
+                .AddInterceptors(interceptor)
                 .Options;
 
             using (var context = new DraftEngineDbContext(options))
@@ -242,9 +243,12 @@ public class DpapiRoundtripIntegrationTests
             Assert.Equal("safe@example.com", loaded.ClientEmail);
             Assert.Equal("""[{"name":"Acme"}]""", loaded.PartiesJson);
 
-            // On decryption failure, the interceptor applies a defensive value (empty string)
-            // to avoid leaking DEENC1: ciphertext to the UI.
-            Assert.Equal(string.Empty, loaded.AssembledText);
+            // Undecryptable data is kept as the original ciphertext (never replaced with an empty
+            // string) and reported through the typed flag so the UI can explain what happened.
+            Assert.Equal(corruptValue, loaded.AssembledText);
+            Assert.Contains(
+                interceptor.UnavailableColumns,
+                issue => issue.PropertyName == nameof(Contract.AssembledText));
 
             // The failed load did not write back: the row on disk is byte-for-byte what was written.
             using (var conn = new SqliteConnection($"Data Source={dbPath}"))
@@ -255,6 +259,27 @@ public class DpapiRoundtripIntegrationTests
                 using var reader = cmd.ExecuteReader();
                 Assert.True(reader.Read());
                 Assert.Equal(rawClientNameBefore, reader.GetString(0));
+                Assert.Equal(corruptValue, reader.GetString(1));
+            }
+
+            // Even an attach-and-update-everything save must leave the undecryptable value untouched
+            // (decryptable columns are re-encrypted, which legitimately produces new ciphertext).
+            using (var context = new DraftEngineDbContext(options))
+            {
+                var tracked = await context.Contracts.SingleAsync();
+                tracked.Title = "Renamed after the failed decryption";
+                context.Contracts.Update(tracked);
+                await context.SaveChangesAsync();
+            }
+
+            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            {
+                conn.Open();
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = "SELECT Title, AssembledText FROM Contracts LIMIT 1";
+                using var reader = cmd.ExecuteReader();
+                Assert.True(reader.Read());
+                Assert.Equal("Renamed after the failed decryption", reader.GetString(0));
                 Assert.Equal(corruptValue, reader.GetString(1));
             }
         }

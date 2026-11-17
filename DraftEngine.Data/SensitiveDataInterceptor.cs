@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
@@ -65,6 +66,27 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
         };
 
     private readonly ILogger<SensitiveDataInterceptor>? _logger;
+    private readonly object _unavailableLock = new();
+    private readonly List<ProtectedDataUnavailableException> _unavailable = new();
+
+    /// <summary>
+    /// Raised when a materialized value cannot be decrypted (different Windows account or damaged
+    /// ciphertext). The value stays as ciphertext on the entity and is never written back empty;
+    /// the UI can use this to show a friendly, localized message instead of crashing.
+    /// </summary>
+    public event EventHandler<ProtectedDataUnavailableException>? ProtectedDataUnavailable;
+
+    /// <summary>The columns that could not be decrypted during this application session.</summary>
+    public IReadOnlyList<ProtectedDataUnavailableException> UnavailableColumns
+    {
+        get
+        {
+            lock (_unavailableLock)
+            {
+                return _unavailable.ToArray();
+            }
+        }
+    }
 
     /// <summary>Creates the interceptor; the logger is optional (tests construct it without one).</summary>
     public SensitiveDataInterceptor(ILogger<SensitiveDataInterceptor>? logger = null)
@@ -146,30 +168,23 @@ public sealed class SensitiveDataInterceptor : SaveChangesInterceptor, IMaterial
                     }
                     catch (Exception ex)
                     {
+                        // Keep the original ciphertext on the entity. Clearing the value (the old
+                        // behaviour) let a later save mark the property modified and overwrite the
+                        // only copy of data that is still recoverable under the right Windows
+                        // account. EncryptChangedValues skips marker-prefixed values, so it is
+                        // written back unchanged.
                         _logger?.LogWarning(ex,
-                            "Decrypting sensitive column '{PropertyName}' on entity '{EntityType}' failed during materialization; applying defensive value.",
+                            "Sensitive column '{PropertyName}' on entity '{EntityType}' could not be decrypted; preserving the stored ciphertext.",
                             propertyName,
                             entityType.Name);
-                        try
+
+                        var unavailable = new ProtectedDataUnavailableException(entityType.Name, propertyName, ex);
+                        lock (_unavailableLock)
                         {
-                            if (propertyInfo != null && propertyInfo.CanWrite)
-                            {
-                                var propType = propertyInfo.PropertyType;
-                                if (propType == typeof(string))
-                                {
-                                    propertyInfo.SetValue(entity, string.Empty);
-                                }
-                                else if (Nullable.GetUnderlyingType(propType) == typeof(string))
-                                {
-                                    propertyInfo.SetValue(entity, null);
-                                }
-                                // For non-nullable required strings, setting empty is defensive; avoid leaving DEENC1: visible
-                            }
+                            _unavailable.Add(unavailable);
                         }
-                        catch
-                        {
-                            // Avoid breaking materialization
-                        }
+
+                        ProtectedDataUnavailable?.Invoke(this, unavailable);
                     }
                 }
             }

@@ -64,15 +64,18 @@ public sealed class PortableBackupService : IPortableBackupService
 
     private readonly IDatabaseContextFactory _contextFactory;
     private readonly IAppSettingsService? _settingsService;
+    private readonly ISecretProtector? _protector;
     private readonly string _defaultBackupDirectory;
 
     public PortableBackupService(
         IDatabaseContextFactory contextFactory,
         IAppSettingsService? settingsService = null,
-        string? backupDirectory = null)
+        string? backupDirectory = null,
+        ISecretProtector? protector = null)
     {
         _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
         _settingsService = settingsService;
+        _protector = protector;
         _defaultBackupDirectory = backupDirectory ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "DraftEngine",
@@ -210,6 +213,8 @@ public sealed class PortableBackupService : IPortableBackupService
         var contractFields = await context.Set<ContractField>().AsNoTracking().ToListAsync(cancellationToken);
         var chatMessages = await context.Set<ChatMessage>().AsNoTracking().ToListAsync(cancellationToken);
         var contractVersions = await context.Set<ContractVersion>().AsNoTracking().ToListAsync(cancellationToken);
+        var analyses = await context.Set<ContractAnalysis>().AsNoTracking().ToListAsync(cancellationToken);
+        var wizardDrafts = await context.Set<WizardDraft>().AsNoTracking().ToListAsync(cancellationToken);
 
         var payload = new BackupPayload
         {
@@ -297,13 +302,21 @@ public sealed class PortableBackupService : IPortableBackupService
                 GeneratedAt = document.GeneratedAt,
                 Version = document.Version
             }).ToListAsync(cancellationToken),
-            WizardDrafts = await context.Set<WizardDraft>().AsNoTracking().Select(draft => new BackupWizardDraft
+            ContractAnalyses = analyses.Select(analysis => new BackupContractAnalysis
             {
-                DraftKey = draft.DraftKey,
-                EncryptedPayload = draft.EncryptedPayload,
-                UpdatedAt = draft.UpdatedAt
-            }).ToListAsync(cancellationToken)
+                Id = analysis.Id,
+                ContractId = analysis.ContractId,
+                FileName = analysis.FileName,
+                ContractType = analysis.ContractType,
+                ResultJson = analysis.ResultJson,
+                CreatedAt = analysis.CreatedAt,
+                UpdatedAt = analysis.UpdatedAt,
+                IsArchived = analysis.IsArchived,
+                ArchivedAt = analysis.ArchivedAt
+            }).ToList(),
+            WizardDrafts = CollectWizardDrafts(wizardDrafts, out var skippedDrafts)
         };
+        payload.SkippedWizardDrafts = skippedDrafts;
 
         if (_settingsService is not null)
         {
@@ -345,6 +358,7 @@ public sealed class PortableBackupService : IPortableBackupService
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         // Children first, then parents, so foreign keys are never violated.
+        await context.Set<ContractAnalysis>().ExecuteDeleteAsync(cancellationToken);
         await context.Set<ContractClause>().ExecuteDeleteAsync(cancellationToken);
         await context.Set<ContractField>().ExecuteDeleteAsync(cancellationToken);
         await context.Set<ChatMessage>().ExecuteDeleteAsync(cancellationToken);
@@ -456,10 +470,23 @@ public sealed class PortableBackupService : IPortableBackupService
             Version = document.Version
         }));
 
+        context.AddRange(payload.ContractAnalyses.Select(analysis => new ContractAnalysis
+        {
+            Id = analysis.Id,
+            ContractId = analysis.ContractId,
+            FileName = analysis.FileName,
+            ContractType = analysis.ContractType,
+            ResultJson = analysis.ResultJson,
+            CreatedAt = analysis.CreatedAt,
+            UpdatedAt = analysis.UpdatedAt,
+            IsArchived = analysis.IsArchived,
+            ArchivedAt = analysis.ArchivedAt
+        }));
+
         context.AddRange(payload.WizardDrafts.Select(draft => new WizardDraft
         {
             DraftKey = draft.DraftKey,
-            EncryptedPayload = draft.EncryptedPayload,
+            EncryptedPayload = ProtectDraft(draft.Payload),
             UpdatedAt = draft.UpdatedAt
         }));
 
@@ -485,7 +512,8 @@ public sealed class PortableBackupService : IPortableBackupService
             ("ContractClauses", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractClauses) WHERE name = {0}"),
             ("ChatMessages", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ChatMessages) WHERE name = {0}"),
             ("ContractVersions", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractVersions) WHERE name = {0}"),
-            ("GeneratedDocuments", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM GeneratedDocuments) WHERE name = {0}")
+            ("GeneratedDocuments", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM GeneratedDocuments) WHERE name = {0}"),
+            ("ContractAnalyses", "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(Id), 0) FROM ContractAnalyses) WHERE name = {0}")
         };
         foreach (var (table, sql) in commands)
         {
@@ -645,7 +673,9 @@ public sealed class PortableBackupService : IPortableBackupService
             payload.ContractClauses.Any(selection => !contractIds.Contains(selection.ContractId)) ||
             payload.ChatMessages.Any(message => !contractIds.Contains(message.ContractId)) ||
             payload.ContractVersions.Any(version => !contractIds.Contains(version.ContractId)) ||
-            payload.GeneratedDocuments.Any(document => !contractIds.Contains(document.ContractId)))
+            payload.GeneratedDocuments.Any(document => !contractIds.Contains(document.ContractId)) ||
+            payload.ContractAnalyses.Any(analysis =>
+                analysis.ContractId.HasValue && !contractIds.Contains(analysis.ContractId.Value)))
         {
             throw new BackupFormatException("The backup contains records that reference a missing contract.");
         }
@@ -660,7 +690,54 @@ public sealed class PortableBackupService : IPortableBackupService
         payload.ContractVersions.Count,
         payload.GeneratedDocuments.Count,
         payload.WizardDrafts.Count,
-        payload.Settings is not null);
+        payload.Settings is not null,
+        payload.ContractAnalyses.Count,
+        payload.SkippedWizardDrafts);
+
+    private List<BackupWizardDraft> CollectWizardDrafts(List<WizardDraft> drafts, out int skipped)
+    {
+        skipped = 0;
+        var result = new List<BackupWizardDraft>();
+        foreach (var draft in drafts)
+        {
+            try
+            {
+                if (_protector is null)
+                {
+                    throw new InvalidOperationException("No secret protector is available.");
+                }
+
+                var plaintext = _protector.Unprotect(draft.EncryptedPayload);
+                if (plaintext is null)
+                {
+                    throw new InvalidOperationException("The draft could not be decrypted.");
+                }
+
+                result.Add(new BackupWizardDraft
+                {
+                    DraftKey = draft.DraftKey,
+                    Payload = plaintext,
+                    UpdatedAt = draft.UpdatedAt
+                });
+            }
+            catch (Exception ex)
+            {
+                // Content-free, counted warning: a draft bound to another Windows account must
+                // not abort the whole backup.
+                skipped++;
+                Log.Warning(
+                    "Skipping one wizard draft that could not be decrypted ({ExceptionType}).",
+                    ex.GetType().Name);
+            }
+        }
+
+        return result;
+    }
+
+    private string ProtectDraft(string plaintext) =>
+        _protector is null
+            ? throw new InvalidOperationException("No secret protector is available for restoring wizard drafts.")
+            : _protector.Protect(plaintext);
 
     private static string Csv(string? value)
     {

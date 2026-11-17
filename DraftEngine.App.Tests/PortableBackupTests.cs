@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -26,8 +27,154 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
         _fixture = fixture;
     }
 
-    private PortableBackupService CreateService() => new(_fixture.Provider
-        .GetRequiredService<DraftEngine.Core.Interfaces.IDatabaseContextFactory>());
+    private PortableBackupService CreateService() => new(
+        _fixture.Provider.GetRequiredService<DraftEngine.Core.Interfaces.IDatabaseContextFactory>(),
+        protector: _fixture.Provider.GetRequiredService<ISecretProtector>());
+
+    [Fact]
+    public async Task EncryptedBackup_RoundTripsContractAnalyses_AndDecryptsWizardDrafts()
+    {
+        var contractId = Seed();
+        var protector = _fixture.Provider.GetRequiredService<ISecretProtector>();
+        using (var context = _fixture.CreateContext())
+        {
+            context.ContractAnalyses.Add(new ContractAnalysis
+            {
+                ContractId = contractId,
+                FileName = "Acme secret review.docx",
+                ContractType = "MutualNda",
+                ResultJson = "{\"summary\":\"AUDIT_ANALYSIS_MARKER\"}",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            });
+            context.WizardDrafts.Add(new WizardDraft
+            {
+                DraftKey = "wizard:audit",
+                EncryptedPayload = protector.Protect("{\"step\":2,\"party\":\"AUDIT_DRAFT_MARKER\"}"),
+                UpdatedAt = DateTime.UtcNow,
+            });
+            await context.SaveChangesAsync();
+        }
+
+        var service = CreateService();
+        using var encrypted = new MemoryStream();
+        var exported = await service.ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+        Assert.Equal(1, exported.ContractAnalyses);
+        Assert.Equal(1, exported.WizardDrafts);
+        Assert.Equal(0, exported.SkippedWizardDrafts);
+
+        // The backup container itself must not expose the synthetic plaintext markers.
+        var bytes = encrypted.ToArray();
+        var asText = Encoding.UTF8.GetString(bytes);
+        Assert.DoesNotContain("AUDIT_ANALYSIS_MARKER", asText, StringComparison.Ordinal);
+        Assert.DoesNotContain("AUDIT_DRAFT_MARKER", asText, StringComparison.Ordinal);
+
+        using (var context = _fixture.CreateContext())
+        {
+            await context.Set<ContractAnalysis>().ExecuteDeleteAsync();
+            await context.Set<WizardDraft>().ExecuteDeleteAsync();
+            await context.Set<Contract>().ExecuteDeleteAsync();
+        }
+
+        encrypted.Position = 0;
+        var restored = await service.ImportEncryptedAsync(
+            encrypted, Password, confirmReplace: true,
+            preImportBackupPath: Path.Combine(_fixture.Directory, "pre-import-analyses.debk"));
+
+        Assert.Equal(1, restored.ContractAnalyses);
+        using var verify = _fixture.CreateContext();
+        var analysis = await verify.Set<ContractAnalysis>().SingleAsync();
+        Assert.Equal("Acme secret review.docx", analysis.FileName);
+        Assert.Contains("AUDIT_ANALYSIS_MARKER", analysis.ResultJson, StringComparison.Ordinal);
+
+        var draft = await verify.Set<WizardDraft>().SingleAsync();
+        Assert.Equal("{\"step\":2,\"party\":\"AUDIT_DRAFT_MARKER\"}", protector.Unprotect(draft.EncryptedPayload));
+        Assert.DoesNotContain("AUDIT_DRAFT_MARKER", draft.EncryptedPayload, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task UndecryptableWizardDraft_IsSkippedWithACountInsteadOfAbortingTheBackup()
+    {
+        Seed();
+        using (var context = _fixture.CreateContext())
+        {
+            context.WizardDrafts.Add(new WizardDraft
+            {
+                DraftKey = "wizard:broken",
+                EncryptedPayload = "this-is-not-dpapi-ciphertext",
+                UpdatedAt = DateTime.UtcNow,
+            });
+            await context.SaveChangesAsync();
+        }
+
+        using var encrypted = new MemoryStream();
+        var summary = await CreateService().ExportEncryptedAsync(encrypted, Password, includeApiKey: false);
+
+        Assert.Equal(1, summary.SkippedWizardDrafts);
+        Assert.Equal(0, summary.WizardDrafts);
+        Assert.True(encrypted.Length > 0);
+        Assert.True(summary.Contracts >= 1);
+    }
+
+    [Fact]
+    public async Task Backup_IncludesCommittedRowsThatAreStillInTheWalFile()
+    {
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection(
+            _fixture.Options.Data.ConnectionString))
+        {
+            connection.Open();
+            using var pragma = connection.CreateCommand();
+            pragma.CommandText = "PRAGMA journal_mode=WAL;";
+            pragma.ExecuteScalar();
+
+            using var context = _fixture.CreateContext();
+            context.Contracts.Add(new Contract
+            {
+                UserId = 1,
+                Title = "WAL committed contract",
+                ContractType = "MutualNda",
+                ClientName = "WAL Client",
+                AssembledText = "WAL body",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            });
+            await context.SaveChangesAsync();
+
+            // The connection above stays open, so the committed row can still live in the -wal file.
+            using var json = new MemoryStream();
+            await CreateService().WriteJsonAsync(json, includeApiKey: false);
+            var text = Encoding.UTF8.GetString(json.ToArray());
+            Assert.Contains("WAL committed contract", text, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void EveryDbSet_IsEitherBackedUpOrExplicitlyExcludedWithAReason()
+    {
+        // Users is intentionally excluded: the database is single-user (CurrentUserId = 1) and
+        // ReplaceAll keeps the local row. Every other DbSet must have a backup collection.
+        var exclusions = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Users"] = "Single local user; import preserves the current user row.",
+        };
+        var payloadProperties = typeof(BackupPayload).GetProperties()
+            .Select(property => property.Name)
+            .ToHashSet(StringComparer.Ordinal);
+        var dbSetNames = typeof(DraftEngine.Data.DraftEngineDbContext).GetProperties()
+            .Where(property => property.PropertyType.IsGenericType &&
+                               property.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+            .Select(property => property.Name)
+            .ToArray();
+
+        Assert.NotEmpty(dbSetNames);
+        var uncovered = dbSetNames
+            .Where(name => !payloadProperties.Contains(name) && !exclusions.ContainsKey(name))
+            .ToArray();
+
+        Assert.True(
+            uncovered.Length == 0,
+            "DbSets without backup coverage: " + string.Join(", ", uncovered));
+    }
 
     private int Seed()
     {
@@ -86,6 +233,7 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
         // Destroy the source data, then restore it.
         using (var context = _fixture.CreateContext())
         {
+            await context.Set<ContractAnalysis>().ExecuteDeleteAsync();
             await context.Set<ContractField>().ExecuteDeleteAsync();
             await context.Set<ContractVersion>().ExecuteDeleteAsync();
             await context.Set<ChatMessage>().ExecuteDeleteAsync();
@@ -131,6 +279,7 @@ public sealed class PortableBackupTests : IClassFixture<StartupFixture>
 
         using (var context = _fixture.CreateContext())
         {
+            await context.Set<ContractAnalysis>().ExecuteDeleteAsync();
             await context.Set<Contract>().ExecuteDeleteAsync();
         }
 

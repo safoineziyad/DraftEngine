@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using DraftEngine.App.Services.Settings;
 
 namespace DraftEngine.App.Services.Backup;
@@ -23,6 +24,11 @@ public sealed class BackupPayload
     public List<BackupContractVersion> ContractVersions { get; set; } = [];
     public List<BackupGeneratedDocument> GeneratedDocuments { get; set; } = [];
     public List<BackupWizardDraft> WizardDrafts { get; set; } = [];
+    public List<BackupContractAnalysis> ContractAnalyses { get; set; } = [];
+
+    /// <summary>Count of drafts that could not be decrypted and were left out (content-free).</summary>
+    [JsonIgnore]
+    public int SkippedWizardDrafts { get; set; }
 
     /// <summary>Non-secret settings; the API key is only present when the user opted in.</summary>
     public BackupSettings? Settings { get; set; }
@@ -122,8 +128,24 @@ public sealed class BackupGeneratedDocument
 public sealed class BackupWizardDraft
 {
     public string DraftKey { get; set; } = string.Empty;
-    public string EncryptedPayload { get; set; } = string.Empty;
+
+    /// <summary>Plaintext draft inside the encrypted backup; re-protected with DPAPI on import.</summary>
+    public string Payload { get; set; } = string.Empty;
     public DateTime UpdatedAt { get; set; }
+}
+
+/// <summary>Saved contract review. Encrypted text columns are plaintext inside the backup only.</summary>
+public sealed class BackupContractAnalysis
+{
+    public int Id { get; set; }
+    public int? ContractId { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string ContractType { get; set; } = string.Empty;
+    public string ResultJson { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public bool IsArchived { get; set; }
+    public DateTime? ArchivedAt { get; set; }
 }
 
 /// <summary>Provider profile metadata in a backup. Deliberately excludes the API key.</summary>
@@ -168,7 +190,9 @@ public sealed record BackupSummary(
     int Versions,
     int GeneratedDocuments,
     int WizardDrafts,
-    bool IncludedSettings);
+    bool IncludedSettings,
+    int ContractAnalyses = 0,
+    int SkippedWizardDrafts = 0);
 
 /// <summary>Thrown when a backup cannot be decrypted (wrong password or tampered file).</summary>
 public sealed class BackupPasswordException : Exception

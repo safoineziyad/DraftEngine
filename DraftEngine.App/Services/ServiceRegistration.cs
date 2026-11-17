@@ -63,7 +63,8 @@ public static class ServiceRegistration
         // Portable encrypted backup/restore and plain data export.
         services.AddSingleton<IPortableBackupService>(provider => new PortableBackupService(
             provider.GetRequiredService<IDatabaseContextFactory>(),
-            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>()));
+            provider.GetRequiredService<DraftEngine.App.Services.Settings.IAppSettingsService>(),
+            protector: provider.GetRequiredService<DraftEngine.App.Services.Settings.ISecretProtector>()));
 
         // Wizard draft persistence, licensing (disabled by default), update check (off by default).
         services.AddTransient<IWizardDraftService, WizardDraftService>();

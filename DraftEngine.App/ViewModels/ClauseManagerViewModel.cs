@@ -29,6 +29,13 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
     public string PageTitle =>
         DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("Clause.PageTitle")
         ?? "Clause Manager";
+
+    private static string L(string key, string fallback) =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString(key) ?? fallback;
+
+    private static string L(string key, string fallback, params object[] arguments) =>
+        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString(key, arguments)
+        ?? string.Format(System.Globalization.CultureInfo.CurrentCulture, fallback, arguments);
     public ObservableCollection<Clause> Clauses { get; } = new();
     public ObservableCollection<string> ContractTypes { get; } =
         new(ContractTypeRegistry.All.Select(type => type.DisplayName));
@@ -116,7 +123,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load clauses.");
-            ErrorMessage = "We couldn't load clauses. Please try again.";
+            ErrorMessage = L("Audit.ClauseLoadError", "We couldn't load clauses. Please try again.");
         }
         finally
         {
@@ -167,7 +174,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to duplicate clause {ClauseId}.", clause.Id);
-            ErrorMessage = "We couldn't duplicate the clause. Please try again.";
+            ErrorMessage = L("Audit.ClauseDuplicateError", "We couldn't duplicate the clause. Please try again.");
         }
         finally
         {
@@ -181,8 +188,8 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         if (clause is not { Source: "User", IsArchived: false }) return;
 
         var confirm = MessageBox.Show(
-            $"Archive \"{clause.Title}\"?\n\nThis hides it from clause selection.",
-            "Archive clause",
+            L("Audit.ClauseArchiveConfirm", "Archive \"{0}\"? This hides it from clause selection.", clause.Title),
+            L("Audit.ClauseArchiveTitle", "Archive clause"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning);
         if (confirm != MessageBoxResult.Yes) return;
@@ -198,7 +205,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to archive clause {ClauseId}.", clause.Id);
-            ErrorMessage = "We couldn't archive the clause. Please try again.";
+            ErrorMessage = L("Audit.ClauseArchiveError", "We couldn't archive the clause. Please try again.");
         }
         finally
         {
@@ -214,19 +221,25 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
 
         if (string.IsNullOrWhiteSpace(clause.Title) || string.IsNullOrWhiteSpace(clause.BodyTemplate))
         {
-            MessageBox.Show("Please enter a clause title and body template.", "Clause Manager",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(
+                L("Audit.ClauseMissingTitleBody", "Please enter a clause title and body template."),
+                PageTitle,
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
             return;
         }
 
         var (isValid, unknownKeys) = await _clauseService.ValidatePlaceholdersAsync(clause.BodyTemplate);
         if (!isValid)
         {
-            PlaceholderWarning = $"Unknown placeholder(s): {string.Join(", ", unknownKeys)}. " +
-                "These won't be resolved when drafting.";
+            var joinedKeys = string.Join(", ", unknownKeys);
+            PlaceholderWarning = L(
+                "Audit.ClauseUnknownPlaceholders",
+                "Unknown placeholder(s): {0}. These won't be resolved when drafting.",
+                joinedKeys);
             var proceed = MessageBox.Show(
-                $"{PlaceholderWarning}\n\nContinue anyway?",
-                "Unknown placeholders",
+                $"{PlaceholderWarning}\n\n{L("Audit.ClauseContinueAnyway", "Continue anyway?")}",
+                L("Audit.ClauseUnknownPlaceholdersTitle", "Unknown placeholders"),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
             if (proceed != MessageBoxResult.Yes) return;
@@ -253,7 +266,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to save clause.");
-            ErrorMessage = "We couldn't save the clause. Please try again.";
+            ErrorMessage = L("Audit.ClauseSaveError", "We couldn't save the clause. Please try again.");
         }
         finally
         {

@@ -43,6 +43,13 @@ public class AppSettings
     /// <summary>When true, replace party names and addresses with placeholders before sending to AI.</summary>
     public bool HidePartyNamesFromAi { get; set; }
 
+    /// <summary>
+    /// How the user uses DraftEngine. Null means "not chosen" and keeps the full lawyer
+    /// experience, so installs created before profiles existed behave exactly as before.
+    /// Local preference only: never an account, never sent anywhere.
+    /// </summary>
+    public Services.Profiles.UserProfile? Profile { get; set; }
+
     /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
     public string Language { get; set; } = "system";
 

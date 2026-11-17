@@ -34,11 +34,11 @@ public sealed class AppSettingsService : IAppSettingsService
     public event Action? SettingsChanged;
 
     /// <summary>Creates the service and loads existing settings from %APPDATA%\DraftEngine\settings.json (defaults on any failure).</summary>
-    public AppSettingsService(ISecretProtector protector, IHttpClientFactory httpClientFactory)
+    public AppSettingsService(ISecretProtector protector, IHttpClientFactory httpClientFactory, string? settingsPath = null)
     {
         _protector = protector ?? throw new ArgumentNullException(nameof(protector));
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        _settingsPath = Path.Combine(
+        _settingsPath = settingsPath ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "DraftEngine",
             "settings.json");
@@ -78,6 +78,7 @@ public sealed class AppSettingsService : IAppSettingsService
             HidePartyNamesFromAi = settings.HidePartyNamesFromAi,
             Language = settings.Language,
             Theme = settings.Theme,
+            Profile = settings.Profile,
         };
 
         var json = JsonSerializer.Serialize(stored, JsonOptions);
@@ -150,6 +151,7 @@ public sealed class AppSettingsService : IAppSettingsService
                 HidePartyNamesFromAi = stored.HidePartyNamesFromAi,
                 Language = string.IsNullOrWhiteSpace(stored.Language) ? "system" : stored.Language,
                 Theme = string.IsNullOrWhiteSpace(stored.Theme) ? "System" : stored.Theme,
+                Profile = stored.Profile,
             };
         }
         catch (Exception ex)
@@ -174,5 +176,6 @@ public sealed class AppSettingsService : IAppSettingsService
         public bool HidePartyNamesFromAi { get; set; }
         public string Language { get; set; } = "system";
         public string Theme { get; set; } = "System";
+        public Services.Profiles.UserProfile? Profile { get; set; }
     }
 }

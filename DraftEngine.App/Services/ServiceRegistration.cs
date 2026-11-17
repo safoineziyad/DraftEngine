@@ -92,6 +92,10 @@ public static class ServiceRegistration
         services.AddSingleton<ISystemThemeProvider, RegistrySystemThemeProvider>();
         services.AddSingleton<IThemeService, ThemeService>();
 
+        // Local user profile: chooses which existing pages are visible. No account, no network.
+        services.AddSingleton<DraftEngine.App.Services.Profiles.IProfileService,
+            DraftEngine.App.Services.Profiles.ProfileService>();
+
         // Page view models (singletons: navigation caches them).
         services.AddSingleton<DashboardViewModel>();
         services.AddSingleton<NewContractViewModel>();

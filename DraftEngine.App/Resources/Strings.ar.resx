@@ -390,4 +390,20 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>تشارك التعديلات بالذكاء الاصطناعي نص هذا العقد مع OpenAI لمعالجته.&#xA;&#xA;تابع فقط إذا كنت توافق على إرسال هذا المستند إلى OpenAI؛ مثلاً إذا لم يتضمن معلومات سرية أو امتيازية لا يُسمح لك بمشاركتها مع خدمة خارجية.&#xA;&#xA;هل تريد متابعة التعديل بالذكاء الاصطناعي؟</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>التعديل بالذكاء الاصطناعي يرسل بيانات إلى OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>كيف ستستخدم DraftEngine؟</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>اختر ملفًا شخصيًا لعرض الصفحات التي تحتاجها. يمكنك تغييره لاحقًا من الإعدادات.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>محامٍ</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>مجموعة كاملة للصياغة والتحليل ومكتبة الشروط.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>أعمال</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>صِغ الاتفاقيات وراجعها دون أدوات مكتبة الشروط، مع تنبيه بأن هذا ليس استشارة قانونية.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>وسيط</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>صفحات صياغة مشتركة، مع مساحة وساطة مخطط لها.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>يقدم DraftEngine معلومات عامة ومساعدة في الصياغة، وليس استشارة قانونية. اطلب من محامٍ مؤهل مراجعة الاتفاقيات المهمة.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>مساحة وساطة مخصصة مخطط لها. تتوفر حاليًا صفحات الصياغة والتحليل المشتركة.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>الملف الشخصي</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>اختر الصفحات التي يعرضها DraftEngine. إخفاء صفحة لا يحذف بياناتها أبدًا.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>محامٍ</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>أعمال</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>وسيط</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>تم تحديث الملف الشخصي. تعرض الشريط الجانبي الآن صفحات {0}.</value></data>
 </root>

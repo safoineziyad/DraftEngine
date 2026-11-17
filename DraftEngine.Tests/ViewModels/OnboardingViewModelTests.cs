@@ -6,15 +6,15 @@ namespace DraftEngine.Tests.ViewModels;
 public class OnboardingViewModelTests
 {
     [Fact]
-    public void StartsOnTheFirstOfThreeScreens()
+    public void StartsOnTheFirstOfFourScreens()
     {
         var viewModel = new OnboardingViewModel();
 
-        Assert.Equal(3, viewModel.StepCount);
+        Assert.Equal(4, viewModel.StepCount);
         Assert.Equal(0, viewModel.StepIndex);
         Assert.True(viewModel.IsFirst);
         Assert.False(viewModel.IsLast);
-        Assert.Equal("Step 1 of 3", viewModel.StepLabel);
+        Assert.Equal("Step 1 of 4", viewModel.StepLabel);
         Assert.Equal("Next", viewModel.PrimaryButtonText);
     }
 
@@ -27,8 +27,9 @@ public class OnboardingViewModelTests
 
         viewModel.NextCommand.Execute(null);
         viewModel.NextCommand.Execute(null);
+        viewModel.NextCommand.Execute(null);
 
-        Assert.Equal(2, viewModel.StepIndex);
+        Assert.Equal(3, viewModel.StepIndex);
         Assert.True(viewModel.IsLast);
         Assert.Equal("Get started", viewModel.PrimaryButtonText);
         Assert.Equal(0, completed);

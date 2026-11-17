@@ -47,6 +47,16 @@
                               SelectedValue="{Binding SelectedLanguage, Mode=TwoWay}"
                               AutomationProperties.Name="{loc:T Onboarding.LanguagePrompt}"
                               Width="200" Margin="12,0,0,0" />
+                    <TextBlock Text="{loc:T Settings.Theme}"
+                               VerticalAlignment="Center"
+                               Margin="20,0,0,0"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <ComboBox ItemsSource="{Binding ThemeOptions}"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="Mode"
+                              SelectedValue="{Binding SelectedTheme, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Settings.Theme}"
+                              Width="150" Margin="12,0,0,0" />
                 </StackPanel>
 
                 <TextBlock Text="{Binding StepTitle}"
@@ -57,6 +67,33 @@
                            TextWrapping="Wrap"
                            FontSize="14"
                            Margin="0,12,0,22" />
+
+                <ListBox ItemsSource="{Binding ProfileOptions}"
+                         SelectedValuePath="Profile"
+                         SelectedValue="{Binding SelectedProfile, Mode=TwoWay}"
+                         Visibility="{Binding IsProfileStep, Converter={StaticResource BoolToVis}}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Margin="0,0,0,10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="6"
+                                    Padding="14,10"
+                                    Margin="0,0,0,6"
+                                    Background="{DynamicResource PanelBrush}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <TextBlock Text="{Binding Description}"
+                                               TextWrapping="Wrap"
+                                               Style="{StaticResource SecondaryTextStyle}"
+                                               Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
                 <ItemsControl ItemsSource="{Binding StepBullets}">
                     <ItemsControl.ItemTemplate>

@@ -84,10 +84,28 @@ public partial class AnalyzeViewModel : ObservableObject, INavigationAware
     public int FindingCount => Findings.Count;
     public string FindingCountText => Findings.Count == 1 ? "1 finding" : $"{Findings.Count} findings";
 
-    public AnalyzeViewModel(IAnalysisService analysisService, IAppSettingsService settings)
+    private readonly DraftEngine.App.Services.Profiles.IProfileService? _profileService;
+    private readonly DraftEngine.App.Services.Localization.ILocalizationService _localization;
+
+    /// <summary>Business profile sees the short not-legal-advice notice on this page.</summary>
+    public bool ShowNotLegalAdviceNotice =>
+        DraftEngine.App.Services.Profiles.ProfileFeatureMatrix.ShowsNotLegalAdviceNotice(_profileService?.Current);
+
+    /// <summary>Localized Business notice.</summary>
+    public string NotLegalAdviceText => _localization.GetString("Profile.Notice.NotLegalAdvice");
+
+    public AnalyzeViewModel(
+        IAnalysisService analysisService,
+        IAppSettingsService settings,
+        DraftEngine.App.Services.Profiles.IProfileService? profileService = null,
+        DraftEngine.App.Services.Localization.ILocalizationService? localization = null)
     {
         _analysisService = analysisService ?? throw new ArgumentNullException(nameof(analysisService));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        _profileService = profileService;
+        _localization = localization
+            ?? DraftEngine.App.Services.Localization.LocalizationSource.Current.Service
+            ?? new DraftEngine.App.Services.Localization.LocalizationService();
         SelectedContractType = ContractTypes[0];
         _settings.SettingsChanged += OnSettingsChanged;
     }

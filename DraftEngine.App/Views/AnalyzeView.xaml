@@ -23,6 +23,11 @@
                 <TextBlock Text="{Binding Disclaimer}" FontWeight="SemiBold"
                            Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
             </Border>
+            <Border Background="{DynamicResource PanelBrush}" CornerRadius="6" Padding="10,8" Margin="0,8,0,0"
+                    Visibility="{Binding ShowNotLegalAdviceNotice, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding NotLegalAdviceText}" TextWrapping="Wrap"
+                           Style="{StaticResource SecondaryTextStyle}" />
+            </Border>
         </StackPanel>
 
         <Grid Grid.Row="1">

@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Services.Profiles;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.ViewModels.NewContract;
 using DraftEngine.Core.Interfaces;
@@ -46,6 +47,14 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
     private readonly IWizardDraftService _drafts;
     private readonly IContractTypeRegistry _contractTypeRegistry;
     private readonly ILocalizationService _localization;
+    private readonly IProfileService? _profileService;
+
+    /// <summary>Business profile sees the short not-legal-advice notice on this page.</summary>
+    public bool ShowNotLegalAdviceNotice =>
+        ProfileFeatureMatrix.ShowsNotLegalAdviceNotice(_profileService?.Current);
+
+    /// <summary>Localized Business notice.</summary>
+    public string NotLegalAdviceText => _localization.GetString("Profile.Notice.NotLegalAdvice");
 
     private bool _clausesLoaded;
 
@@ -136,8 +145,10 @@ public partial class NewContractViewModel : ObservableObject, INavigationAware
         IAppSettingsService appSettings,
         IWizardDraftService drafts,
         IContractTypeRegistry? contractTypeRegistry = null,
-        ILocalizationService? localization = null)
+        ILocalizationService? localization = null,
+        IProfileService? profileService = null)
     {
+        _profileService = profileService;
         _contractService = contractService;
         _clauseService = clauseService;
         _fieldService = fieldService;

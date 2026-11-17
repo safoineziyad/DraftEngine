@@ -390,4 +390,20 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>La edición con IA comparte el texto de este contrato con OpenAI para procesarlo.&#xA;&#xA;Continúa solo si aceptas enviar este documento a OpenAI; por ejemplo, si no contiene material privilegiado o confidencial que no tengas permiso para compartir con un servicio externo.&#xA;&#xA;¿Continuar con la edición con IA?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La edición con IA envía datos a OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>¿Cómo vas a usar DraftEngine?</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>Elige un perfil para mostrar las páginas que necesitas. Puedes cambiarlo más tarde en Ajustes.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>Abogado</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>Conjunto completo de redacción, análisis y biblioteca de cláusulas.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>Empresa</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>Redacta y revisa acuerdos sin la biblioteca de cláusulas, con un aviso de no asesoramiento jurídico.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>Mediador</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>Páginas de redacción compartidas, con un espacio de mediación previsto.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>DraftEngine ofrece información general y ayuda de redacción, no asesoramiento jurídico. Haz que un abogado cualificado revise los acuerdos importantes.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>Está previsto un espacio de mediación dedicado. Por ahora están disponibles las páginas compartidas de redacción y análisis.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>Perfil</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>Elige qué páginas muestra DraftEngine. Ocultar una página nunca borra sus datos.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>Abogado</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>Empresa</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>Mediador</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>Perfil actualizado. La barra lateral ahora muestra las páginas de {0}.</value></data>
 </root>

@@ -390,4 +390,20 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>AI edits share this contract's text with OpenAI for processing.&#xA;&#xA;Only continue if you are comfortable sending this document to OpenAI — for example, if it contains no privileged or confidential client material you are not permitted to share with a third-party service.&#xA;&#xA;Continue with AI editing?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>AI editing sends data to OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>How will you use DraftEngine?</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>Choose a profile to show the pages you need. You can change it later in Settings.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>Lawyer</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>Full drafting toolkit, analysis and the clause library.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>Business</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>Draft and review agreements without clause-library tools, with a not-legal-advice notice.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>Mediator</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>Shared drafting pages, with a mediation workspace planned.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>DraftEngine provides general information and drafting help, not legal advice. Have important agreements reviewed by a qualified lawyer.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>A dedicated mediation workspace is planned. For now, the shared drafting and analysis pages are available.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>Profile</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>Choose which pages DraftEngine shows. Hiding a page never deletes its data.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>Lawyer</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>Business</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>Mediator</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>Profile updated. The sidebar now shows the pages for {0}.</value></data>
 </root>

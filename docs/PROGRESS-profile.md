@@ -35,6 +35,24 @@ settings-file round trip (missing file → no profile; saved Business → reload
 - Affected tests: `DraftEngine.App.Tests` 138 passed, 0 failed.
 - Not visually verified (no profile UI exists yet).
 
-NEXT STEP: Phase 2 — first-run profile step (language, theme, profile cards with Skip→Lawyer),
-live sidebar gating with Dashboard fallback and inert shortcuts, Business notice on Dashboard /
-New Contract / Analyze, Mediator dashboard note, and profile-specific Getting started content.
+## Phase 2 — first-run profile and live gating (done)
+
+- Onboarding is now four screens: language + theme on the first screen, then the profile cards,
+  then the two existing walkthrough screens. The profile step offers Lawyer, Business and
+  Mediator cards; Skip or finishing without a selection saves Lawyer.
+- Theme choice applies immediately through `IThemeService`; language still applies immediately.
+- `MainViewModel` filters Workspace/Tools/Bottom by `ProfileFeatureMatrix`. A `ProfileChanged`
+  event re-filters live, raises the collection properties, and navigates to Dashboard when the
+  current page is no longer visible. Hidden navigation commands are inert (including the
+  Clause Manager shortcut), so no command can open a hidden page.
+- Business profiles see `Profile.Notice.NotLegalAdvice` on Dashboard, New Contract and Analyze.
+  Mediator profiles see `Dashboard.MediationPlanned` on Dashboard.
+- All new strings exist in EN/FR/ES/AR; the count rose from 21 to 37 onboarding/profile keys.
+- Tests: `ProfileModeTests` (visibility, live switch, fallback, inert shortcut, notice predicates)
+  and `OnboardingProfileTests` (screen order, cards, Skip→Lawyer, saved choice, live theme).
+  Existing onboarding tests were updated for four screens without losing coverage.
+- Full suite: **409 passed, 0 failed** (232 + 149 + 28).
+- Not visually verified: no desktop window was opened; cards, RTL and dark theme are unchecked.
+- Profile-specific Getting started copy is not yet added.
+
+NEXT STEP: Phase 3 — Settings profile card, confirmation, and final documentation.

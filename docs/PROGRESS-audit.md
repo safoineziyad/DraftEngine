@@ -51,4 +51,13 @@ Branch: `fix/audit-data-safety` in `DraftEngine-audit` (separate checkout).
 - No migration was needed. `IF NOT EXISTS`-style upgrade paths were not touched.
 - Phase 2 (FIX 5–9) is not started; UI changes are not visually verified.
 
-NEXT STEP: Phase 2 — FIX 5 (hostile import limits and zip-bomb guards).
+## FIX 5 — hostile imports (done)
+
+- `DocumentImporter` now enforces: 25 MB input cap for all formats, DOCX/zip container limits (2,000 entries, 100 MB total uncompressed, 200:1 per-entry ratio) checked before Office Open XML parses, and a 5,000-page PDF cap.
+- Tests in `DocumentImporterHardeningTests`: oversize TXT, zip-bomb DOCX entry, DOCX with too many entries; all rejected with a `DocumentImportException`, no large allocation.
+- Office Open XML and PdfPig do not expand external entities (the SDK uses DTD-prohibiting readers; PDF has no XML entity model), so no entity-expansion path is exercised.
+- Full suite: **504 passed, 0 failed** (339 + 134 + 31), exit 0.
+
+FIX 6–9 and the profile track are NOT done.
+
+NEXT STEP: FIX 6 — InvariantCulture and filename sanitization.

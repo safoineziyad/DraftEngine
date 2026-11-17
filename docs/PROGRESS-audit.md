@@ -58,6 +58,12 @@ Branch: `fix/audit-data-safety` in `DraftEngine-audit` (separate checkout).
 - Office Open XML and PdfPig do not expand external entities (the SDK uses DTD-prohibiting readers; PDF has no XML entity model), so no entity-expansion path is exercised.
 - Full suite: **504 passed, 0 failed** (339 + 134 + 31), exit 0.
 
-FIX 6–9 and the profile track are NOT done.
+## FIX 6 — filename safety (done)
 
-NEXT STEP: FIX 6 — InvariantCulture and filename sanitization.
+- New `ExportFileNameSanitizer` used by contract export: invalid/control characters replaced, surrounding spaces and dots trimmed, empty names fall back to `Contract`, Windows device names (`CON`, `COM1`…) prefixed even with mixed casing, stems capped at 120 characters, extensions normalized invariantly.
+- Tests run under `en-US`, `tr-TR` and `ar-SA`, plus control characters, 300-character titles and uppercase extensions.
+- Full suite: **510 passed, 0 failed** (339 + 140 + 31), exit 0.
+
+FIX 7–9 and the profile track are NOT done.
+
+NEXT STEP: FIX 7 — remove synchronous waits from the UI thread.

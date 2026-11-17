@@ -30,11 +30,18 @@ application, so they are deliberately absent rather than invented.
 
 `ProfileFeatureMatrix` is the single source of truth for this table; tests assert every cell.
 
+## Where the choice is made
+
+- **First run:** language and theme, then the profile cards. Skip, or finishing without a card,
+  saves Lawyer. The choice is written immediately when the user leaves the profile step.
+- **Settings → Profile:** the same three choices in a card. Changing one updates the sidebar
+  immediately and shows a short confirmation; it never requires a restart.
+
 ## Rules
 
 - **Existing installs have no profile.** A missing/profile value `null` behaves exactly like
-  `Lawyer`, so upgrading never removes a page. A dismissible dashboard card invites the user to
-  choose; startup is never blocked.
+  `Lawyer`, so upgrading never removes a page. First-run onboarding offers the three cards, and
+  Settings always shows the current choice; skipping onboarding keeps Lawyer.
 - **Switching never deletes data.** Hiding a page only removes its sidebar entry and navigation
   target; contracts, clauses and other saved data remain in the database and return if the user
   switches back.

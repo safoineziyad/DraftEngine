@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services.Backup;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Services.Profiles;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.Themes;
 using DraftEngine.Core.Interfaces;
@@ -26,6 +27,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IPortableBackupService? _backupService;
     private readonly ILocalizationService _localization;
     private readonly IThemeService? _themeService;
+    private readonly IProfileService? _profileService;
+    private bool _isApplyingProfile;
     private bool _isLoading;
     private bool _isApplyingLanguage;
     private bool _isApplyingTheme;
@@ -156,8 +159,10 @@ public partial class SettingsViewModel : ObservableObject
         IAiRedactionService? redactionService = null,
         IPortableBackupService? backupService = null,
         ILocalizationService? localization = null,
-        IThemeService? themeService = null)
+        IThemeService? themeService = null,
+        IProfileService? profileService = null)
     {
+        _profileService = profileService;
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _redactionService = redactionService;
         _backupService = backupService;
@@ -170,12 +175,56 @@ public partial class SettingsViewModel : ObservableObject
             new ThemeChoiceViewModel(ThemeMode.Light, "Theme.Light", _localization),
             new ThemeChoiceViewModel(ThemeMode.Dark, "Theme.Dark", _localization),
         ];
+        ProfileOptions =
+        [
+            new ProfileChoiceViewModel(UserProfile.Lawyer, "Settings.Profile.Lawyer", _localization),
+            new ProfileChoiceViewModel(UserProfile.Business, "Settings.Profile.Business", _localization),
+            new ProfileChoiceViewModel(UserProfile.Mediator, "Settings.Profile.Mediator", _localization),
+        ];
+        _isApplyingProfile = true;
+        SelectedProfile = profileService?.Current ?? UserProfile.Lawyer;
+        _isApplyingProfile = false;
+
         _settingsService.SettingsChanged += OnSettingsChanged;
         _localization.LanguageChanged += OnLanguageChanged;
         _isApplyingLanguage = true;
         SelectedLanguage = _localization.CurrentLanguage;
         _isApplyingLanguage = false;
         ApplyFromCurrentSettings();
+    }
+
+    /// <summary>Profile choices shown in the Settings profile card.</summary>
+    public IReadOnlyList<ProfileChoiceViewModel> ProfileOptions { get; }
+
+    /// <summary>The saved profile; changing it re-filters the sidebar immediately.</summary>
+    [ObservableProperty]
+    private UserProfile selectedProfile = UserProfile.Lawyer;
+
+    /// <summary>Confirmation shown after a profile change.</summary>
+    [ObservableProperty]
+    private string? profileConfirmation;
+
+    /// <summary>True when the confirmation is visible.</summary>
+    public bool HasProfileConfirmation => !string.IsNullOrEmpty(ProfileConfirmation);
+
+    partial void OnProfileConfirmationChanged(string? value) =>
+        OnPropertyChanged(nameof(HasProfileConfirmation));
+
+    partial void OnSelectedProfileChanged(UserProfile value)
+    {
+        if (_isApplyingProfile || _profileService is null || _profileService.Current == value)
+        {
+            return;
+        }
+
+        _ = ApplyProfileAsync(value);
+    }
+
+    private async Task ApplyProfileAsync(UserProfile profile)
+    {
+        await _profileService!.SetProfileAsync(profile);
+        var name = ProfileOptions.First(option => option.Profile == profile).DisplayName;
+        ProfileConfirmation = _localization.GetString("Settings.ProfileChanged", name);
     }
 
     /// <summary>Password used for encrypted backup export/restore (never persisted, never logged).</summary>
@@ -553,6 +602,13 @@ public partial class SettingsViewModel : ObservableObject
         {
             option.RefreshLocalization();
         }
+
+        foreach (var option in ProfileOptions)
+        {
+            option.RefreshLocalization();
+        }
+
+        OnPropertyChanged(nameof(ProfileConfirmation));
         OnPropertyChanged(nameof(AiConsentStatusText));
         OnPropertyChanged(nameof(ShowHideKeyText));
 

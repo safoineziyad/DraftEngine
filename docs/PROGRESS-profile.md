@@ -55,4 +55,19 @@ settings-file round trip (missing file → no profile; saved Business → reload
 - Not visually verified: no desktop window was opened; cards, RTL and dark theme are unchecked.
 - Profile-specific Getting started copy is not yet added.
 
-NEXT STEP: Phase 3 — Settings profile card, confirmation, and final documentation.
+## Phase 3 — Settings card, tests and docs (done)
+
+- New `ProfileSettingsCard` UserControl embedded in Settings, bound to `SettingsViewModel`.
+  `ProfileOptions` (Lawyer/Business/Mediator) start from the saved choice; changing the selection
+  calls `IProfileService.SetProfileAsync`, which raises `ProfileChanged`, re-filters the sidebar
+  and shows the localized `Settings.ProfileChanged` confirmation (no restart).
+- `SettingsProfileTests` covers the three options, starting from the saved value, persistence and
+  a localized confirmation without the `{0}` placeholder.
+- `docs/PROFILES.md` now records where the choice is made (onboarding and Settings) and the
+  no-data-deletion promise; all profile strings are in EN/FR/ES/AR.
+- Full suite: **411 passed, 0 failed** (232 + 151 + 28).
+- Not visually verified: the Settings card, onboarding cards, RTL mirroring and dark theme were
+  not opened in a desktop window.
+- Still missing: profile-specific Getting started copy (recorded as follow-up).
+
+NEXT STEP: none scoped; profile mode Phase 1–3 complete pending visual review.

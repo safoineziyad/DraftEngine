@@ -64,6 +64,23 @@ Branch: `fix/audit-data-safety` in `DraftEngine-audit` (separate checkout).
 - Tests run under `en-US`, `tr-TR` and `ar-SA`, plus control characters, 300-character titles and uppercase extensions.
 - Full suite: **510 passed, 0 failed** (339 + 140 + 31), exit 0.
 
-FIX 7–9 and the profile track are NOT done.
+## FIX 7 — UI-thread waits (done)
 
-NEXT STEP: FIX 7 — remove synchronous waits from the UI thread.
+- `OnStartup` is now `async void` (the WPF entry-point contract) and awaits localization, license evaluation, onboarding save and startup-error localization. `LicenseService` awaits its last-check persistence instead of blocking.
+- `StartupAsyncTests` asserts `OnStartup` is an async method and that `App.xaml.cs` contains no `.GetAwaiter().GetResult()` / `.Wait()`.
+- Full suite: **512 passed, 0 failed** (339 + 142 + 31), exit 0. UI not visually verified.
+
+## FIX 8 — Clause Manager localization (done)
+
+- All user-facing strings in `ClauseManagerViewModel` now come from resources (`Audit.Clause*`), added to EN/FR/ES/AR; dialogs use the localized title and continue prompt.
+
+## FIX 9 — warnings (done)
+
+- `IUpdateCheckService`/`UpdateCheckService` nullable-clean; `ThemeTests` blocking initialize awaited; `AnalyzerTests` non-async test de-async'd; `ExportTests` nullable dereference fixed. Solution builds with no CS/xUnit warnings.
+
+## Protected-data banner (done)
+
+- `MainViewModel` subscribes to `SensitiveDataInterceptor.ProtectedDataUnavailable`, shows the localized `Audit.ProtectedDataUnavailable` banner in `MainWindow`, and can dismiss it for the session. `Audit.ProtectedDataDismiss` added ×4. Covered by `ProtectedDataBannerTests`.
+- Full suite: **513 passed, 0 failed** (339 + 143 + 31), exit 0. Banner not visually verified.
+
+NEXT STEP: profile Phase 2.

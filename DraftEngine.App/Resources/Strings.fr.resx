@@ -561,4 +561,6 @@
   <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Espaces réservés inconnus : {0}. Ils ne seront pas résolus lors de la rédaction.</value></data>
   <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Espaces réservés inconnus</value></data>
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>Continuer quand même ?</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Ignorer</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

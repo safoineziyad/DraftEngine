@@ -561,4 +561,6 @@
   <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Unknown placeholder(s): {0}. These won't be resolved when drafting.</value></data>
   <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Unknown placeholders</value></data>
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>Continue anyway?</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Dismiss</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

@@ -561,4 +561,6 @@
   <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>عناصر نائبة غير معروفة: {0}. لن يتم استبدالها عند الصياغة.</value></data>
   <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>عناصر نائبة غير معروفة</value></data>
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>المتابعة على أي حال؟</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>تجاهل</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

@@ -561,4 +561,6 @@
   <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Marcadores desconocidos: {0}. No se resolverán al redactar.</value></data>
   <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Marcadores desconocidos</value></data>
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>¿Continuar de todos modos?</value></data>
+  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Descartar</value></data>
+  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
 </root>

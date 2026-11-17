@@ -58,48 +58,11 @@ public class AppSettings
     public bool HidePartyNamesFromAi { get; set; }
 
     /// <summary>
-    /// Configured AI providers. <see cref="OpenAiApiKey"/> and <see cref="OpenAiModel"/> mirror
-    /// the active profile so older code paths keep working; the profile list is the source of truth.
+    /// How the user uses DraftEngine. Null means "not chosen" and keeps the full lawyer
+    /// experience, so installs created before profiles existed behave exactly as before.
+    /// Local preference only: never an account, never sent anywhere.
     /// </summary>
-    public List<AiProfile> AiProfiles { get; set; } = new();
-
-    /// <summary>Id of the profile used for drafting; empty means the first profile.</summary>
-    public string ActiveAiProfileId { get; set; } = string.Empty;
-
-    /// <summary>The profile in effect for AI calls, or null when none is configured.</summary>
-    public AiProfile? ActiveAiProfile =>
-        AiProfiles.FirstOrDefault(profile => string.Equals(profile.Id, ActiveAiProfileId, StringComparison.Ordinal))
-        ?? AiProfiles.FirstOrDefault();
-
-    /// <summary>
-    /// Copies the active profile's key/model into the legacy single-provider fields so every
-    /// existing consumer (backup, consent checks, AI service resolution) sees the same values.
-    /// </summary>
-    internal AppSettings MirrorActiveProfile()
-    {
-        if (ActiveAiProfile is { } active)
-        {
-            ActiveAiProfileId = active.Id;
-            OpenAiApiKey = active.ApiKey;
-            OpenAiModel = string.IsNullOrWhiteSpace(active.Model) ? FallbackModel : active.Model;
-            OpenAiBaseUrl = string.IsNullOrWhiteSpace(active.BaseUrl) ? null : active.BaseUrl;
-            UseCustomOpenAiEndpoint = active.Preset is AiProviderPreset.Custom;
-        }
-
-        return this;
-    }
-
-    /// <summary>True when automatic update checks run at startup (default on, notify-only).</summary>
-    public bool UpdateChecksEnabled { get; set; } = true;
-
-    /// <summary>True when the beta channel is used (stable is the default).</summary>
-    public bool UpdateIncludeBeta { get; set; }
-
-    /// <summary>Version the user chose to skip; that exact version is not offered again.</summary>
-    public string SkippedUpdateVersion { get; set; } = string.Empty;
-
-    /// <summary>UTC timestamp of the last update check (null when never checked).</summary>
-    public DateTimeOffset? LastUpdateCheckUtc { get; set; }
+    public Services.Profiles.UserProfile? Profile { get; set; }
 
     /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
     public string Language { get; set; } = "system";

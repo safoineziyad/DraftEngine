@@ -390,177 +390,20 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>تشارك التعديلات بالذكاء الاصطناعي نص هذا العقد مع OpenAI لمعالجته.&#xA;&#xA;تابع فقط إذا كنت توافق على إرسال هذا المستند إلى OpenAI؛ مثلاً إذا لم يتضمن معلومات سرية أو امتيازية لا يُسمح لك بمشاركتها مع خدمة خارجية.&#xA;&#xA;هل تريد متابعة التعديل بالذكاء الاصطناعي؟</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>التعديل بالذكاء الاصطناعي يرسل بيانات إلى OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
-  <data name="Startup.Error.Title" xml:space="preserve"><value>تعذّر بدء DraftEngine</value></data>
-  <data name="Startup.Error.Body" xml:space="preserve"><value>تعذّر على DraftEngine فتح قاعدة بياناته. لم تتغيّر بياناتك. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
-  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>تعذّر إكمال ترقية قاعدة البيانات، لذا تمت استعادة النسخة الاحتياطية التي أُنشئت قبل الترقية. بياناتك دون تغيير. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
-  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>التشخيص (الإصدار وWindows و.NET ونوع الخطأ فقط؛ دون بيانات العقود)</value></data>
-  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>نسخ التشخيص</value></data>
-  <data name="Startup.Error.Close" xml:space="preserve"><value>إغلاق</value></data>
-  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>تم نسخ التشخيص.</value></data>
-  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>الحافظة غير متاحة.</value></data>
-  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>البنود قوالب عامة ولم تُكيَّف مع قانون الولاية القضائية المختارة.</value></data>
-  <data name="Settings.Profiles" xml:space="preserve"><value>موفرو الذكاء الاصطناعي</value></data>
-  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>ملف موفر الذكاء الاصطناعي</value></data>
-  <data name="Settings.AddProfile" xml:space="preserve"><value>جديد</value></data>
-  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>إضافة ملف موفر ذكاء اصطناعي جديد</value></data>
-  <data name="Settings.RemoveProfile" xml:space="preserve"><value>إزالة</value></data>
-  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>إزالة ملف الموفر المحدد</value></data>
-  <data name="Settings.ProfileName" xml:space="preserve"><value>اسم الملف</value></data>
-  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>اسم ملف موفر الذكاء الاصطناعي</value></data>
-  <data name="Settings.ProviderPreset" xml:space="preserve"><value>نوع الموفر</value></data>
-  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>نوع موفر الذكاء الاصطناعي</value></data>
-  <data name="Settings.BaseUrl" xml:space="preserve"><value>عنوان URL الأساسي</value></data>
-  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>نقطة نهاية متوافقة مع OpenAI تنتهي عادةً بـ /v1/. يستخدم Azure مسار النشر؛ ولا تحتاج الخوادم المحلية إلى مفتاح.</value></data>
-  <data name="Settings.FetchModels" xml:space="preserve"><value>تحميل النماذج</value></data>
-  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>تحميل قائمة النماذج من الموفر</value></data>
-  <data name="Settings.NewProfileName" xml:space="preserve"><value>موفر جديد</value></data>
-  <data name="Settings.ModelsFetched" xml:space="preserve"><value>تم تحميل {0} نموذجًا من الموفر.</value></data>
-  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>تعذر تحميل قائمة النماذج. تحقق من عنوان URL الأساسي والمفتاح.</value></data>
-  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / متوافق</value></data>
-  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
-  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (محلي)</value></data>
-  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (محلي)</value></data>
-  <data name="Settings.PresetCustom" xml:space="preserve"><value>نقطة نهاية مخصصة</value></data>
-  <data name="About.PageTitle" xml:space="preserve"><value>حول والمساعدة</value></data>
-  <data name="About.Subtitle" xml:space="preserve"><value>معلومات الإصدار والمساعدة والخصوصية والترخيص.</value></data>
-  <data name="About.Tagline" xml:space="preserve"><value>يصوغ DraftEngine العقود محليًا من القوالب. يعمل الإنشاء دون اتصال بالإنترنت ولا يتطلب مفتاح ذكاء اصطناعي أبدًا.</value></data>
-  <data name="About.OpenLogs" xml:space="preserve"><value>فتح مجلد السجلات</value></data>
-  <data name="About.OpenData" xml:space="preserve"><value>فتح مجلد البيانات</value></data>
-  <data name="About.Diagnostics" xml:space="preserve"><value>التشخيص</value></data>
-  <data name="About.DiagnosticsDescription" xml:space="preserve"><value>الإصدار وWindows و.NET فقط. لا بيانات عقود ولا مسارات ولا معرّفات.</value></data>
-  <data name="About.CopyDiagnostics" xml:space="preserve"><value>نسخ التشخيص</value></data>
-  <data name="About.CopyDiagnosticsAutomation" xml:space="preserve"><value>نسخ تشخيص الإصدار ونظام التشغيل</value></data>
-  <data name="About.Privacy" xml:space="preserve"><value>ملخص الخصوصية</value></data>
-  <data name="About.PrivacyBody" xml:space="preserve"><value>تبقى العقود وإجابات الإدخال وسجل المحادثات والإعدادات ومفتاح API على هذا الكمبيوتر ومشفرة بملف تعريف Windows الخاص بك. لا توجد قياسات عن بُعد ولا حساب ولا رفع في الخلفية. يُفعَّل التحقق من التحديثات افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه هنا.</value></data>
-  <data name="About.AiPrivacyBody" xml:space="preserve"><value>تحرير الذكاء الاصطناعي اختياري. عند استخدامه يُرسل نص العقد الحالي وتعليماتك إلى موفر الذكاء الاصطناعي الذي أعددته. فعّل «إخفاء أسماء وعناوين الأطراف عن الذكاء الاصطناعي» في الإعدادات لاستبدال البيانات الحقيقية برموز.</value></data>
-  <data name="About.Updates" xml:space="preserve"><value>التحديثات</value></data>
-  <data name="About.CheckUpdates" xml:space="preserve"><value>التحقق من التحديثات</value></data>
-  <data name="About.License" xml:space="preserve"><value>الترخيص</value></data>
-  <data name="About.LicenseKeyLabel" xml:space="preserve"><value>مفتاح الترخيص</value></data>
-  <data name="About.LicenseKeyTooltip" xml:space="preserve"><value>الصق مفتاح الترخيص الموقّع الذي تلقيته</value></data>
-  <data name="About.ActivateLicense" xml:space="preserve"><value>تفعيل الترخيص</value></data>
-  <data name="Analyze.PageTitle" xml:space="preserve"><value>تحليل</value></data>
-  <data name="Analyze.ImportTitle" xml:space="preserve"><value>١. استيراد عقد</value></data>
-  <data name="Analyze.ImportDescription" xml:space="preserve"><value>ملف DOCX أو PDF نصي. تتطلب ملفات PDF الممسوحة ضوئيًا التعرف الضوئي غير المدعوم بعد.</value></data>
-  <data name="Analyze.PlaybookLabel" xml:space="preserve"><value>نوع العقد (دليل المراجعة)</value></data>
-  <data name="Analyze.PlaybookAutomation" xml:space="preserve"><value>نوع العقد في دليل المراجعة</value></data>
-  <data name="Analyze.ChooseFileAutomation" xml:space="preserve"><value>اختيار ملف عقد</value></data>
-  <data name="Analyze.Analyze" xml:space="preserve"><value>تحليل</value></data>
-  <data name="Analyze.AnalyzeAutomation" xml:space="preserve"><value>إعادة تحليل الملف الحالي</value></data>
-  <data name="Analyze.AiReview" xml:space="preserve"><value>مراجعة بالذكاء الاصطناعي (اختياري)</value></data>
-  <data name="Analyze.AiReviewAutomation" xml:space="preserve"><value>تمكين المراجعة بالذكاء الاصطناعي</value></data>
-  <data name="Analyze.GroupedHint" xml:space="preserve"><value>مجمعة حسب الخطورة. اختر ملاحظة لإبراز الاقتباس.</value></data>
-  <data name="Analyze.ExportDocx" xml:space="preserve"><value>تصدير التقرير (DOCX)</value></data>
-  <data name="Analyze.ExportPdf" xml:space="preserve"><value>تصدير التقرير (PDF)</value></data>
-  <data name="Analyze.FindingsAutomation" xml:space="preserve"><value>نتائج المراجعة</value></data>
-  <data name="Analyze.AiBadge" xml:space="preserve"><value>AI</value></data>
-  <data name="Analyze.Saved" xml:space="preserve"><value>التحليلات المحفوظة</value></data>
-  <data name="Analyze.Refresh" xml:space="preserve"><value>تحديث</value></data>
-  <data name="Analyze.ArchiveSelected" xml:space="preserve"><value>أرشفة المحدد</value></data>
-  <data name="Analyze.OpenSelected" xml:space="preserve"><value>فتح التحليل المحدد</value></data>
-  <data name="Analyze.Document" xml:space="preserve"><value>المستند</value></data>
-  <data name="Analyze.DocumentAutomation" xml:space="preserve"><value>نص العقد المستورد</value></data>
-  <data name="Analyze.SuggestedFix" xml:space="preserve"><value>الإصلاح المقترح</value></data>
-  <data name="Analyze.CopyFix" xml:space="preserve"><value>نسخ الإصلاح المقترح</value></data>
-  <data name="Clause.PageTitle" xml:space="preserve"><value>إدارة البنود</value></data>
-  <data name="Clause.Subtitle" xml:space="preserve"><value>أنشئ قوالب البنود وحرّرها وأرشفها.</value></data>
-  <data name="Clause.FilterType" xml:space="preserve"><value>تصفية البنود حسب نوع العقد</value></data>
-  <data name="Clause.FilterCategory" xml:space="preserve"><value>تصفية البنود حسب الفئة</value></data>
-  <data name="Clause.FilterSource" xml:space="preserve"><value>تصفية البنود حسب المصدر</value></data>
-  <data name="Clause.New" xml:space="preserve"><value>+ جديد</value></data>
-  <data name="Clause.NewAutomation" xml:space="preserve"><value>إنشاء بند جديد</value></data>
-  <data name="Clause.Edit" xml:space="preserve"><value>تحرير</value></data>
-  <data name="Clause.EditAutomation" xml:space="preserve"><value>تحرير البند المحدد</value></data>
-  <data name="Clause.Duplicate" xml:space="preserve"><value>تكرار</value></data>
-  <data name="Clause.DuplicateAutomation" xml:space="preserve"><value>تكرار البند المحدد</value></data>
-  <data name="Clause.Archive" xml:space="preserve"><value>أرشفة</value></data>
-  <data name="Clause.ArchiveAutomation" xml:space="preserve"><value>أرشفة البند المحدد</value></data>
-  <data name="Clause.ListAutomation" xml:space="preserve"><value>قائمة البنود</value></data>
-  <data name="Clause.Empty" xml:space="preserve"><value>لا توجد بنود بعد — أنشئ أول بند.</value></data>
-  <data name="Clause.NewLong" xml:space="preserve"><value>+ بند جديد</value></data>
-  <data name="Clause.TitleLabel" xml:space="preserve"><value>العنوان</value></data>
-  <data name="Clause.TitleAutomation" xml:space="preserve"><value>عنوان البند</value></data>
-  <data name="Clause.CategoryLabel" xml:space="preserve"><value>الفئة</value></data>
-  <data name="Clause.CategoryAutomation" xml:space="preserve"><value>فئة البند</value></data>
-  <data name="Clause.BodyLabel" xml:space="preserve"><value>نص القالب</value></data>
-  <data name="Clause.BodyAutomation" xml:space="preserve"><value>نص قالب البند</value></data>
-  <data name="Clause.Optional" xml:space="preserve"><value>بند اختياري</value></data>
-  <data name="Clause.OptionalAutomation" xml:space="preserve"><value>تعليم البند كاختياري</value></data>
-  <data name="Clause.Cancel" xml:space="preserve"><value>إلغاء</value></data>
-  <data name="Clause.CancelAutomation" xml:space="preserve"><value>تجاهل التغييرات</value></data>
-  <data name="Clause.Save" xml:space="preserve"><value>حفظ</value></data>
-  <data name="Clause.SaveAutomation" xml:space="preserve"><value>حفظ البند</value></data>
-  <data name="Clause.TryAgain" xml:space="preserve"><value>إعادة المحاولة</value></data>
-  <data name="Clause.TryAgainAutomation" xml:space="preserve"><value>إعادة تحميل البنود</value></data>
-  <data name="License.WindowTitle" xml:space="preserve"><value>تفعيل DraftEngine</value></data>
-  <data name="License.Heading" xml:space="preserve"><value>تفعيل DraftEngine</value></data>
-  <data name="License.Description" xml:space="preserve"><value>الصق مفتاح الترخيص الموقّع الذي تلقيته. يتم التحقق من التفعيل دون اتصال على هذا الكمبيوتر؛ ولا حاجة إلى حساب أو اتصال بالشبكة.</value></data>
-  <data name="License.KeyLabel" xml:space="preserve"><value>مفتاح الترخيص</value></data>
-  <data name="License.KeyAutomation" xml:space="preserve"><value>مفتاح الترخيص</value></data>
-  <data name="License.Quit" xml:space="preserve"><value>إنهاء</value></data>
-  <data name="License.QuitAutomation" xml:space="preserve"><value>إنهاء DraftEngine</value></data>
-  <data name="License.Activate" xml:space="preserve"><value>تفعيل</value></data>
-  <data name="License.ActivateAutomation" xml:space="preserve"><value>تفعيل الترخيص</value></data>
-  <data name="License.PasteKey" xml:space="preserve"><value>الصق مفتاح الترخيص الذي تلقيته.</value></data>
-  <data name="License.ActivationFailed" xml:space="preserve"><value>تعذر تفعيل الترخيص. تحقق من المفتاح وحاول مجددًا.</value></data>
-  <data name="Update.Banner" xml:space="preserve"><value>الإصدار {0} متاح.</value></data>
-  <data name="Update.WhatsNew" xml:space="preserve"><value>ما الجديد</value></data>
-  <data name="Update.WhatsNewAutomation" xml:space="preserve"><value>عرض ملاحظات الإصدار</value></data>
-  <data name="Update.Install" xml:space="preserve"><value>تحديث</value></data>
-  <data name="Update.InstallAutomation" xml:space="preserve"><value>تنزيل التحديث وتثبيته</value></data>
-  <data name="Update.Later" xml:space="preserve"><value>لاحقًا</value></data>
-  <data name="Update.LaterAutomation" xml:space="preserve"><value>ذكّرني لاحقًا</value></data>
-  <data name="Update.Skip" xml:space="preserve"><value>تخطي هذا الإصدار</value></data>
-  <data name="Update.SkipAutomation" xml:space="preserve"><value>تخطي هذا الإصدار</value></data>
-  <data name="Update.AboutBadgeAutomation" xml:space="preserve"><value>يتوفر تحديث</value></data>
-  <data name="Update.ConfirmTitle" xml:space="preserve"><value>تثبيت التحديث</value></data>
-  <data name="Update.ConfirmBody" xml:space="preserve"><value>سيُغلق DraftEngine وسيعمل المثبّت ثم يُعاد تشغيل التطبيق. تُحفظ نسخة من قاعدة البيانات أولًا. هل تريد تثبيت الإصدار {0} الآن؟</value></data>
-  <data name="Update.Installing" xml:space="preserve"><value>جارٍ التثبيت…</value></data>
-  <data name="Update.Cancelled" xml:space="preserve"><value>أُلغي التحديث. لم يتغير شيء.</value></data>
-  <data name="Update.Skipped" xml:space="preserve"><value>لن يُعرض هذا الإصدار مرة أخرى.</value></data>
-  <data name="Update.UpToDate" xml:space="preserve"><value>أنت تستخدم أحدث إصدار.</value></data>
-  <data name="Update.Checking" xml:space="preserve"><value>جارٍ التحقق من التحديثات…</value></data>
-  <data name="Update.LastCheckedNever" xml:space="preserve"><value>لم يتم التحقق من التحديثات بعد.</value></data>
-  <data name="Update.LastCheckedAt" xml:space="preserve"><value>آخر تحقق: {0}</value></data>
-  <data name="Update.ChecksOn" xml:space="preserve"><value>التحقق التلقائي من التحديثات مفعّل.</value></data>
-  <data name="Update.ChecksOff" xml:space="preserve"><value>التحقق التلقائي من التحديثات متوقف.</value></data>
-  <data name="Update.ErrorTitle" xml:space="preserve"><value>التحديث</value></data>
-  <data name="Update.Error.Disabled" xml:space="preserve"><value>التحقق من التحديثات متوقف.</value></data>
-  <data name="Update.Error.Offline" xml:space="preserve"><value>تعذر الوصول إلى خادم التحديثات. تحقق من اتصالك وحاول مجددًا.</value></data>
-  <data name="Update.Error.Timeout" xml:space="preserve"><value>لم يستجب خادم التحديثات في الوقت المحدد. حاول لاحقًا.</value></data>
-  <data name="Update.Error.NotFound" xml:space="preserve"><value>لم يُعثر على ملف تعريف التحديث في العنوان المحدد.</value></data>
-  <data name="Update.Error.Http" xml:space="preserve"><value>أعاد خادم التحديثات خطأ. حاول لاحقًا.</value></data>
-  <data name="Update.Error.Malformed" xml:space="preserve"><value>ملف تعريف التحديث غير صالح وتم تجاهله.</value></data>
-  <data name="Update.Error.Schema" xml:space="preserve"><value>يستخدم ملف تعريف التحديث مخططًا غير مدعوم.</value></data>
-  <data name="Update.Error.Signature" xml:space="preserve"><value>تعذر التحقق من التحديث وتم تجاهله.</value></data>
-  <data name="Update.Error.Downgrade" xml:space="preserve"><value>الإصدار المعروض أقدم من المثبّت؛ تم رفضه.</value></data>
-  <data name="Update.Error.BlockedHost" xml:space="preserve"><value>يشير التحديث إلى عنوان غير مسموح به.</value></data>
-  <data name="Update.Error.Hash" xml:space="preserve"><value>المثبّت الذي تم تنزيله لا يطابق بصمته. تم حذفه.</value></data>
-  <data name="Update.Error.Truncated" xml:space="preserve"><value>كان التنزيل غير مكتمل. تم حذفه؛ يرجى المحاولة مجددًا.</value></data>
-  <data name="Update.Error.DiskFull" xml:space="preserve"><value>لا توجد مساحة كافية على القرص لتنزيل التحديث.</value></data>
-  <data name="Update.Error.Authenticode" xml:space="preserve"><value>المثبّت الذي تم تنزيله غير موقّع بشكل صالح.</value></data>
-  <data name="Update.Error.Snapshot" xml:space="preserve"><value>فشل إنشاء نسخة قاعدة البيانات، لذلك لم يبدأ التحديث.</value></data>
-  <data name="Update.Error.Launch" xml:space="preserve"><value>تعذر تشغيل المثبّت. لا يزال DraftEngine يعمل.</value></data>
-  <data name="Update.Error.Cancelled" xml:space="preserve"><value>أُلغي التحديث.</value></data>
-  <data name="Update.Error.Generic" xml:space="preserve"><value>تعذر إكمال التحديث. حاول لاحقًا.</value></data>
-  <data name="Settings.UpdatesSection" xml:space="preserve"><value>التحديثات</value></data>
-  <data name="Settings.AutomaticUpdateChecks" xml:space="preserve"><value>التحقق من التحديثات تلقائيًا</value></data>
-  <data name="Settings.AutomaticUpdateChecksDescription" xml:space="preserve"><value>طلب HTTPS واحد على الأكثر مرة يوميًا، يرسل إصدار التطبيق فقط. لا يتم تنزيل أو تثبيت أي شيء دون نقرك.</value></data>
-  <data name="Settings.IncludeBetaVersions" xml:space="preserve"><value>تضمين إصدارات بيتا</value></data>
-  <data name="Settings.CheckNow" xml:space="preserve"><value>تحقق الآن</value></data>
-  <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>التحقق من التحديثات الآن</value></data>
-  <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>التحقق من التحديثات مفعّل افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه من الإعدادات.</value></data>
-  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>تمت حماية هذه البيانات تحت حساب Windows آخر ولا يمكن فتحها هنا. استعدها من نسخة احتياطية محمولة.</value></data>
-  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>تعذر تحميل الشروط. حاول مرة أخرى.</value></data>
-  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>تعذر تكرار الشرط. حاول مرة أخرى.</value></data>
-  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>تعذر أرشفة الشرط. حاول مرة أخرى.</value></data>
-  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>تعذر حفظ الشرط. حاول مرة أخرى.</value></data>
-  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>أرشفة الشرط</value></data>
-  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>أرشفة «{0}»؟ سيُخفى من اختيار الشروط.</value></data>
-  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>أدخل عنوان الشرط ونموذج النص.</value></data>
-  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>عناصر نائبة غير معروفة: {0}. لن يتم استبدالها عند الصياغة.</value></data>
-  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>عناصر نائبة غير معروفة</value></data>
-  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>المتابعة على أي حال؟</value></data>
-  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>تجاهل</value></data>
-  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>كيف ستستخدم DraftEngine؟</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>اختر ملفًا شخصيًا لعرض الصفحات التي تحتاجها. يمكنك تغييره لاحقًا من الإعدادات.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>محامٍ</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>مجموعة كاملة للصياغة والتحليل ومكتبة الشروط.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>أعمال</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>صِغ الاتفاقيات وراجعها دون أدوات مكتبة الشروط، مع تنبيه بأن هذا ليس استشارة قانونية.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>وسيط</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>صفحات صياغة مشتركة، مع مساحة وساطة مخطط لها.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>يقدم DraftEngine معلومات عامة ومساعدة في الصياغة، وليس استشارة قانونية. اطلب من محامٍ مؤهل مراجعة الاتفاقيات المهمة.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>مساحة وساطة مخصصة مخطط لها. تتوفر حاليًا صفحات الصياغة والتحليل المشتركة.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>الملف الشخصي</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>اختر الصفحات التي يعرضها DraftEngine. إخفاء صفحة لا يحذف بياناتها أبدًا.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>محامٍ</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>أعمال</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>وسيط</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>تم تحديث الملف الشخصي. تعرض الشريط الجانبي الآن صفحات {0}.</value></data>
 </root>

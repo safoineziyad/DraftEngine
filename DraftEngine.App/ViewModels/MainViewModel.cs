@@ -6,7 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
-using DraftEngine.Data;
+using DraftEngine.App.Services.Profiles;
+using DraftEngine.App.Services.Updates;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -20,9 +21,11 @@ public partial class MainViewModel : ObservableObject
     private readonly AppOptions? _appOptions;
     private readonly UpdateFlowViewModel? _updateFlow;
     private readonly ILocalizationService? _localization;
-    private readonly NavigationItemViewModel? _aboutItem;
-    private readonly SensitiveDataInterceptor? _sensitiveData;
-    private string? _protectedDataWarning;
+    private readonly IProfileService? _profileService;
+    private readonly NavigationItemViewModel[] _workspaceMaster;
+    private readonly NavigationItemViewModel[] _toolsMaster;
+    private readonly NavigationItemViewModel[] _bottomMaster;
+    private UpdateInfo? _availableUpdate;
 
     /// <summary>Segoe Fluent Icons glyphs with a Segoe MDL2 Assets fallback for older Windows.</summary>
     private const string IconHome = "\uE80F";
@@ -41,16 +44,17 @@ public partial class MainViewModel : ObservableObject
     public string CurrentPageKey => _navigation.CurrentKey;
 
     /// <summary>Workspace group: dashboard, contract creation and the contract lists.</summary>
-    public IReadOnlyList<NavigationItemViewModel> WorkspaceItems { get; }
+    public IReadOnlyList<NavigationItemViewModel> WorkspaceItems => Visible(_workspaceMaster);
 
     /// <summary>Tools group: analysis and clause management.</summary>
-    public IReadOnlyList<NavigationItemViewModel> ToolsItems { get; }
+    public IReadOnlyList<NavigationItemViewModel> ToolsItems => Visible(_toolsMaster);
 
     /// <summary>Bottom group: settings and about, pinned below the scrollable list.</summary>
-    public IReadOnlyList<NavigationItemViewModel> BottomItems { get; }
+    public IReadOnlyList<NavigationItemViewModel> BottomItems => Visible(_bottomMaster);
 
     /// <summary>Every navigation item in sidebar order (for tests and keyboard traversal).</summary>
-    public IReadOnlyList<NavigationItemViewModel> AllItems { get; }
+    public IReadOnlyList<NavigationItemViewModel> AllItems =>
+        WorkspaceItems.Concat(ToolsItems).Concat(BottomItems).ToArray();
 
     /// <summary>Version label from the assembly version, localized ("Version 0.4.0…").</summary>
     public string VersionDisplay =>
@@ -112,9 +116,9 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         INavigationService navigation,
         AppOptions? appOptions = null,
-        UpdateFlowViewModel? updateFlow = null,
+        IUpdateService? updateService = null,
         ILocalizationService? localization = null,
-        SensitiveDataInterceptor? sensitiveData = null)
+        IProfileService? profileService = null)
     {
         _navigation = navigation;
         _sensitiveData = sensitiveData;
@@ -141,15 +145,16 @@ public partial class MainViewModel : ObservableObject
             _updateFlow.ShutdownRequested += () => Application.Current?.Shutdown();
         }
         _localization = localization ?? LocalizationSource.Current.Service;
+        _profileService = profileService;
 
-        WorkspaceItems =
+        _workspaceMaster =
         [
             new NavigationItemViewModel("dashboard", "Nav.Dashboard", IconHome, NavigateDashboardCommand, _localization),
             new NavigationItemViewModel("new-contract", "Nav.NewContract", IconAdd, NavigateNewContractCommand, _localization),
             new NavigationItemViewModel("contracts", "Nav.Contracts", IconList, NavigateContractsCommand, _localization),
             new NavigationItemViewModel("archived-contracts", "Nav.Archived", IconArchive, NavigateArchivedContractsCommand, _localization),
         ];
-        ToolsItems =
+        _toolsMaster =
         [
             new NavigationItemViewModel("analyze", "Nav.Analyze", IconAnalyze, NavigateAnalyzeCommand, _localization),
             new NavigationItemViewModel("clause-management", "Nav.ClauseManager", IconClauses, NavigateClauseManagementCommand, _localization),
@@ -163,9 +168,12 @@ public partial class MainViewModel : ObservableObject
             _aboutItem = new NavigationItemViewModel("about", "Nav.About", IconInfo, NavigateAboutCommand, _localization);
             bottomItems.Add(_aboutItem);
         }
+        _bottomMaster = bottomItems.ToArray();
 
-        BottomItems = bottomItems;
-        AllItems = WorkspaceItems.Concat(ToolsItems).Concat(BottomItems).ToArray();
+        if (_profileService is not null)
+        {
+            _profileService.ProfileChanged += OnProfileChanged;
+        }
 
         _navigation.CurrentViewModelChanged += _ => OnCurrentViewModelChanged();
         _navigation.Navigate("dashboard");
@@ -180,6 +188,41 @@ public partial class MainViewModel : ObservableObject
             // Never blocks startup: the flow waits, then checks at most once per 24 hours.
             _ = _updateFlow.CheckOnStartupAsync();
         }
+    }
+
+    private static readonly IReadOnlyDictionary<string, FeatureKey> PageFeatures =
+        new Dictionary<string, FeatureKey>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["dashboard"] = FeatureKey.Dashboard,
+            ["new-contract"] = FeatureKey.NewContract,
+            ["contracts"] = FeatureKey.Contracts,
+            ["archived-contracts"] = FeatureKey.Archive,
+            ["analyze"] = FeatureKey.Analyze,
+            ["clause-management"] = FeatureKey.Clauses,
+            ["settings"] = FeatureKey.Settings,
+            ["about"] = FeatureKey.About,
+        };
+
+    private bool IsPageVisible(string key) =>
+        !PageFeatures.TryGetValue(key, out var feature) ||
+        _profileService?.IsFeatureVisible(feature) != false;
+
+    private IReadOnlyList<NavigationItemViewModel> Visible(IEnumerable<NavigationItemViewModel> items) =>
+        items.Where(item => IsPageVisible(item.Key)).ToArray();
+
+    private void OnProfileChanged(object? sender, UserProfile profile)
+    {
+        OnPropertyChanged(nameof(WorkspaceItems));
+        OnPropertyChanged(nameof(ToolsItems));
+        OnPropertyChanged(nameof(BottomItems));
+        OnPropertyChanged(nameof(AllItems));
+
+        if (!IsPageVisible(_navigation.CurrentKey))
+        {
+            _navigation.Navigate("dashboard");
+        }
+
+        OnCurrentViewModelChanged();
     }
 
     private void OnCurrentViewModelChanged()
@@ -216,11 +259,17 @@ public partial class MainViewModel : ObservableObject
 
     /// <summary>Navigates to the new contract page.</summary>
     [RelayCommand]
-    private void NavigateNewContract() => _navigation.Navigate("new-contract");
+    private void NavigateNewContract()
+    {
+        if (IsPageVisible("new-contract")) _navigation.Navigate("new-contract");
+    }
 
     /// <summary>Navigates to the contracts list page.</summary>
     [RelayCommand]
-    private void NavigateContracts() => _navigation.Navigate("contracts");
+    private void NavigateContracts()
+    {
+        if (IsPageVisible("contracts")) _navigation.Navigate("contracts");
+    }
 
     /// <summary>Navigates to the settings page.</summary>
     [RelayCommand]
@@ -228,15 +277,25 @@ public partial class MainViewModel : ObservableObject
 
     /// <summary>Navigates to the clause management page.</summary>
     [RelayCommand]
-    private void NavigateClauseManagement() => _navigation.Navigate("clause-management");
+    private void NavigateClauseManagement()
+    {
+        // Business profile has no clause-library page; the shortcut is inert, never a crash.
+        if (IsPageVisible("clause-management")) _navigation.Navigate("clause-management");
+    }
 
     /// <summary>Navigates to archived contracts.</summary>
     [RelayCommand]
-    private void NavigateArchivedContracts() => _navigation.Navigate("archived-contracts");
+    private void NavigateArchivedContracts()
+    {
+        if (IsPageVisible("archived-contracts")) _navigation.Navigate("archived-contracts");
+    }
 
     /// <summary>Navigates to the Analyze page.</summary>
     [RelayCommand]
-    private void NavigateAnalyze() => _navigation.Navigate("analyze");
+    private void NavigateAnalyze()
+    {
+        if (IsPageVisible("analyze")) _navigation.Navigate("analyze");
+    }
 
     /// <summary>Navigates to the About &amp; Help page.</summary>
     [RelayCommand]

@@ -390,177 +390,20 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>La edición con IA comparte el texto de este contrato con OpenAI para procesarlo.&#xA;&#xA;Continúa solo si aceptas enviar este documento a OpenAI; por ejemplo, si no contiene material privilegiado o confidencial que no tengas permiso para compartir con un servicio externo.&#xA;&#xA;¿Continuar con la edición con IA?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La edición con IA envía datos a OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
-  <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine no pudo iniciarse</value></data>
-  <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine no pudo abrir su base de datos. Tus datos no se modificaron. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
-  <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>No se pudo completar la actualización de la base de datos, así que se restauró la copia de seguridad previa. Tus datos no han cambiado. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
-  <data name="Startup.Error.DiagnosticsLabel" xml:space="preserve"><value>Diagnóstico (solo versión, Windows, .NET y tipo de error; sin datos de contratos)</value></data>
-  <data name="Startup.Error.CopyDiagnostics" xml:space="preserve"><value>Copiar diagnóstico</value></data>
-  <data name="Startup.Error.Close" xml:space="preserve"><value>Cerrar</value></data>
-  <data name="Startup.Error.DiagnosticsCopied" xml:space="preserve"><value>Diagnóstico copiado.</value></data>
-  <data name="Startup.Error.ClipboardUnavailable" xml:space="preserve"><value>El portapapeles no está disponible.</value></data>
-  <data name="Wizard.JurisdictionDisclaimer" xml:space="preserve"><value>Las cláusulas son plantillas genéricas y no se han adaptado a la legislación de la jurisdicción seleccionada.</value></data>
-  <data name="Settings.Profiles" xml:space="preserve"><value>Proveedores de IA</value></data>
-  <data name="Settings.ProfilesAutomation" xml:space="preserve"><value>Perfil de proveedor de IA</value></data>
-  <data name="Settings.AddProfile" xml:space="preserve"><value>Nuevo</value></data>
-  <data name="Settings.AddProfileAutomation" xml:space="preserve"><value>Añadir un perfil de proveedor de IA</value></data>
-  <data name="Settings.RemoveProfile" xml:space="preserve"><value>Quitar</value></data>
-  <data name="Settings.RemoveProfileAutomation" xml:space="preserve"><value>Quitar el perfil de proveedor de IA seleccionado</value></data>
-  <data name="Settings.ProfileName" xml:space="preserve"><value>Nombre del perfil</value></data>
-  <data name="Settings.ProfileNameAutomation" xml:space="preserve"><value>Nombre del perfil de proveedor de IA</value></data>
-  <data name="Settings.ProviderPreset" xml:space="preserve"><value>Tipo de proveedor</value></data>
-  <data name="Settings.ProviderPresetAutomation" xml:space="preserve"><value>Tipo de proveedor de IA</value></data>
-  <data name="Settings.BaseUrl" xml:space="preserve"><value>URL base</value></data>
-  <data name="Settings.BaseUrlDescription" xml:space="preserve"><value>Endpoint compatible con OpenAI, normalmente termina en /v1/. Azure usa la ruta del despliegue; los servidores locales no necesitan clave.</value></data>
-  <data name="Settings.FetchModels" xml:space="preserve"><value>Cargar modelos</value></data>
-  <data name="Settings.FetchModelsAutomation" xml:space="preserve"><value>Cargar la lista de modelos del proveedor</value></data>
-  <data name="Settings.NewProfileName" xml:space="preserve"><value>Nuevo proveedor</value></data>
-  <data name="Settings.ModelsFetched" xml:space="preserve"><value>Se cargaron {0} modelo(s) del proveedor.</value></data>
-  <data name="Settings.ErrorFetchModels" xml:space="preserve"><value>No se pudo cargar la lista de modelos. Comprueba la URL base y la clave.</value></data>
-  <data name="Settings.PresetOpenAi" xml:space="preserve"><value>OpenAI / compatible</value></data>
-  <data name="Settings.PresetAzure" xml:space="preserve"><value>Azure OpenAI</value></data>
-  <data name="Settings.PresetOllama" xml:space="preserve"><value>Ollama (local)</value></data>
-  <data name="Settings.PresetLmStudio" xml:space="preserve"><value>LM Studio (local)</value></data>
-  <data name="Settings.PresetCustom" xml:space="preserve"><value>Endpoint personalizado</value></data>
-  <data name="About.PageTitle" xml:space="preserve"><value>Acerca de y ayuda</value></data>
-  <data name="About.Subtitle" xml:space="preserve"><value>Información de versión, ayuda, privacidad y licencia.</value></data>
-  <data name="About.Tagline" xml:space="preserve"><value>DraftEngine redacta contratos localmente a partir de plantillas. La generación funciona totalmente sin conexión y nunca requiere una clave de IA.</value></data>
-  <data name="About.OpenLogs" xml:space="preserve"><value>Abrir carpeta de registros</value></data>
-  <data name="About.OpenData" xml:space="preserve"><value>Abrir carpeta de datos</value></data>
-  <data name="About.Diagnostics" xml:space="preserve"><value>Diagnóstico</value></data>
-  <data name="About.DiagnosticsDescription" xml:space="preserve"><value>Solo versión, Windows y .NET. Sin datos de contratos, rutas ni identificadores.</value></data>
-  <data name="About.CopyDiagnostics" xml:space="preserve"><value>Copiar diagnóstico</value></data>
-  <data name="About.CopyDiagnosticsAutomation" xml:space="preserve"><value>Copiar el diagnóstico de versión y sistema operativo</value></data>
-  <data name="About.Privacy" xml:space="preserve"><value>Resumen de privacidad</value></data>
-  <data name="About.PrivacyBody" xml:space="preserve"><value>Los contratos, las respuestas, el historial de chat, la configuración y la clave API permanecen en este equipo y se cifran con tu perfil de Windows. Sin telemetría, sin cuenta y sin cargas en segundo plano. La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse aquí.</value></data>
-  <data name="About.AiPrivacyBody" xml:space="preserve"><value>La edición con IA es opcional. Cuando la usas, el texto actual del contrato y tu instrucción se envían al proveedor de IA que configuraste. Activa «Ocultar nombres y direcciones de las partes a la IA» en Ajustes para sustituir los datos reales por tokens.</value></data>
-  <data name="About.Updates" xml:space="preserve"><value>Actualizaciones</value></data>
-  <data name="About.CheckUpdates" xml:space="preserve"><value>Buscar actualizaciones</value></data>
-  <data name="About.License" xml:space="preserve"><value>Licencia</value></data>
-  <data name="About.LicenseKeyLabel" xml:space="preserve"><value>Clave de licencia</value></data>
-  <data name="About.LicenseKeyTooltip" xml:space="preserve"><value>Pega la clave de licencia firmada que recibiste</value></data>
-  <data name="About.ActivateLicense" xml:space="preserve"><value>Activar licencia</value></data>
-  <data name="Analyze.PageTitle" xml:space="preserve"><value>Analizar</value></data>
-  <data name="Analyze.ImportTitle" xml:space="preserve"><value>1. Importar un contrato</value></data>
-  <data name="Analyze.ImportDescription" xml:space="preserve"><value>DOCX o PDF basado en texto. Los PDF escaneados necesitan OCR, que aún no es compatible.</value></data>
-  <data name="Analyze.PlaybookLabel" xml:space="preserve"><value>Tipo de contrato (playbook)</value></data>
-  <data name="Analyze.PlaybookAutomation" xml:space="preserve"><value>Tipo de contrato del playbook</value></data>
-  <data name="Analyze.ChooseFileAutomation" xml:space="preserve"><value>Elegir un archivo de contrato</value></data>
-  <data name="Analyze.Analyze" xml:space="preserve"><value>Analizar</value></data>
-  <data name="Analyze.AnalyzeAutomation" xml:space="preserve"><value>Volver a analizar el archivo actual</value></data>
-  <data name="Analyze.AiReview" xml:space="preserve"><value>Revisión con IA (opcional)</value></data>
-  <data name="Analyze.AiReviewAutomation" xml:space="preserve"><value>Activar la revisión con IA</value></data>
-  <data name="Analyze.GroupedHint" xml:space="preserve"><value>Agrupados por gravedad. Selecciona un hallazgo para resaltar su cita.</value></data>
-  <data name="Analyze.ExportDocx" xml:space="preserve"><value>Exportar informe (DOCX)</value></data>
-  <data name="Analyze.ExportPdf" xml:space="preserve"><value>Exportar informe (PDF)</value></data>
-  <data name="Analyze.FindingsAutomation" xml:space="preserve"><value>Hallazgos de la revisión</value></data>
-  <data name="Analyze.AiBadge" xml:space="preserve"><value>IA</value></data>
-  <data name="Analyze.Saved" xml:space="preserve"><value>Análisis guardados</value></data>
-  <data name="Analyze.Refresh" xml:space="preserve"><value>Actualizar</value></data>
-  <data name="Analyze.ArchiveSelected" xml:space="preserve"><value>Archivar seleccionado</value></data>
-  <data name="Analyze.OpenSelected" xml:space="preserve"><value>Abrir el análisis seleccionado</value></data>
-  <data name="Analyze.Document" xml:space="preserve"><value>Documento</value></data>
-  <data name="Analyze.DocumentAutomation" xml:space="preserve"><value>Texto del contrato importado</value></data>
-  <data name="Analyze.SuggestedFix" xml:space="preserve"><value>Corrección sugerida</value></data>
-  <data name="Analyze.CopyFix" xml:space="preserve"><value>Copiar la corrección sugerida</value></data>
-  <data name="Clause.PageTitle" xml:space="preserve"><value>Gestor de cláusulas</value></data>
-  <data name="Clause.Subtitle" xml:space="preserve"><value>Crea, edita y archiva tus plantillas de cláusulas.</value></data>
-  <data name="Clause.FilterType" xml:space="preserve"><value>Filtrar cláusulas por tipo de contrato</value></data>
-  <data name="Clause.FilterCategory" xml:space="preserve"><value>Filtrar cláusulas por categoría</value></data>
-  <data name="Clause.FilterSource" xml:space="preserve"><value>Filtrar cláusulas por origen</value></data>
-  <data name="Clause.New" xml:space="preserve"><value>+ Nueva</value></data>
-  <data name="Clause.NewAutomation" xml:space="preserve"><value>Crear una cláusula</value></data>
-  <data name="Clause.Edit" xml:space="preserve"><value>Editar</value></data>
-  <data name="Clause.EditAutomation" xml:space="preserve"><value>Editar la cláusula seleccionada</value></data>
-  <data name="Clause.Duplicate" xml:space="preserve"><value>Duplicar</value></data>
-  <data name="Clause.DuplicateAutomation" xml:space="preserve"><value>Duplicar la cláusula seleccionada</value></data>
-  <data name="Clause.Archive" xml:space="preserve"><value>Archivar</value></data>
-  <data name="Clause.ArchiveAutomation" xml:space="preserve"><value>Archivar la cláusula seleccionada</value></data>
-  <data name="Clause.ListAutomation" xml:space="preserve"><value>Lista de cláusulas</value></data>
-  <data name="Clause.Empty" xml:space="preserve"><value>Aún no hay cláusulas: crea la primera.</value></data>
-  <data name="Clause.NewLong" xml:space="preserve"><value>+ Nueva cláusula</value></data>
-  <data name="Clause.TitleLabel" xml:space="preserve"><value>Título</value></data>
-  <data name="Clause.TitleAutomation" xml:space="preserve"><value>Título de la cláusula</value></data>
-  <data name="Clause.CategoryLabel" xml:space="preserve"><value>Categoría</value></data>
-  <data name="Clause.CategoryAutomation" xml:space="preserve"><value>Categoría de la cláusula</value></data>
-  <data name="Clause.BodyLabel" xml:space="preserve"><value>Cuerpo de la plantilla</value></data>
-  <data name="Clause.BodyAutomation" xml:space="preserve"><value>Cuerpo de la plantilla de cláusula</value></data>
-  <data name="Clause.Optional" xml:space="preserve"><value>Cláusula opcional</value></data>
-  <data name="Clause.OptionalAutomation" xml:space="preserve"><value>Marcar la cláusula como opcional</value></data>
-  <data name="Clause.Cancel" xml:space="preserve"><value>Cancelar</value></data>
-  <data name="Clause.CancelAutomation" xml:space="preserve"><value>Descartar cambios</value></data>
-  <data name="Clause.Save" xml:space="preserve"><value>Guardar</value></data>
-  <data name="Clause.SaveAutomation" xml:space="preserve"><value>Guardar cláusula</value></data>
-  <data name="Clause.TryAgain" xml:space="preserve"><value>Reintentar</value></data>
-  <data name="Clause.TryAgainAutomation" xml:space="preserve"><value>Volver a cargar las cláusulas</value></data>
-  <data name="License.WindowTitle" xml:space="preserve"><value>Activar DraftEngine</value></data>
-  <data name="License.Heading" xml:space="preserve"><value>Activar DraftEngine</value></data>
-  <data name="License.Description" xml:space="preserve"><value>Pega la clave de licencia firmada que recibiste. La activación se verifica sin conexión en este equipo; no se necesita cuenta ni conexión de red.</value></data>
-  <data name="License.KeyLabel" xml:space="preserve"><value>Clave de licencia</value></data>
-  <data name="License.KeyAutomation" xml:space="preserve"><value>Clave de licencia</value></data>
-  <data name="License.Quit" xml:space="preserve"><value>Salir</value></data>
-  <data name="License.QuitAutomation" xml:space="preserve"><value>Salir de DraftEngine</value></data>
-  <data name="License.Activate" xml:space="preserve"><value>Activar</value></data>
-  <data name="License.ActivateAutomation" xml:space="preserve"><value>Activar licencia</value></data>
-  <data name="License.PasteKey" xml:space="preserve"><value>Pega la clave de licencia que recibiste.</value></data>
-  <data name="License.ActivationFailed" xml:space="preserve"><value>No se pudo activar la licencia. Comprueba la clave e inténtalo de nuevo.</value></data>
-  <data name="Update.Banner" xml:space="preserve"><value>La versión {0} está disponible.</value></data>
-  <data name="Update.WhatsNew" xml:space="preserve"><value>Novedades</value></data>
-  <data name="Update.WhatsNewAutomation" xml:space="preserve"><value>Mostrar las notas de la versión</value></data>
-  <data name="Update.Install" xml:space="preserve"><value>Actualizar</value></data>
-  <data name="Update.InstallAutomation" xml:space="preserve"><value>Descargar e instalar la actualización</value></data>
-  <data name="Update.Later" xml:space="preserve"><value>Más tarde</value></data>
-  <data name="Update.LaterAutomation" xml:space="preserve"><value>Recuérdamelo más tarde</value></data>
-  <data name="Update.Skip" xml:space="preserve"><value>Omitir esta versión</value></data>
-  <data name="Update.SkipAutomation" xml:space="preserve"><value>Omitir esta versión</value></data>
-  <data name="Update.AboutBadgeAutomation" xml:space="preserve"><value>Actualización disponible</value></data>
-  <data name="Update.ConfirmTitle" xml:space="preserve"><value>Instalar actualización</value></data>
-  <data name="Update.ConfirmBody" xml:space="preserve"><value>DraftEngine se cerrará, el instalador se ejecutará y la aplicación se reiniciará. Primero se guarda una instantánea de la base de datos. ¿Instalar la versión {0} ahora?</value></data>
-  <data name="Update.Installing" xml:space="preserve"><value>Instalando…</value></data>
-  <data name="Update.Cancelled" xml:space="preserve"><value>Actualización cancelada. No se cambió nada.</value></data>
-  <data name="Update.Skipped" xml:space="preserve"><value>Esta versión no se volverá a ofrecer.</value></data>
-  <data name="Update.UpToDate" xml:space="preserve"><value>Estás usando la última versión.</value></data>
-  <data name="Update.Checking" xml:space="preserve"><value>Buscando actualizaciones…</value></data>
-  <data name="Update.LastCheckedNever" xml:space="preserve"><value>Nunca se han buscado actualizaciones.</value></data>
-  <data name="Update.LastCheckedAt" xml:space="preserve"><value>Última comprobación: {0}</value></data>
-  <data name="Update.ChecksOn" xml:space="preserve"><value>La búsqueda automática de actualizaciones está activada.</value></data>
-  <data name="Update.ChecksOff" xml:space="preserve"><value>La búsqueda automática de actualizaciones está desactivada.</value></data>
-  <data name="Update.ErrorTitle" xml:space="preserve"><value>Actualización</value></data>
-  <data name="Update.Error.Disabled" xml:space="preserve"><value>La búsqueda de actualizaciones está desactivada.</value></data>
-  <data name="Update.Error.Offline" xml:space="preserve"><value>No se pudo contactar con el servidor de actualizaciones. Comprueba tu conexión e inténtalo de nuevo.</value></data>
-  <data name="Update.Error.Timeout" xml:space="preserve"><value>El servidor de actualizaciones no respondió a tiempo. Inténtalo más tarde.</value></data>
-  <data name="Update.Error.NotFound" xml:space="preserve"><value>No se encontró ningún manifiesto de actualización en la dirección configurada.</value></data>
-  <data name="Update.Error.Http" xml:space="preserve"><value>El servidor de actualizaciones devolvió un error. Inténtalo más tarde.</value></data>
-  <data name="Update.Error.Malformed" xml:space="preserve"><value>El manifiesto de actualización está mal formado y se ignoró.</value></data>
-  <data name="Update.Error.Schema" xml:space="preserve"><value>El manifiesto de actualización usa un esquema no compatible.</value></data>
-  <data name="Update.Error.Signature" xml:space="preserve"><value>No se pudo verificar la actualización y se ignoró.</value></data>
-  <data name="Update.Error.Downgrade" xml:space="preserve"><value>La versión ofrecida es anterior a la instalada; se rechazó.</value></data>
-  <data name="Update.Error.BlockedHost" xml:space="preserve"><value>La actualización apunta a una dirección no permitida.</value></data>
-  <data name="Update.Error.Hash" xml:space="preserve"><value>El instalador descargado no coincide con su suma de comprobación. Se eliminó.</value></data>
-  <data name="Update.Error.Truncated" xml:space="preserve"><value>La descarga estaba incompleta. Se eliminó; inténtalo de nuevo.</value></data>
-  <data name="Update.Error.DiskFull" xml:space="preserve"><value>No hay espacio suficiente en disco para descargar la actualización.</value></data>
-  <data name="Update.Error.Authenticode" xml:space="preserve"><value>El instalador descargado no tiene una firma válida.</value></data>
-  <data name="Update.Error.Snapshot" xml:space="preserve"><value>Falló la instantánea de la base de datos, así que no se inició la actualización.</value></data>
-  <data name="Update.Error.Launch" xml:space="preserve"><value>No se pudo iniciar el instalador. DraftEngine sigue en ejecución.</value></data>
-  <data name="Update.Error.Cancelled" xml:space="preserve"><value>La actualización se canceló.</value></data>
-  <data name="Update.Error.Generic" xml:space="preserve"><value>No se pudo completar la actualización. Inténtalo más tarde.</value></data>
-  <data name="Settings.UpdatesSection" xml:space="preserve"><value>Actualizaciones</value></data>
-  <data name="Settings.AutomaticUpdateChecks" xml:space="preserve"><value>Buscar actualizaciones automáticamente</value></data>
-  <data name="Settings.AutomaticUpdateChecksDescription" xml:space="preserve"><value>Una solicitud HTTPS como máximo una vez al día, enviando solo la versión de la aplicación. Nada se descarga ni se instala sin tu clic.</value></data>
-  <data name="Settings.IncludeBetaVersions" xml:space="preserve"><value>Incluir versiones beta</value></data>
-  <data name="Settings.CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
-  <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Buscar actualizaciones ahora</value></data>
-  <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse en Ajustes.</value></data>
-  <data name="Audit.ProtectedDataUnavailable" xml:space="preserve"><value>Estos datos se protegieron con otra cuenta de Windows y no se pueden abrir aquí. Restáuralos desde una copia de seguridad portátil.</value></data>
-  <data name="Audit.ClauseLoadError" xml:space="preserve"><value>No se pudieron cargar las cláusulas. Inténtalo de nuevo.</value></data>
-  <data name="Audit.ClauseDuplicateError" xml:space="preserve"><value>No se pudo duplicar la cláusula. Inténtalo de nuevo.</value></data>
-  <data name="Audit.ClauseArchiveError" xml:space="preserve"><value>No se pudo archivar la cláusula. Inténtalo de nuevo.</value></data>
-  <data name="Audit.ClauseSaveError" xml:space="preserve"><value>No se pudo guardar la cláusula. Inténtalo de nuevo.</value></data>
-  <data name="Audit.ClauseArchiveTitle" xml:space="preserve"><value>Archivar cláusula</value></data>
-  <data name="Audit.ClauseArchiveConfirm" xml:space="preserve"><value>¿Archivar «{0}»? Se ocultará de la selección de cláusulas.</value></data>
-  <data name="Audit.ClauseMissingTitleBody" xml:space="preserve"><value>Introduce un título y una plantilla de cuerpo para la cláusula.</value></data>
-  <data name="Audit.ClauseUnknownPlaceholders" xml:space="preserve"><value>Marcadores desconocidos: {0}. No se resolverán al redactar.</value></data>
-  <data name="Audit.ClauseUnknownPlaceholdersTitle" xml:space="preserve"><value>Marcadores desconocidos</value></data>
-  <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>¿Continuar de todos modos?</value></data>
-  <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Descartar</value></data>
-  <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>¿Cómo vas a usar DraftEngine?</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>Elige un perfil para mostrar las páginas que necesitas. Puedes cambiarlo más tarde en Ajustes.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>Abogado</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>Conjunto completo de redacción, análisis y biblioteca de cláusulas.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>Empresa</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>Redacta y revisa acuerdos sin la biblioteca de cláusulas, con un aviso de no asesoramiento jurídico.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>Mediador</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>Páginas de redacción compartidas, con un espacio de mediación previsto.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>DraftEngine ofrece información general y ayuda de redacción, no asesoramiento jurídico. Haz que un abogado cualificado revise los acuerdos importantes.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>Está previsto un espacio de mediación dedicado. Por ahora están disponibles las páginas compartidas de redacción y análisis.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>Perfil</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>Elige qué páginas muestra DraftEngine. Ocultar una página nunca borra sus datos.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>Abogado</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>Empresa</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>Mediador</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>Perfil actualizado. La barra lateral ahora muestra las páginas de {0}.</value></data>
 </root>

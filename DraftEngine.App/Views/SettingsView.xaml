@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:settings="clr-namespace:DraftEngine.App.Services.Settings"
+             xmlns:views="clr-namespace:DraftEngine.App.Views"
              xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
@@ -52,6 +53,9 @@
                               Width="240" />
                 </StackPanel>
             </Border>
+
+            <!-- Profile: which pages are shown; hidden pages keep their data. -->
+            <views:ProfileSettingsCard />
 
             <!-- OpenAI section -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">

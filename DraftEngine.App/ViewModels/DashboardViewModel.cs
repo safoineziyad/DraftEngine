@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Services.Profiles;
 using DraftEngine.Core.Interfaces;
 using Serilog;
 
@@ -28,6 +29,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IContractService _contractService;
     private readonly INavigationService _navigation;
     private readonly ILocalizationService _localization;
+    private readonly IProfileService? _profileService;
     private bool _hasLoadError;
 
     /// <summary>The page title shown in the view header.</summary>
@@ -64,13 +66,39 @@ public partial class DashboardViewModel : ObservableObject
     public DashboardViewModel(
         IContractService contractService,
         INavigationService navigation,
-        ILocalizationService? localization = null)
+        ILocalizationService? localization = null,
+        IProfileService? profileService = null)
     {
         _contractService = contractService;
         _navigation = navigation;
         _localization = localization ?? LocalizationSource.Current.Service ?? new LocalizationService();
+        _profileService = profileService;
         _navigation.CurrentViewModelChanged += OnPageChanged;
         _localization.LanguageChanged += OnLanguageChanged;
+        if (_profileService is not null)
+        {
+            _profileService.ProfileChanged += (_, _) => RefreshProfileContent();
+        }
+    }
+
+    /// <summary>Business profile sees the short not-legal-advice notice.</summary>
+    public bool ShowNotLegalAdviceNotice =>
+        ProfileFeatureMatrix.ShowsNotLegalAdviceNotice(_profileService?.Current);
+
+    /// <summary>Mediator profile sees the planned-workspace note.</summary>
+    public bool ShowMediationPlannedNote =>
+        ProfileFeatureMatrix.ShowsMediationPlannedNote(_profileService?.Current);
+
+    /// <summary>Localized Business notice.</summary>
+    public string NotLegalAdviceText => _localization.GetString("Profile.Notice.NotLegalAdvice");
+
+    /// <summary>Localized Mediator note.</summary>
+    public string MediationPlannedText => _localization.GetString("Dashboard.MediationPlanned");
+
+    private void RefreshProfileContent()
+    {
+        OnPropertyChanged(nameof(ShowNotLegalAdviceNotice));
+        OnPropertyChanged(nameof(ShowMediationPlannedNote));
     }
 
     /// <summary>Navigates to the new contract wizard.</summary>
@@ -154,6 +182,8 @@ public partial class DashboardViewModel : ObservableObject
 
         OnPropertyChanged(nameof(HasContracts));
         OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(NotLegalAdviceText));
+        OnPropertyChanged(nameof(MediationPlannedText));
 
         if (_hasLoadError)
         {

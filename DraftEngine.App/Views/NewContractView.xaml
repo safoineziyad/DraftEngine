@@ -144,6 +144,11 @@
                     <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitleStyle}" />
                     <TextBlock Text="{loc:T Wizard.Subtitle}"
                                Style="{StaticResource SecondaryTextStyle}" Margin="0,4,0,0" />
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="6" Padding="10,8" Margin="0,10,0,0"
+                            Visibility="{Binding ShowNotLegalAdviceNotice, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding NotLegalAdviceText}" TextWrapping="Wrap"
+                                   Style="{StaticResource SecondaryTextStyle}" />
+                    </Border>
                 </StackPanel>
                 <Button Grid.Column="1" Content="{loc:T Wizard.DiscardDraft}" Padding="14,0" Height="34"
                         Command="{Binding DiscardDraftCommand}" VerticalAlignment="Center" />

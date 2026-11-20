@@ -35,10 +35,7 @@ public sealed class AppSettingsService : IAppSettingsService
     public event Action? SettingsChanged;
 
     /// <summary>Creates the service and loads existing settings from %APPDATA%\DraftEngine\settings.json (defaults on any failure).</summary>
-<<<<<<< HEAD
     /// <param name="settingsPath">Optional override for the settings file (tests use a temp folder).</param>
-=======
->>>>>>> origin/feature/profile-mode
     public AppSettingsService(ISecretProtector protector, IHttpClientFactory httpClientFactory, string? settingsPath = null)
     {
         _protector = protector ?? throw new ArgumentNullException(nameof(protector));
@@ -201,14 +198,10 @@ public sealed class AppSettingsService : IAppSettingsService
                 LastUpdateCheckUtc = stored.LastUpdateCheckUtc,
                 Language = string.IsNullOrWhiteSpace(stored.Language) ? "system" : stored.Language,
                 Theme = string.IsNullOrWhiteSpace(stored.Theme) ? "System" : stored.Theme,
-<<<<<<< HEAD
                 AiProfiles = LoadProfiles(stored),
                 ActiveAiProfileId = stored.ActiveAiProfileId ?? string.Empty,
-            }.MirrorActiveProfile();
-=======
                 Profile = stored.Profile,
-            };
->>>>>>> origin/feature/profile-mode
+            }.MirrorActiveProfile();
         }
         catch (Exception ex)
         {

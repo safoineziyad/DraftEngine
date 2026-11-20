@@ -31,13 +31,10 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IPortableBackupService? _backupService;
     private readonly ILocalizationService _localization;
     private readonly IThemeService? _themeService;
-<<<<<<< HEAD
     private readonly IHttpClientFactory? _httpClientFactory;
     private readonly UpdateFlowViewModel? _updateFlow;
-=======
     private readonly IProfileService? _profileService;
     private bool _isApplyingProfile;
->>>>>>> origin/feature/profile-mode
     private bool _isLoading;
     private bool _isApplyingLanguage;
     private bool _isApplyingTheme;
@@ -76,9 +73,9 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>Preset choices with localized display names.</summary>
     public IReadOnlyList<AiPresetChoice> PresetOptions { get; }
 
-    /// <summary>Profile currently being edited.</summary>
+    /// <summary>AI provider profile currently being edited (distinct from the user profile).</summary>
     [ObservableProperty]
-    private AiProfile? selectedProfile;
+    private AiProfile? selectedAiProfile;
 
     /// <summary>Display name of the profile being edited.</summary>
     [ObservableProperty]
@@ -210,12 +207,9 @@ public partial class SettingsViewModel : ObservableObject
         IPortableBackupService? backupService = null,
         ILocalizationService? localization = null,
         IThemeService? themeService = null,
-<<<<<<< HEAD
         IHttpClientFactory? httpClientFactory = null,
-        UpdateFlowViewModel? updateFlow = null)
-=======
+        UpdateFlowViewModel? updateFlow = null,
         IProfileService? profileService = null)
->>>>>>> origin/feature/profile-mode
     {
         _profileService = profileService;
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
@@ -567,7 +561,7 @@ public partial class SettingsViewModel : ObservableObject
             BaseUrl = AiProfile.DefaultBaseUrl(AiProviderPreset.OpenAiCompatible),
         };
         Profiles.Add(profile);
-        SelectedProfile = profile;
+        SelectedAiProfile = profile;
         MarkDirty();
     }
 
@@ -575,14 +569,14 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void RemoveProfile()
     {
-        if (SelectedProfile is null || Profiles.Count <= 1)
+        if (SelectedAiProfile is null || Profiles.Count <= 1)
         {
             return;
         }
 
-        var index = Profiles.IndexOf(SelectedProfile);
-        Profiles.Remove(SelectedProfile);
-        SelectedProfile = Profiles[Math.Max(0, Math.Min(index, Profiles.Count - 1))];
+        var index = Profiles.IndexOf(SelectedAiProfile);
+        Profiles.Remove(SelectedAiProfile);
+        SelectedAiProfile = Profiles[Math.Max(0, Math.Min(index, Profiles.Count - 1))];
         MarkDirty();
     }
 
@@ -663,7 +657,7 @@ public partial class SettingsViewModel : ObservableObject
                 DefaultGoverningLawSubdivision = SelectedGoverningLawSubdivision?.Trim() ?? string.Empty,
                 DefaultTermMonths = termMonths,
                 AiProfiles = Profiles.Select(profile => profile.Clone()).ToList(),
-                ActiveAiProfileId = SelectedProfile?.Id ?? string.Empty,
+                ActiveAiProfileId = SelectedAiProfile?.Id ?? string.Empty,
                 // Preserve the AI data-sharing acknowledgement — editing settings must not
                 // silently withdraw the consent given during a chat edit.
                 AiDataConsentAccepted = AiConsentGranted,
@@ -676,6 +670,9 @@ public partial class SettingsViewModel : ObservableObject
                 UpdateIncludeBeta = _settingsService.Current.UpdateIncludeBeta,
                 SkippedUpdateVersion = _settingsService.Current.SkippedUpdateVersion,
                 LastUpdateCheckUtc = _settingsService.Current.LastUpdateCheckUtc,
+                // The profile choice is owned by IProfileService on the shared settings object;
+                // saving AI/provider settings must not silently reset it.
+                Profile = _settingsService.Current.Profile,
                 // Persisted elsewhere (theme service / language store); preserve them so a
                 // manual Save never resets the user's language or theme choice.
                 Theme = _settingsService.Current.Theme,
@@ -723,7 +720,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnProfileNameChanged(string value) => SyncEditorToProfile();
 
-    partial void OnSelectedProfileChanged(AiProfile? value) => LoadProfileIntoEditor(value);
+    partial void OnSelectedAiProfileChanged(AiProfile? value) => LoadProfileIntoEditor(value);
 
     partial void OnSelectedPresetOptionChanged(AiPresetChoice? value)
     {
@@ -750,16 +747,16 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>Copies the editor fields into the selected profile (no-op while loading).</summary>
     private void SyncEditorToProfile()
     {
-        if (_isLoading || SelectedProfile is null)
+        if (_isLoading || SelectedAiProfile is null)
         {
             return;
         }
 
-        SelectedProfile.Name = string.IsNullOrWhiteSpace(ProfileName) ? Text("Settings.NewProfileName") : ProfileName.Trim();
-        SelectedProfile.Preset = SelectedPresetOption?.Preset ?? SelectedProfile.Preset;
-        SelectedProfile.BaseUrl = OpenAiBaseUrl?.Trim() ?? string.Empty;
-        SelectedProfile.Model = SelectedModel?.Trim() ?? string.Empty;
-        SelectedProfile.ApiKey = OpenAiApiKey?.Trim() ?? string.Empty;
+        SelectedAiProfile.Name = string.IsNullOrWhiteSpace(ProfileName) ? Text("Settings.NewProfileName") : ProfileName.Trim();
+        SelectedAiProfile.Preset = SelectedPresetOption?.Preset ?? SelectedAiProfile.Preset;
+        SelectedAiProfile.BaseUrl = OpenAiBaseUrl?.Trim() ?? string.Empty;
+        SelectedAiProfile.Model = SelectedModel?.Trim() ?? string.Empty;
+        SelectedAiProfile.ApiKey = OpenAiApiKey?.Trim() ?? string.Empty;
         MarkDirty();
     }
 
@@ -791,7 +788,7 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>Builds a throwaway profile from the editor, for testing before saving.</summary>
     private AiProfile BuildProfileFromEditor() => new()
     {
-        Id = SelectedProfile?.Id ?? "editor",
+        Id = SelectedAiProfile?.Id ?? "editor",
         Name = ProfileName,
         Preset = SelectedPresetOption?.Preset ?? AiProviderPreset.OpenAiCompatible,
         BaseUrl = OpenAiBaseUrl?.Trim() ?? string.Empty,
@@ -994,7 +991,7 @@ public partial class SettingsViewModel : ObservableObject
                 Profiles.Add(profile.Clone());
             }
 
-            SelectedProfile = Profiles.FirstOrDefault(profile =>
+            SelectedAiProfile = Profiles.FirstOrDefault(profile =>
                     string.Equals(profile.Id, saved.ActiveAiProfileId, StringComparison.Ordinal))
                 ?? Profiles.FirstOrDefault();
 

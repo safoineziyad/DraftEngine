@@ -77,7 +77,7 @@
                         </Grid.ColumnDefinitions>
                         <ComboBox Grid.Column="0" ItemsSource="{Binding Profiles}"
                                   DisplayMemberPath="Name"
-                                  SelectedItem="{Binding SelectedProfile}"
+                                  SelectedItem="{Binding SelectedAiProfile}"
                                   AutomationProperties.Name="{loc:T Settings.ProfilesAutomation}" />
                         <Button Grid.Column="1" Content="{loc:T Settings.AddProfile}" Margin="8,0,0,0" Padding="10,0" Height="30"
                                 AutomationProperties.Name="{loc:T Settings.AddProfileAutomation}"

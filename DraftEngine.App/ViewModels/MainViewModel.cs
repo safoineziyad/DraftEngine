@@ -6,12 +6,9 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
-<<<<<<< HEAD
 using DraftEngine.Data;
-=======
 using DraftEngine.App.Services.Profiles;
 using DraftEngine.App.Services.Updates;
->>>>>>> origin/feature/profile-mode
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -25,17 +22,13 @@ public partial class MainViewModel : ObservableObject
     private readonly AppOptions? _appOptions;
     private readonly UpdateFlowViewModel? _updateFlow;
     private readonly ILocalizationService? _localization;
-<<<<<<< HEAD
     private readonly NavigationItemViewModel? _aboutItem;
     private readonly SensitiveDataInterceptor? _sensitiveData;
     private string? _protectedDataWarning;
-=======
     private readonly IProfileService? _profileService;
     private readonly NavigationItemViewModel[] _workspaceMaster;
     private readonly NavigationItemViewModel[] _toolsMaster;
     private readonly NavigationItemViewModel[] _bottomMaster;
-    private UpdateInfo? _availableUpdate;
->>>>>>> origin/feature/profile-mode
 
     /// <summary>Segoe Fluent Icons glyphs with a Segoe MDL2 Assets fallback for older Windows.</summary>
     private const string IconHome = "\uE80F";
@@ -126,15 +119,13 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(
         INavigationService navigation,
         AppOptions? appOptions = null,
-<<<<<<< HEAD
         UpdateFlowViewModel? updateFlow = null,
         ILocalizationService? localization = null,
-        SensitiveDataInterceptor? sensitiveData = null)
-=======
-        IUpdateService? updateService = null,
-        ILocalizationService? localization = null,
-        IProfileService? profileService = null)
->>>>>>> origin/feature/profile-mode
+        SensitiveDataInterceptor? sensitiveData = null,
+        IProfileService? profileService = null,
+        // Legacy parameter kept for profile-mode callers: IUpdateService no longer exists after
+        // the signed-update refactor, so the update flow is supplied through updateFlow instead.
+        object? updateService = null)
     {
         _navigation = navigation;
         _sensitiveData = sensitiveData;

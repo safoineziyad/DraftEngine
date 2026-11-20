@@ -390,7 +390,6 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>La edición con IA comparte el texto de este contrato con OpenAI para procesarlo.&#xA;&#xA;Continúa solo si aceptas enviar este documento a OpenAI; por ejemplo, si no contiene material privilegiado o confidencial que no tengas permiso para compartir con un servicio externo.&#xA;&#xA;¿Continuar con la edición con IA?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La edición con IA envía datos a OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
-<<<<<<< HEAD
   <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine no pudo iniciarse</value></data>
   <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine no pudo abrir su base de datos. Tus datos no se modificaron. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
   <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>No se pudo completar la actualización de la base de datos, así que se restauró la copia de seguridad previa. Tus datos no han cambiado. Reinicia la aplicación; si el problema continúa, contacta con el soporte.</value></data>
@@ -564,7 +563,6 @@
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>¿Continuar de todos modos?</value></data>
   <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Descartar</value></data>
   <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
-=======
   <data name="Onboarding.Profile.Title" xml:space="preserve"><value>¿Cómo vas a usar DraftEngine?</value></data>
   <data name="Onboarding.Profile.Description" xml:space="preserve"><value>Elige un perfil para mostrar las páginas que necesitas. Puedes cambiarlo más tarde en Ajustes.</value></data>
   <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>Abogado</value></data>
@@ -581,5 +579,4 @@
   <data name="Settings.Profile.Business" xml:space="preserve"><value>Empresa</value></data>
   <data name="Settings.Profile.Mediator" xml:space="preserve"><value>Mediador</value></data>
   <data name="Settings.ProfileChanged" xml:space="preserve"><value>Perfil actualizado. La barra lateral ahora muestra las páginas de {0}.</value></data>
->>>>>>> origin/feature/profile-mode
 </root>

@@ -58,7 +58,6 @@ public class AppSettings
     public bool HidePartyNamesFromAi { get; set; }
 
     /// <summary>
-<<<<<<< HEAD
     /// Configured AI providers. <see cref="OpenAiApiKey"/> and <see cref="OpenAiModel"/> mirror
     /// the active profile so older code paths keep working; the profile list is the source of truth.
     /// </summary>
@@ -101,13 +100,13 @@ public class AppSettings
 
     /// <summary>UTC timestamp of the last update check (null when never checked).</summary>
     public DateTimeOffset? LastUpdateCheckUtc { get; set; }
-=======
+
+    /// <summary>
     /// How the user uses DraftEngine. Null means "not chosen" and keeps the full lawyer
     /// experience, so installs created before profiles existed behave exactly as before.
     /// Local preference only: never an account, never sent anywhere.
     /// </summary>
     public Services.Profiles.UserProfile? Profile { get; set; }
->>>>>>> origin/feature/profile-mode
 
     /// <summary>UI language code (en, fr, ar, es) or "system" to follow Windows.</summary>
     public string Language { get; set; } = "system";

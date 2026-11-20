@@ -390,7 +390,6 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>تشارك التعديلات بالذكاء الاصطناعي نص هذا العقد مع OpenAI لمعالجته.&#xA;&#xA;تابع فقط إذا كنت توافق على إرسال هذا المستند إلى OpenAI؛ مثلاً إذا لم يتضمن معلومات سرية أو امتيازية لا يُسمح لك بمشاركتها مع خدمة خارجية.&#xA;&#xA;هل تريد متابعة التعديل بالذكاء الاصطناعي؟</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>التعديل بالذكاء الاصطناعي يرسل بيانات إلى OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
-<<<<<<< HEAD
   <data name="Startup.Error.Title" xml:space="preserve"><value>تعذّر بدء DraftEngine</value></data>
   <data name="Startup.Error.Body" xml:space="preserve"><value>تعذّر على DraftEngine فتح قاعدة بياناته. لم تتغيّر بياناتك. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
   <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>تعذّر إكمال ترقية قاعدة البيانات، لذا تمت استعادة النسخة الاحتياطية التي أُنشئت قبل الترقية. بياناتك دون تغيير. أعد تشغيل التطبيق؛ وإذا استمرت المشكلة فاتصل بالدعم.</value></data>
@@ -564,7 +563,6 @@
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>المتابعة على أي حال؟</value></data>
   <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>تجاهل</value></data>
   <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
-=======
   <data name="Onboarding.Profile.Title" xml:space="preserve"><value>كيف ستستخدم DraftEngine؟</value></data>
   <data name="Onboarding.Profile.Description" xml:space="preserve"><value>اختر ملفًا شخصيًا لعرض الصفحات التي تحتاجها. يمكنك تغييره لاحقًا من الإعدادات.</value></data>
   <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>محامٍ</value></data>
@@ -581,5 +579,4 @@
   <data name="Settings.Profile.Business" xml:space="preserve"><value>أعمال</value></data>
   <data name="Settings.Profile.Mediator" xml:space="preserve"><value>وسيط</value></data>
   <data name="Settings.ProfileChanged" xml:space="preserve"><value>تم تحديث الملف الشخصي. تعرض الشريط الجانبي الآن صفحات {0}.</value></data>
->>>>>>> origin/feature/profile-mode
 </root>

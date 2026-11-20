@@ -125,12 +125,12 @@
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColUpdated" />
                                 <ColumnDefinition Width="220" SharedSizeGroup="ColActions" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{loc:T Contracts.ColumnTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="1" Text="{loc:T Contracts.ColumnType}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="2" Text="{loc:T Contracts.ColumnStatus}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="3" Text="{loc:T Contracts.ColumnEffective}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="4" Text="{loc:T Contracts.ColumnTerm}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
-                            <TextBlock Grid.Column="5" Text="{loc:T Contracts.ColumnUpdated}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Text="{loc:T Contracts.ColumnTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{loc:T Contracts.ColumnType}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Contracts.ColumnStatus}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Contracts.ColumnEffective}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Contracts.ColumnTerm}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="5" Text="{loc:T Contracts.ColumnUpdated}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" VerticalAlignment="Center" Margin="0,0,12,0" />
                             <TextBlock Grid.Column="6" Text="" />
                         </Grid>
                     </Border>

@@ -27,6 +27,7 @@
   - Verified `ContractRowViewModel.ContractType` displays human-readable localized display name via `ContractTypeRegistry.GetByDisplayName` and never raw ID or class name.
   - Verified localized `StatusText` for all `ContractStatus` values.
   - Added `ContractsListHeaderTests.cs` (10 tests) covering header localization across en/fr/ar/es and display name resolution.
+  - Follow-up: header TextBlocks now use `VerticalAlignment="Center"`, matching the data rows exactly in both LTR and RTL.
 - Tests: `DraftEngine.App.Tests`: 145 passed (rose from 135). Full suite: 507 passed, 1 pre-existing failed.
 
 ## FIX 3: Theme leaks
@@ -58,4 +59,4 @@
   - Added `DraftEngine.App.Tests/JurisdictionDefaultTests.cs` (2 tests) verifying `AppSettings` and `NewContractViewModel` defaults.
 - Tests: `DraftEngine.App.Tests`: 153 passed (rose from 151). Full suite: 515 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 6 - Build stamp and dashboard tile
+NEXT STEP: FIX 3 - Theme leaks (audit and finish remaining dynamic-resource gaps)

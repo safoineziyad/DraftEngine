@@ -239,7 +239,7 @@
                     <Button Content="{loc:T Settings.CheckNow}" Padding="12,0" Height="30"
                             HorizontalAlignment="Left"
                             AutomationProperties.Name="{loc:T Settings.CheckNowAutomation}"
-                            Command="{Binding Updates.CheckCommand}" />
+                            Command="{Binding Updates.CheckNowCommand}" />
                 </StackPanel>
             </Border>
 

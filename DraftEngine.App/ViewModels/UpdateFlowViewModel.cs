@@ -223,13 +223,19 @@ public partial class UpdateFlowViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsBannerVisible));
         OnPropertyChanged(nameof(CanDownload));
+        DownloadAndInstallCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnIsBusyChanged(bool value)
     {
         OnPropertyChanged(nameof(CanDownload));
         OnPropertyChanged(nameof(UpdateButtonText));
+        CheckNowCommand.NotifyCanExecuteChanged();
+        DownloadAndInstallCommand.NotifyCanExecuteChanged();
     }
+
+    /// <summary>Manual checks are available whenever the flow is idle.</summary>
+    private bool CanCheck() => !IsBusy;
 
     partial void OnShowReleaseNotesChanged(bool value) => OnPropertyChanged(nameof(ShowNotesPanel));
 
@@ -274,8 +280,14 @@ public partial class UpdateFlowViewModel : ObservableObject
         await CheckAsync(manual: false).ConfigureAwait(true);
     }
 
+    /// <summary>
+    /// "Check now" command. It deliberately takes no parameter: a parameterized command would be
+    /// disabled when WPF passes a null CommandParameter (the previous bug in About and Settings).
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanCheck))]
+    private Task CheckNowAsync() => CheckAsync(manual: true);
+
     /// <summary>Checks now (manual checks ignore the 24-hour cadence).</summary>
-    [RelayCommand]
     public async Task CheckAsync(bool manual = true)
     {
         if (IsBusy)
@@ -342,7 +354,7 @@ public partial class UpdateFlowViewModel : ObservableObject
     /// Downloads the verified installer, asks for explicit confirmation, then snapshots and
     /// launches it. Declining the confirmation leaves the app running and does nothing else.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDownload))]
     public async Task DownloadAndInstallAsync()
     {
         if (_manifest is null || IsBusy)

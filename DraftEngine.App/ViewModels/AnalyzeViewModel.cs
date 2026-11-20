@@ -86,12 +86,19 @@ public partial class AnalyzeViewModel : ObservableObject, INavigationAware
     public int FindingCount => Findings.Count;
     public string FindingCountText => Findings.Count == 1 ? "1 finding" : $"{Findings.Count} findings";
 
+    /// <summary>True when the history list has at least one saved analysis.</summary>
+    public bool HasSavedAnalyses => RecentAnalyses.Count > 0;
+
+    /// <summary>True when a document has been imported into the viewer.</summary>
+    public bool HasDocument => !string.IsNullOrWhiteSpace(DocumentText);
+
     public AnalyzeViewModel(IAnalysisService analysisService, IAppSettingsService settings)
     {
         _analysisService = analysisService ?? throw new ArgumentNullException(nameof(analysisService));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         SelectedContractType = ContractTypes[0];
         _settings.SettingsChanged += OnSettingsChanged;
+        RecentAnalyses.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasSavedAnalyses));
     }
 
     private void OnSettingsChanged()
@@ -104,6 +111,8 @@ public partial class AnalyzeViewModel : ObservableObject, INavigationAware
             UseAi = false;
         }
     }
+
+    partial void OnDocumentTextChanged(string value) => OnPropertyChanged(nameof(HasDocument));
 
     public async void OnNavigatedTo(object? parameter)
     {

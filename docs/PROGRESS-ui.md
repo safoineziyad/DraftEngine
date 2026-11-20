@@ -76,4 +76,13 @@
   - No AI controls were modified: the OpenAI card keeps its profiles, preset, endpoint, key and model controls untouched.
 - Tests: same suite as FIX 6; no test regressions.
 
-NEXT STEP: FIX 8 - Empty states in AnalyzeView
+## FIX 8: Empty states
+- Status: Done
+- Verification (from code, not visually verified):
+  - Added localized `Analyze.SavedEmpty` and `Analyze.DocumentEmpty` strings to all four `Strings*.resx` files.
+  - `AnalyzeView.xaml` now shows a "No saved analyses yet…" hint under Saved analyses and a centered "Choose a file to begin" hint inside the Document panel, both driven by `InverseBooleanToVisibilityConverter`.
+  - Added `HasSavedAnalyses` (notified from `RecentAnalyses.CollectionChanged`) and `HasDocument` (notified from `OnDocumentTextChanged`) to `AnalyzeViewModel`.
+  - Added `AnalyzeEmptyStateTests.cs` (4 simple ViewModel/XAML-source tests, no WPF rendering).
+- Tests: see final full-suite run; no regressions expected.
+
+NEXT STEP: FIX 9 - Add About/Help sidebar entry

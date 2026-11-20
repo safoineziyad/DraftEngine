@@ -457,6 +457,8 @@
   <data name="Analyze.FindingsAutomation" xml:space="preserve"><value>Review findings</value></data>
   <data name="Analyze.AiBadge" xml:space="preserve"><value>AI</value></data>
   <data name="Analyze.Saved" xml:space="preserve"><value>Saved analyses</value></data>
+  <data name="Analyze.SavedEmpty" xml:space="preserve"><value>No saved analyses yet. Analyze a contract to see it here.</value></data>
+  <data name="Analyze.DocumentEmpty" xml:space="preserve"><value>Choose a file to begin</value></data>
   <data name="Analyze.Refresh" xml:space="preserve"><value>Refresh</value></data>
   <data name="Analyze.ArchiveSelected" xml:space="preserve"><value>Archive selected</value></data>
   <data name="Analyze.OpenSelected" xml:space="preserve"><value>Open selected analysis</value></data>

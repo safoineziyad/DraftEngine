@@ -457,6 +457,8 @@
   <data name="Analyze.FindingsAutomation" xml:space="preserve"><value>نتائج المراجعة</value></data>
   <data name="Analyze.AiBadge" xml:space="preserve"><value>AI</value></data>
   <data name="Analyze.Saved" xml:space="preserve"><value>التحليلات المحفوظة</value></data>
+  <data name="Analyze.SavedEmpty" xml:space="preserve"><value>لا توجد تحليلات محفوظة بعد. حلّل عقداً لرؤيته هنا.</value></data>
+  <data name="Analyze.DocumentEmpty" xml:space="preserve"><value>اختر ملفاً للبدء</value></data>
   <data name="Analyze.Refresh" xml:space="preserve"><value>تحديث</value></data>
   <data name="Analyze.ArchiveSelected" xml:space="preserve"><value>أرشفة المحدد</value></data>
   <data name="Analyze.OpenSelected" xml:space="preserve"><value>فتح التحليل المحدد</value></data>

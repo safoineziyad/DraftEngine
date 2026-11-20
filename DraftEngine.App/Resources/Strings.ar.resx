@@ -550,4 +550,26 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>تحقق الآن</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>التحقق من التحديثات الآن</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>التحقق من التحديثات مفعّل افتراضيًا: طلب HTTPS واحد يحتوي على إصدار التطبيق دون معرّفات، ويمكن إيقافه من الإعدادات.</value></data>
+  <data name="Ui.ClauseFilterType" xml:space="preserve"><value>نوع العقد</value></data>
+  <data name="Ui.ClauseFilterCategory" xml:space="preserve"><value>الفئة</value></data>
+  <data name="Ui.ClauseFilterSource" xml:space="preserve"><value>المصدر</value></data>
+  <data name="Ui.ClauseColTitle" xml:space="preserve"><value>العنوان</value></data>
+  <data name="Ui.ClauseColCategory" xml:space="preserve"><value>الفئة</value></data>
+  <data name="Ui.ClauseColSource" xml:space="preserve"><value>المصدر</value></data>
+  <data name="Ui.ClauseColOrder" xml:space="preserve"><value>الترتيب</value></data>
+  <data name="Ui.ClauseColOptional" xml:space="preserve"><value>النوع</value></data>
+  <data name="Ui.ClauseDefault" xml:space="preserve"><value>افتراضي</value></data>
+  <data name="Ui.ClauseAll" xml:space="preserve"><value>الكل</value></data>
+  <data name="Ui.ClauseSourceSystem" xml:space="preserve"><value>النظام</value></data>
+  <data name="Ui.ClauseSourceUser" xml:space="preserve"><value>المستخدم</value></data>
+  <data name="Ui.ClauseErrorLoad" xml:space="preserve"><value>تعذر تحميل البنود. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Ui.ClauseErrorDuplicate" xml:space="preserve"><value>تعذر نسخ البند. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Ui.ClauseErrorArchive" xml:space="preserve"><value>تعذر أرشفة البند. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Ui.ClauseErrorSave" xml:space="preserve"><value>تعذر حفظ البند. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Ui.ClauseArchiveConfirm" xml:space="preserve"><value>أرشفة "{0}"؟&#x000A;&#x000A;سيؤدي هذا إلى إخفائه من اختيار البنود.</value></data>
+  <data name="Ui.ClauseArchiveTitle" xml:space="preserve"><value>أرشفة البند</value></data>
+  <data name="Ui.ClauseSaveValidation" xml:space="preserve"><value>يرجى إدخال عنوان ونموذج نص البند.</value></data>
+  <data name="Ui.ClausePlaceholderWarning" xml:space="preserve"><value>عناصر نائبة غير معروفة: {0}. لن يتم حلها أثناء الصياغة.</value></data>
+  <data name="Ui.ClausePlaceholderContinue" xml:space="preserve"><value>{0}&#x000A;&#x000A;المتابعة على أي حال؟</value></data>
+  <data name="Ui.ClausePlaceholderTitle" xml:space="preserve"><value>عناصر نائبة غير معروفة</value></data>
 </root>

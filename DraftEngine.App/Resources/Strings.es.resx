@@ -550,4 +550,26 @@
   <data name="Settings.CheckNow" xml:space="preserve"><value>Buscar ahora</value></data>
   <data name="Settings.CheckNowAutomation" xml:space="preserve"><value>Buscar actualizaciones ahora</value></data>
   <data name="Onboarding.Step1.Bullet4" xml:space="preserve"><value>La búsqueda de actualizaciones está activada por defecto: una solicitud HTTPS simple con la versión de la aplicación, sin identificadores, y puede desactivarse en Ajustes.</value></data>
+  <data name="Ui.ClauseFilterType" xml:space="preserve"><value>Tipo de contrato</value></data>
+  <data name="Ui.ClauseFilterCategory" xml:space="preserve"><value>Categoría</value></data>
+  <data name="Ui.ClauseFilterSource" xml:space="preserve"><value>Origen</value></data>
+  <data name="Ui.ClauseColTitle" xml:space="preserve"><value>Título</value></data>
+  <data name="Ui.ClauseColCategory" xml:space="preserve"><value>Categoría</value></data>
+  <data name="Ui.ClauseColSource" xml:space="preserve"><value>Origen</value></data>
+  <data name="Ui.ClauseColOrder" xml:space="preserve"><value>Orden</value></data>
+  <data name="Ui.ClauseColOptional" xml:space="preserve"><value>Tipo</value></data>
+  <data name="Ui.ClauseDefault" xml:space="preserve"><value>Predeterminado</value></data>
+  <data name="Ui.ClauseAll" xml:space="preserve"><value>Todos</value></data>
+  <data name="Ui.ClauseSourceSystem" xml:space="preserve"><value>Sistema</value></data>
+  <data name="Ui.ClauseSourceUser" xml:space="preserve"><value>Usuario</value></data>
+  <data name="Ui.ClauseErrorLoad" xml:space="preserve"><value>No pudimos cargar las cláusulas. Inténtelo de nuevo.</value></data>
+  <data name="Ui.ClauseErrorDuplicate" xml:space="preserve"><value>No pudimos duplicar la cláusula. Inténtelo de nuevo.</value></data>
+  <data name="Ui.ClauseErrorArchive" xml:space="preserve"><value>No pudimos archivar la cláusula. Inténtelo de nuevo.</value></data>
+  <data name="Ui.ClauseErrorSave" xml:space="preserve"><value>No pudimos guardar la cláusula. Inténtelo de nuevo.</value></data>
+  <data name="Ui.ClauseArchiveConfirm" xml:space="preserve"><value>¿Archivar "{0}"?&#x000A;&#x000A;Esto lo ocultará de la selección de cláusulas.</value></data>
+  <data name="Ui.ClauseArchiveTitle" xml:space="preserve"><value>Archivar cláusula</value></data>
+  <data name="Ui.ClauseSaveValidation" xml:space="preserve"><value>Ingrese el título y la plantilla de la cláusula.</value></data>
+  <data name="Ui.ClausePlaceholderWarning" xml:space="preserve"><value>Marcador(es) desconocido(s): {0}. No se resolverán al redactar.</value></data>
+  <data name="Ui.ClausePlaceholderContinue" xml:space="preserve"><value>{0}&#x000A;&#x000A;¿Continuar de todos modos?</value></data>
+  <data name="Ui.ClausePlaceholderTitle" xml:space="preserve"><value>Marcadores de posición desconocidos</value></data>
 </root>

@@ -45,14 +45,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <ComboBox Width="180" Margin="0,0,8,0"
+                            <TextBlock Text="{loc:T Ui.ClauseFilterType}" Style="{StaticResource SecondaryTextStyle}"
+                                       VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <ComboBox Width="160" Margin="0,0,14,0"
                                       ItemsSource="{Binding ContractTypes}"
                                       SelectedItem="{Binding SelectedContractType, UpdateSourceTrigger=PropertyChanged}"
                                       AutomationProperties.Name="{loc:T Clause.FilterType}" />
-                            <ComboBox Width="150" Margin="0,0,8,0"
+                            <TextBlock Text="{loc:T Ui.ClauseFilterCategory}" Style="{StaticResource SecondaryTextStyle}"
+                                       VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <ComboBox Width="140" Margin="0,0,14,0"
                                       ItemsSource="{Binding CategoryFilters}"
                                       SelectedItem="{Binding SelectedCategoryFilter}"
                                       AutomationProperties.Name="{loc:T Clause.FilterCategory}" />
+                            <TextBlock Text="{loc:T Ui.ClauseFilterSource}" Style="{StaticResource SecondaryTextStyle}"
+                                       VerticalAlignment="Center" Margin="0,0,6,0" />
                             <ComboBox Width="120"
                                       ItemsSource="{Binding SourceFilters}"
                                       SelectedItem="{Binding SelectedSourceFilter}"
@@ -82,54 +88,91 @@
                 </Border>
 
                 <!-- Rows -->
-                <ListView Grid.Row="1" ItemsSource="{Binding Clauses}"
-                          SelectedItem="{Binding SelectedClause, Mode=TwoWay}"
-                          AutomationProperties.Name="{loc:T Clause.ListAutomation}">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Padding" Value="16,10" />
-                            <Setter Property="BorderThickness" Value="0,0,0,1" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="2*" />
-                                    <ColumnDefinition Width="1.5*" />
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" />
-                                <TextBlock Grid.Column="1" Text="{Binding Category}"
-                                           VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}"
-                                           TextTrimming="CharacterEllipsis" />
-                                <TextBlock Grid.Column="2" Text="{Binding Source}"
-                                           VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" />
-                                <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="8,0,0,0"
-                                           Style="{StaticResource SecondaryTextStyle}" FontSize="11">
-                                    <Run Text="{Binding SortOrder}" />
-                                    <Run Text="{Binding IsOptional, StringFormat=' optional'}" />
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                <!-- Empty state -->
-                <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
-                            Visibility="{Binding HasNoClauses, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{loc:T Clause.Empty}"
-                               Style="{StaticResource BodyTextStyle}" FontSize="15"
-                               HorizontalAlignment="Center" />
-                    <Button Content="{loc:T Clause.NewLong}" Style="{StaticResource PrimaryButtonStyle}"
-                            AutomationProperties.Name="{loc:T Clause.NewAutomation}"
-                            Command="{Binding NewClauseCommand}"
-                            HorizontalAlignment="Center" Margin="0,16,0,0" />
-                </StackPanel>
+                    <!-- Column Headers -->
+                    <Border Grid.Row="0" BorderBrush="{DynamicResource BorderSubtleBrush}"
+                            BorderThickness="0,0,0,1" Background="{DynamicResource PanelBrush}"
+                            Padding="16,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" MinWidth="180" />
+                                <ColumnDefinition Width="1.5*" MinWidth="130" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="90" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{loc:T Ui.ClauseColTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{loc:T Ui.ClauseColCategory}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Ui.ClauseColSource}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Ui.ClauseColOrder}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Ui.ClauseColOptional}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                        </Grid>
+                    </Border>
+
+                    <ListView Grid.Row="1" ItemsSource="{Binding Clauses}"
+                              SelectedItem="{Binding SelectedClause, Mode=TwoWay}"
+                              AutomationProperties.Name="{loc:T Clause.ListAutomation}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="16,10" />
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" MinWidth="180" />
+                                        <ColumnDefinition Width="1.5*" MinWidth="130" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="90" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                                               Margin="0,0,12,0"
+                                               TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Category}"
+                                               Margin="0,0,12,0"
+                                               VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Source}"
+                                               Margin="0,0,12,0"
+                                               VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding SortOrder}"
+                                               Margin="0,0,12,0"
+                                               VerticalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" />
+                                    <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                        <Border CornerRadius="4" Padding="6,2" HorizontalAlignment="Left"
+                                                Background="{DynamicResource PanelBrush}"
+                                                Visibility="{Binding IsOptional, Converter={StaticResource BoolToVis}}">
+                                            <TextBlock Text="{loc:T Wizard.Optional}" FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!-- Empty state -->
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="{Binding HasNoClauses, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{loc:T Clause.Empty}"
+                                   Style="{StaticResource BodyTextStyle}" FontSize="15"
+                                   HorizontalAlignment="Center" />
+                        <Button Content="{loc:T Clause.NewLong}" Style="{StaticResource PrimaryButtonStyle}"
+                                AutomationProperties.Name="{loc:T Clause.NewAutomation}"
+                                Command="{Binding NewClauseCommand}"
+                                HorizontalAlignment="Center" Margin="0,16,0,0" />
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 

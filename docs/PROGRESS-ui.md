@@ -39,4 +39,15 @@
   - Added `DraftEngine.App.Tests/ThemeLeakTests.cs` (3 tests) validating brand bar contrast (>= 4.5:1) in both themes, DatePicker contrast in both themes, and editable ComboBox template support.
 - Tests: `DraftEngine.App.Tests`: 148 passed (rose from 145). Full suite: 510 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 4 - Clause Manager
+## FIX 4: Clause Manager
+- Status: Done
+- Verification (from code, not visually verified):
+  - Injected `ILocalizationService` into `ClauseManagerViewModel` constructor; eliminated all hardcoded English strings (load, duplicate, archive, save errors, confirmation and validation dialogs, and filters).
+  - Added visible label text (`Ui.ClauseFilterType`, `Ui.ClauseFilterCategory`, `Ui.ClauseFilterSource`) before each filter ComboBox in `ClauseManagerView.xaml`.
+  - Added dedicated column headers (Title, Category, Source, Order, Type) above the clause list matching column widths (`2*`, `1.5*`, `100`, `80`, `90`).
+  - Replaced raw `StringFormat=' optional'` text with a styled localized badge (`Wizard.Optional`).
+  - Added 22 new resource strings with prefix `Ui.` to `Strings.resx`, `Strings.fr.resx`, `Strings.ar.resx`, and `Strings.es.resx` with 100% key parity.
+  - Added `DraftEngine.App.Tests/ClauseManagerPolishTests.cs` (3 tests) verifying localized errors, injected PageTitle, and XAML column headers/filter labels.
+- Tests: `DraftEngine.App.Tests`: 151 passed (rose from 148). Full suite: 513 passed, 1 pre-existing failed.
+
+NEXT STEP: FIX 5 - Jurisdiction default

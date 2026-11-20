@@ -21,28 +21,30 @@ namespace DraftEngine.App.ViewModels;
 public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
 {
     private const int CurrentUserId = 1;
-    private const string AllFilter = "All";
     private readonly IClauseManagementService _clauseService;
+    private readonly DraftEngine.App.Services.Localization.ILocalizationService _localization;
     private readonly List<Clause> _allClauses = new();
     private int _loadVersion;
 
-    public string PageTitle =>
-        DraftEngine.App.Services.Localization.LocalizationSource.Current.Service?.GetString("Clause.PageTitle")
-        ?? "Clause Manager";
+    public string PageTitle => _localization.GetString("Clause.PageTitle");
+    private string AllFilterText => _localization.GetString("Ui.ClauseAll");
+    private string SystemFilterText => _localization.GetString("Ui.ClauseSourceSystem");
+    private string UserFilterText => _localization.GetString("Ui.ClauseSourceUser");
+
     public ObservableCollection<Clause> Clauses { get; } = new();
     public ObservableCollection<string> ContractTypes { get; } =
         new(ContractTypeRegistry.All.Select(type => type.DisplayName));
-    public ObservableCollection<string> CategoryFilters { get; } = new() { AllFilter };
-    public ObservableCollection<string> SourceFilters { get; } = new() { AllFilter, "System", "User" };
+    public ObservableCollection<string> CategoryFilters { get; } = new();
+    public ObservableCollection<string> SourceFilters { get; } = new();
 
     [ObservableProperty]
     private string selectedContractType = ContractTypeRegistry.GetById(ContractTypeRegistry.MutualNdaId).DisplayName;
 
     [ObservableProperty]
-    private string selectedCategoryFilter = AllFilter;
+    private string selectedCategoryFilter = string.Empty;
 
     [ObservableProperty]
-    private string selectedSourceFilter = AllFilter;
+    private string selectedSourceFilter = string.Empty;
 
     [ObservableProperty]
     private Clause? selectedClause;
@@ -67,16 +69,30 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
     public bool HasNoClauses => Clauses.Count == 0;
     public bool HasPlaceholderWarning => PlaceholderWarning is not null;
 
-    public ClauseManagerViewModel(IClauseManagementService clauseService)
+    public ClauseManagerViewModel(
+        IClauseManagementService clauseService,
+        DraftEngine.App.Services.Localization.ILocalizationService? localization = null)
     {
         _clauseService = clauseService ?? throw new ArgumentNullException(nameof(clauseService));
+        _localization = localization
+            ?? DraftEngine.App.Services.Localization.LocalizationSource.Current.Service
+            ?? new DraftEngine.App.Services.Localization.LocalizationService();
+
+        var all = AllFilterText;
+        CategoryFilters.Add(all);
+        SourceFilters.Add(all);
+        SourceFilters.Add(SystemFilterText);
+        SourceFilters.Add(UserFilterText);
+
+        selectedCategoryFilter = all;
+        selectedSourceFilter = all;
     }
 
     public void OnNavigatedTo(object? parameter) => _ = LoadAsync();
 
     partial void OnSelectedContractTypeChanged(string value)
     {
-        SelectedCategoryFilter = AllFilter;
+        SelectedCategoryFilter = AllFilterText;
         _ = LoadAsync();
     }
 
@@ -116,7 +132,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to load clauses.");
-            ErrorMessage = "We couldn't load clauses. Please try again.";
+            ErrorMessage = _localization.GetString("Ui.ClauseErrorLoad");
         }
         finally
         {
@@ -167,7 +183,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to duplicate clause {ClauseId}.", clause.Id);
-            ErrorMessage = "We couldn't duplicate the clause. Please try again.";
+            ErrorMessage = _localization.GetString("Ui.ClauseErrorDuplicate");
         }
         finally
         {
@@ -181,8 +197,8 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         if (clause is not { Source: "User", IsArchived: false }) return;
 
         var confirm = MessageBox.Show(
-            $"Archive \"{clause.Title}\"?\n\nThis hides it from clause selection.",
-            "Archive clause",
+            _localization.GetString("Ui.ClauseArchiveConfirm", clause.Title),
+            _localization.GetString("Ui.ClauseArchiveTitle"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning);
         if (confirm != MessageBoxResult.Yes) return;
@@ -198,7 +214,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to archive clause {ClauseId}.", clause.Id);
-            ErrorMessage = "We couldn't archive the clause. Please try again.";
+            ErrorMessage = _localization.GetString("Ui.ClauseErrorArchive");
         }
         finally
         {
@@ -214,7 +230,9 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
 
         if (string.IsNullOrWhiteSpace(clause.Title) || string.IsNullOrWhiteSpace(clause.BodyTemplate))
         {
-            MessageBox.Show("Please enter a clause title and body template.", "Clause Manager",
+            MessageBox.Show(
+                _localization.GetString("Ui.ClauseSaveValidation"),
+                _localization.GetString("Clause.PageTitle"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -222,11 +240,11 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         var (isValid, unknownKeys) = await _clauseService.ValidatePlaceholdersAsync(clause.BodyTemplate);
         if (!isValid)
         {
-            PlaceholderWarning = $"Unknown placeholder(s): {string.Join(", ", unknownKeys)}. " +
-                "These won't be resolved when drafting.";
+            PlaceholderWarning = _localization.GetString(
+                "Ui.ClausePlaceholderWarning", string.Join(", ", unknownKeys));
             var proceed = MessageBox.Show(
-                $"{PlaceholderWarning}\n\nContinue anyway?",
-                "Unknown placeholders",
+                _localization.GetString("Ui.ClausePlaceholderContinue", PlaceholderWarning),
+                _localization.GetString("Ui.ClausePlaceholderTitle"),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
             if (proceed != MessageBoxResult.Yes) return;
@@ -253,7 +271,7 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to save clause.");
-            ErrorMessage = "We couldn't save the clause. Please try again.";
+            ErrorMessage = _localization.GetString("Ui.ClauseErrorSave");
         }
         finally
         {
@@ -272,9 +290,10 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
 
     private void UpdateCategoryFilters()
     {
+        var allText = AllFilterText;
         var selected = SelectedCategoryFilter;
         CategoryFilters.Clear();
-        CategoryFilters.Add(AllFilter);
+        CategoryFilters.Add(allText);
         foreach (var category in _allClauses.Select(clause => clause.Category)
                      .Where(category => !string.IsNullOrWhiteSpace(category))
                      .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -283,16 +302,28 @@ public partial class ClauseManagerViewModel : ObservableObject, INavigationAware
             CategoryFilters.Add(category);
         }
 
-        SelectedCategoryFilter = CategoryFilters.Contains(selected) ? selected : AllFilter;
+        SelectedCategoryFilter = CategoryFilters.Contains(selected) ? selected : allText;
     }
 
     private void RefreshVisibleClauses()
     {
+        var allText = AllFilterText;
+        var systemText = SystemFilterText;
+        var userText = UserFilterText;
+
         var visible = _allClauses.Where(clause =>
-            (SelectedCategoryFilter == AllFilter ||
-             string.Equals(clause.Category, SelectedCategoryFilter, StringComparison.OrdinalIgnoreCase)) &&
-            (SelectedSourceFilter == AllFilter ||
-             string.Equals(clause.Source, SelectedSourceFilter, StringComparison.OrdinalIgnoreCase)));
+        {
+            var matchCategory = SelectedCategoryFilter == allText ||
+                string.Equals(clause.Category, SelectedCategoryFilter, StringComparison.OrdinalIgnoreCase);
+
+            var matchSource = SelectedSourceFilter == allText ||
+                (SelectedSourceFilter == systemText && string.Equals(clause.Source, "System", StringComparison.OrdinalIgnoreCase)) ||
+                (SelectedSourceFilter == userText && string.Equals(clause.Source, "User", StringComparison.OrdinalIgnoreCase)) ||
+                string.Equals(clause.Source, SelectedSourceFilter, StringComparison.OrdinalIgnoreCase);
+
+            return matchCategory && matchSource;
+        });
+
         Clauses.Clear();
         foreach (var clause in visible)
             Clauses.Add(clause);

@@ -1,4 +1,5 @@
 using DraftEngine.App.Services.Settings;
+using DraftEngine.Core.Data;
 
 namespace DraftEngine.App.Services.Backup;
 
@@ -141,9 +142,10 @@ public sealed class BackupSettings
 {
     public string? OpenAiApiKey { get; set; }
     public string OpenAiModel { get; set; } = AppSettings.FallbackModel;
-    public string DefaultGoverningLaw { get; set; } = "California";
-    public string DefaultGoverningLawCountry { get; set; } = "US";
-    public string DefaultGoverningLawSubdivision { get; set; } = "California";
+    public string DefaultGoverningLaw { get; set; } =
+        JurisdictionResolver.Compose(CountryCatalog.DefaultCode(), string.Empty, "en");
+    public string DefaultGoverningLawCountry { get; set; } = CountryCatalog.DefaultCode();
+    public string DefaultGoverningLawSubdivision { get; set; } = string.Empty;
     public int DefaultTermMonths { get; set; } = 12;
     public bool AiDataConsentAccepted { get; set; }
 

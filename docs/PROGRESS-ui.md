@@ -58,6 +58,7 @@
   - Replaced hard-coded `"California"` default in `AppSettings.cs` (`DefaultGoverningLaw`) with the user's localized region country compose string (`CountryCatalog.DefaultCode()`).
   - Verified `NewContractViewModel` and `IntakeFieldViewModel` initialize the governing law country and subdivision from configured defaults rather than California.
   - Added `DraftEngine.App.Tests/JurisdictionDefaultTests.cs` (2 tests) verifying `AppSettings` and `NewContractViewModel` defaults.
+  - Follow-up: removed the remaining `"California"` fallbacks in `AppSettingsService` (save, load, stored DTO) and `BackupModels`; every default now derives from `CountryCatalog.DefaultCode()` (Windows region).
 - Tests: `DraftEngine.App.Tests`: 153 passed (rose from 151). Full suite: 515 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 5 - Remove residual hard-coded region defaults from settings/backup DTOs
+NEXT STEP: FIX 6 - Release/Debug build stamp and dashboard tooltip

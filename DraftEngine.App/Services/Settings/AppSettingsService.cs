@@ -93,7 +93,8 @@ public sealed class AppSettingsService : IAppSettingsService
             }).ToList(),
             ActiveAiProfileId = settings.ActiveAiProfileId,
             DefaultGoverningLaw = string.IsNullOrWhiteSpace(settings.DefaultGoverningLaw)
-                ? "California"
+                ? DraftEngine.Core.Data.JurisdictionResolver.Compose(
+                    DraftEngine.Core.Data.CountryCatalog.DefaultCode(), string.Empty, "en")
                 : settings.DefaultGoverningLaw,
             DefaultGoverningLawCountry = string.IsNullOrWhiteSpace(settings.DefaultGoverningLawCountry)
                 ? DraftEngine.Core.Data.CountryCatalog.DefaultCode()
@@ -178,7 +179,8 @@ public sealed class AppSettingsService : IAppSettingsService
                     ? AppSettings.FallbackModel
                     : stored.OpenAiModel,
                 DefaultGoverningLaw = string.IsNullOrWhiteSpace(stored.DefaultGoverningLaw)
-                    ? "California"
+                    ? DraftEngine.Core.Data.JurisdictionResolver.Compose(
+                        DraftEngine.Core.Data.CountryCatalog.DefaultCode(), string.Empty, "en")
                     : stored.DefaultGoverningLaw,
                 DefaultGoverningLawCountry = string.IsNullOrWhiteSpace(stored.DefaultGoverningLawCountry)
                     ? DraftEngine.Core.Data.CountryCatalog.DefaultCode()
@@ -263,7 +265,9 @@ public sealed class AppSettingsService : IAppSettingsService
         public string OpenAiModel { get; set; } = AppSettings.FallbackModel;
         public List<StoredAiProfile>? AiProfiles { get; set; } = new();
         public string? ActiveAiProfileId { get; set; }
-        public string DefaultGoverningLaw { get; set; } = "California";
+        public string DefaultGoverningLaw { get; set; } =
+            DraftEngine.Core.Data.JurisdictionResolver.Compose(
+                DraftEngine.Core.Data.CountryCatalog.DefaultCode(), string.Empty, "en");
         public string DefaultGoverningLawCountry { get; set; } = DraftEngine.Core.Data.CountryCatalog.DefaultCode();
         public string DefaultGoverningLawSubdivision { get; set; } = string.Empty;
         public List<string>? RecentCountryCodes { get; set; } = new();

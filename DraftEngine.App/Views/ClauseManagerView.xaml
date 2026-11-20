@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization"
+             xmlns:loc="clr-namespace:DraftEngine.App.Services.Localization" xmlns:converters="clr-namespace:DraftEngine.App.Converters"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" /><converters:InverseBooleanToVisibilityConverter x:Key="BoolToVisInverse" />
     </UserControl.Resources>
 
     <Grid>
@@ -153,6 +153,12 @@
                                                 Background="{DynamicResource PanelBrush}"
                                                 Visibility="{Binding IsOptional, Converter={StaticResource BoolToVis}}">
                                             <TextBlock Text="{loc:T Wizard.Optional}" FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                        </Border>
+                                        <Border CornerRadius="4" Padding="6,2" HorizontalAlignment="Left"
+                                                Background="{DynamicResource PanelBrush}"
+                                                Visibility="{Binding IsOptional, Converter={StaticResource BoolToVisInverse}}">
+                                            <TextBlock Text="{loc:T Ui.ClauseDefault}" FontSize="11"
                                                        Foreground="{DynamicResource TextSecondaryBrush}" />
                                         </Border>
                                     </StackPanel>

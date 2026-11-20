@@ -49,6 +49,7 @@
   - Replaced raw `StringFormat=' optional'` text with a styled localized badge (`Wizard.Optional`).
   - Added 22 new resource strings with prefix `Ui.` to `Strings.resx`, `Strings.fr.resx`, `Strings.ar.resx`, and `Strings.es.resx` with 100% key parity.
   - Added `DraftEngine.App.Tests/ClauseManagerPolishTests.cs` (3 tests) verifying localized errors, injected PageTitle, and XAML column headers/filter labels.
+  - Follow-up: the Type column now renders a localized `Ui.ClauseDefault` badge when `IsOptional` is false, so no clause shows a blank boolean state.
 - Tests: `DraftEngine.App.Tests`: 151 passed (rose from 148). Full suite: 513 passed, 1 pre-existing failed.
 
 ## FIX 5: Jurisdiction default
@@ -59,4 +60,4 @@
   - Added `DraftEngine.App.Tests/JurisdictionDefaultTests.cs` (2 tests) verifying `AppSettings` and `NewContractViewModel` defaults.
 - Tests: `DraftEngine.App.Tests`: 153 passed (rose from 151). Full suite: 515 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 3 - Theme leaks (audit and finish remaining dynamic-resource gaps)
+NEXT STEP: FIX 5 - Remove residual hard-coded region defaults from settings/backup DTOs

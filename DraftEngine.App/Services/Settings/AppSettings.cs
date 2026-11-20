@@ -22,7 +22,9 @@ public class AppSettings
     public string OpenAiModel { get; set; } = FallbackModel;
 
     /// <summary>The default governing law for new contracts (display text).</summary>
-    public string DefaultGoverningLaw { get; set; } = "California";
+    public string DefaultGoverningLaw { get; set; } =
+        DraftEngine.Core.Data.JurisdictionResolver.Compose(
+            DraftEngine.Core.Data.CountryCatalog.DefaultCode(), string.Empty, "en");
 
     /// <summary>Default governing-law country (ISO alpha-2), initially the Windows region.</summary>
     public string DefaultGoverningLawCountry { get; set; } = DraftEngine.Core.Data.CountryCatalog.DefaultCode();

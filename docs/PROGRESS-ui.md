@@ -50,4 +50,12 @@
   - Added `DraftEngine.App.Tests/ClauseManagerPolishTests.cs` (3 tests) verifying localized errors, injected PageTitle, and XAML column headers/filter labels.
 - Tests: `DraftEngine.App.Tests`: 151 passed (rose from 148). Full suite: 513 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 5 - Jurisdiction default
+## FIX 5: Jurisdiction default
+- Status: Done
+- Verification (from code, not visually verified):
+  - Replaced hard-coded `"California"` default in `AppSettings.cs` (`DefaultGoverningLaw`) with the user's localized region country compose string (`CountryCatalog.DefaultCode()`).
+  - Verified `NewContractViewModel` and `IntakeFieldViewModel` initialize the governing law country and subdivision from configured defaults rather than California.
+  - Added `DraftEngine.App.Tests/JurisdictionDefaultTests.cs` (2 tests) verifying `AppSettings` and `NewContractViewModel` defaults.
+- Tests: `DraftEngine.App.Tests`: 153 passed (rose from 151). Full suite: 515 passed, 1 pre-existing failed.
+
+NEXT STEP: FIX 6 - Build stamp and dashboard tile

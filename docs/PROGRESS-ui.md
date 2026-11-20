@@ -29,4 +29,14 @@
   - Added `ContractsListHeaderTests.cs` (10 tests) covering header localization across en/fr/ar/es and display name resolution.
 - Tests: `DraftEngine.App.Tests`: 145 passed (rose from 135). Full suite: 507 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 3 - Theme leaks
+## FIX 3: Theme leaks
+- Status: Done
+- Verification (from code, not visually verified):
+  - Fixed brand bar in `MainWindow.xaml`: changed foreground from `ForegroundBrush` (#FFFFFF in both themes) to `AccentForegroundBrush` (#FFFFFF in Light, #0B1220 in Dark), meeting WCAG AA contrast (>= 4.5:1) against `AccentBrush` in both themes.
+  - Added full theme styling for `DatePicker`, `DatePickerTextBox`, `Calendar`, `CalendarButton`, and `CalendarDayButton` in `DraftEngine.App/Themes/Styles.xaml` using semantic theme brushes (`InputBackgroundBrush`, `PopupBackgroundBrush`, `ControlBorderBrush`, `TextPrimaryBrush`, etc.).
+  - Added `PART_EditableTextBox` to `ComboBox` template in `Styles.xaml` so editable ComboBoxes (e.g. Governing law in Settings) use themed backgrounds and foregrounds in both Light and Dark themes instead of Windows default light gray.
+  - Updated `NewContractView.xaml` DatePicker style to inherit the themed default style via `BasedOn`.
+  - Added `DraftEngine.App.Tests/ThemeLeakTests.cs` (3 tests) validating brand bar contrast (>= 4.5:1) in both themes, DatePicker contrast in both themes, and editable ComboBox template support.
+- Tests: `DraftEngine.App.Tests`: 148 passed (rose from 145). Full suite: 510 passed, 1 pre-existing failed.
+
+NEXT STEP: FIX 4 - Clause Manager

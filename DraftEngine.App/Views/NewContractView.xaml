@@ -10,12 +10,12 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
         <!-- Match the TextBox sizing of the theme. -->
-        <Style TargetType="DatePicker">
+        <Style TargetType="DatePicker" BasedOn="{StaticResource {x:Type DatePicker}}">
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
-        <Style TargetType="ComboBox">
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="Padding" Value="10,0" />

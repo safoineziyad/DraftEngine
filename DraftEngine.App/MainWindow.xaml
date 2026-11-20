@@ -139,7 +139,7 @@
                     <!-- Brand with deep blue accent bar -->
                     <Border DockPanel.Dock="Top" Background="{DynamicResource AccentBrush}" Padding="16,18">
                         <TextBlock Text="DraftEngine"
-                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   Foreground="{DynamicResource AccentForegroundBrush}"
                                    FontSize="16"
                                    FontWeight="SemiBold" />
                     </Border>

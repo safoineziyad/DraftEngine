@@ -85,4 +85,12 @@
   - Added `AnalyzeEmptyStateTests.cs` (4 simple ViewModel/XAML-source tests, no WPF rendering).
 - Tests: see final full-suite run; no regressions expected.
 
-NEXT STEP: FIX 9 - Add About/Help sidebar entry
+## FIX 9: About/Help
+- Status: Done
+- Verification (from code, not visually verified):
+  - `AboutView` and `AboutViewModel` already existed with version, build stamp (commit + UTC build date) and a data-folder link; `NavigationService` already maps `"about"` to `AboutViewModel` and `MainViewModel` already appends the nav item below Settings when enabled.
+  - Enabled the shipped feature flag: `DraftEngine.App/appsettings.json` now sets `"AboutEnabled": true` so the sidebar entry is visible by default.
+  - Added `AboutNavigationTests.cs` (2 simple config/XAML-source tests, no WPF rendering).
+- Tests: see final full-suite run; no regressions expected.
+
+NEXT STEP: None - all 9 UI fixes are complete; run the final full test suite and push fix/ui-polish.

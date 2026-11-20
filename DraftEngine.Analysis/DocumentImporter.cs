@@ -17,6 +17,21 @@ public static class DocumentImporter
         @"^[A-Z][A-Z0-9 ,'&/\-]{3,80}$",
         RegexOptions.Compiled);
 
+    /// <summary>Maximum accepted input file size (25 MB).</summary>
+    public const long MaxInputBytes = 25L * 1024 * 1024;
+
+    /// <summary>Maximum entries allowed in a DOCX/zip container.</summary>
+    public const int MaxZipEntries = 2_000;
+
+    /// <summary>Maximum total uncompressed size allowed in a DOCX/zip container.</summary>
+    public const long MaxUncompressedBytes = 100L * 1024 * 1024;
+
+    /// <summary>Maximum compression ratio (uncompressed / compressed) for a single entry.</summary>
+    public const int MaxCompressionRatio = 200;
+
+    /// <summary>Maximum PDF pages parsed, to bound memory on hostile page trees.</summary>
+    public const int MaxPdfPages = 5_000;
+
     public static IReadOnlyList<string> SupportedExtensions { get; } = [".docx", ".pdf", ".txt"];
 
     public static bool IsSupported(string path) =>
@@ -35,6 +50,13 @@ public static class DocumentImporter
             throw new DocumentImportException($"The file '{Path.GetFileName(path)}' does not exist.");
         }
 
+        var length = new FileInfo(path).Length;
+        if (length > MaxInputBytes)
+        {
+            throw new DocumentImportException(
+                $"The file is larger than the {MaxInputBytes / (1024 * 1024)} MB import limit.");
+        }
+
         return Path.GetExtension(path).ToLowerInvariant() switch
         {
             ".docx" => Task.Run(() => ImportDocx(path), cancellationToken),
@@ -48,6 +70,7 @@ public static class DocumentImporter
     {
         try
         {
+            ValidateZipContainer(path);
             using var document = WordprocessingDocument.Open(path, isEditable: false);
             var body = document.MainDocumentPart?.Document?.Body
                 ?? throw new DocumentImportException("The DOCX file has no document body.");
@@ -87,6 +110,38 @@ public static class DocumentImporter
         }
     }
 
+    /// <summary>
+    /// Rejects zip bombs before Office Open XML opens the package: too many entries, too much
+    /// uncompressed data, or an entry whose compression ratio is implausible.
+    /// </summary>
+    private static void ValidateZipContainer(string path)
+    {
+        using var archive = System.IO.Compression.ZipFile.OpenRead(path);
+        if (archive.Entries.Count > MaxZipEntries)
+        {
+            throw new DocumentImportException("The DOCX container has too many entries.");
+        }
+
+        long total = 0;
+        foreach (var entry in archive.Entries)
+        {
+            checked
+            {
+                total += entry.Length;
+            }
+
+            if (total > MaxUncompressedBytes)
+            {
+                throw new DocumentImportException("The DOCX container expands beyond the import limit.");
+            }
+
+            if (entry.CompressedLength > 0 && entry.Length / Math.Max(1, entry.CompressedLength) > MaxCompressionRatio)
+            {
+                throw new DocumentImportException("The DOCX container has an implausible compression ratio.");
+            }
+        }
+    }
+
     private static bool IsHeadingParagraph(Paragraph paragraph, string text)
     {
         var styleId = paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value;
@@ -112,8 +167,13 @@ public static class DocumentImporter
         {
             using var document = PdfDocument.Open(path);
             var lines = new List<string>();
+            var pageCount = 0;
             foreach (var page in document.GetPages())
             {
+                if (++pageCount > MaxPdfPages)
+                {
+                    throw new DocumentImportException("The PDF has too many pages to analyze safely.");
+                }
                 var pageText = page.Text;
                 foreach (var raw in pageText.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
                 {

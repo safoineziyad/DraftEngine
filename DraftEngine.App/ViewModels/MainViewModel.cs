@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.Data;
 using Serilog;
 
 namespace DraftEngine.App.ViewModels;
@@ -20,6 +21,8 @@ public partial class MainViewModel : ObservableObject
     private readonly UpdateFlowViewModel? _updateFlow;
     private readonly ILocalizationService? _localization;
     private readonly NavigationItemViewModel? _aboutItem;
+    private readonly SensitiveDataInterceptor? _sensitiveData;
+    private string? _protectedDataWarning;
 
     /// <summary>Segoe Fluent Icons glyphs with a Segoe MDL2 Assets fallback for older Windows.</summary>
     private const string IconHome = "\uE80F";
@@ -73,14 +76,53 @@ public partial class MainViewModel : ObservableObject
     /// <summary>True when the About/Help page should appear in the sidebar.</summary>
     public bool AboutEnabled => _appOptions?.Features.AboutEnabled ?? false;
 
+    /// <summary>
+    /// Content-free warning shown when saved data could not be decrypted under this Windows
+    /// account. It never names values; only the affected entity and column come from the error.
+    /// </summary>
+    public string? ProtectedDataWarning
+    {
+        get => _protectedDataWarning;
+        private set
+        {
+            if (SetProperty(ref _protectedDataWarning, value))
+            {
+                OnPropertyChanged(nameof(HasProtectedDataWarning));
+            }
+        }
+    }
+
+    /// <summary>Whether the protected-data banner is visible.</summary>
+    public bool HasProtectedDataWarning => !string.IsNullOrEmpty(ProtectedDataWarning);
+
+    /// <summary>Shows the localized banner for data that could not be decrypted.</summary>
+    public void ReportProtectedDataUnavailable(ProtectedDataUnavailableException unavailable)
+    {
+        ArgumentNullException.ThrowIfNull(unavailable);
+        ProtectedDataWarning = (_localization ?? LocalizationSource.Current.Service)
+            ?.GetString("Audit.ProtectedDataUnavailable")
+            ?? "This data was protected under a different Windows account and cannot be opened here. Restore it from a portable backup.";
+    }
+
+    /// <summary>Hides the protected-data banner for the current session.</summary>
+    [RelayCommand]
+    private void DismissProtectedDataWarning() => ProtectedDataWarning = null;
+
     /// <summary>Creates the main shell view model and navigates to the dashboard.</summary>
     public MainViewModel(
         INavigationService navigation,
         AppOptions? appOptions = null,
         UpdateFlowViewModel? updateFlow = null,
-        ILocalizationService? localization = null)
+        ILocalizationService? localization = null,
+        SensitiveDataInterceptor? sensitiveData = null)
     {
         _navigation = navigation;
+        _sensitiveData = sensitiveData;
+        if (_sensitiveData is not null)
+        {
+            _sensitiveData.ProtectedDataUnavailable += (_, unavailable) =>
+                ReportProtectedDataUnavailable(unavailable);
+        }
         _appOptions = appOptions;
         _updateFlow = updateFlow;
         if (_updateFlow is not null)

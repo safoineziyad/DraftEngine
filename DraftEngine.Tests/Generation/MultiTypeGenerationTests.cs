@@ -198,7 +198,7 @@ public class MultiTypeGenerationTests : IDisposable
         var clauseIds = await GetClauseIdsAsync(definition.Id);
         var text = await new ContractService(_factory, fieldService).GenerateContractAsync(contractId, clauseIds);
 
-        Assert.Equal(ExpectedMutualNdaSnapshot, Normalize(text));
+        Assert.Equal(Normalize(ExpectedMutualNdaSnapshot), Normalize(text));
     }
 
     private async Task MigrateAsync()

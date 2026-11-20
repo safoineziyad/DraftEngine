@@ -9,5 +9,5 @@ namespace DraftEngine.Core.Interfaces;
 public interface IUpdateCheckService
 {
     bool Enabled { get; }
-    Task<string> CheckForUpdatesAsync();
+    Task<string?> CheckForUpdatesAsync();
 }

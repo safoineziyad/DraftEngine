@@ -1248,7 +1248,7 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     private static string BuildDefaultFileName(Contract contract, string extension)
     {
         var raw = $"{contract.Title}-{contract.ContractType}";
-        return SanitizeFileName(raw, extension);
+        return Services.ExportFileNameSanitizer.Sanitize(raw, extension);
     }
 
     /// <summary>
@@ -1260,36 +1260,8 @@ public partial class ContractDetailViewModel : ObservableObject, INavigationAwar
     {
         var directory = Path.GetDirectoryName(path) ?? string.Empty;
         var name = Path.GetFileNameWithoutExtension(path);
-        return Path.Combine(directory, SanitizeFileName(name, extension));
+        return Path.Combine(directory, Services.ExportFileNameSanitizer.Sanitize(name, extension));
     }
-
-    /// <summary>Sanitizes a bare file name (no directory) and appends the extension.</summary>
-    private static string SanitizeFileName(string rawName, string extension)
-    {
-        var invalid = Path.GetInvalidFileNameChars();
-        var safe = new string(rawName.Select(c => invalid.Contains(c) ? '_' : c).ToArray())
-            .Trim(' ', '.');
-
-        if (safe.Length == 0)
-        {
-            safe = "Contract";
-        }
-
-        if (ReservedFileNames.Contains(safe))
-        {
-            safe = "_" + safe;
-        }
-
-        return $"{safe}.{extension}";
-    }
-
-    /// <summary>Windows device names that cannot be used as file names.</summary>
-    private static readonly HashSet<string> ReservedFileNames = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "CON", "PRN", "AUX", "NUL",
-        "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-        "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
-    };
 
     /// <summary>Opens a file with the Windows shell; failures are logged, never surfaced as errors.</summary>
     private static void OpenExportedFile(string path)

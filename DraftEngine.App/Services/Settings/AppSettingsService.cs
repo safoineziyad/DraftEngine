@@ -35,7 +35,10 @@ public sealed class AppSettingsService : IAppSettingsService
     public event Action? SettingsChanged;
 
     /// <summary>Creates the service and loads existing settings from %APPDATA%\DraftEngine\settings.json (defaults on any failure).</summary>
+<<<<<<< HEAD
     /// <param name="settingsPath">Optional override for the settings file (tests use a temp folder).</param>
+=======
+>>>>>>> origin/feature/profile-mode
     public AppSettingsService(ISecretProtector protector, IHttpClientFactory httpClientFactory, string? settingsPath = null)
     {
         _protector = protector ?? throw new ArgumentNullException(nameof(protector));
@@ -112,6 +115,7 @@ public sealed class AppSettingsService : IAppSettingsService
             LastUpdateCheckUtc = settings.LastUpdateCheckUtc,
             Language = settings.Language,
             Theme = settings.Theme,
+            Profile = settings.Profile,
         };
 
         var json = JsonSerializer.Serialize(stored, JsonOptions);
@@ -197,9 +201,14 @@ public sealed class AppSettingsService : IAppSettingsService
                 LastUpdateCheckUtc = stored.LastUpdateCheckUtc,
                 Language = string.IsNullOrWhiteSpace(stored.Language) ? "system" : stored.Language,
                 Theme = string.IsNullOrWhiteSpace(stored.Theme) ? "System" : stored.Theme,
+<<<<<<< HEAD
                 AiProfiles = LoadProfiles(stored),
                 ActiveAiProfileId = stored.ActiveAiProfileId ?? string.Empty,
             }.MirrorActiveProfile();
+=======
+                Profile = stored.Profile,
+            };
+>>>>>>> origin/feature/profile-mode
         }
         catch (Exception ex)
         {
@@ -279,6 +288,7 @@ public sealed class AppSettingsService : IAppSettingsService
         public DateTimeOffset? LastUpdateCheckUtc { get; set; }
         public string Language { get; set; } = "system";
         public string Theme { get; set; } = "System";
+        public Services.Profiles.UserProfile? Profile { get; set; }
     }
 
     /// <summary>Stored provider profile; the key is encrypted, everything else is plain metadata.</summary>

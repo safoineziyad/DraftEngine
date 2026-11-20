@@ -191,13 +191,13 @@ public sealed class LocalizationTests : IDisposable
         await service.InitializeAsync();
         var viewModel = new OnboardingViewModel(service);
 
-        Assert.Equal("Step 1 of 3", viewModel.StepLabel);
+        Assert.Equal("Step 1 of 4", viewModel.StepLabel);
         Assert.Equal("Welcome to DraftEngine", viewModel.StepTitle);
         Assert.Equal("Next", viewModel.PrimaryButtonText);
 
         await service.SetLanguageAsync("fr");
 
-        Assert.Equal("Étape 1 sur 3", viewModel.StepLabel);
+        Assert.Equal("Étape 1 sur 4", viewModel.StepLabel);
         Assert.Equal("Bienvenue dans DraftEngine", viewModel.StepTitle);
         Assert.Equal("Suivant", viewModel.PrimaryButtonText);
         Assert.Contains("contrat", viewModel.StepDescription);

@@ -390,6 +390,7 @@
   <data name="ContractDetail.AiConsentMessage" xml:space="preserve"><value>Les modifications par IA transmettent le texte de ce contrat à OpenAI pour traitement.&#xA;&#xA;Continuez uniquement si vous acceptez d&apos;envoyer ce document à OpenAI — par exemple, s&apos;il ne contient aucune information privilégiée ou confidentielle que vous n&apos;êtes pas autorisé à partager avec un service tiers.&#xA;&#xA;Continuer la modification par IA ?</value></data>
   <data name="ContractDetail.AiConsentTitle" xml:space="preserve"><value>La modification par IA envoie des données à OpenAI</value></data>
   <data name="ContractDetail.MetadataSeparator" xml:space="preserve"><value>  ·  </value></data>
+<<<<<<< HEAD
   <data name="Startup.Error.Title" xml:space="preserve"><value>DraftEngine n&apos;a pas pu démarrer</value></data>
   <data name="Startup.Error.Body" xml:space="preserve"><value>DraftEngine n&apos;a pas pu ouvrir sa base de données. Vos données n&apos;ont pas été modifiées. Redémarrez l&apos;application ; si le problème persiste, contactez le support.</value></data>
   <data name="Startup.Error.BodyRestored" xml:space="preserve"><value>La mise à niveau de la base de données n&apos;a pas pu aboutir ; la sauvegarde effectuée avant la mise à niveau a donc été restaurée. Vos données sont inchangées. Redémarrez l&apos;application ; si le problème persiste, contactez le support.</value></data>
@@ -563,4 +564,22 @@
   <data name="Audit.ClauseContinueAnyway" xml:space="preserve"><value>Continuer quand même ?</value></data>
   <data name="Audit.ProtectedDataDismiss" xml:space="preserve"><value>Ignorer</value></data>
   <data name="Audit.ProtectedDataDismissSymbol" xml:space="preserve"><value>✕</value></data>
+=======
+  <data name="Onboarding.Profile.Title" xml:space="preserve"><value>Comment allez-vous utiliser DraftEngine ?</value></data>
+  <data name="Onboarding.Profile.Description" xml:space="preserve"><value>Choisissez un profil pour afficher les pages dont vous avez besoin. Vous pourrez le modifier dans les Paramètres.</value></data>
+  <data name="Onboarding.Profile.Lawyer.Title" xml:space="preserve"><value>Avocat</value></data>
+  <data name="Onboarding.Profile.Lawyer.Description" xml:space="preserve"><value>Boîte à outils complète de rédaction, analyse et bibliothèque de clauses.</value></data>
+  <data name="Onboarding.Profile.Business.Title" xml:space="preserve"><value>Entreprise</value></data>
+  <data name="Onboarding.Profile.Business.Description" xml:space="preserve"><value>Rédigez et révisez des accords sans la bibliothèque de clauses, avec un avis de non-conseil juridique.</value></data>
+  <data name="Onboarding.Profile.Mediator.Title" xml:space="preserve"><value>Médiateur</value></data>
+  <data name="Onboarding.Profile.Mediator.Description" xml:space="preserve"><value>Pages de rédaction partagées, avec un espace de médiation prévu.</value></data>
+  <data name="Profile.Notice.NotLegalAdvice" xml:space="preserve"><value>DraftEngine fournit des informations générales et une aide à la rédaction, pas un conseil juridique. Faites relire les accords importants par un avocat qualifié.</value></data>
+  <data name="Dashboard.MediationPlanned" xml:space="preserve"><value>Un espace de médiation dédié est prévu. Pour l’instant, les pages de rédaction et d’analyse partagées sont disponibles.</value></data>
+  <data name="Settings.Profile.Title" xml:space="preserve"><value>Profil</value></data>
+  <data name="Settings.Profile.Description" xml:space="preserve"><value>Choisissez les pages affichées par DraftEngine. Masquer une page ne supprime jamais ses données.</value></data>
+  <data name="Settings.Profile.Lawyer" xml:space="preserve"><value>Avocat</value></data>
+  <data name="Settings.Profile.Business" xml:space="preserve"><value>Entreprise</value></data>
+  <data name="Settings.Profile.Mediator" xml:space="preserve"><value>Médiateur</value></data>
+  <data name="Settings.ProfileChanged" xml:space="preserve"><value>Profil mis à jour. La barre latérale affiche désormais les pages de {0}.</value></data>
+>>>>>>> origin/feature/profile-mode
 </root>

@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using DraftEngine.App.Configuration;
 using DraftEngine.App.Services;
 using DraftEngine.App.Services.Localization;
+using DraftEngine.App.Services.Profiles;
 using DraftEngine.App.Services.Settings;
 using DraftEngine.App.Themes;
 using DraftEngine.App.ViewModels;
@@ -159,7 +160,10 @@ public partial class App : Application
             {
                 try
                 {
-                    var onboarding = new OnboardingWindow(locService) { Owner = mainWindow };
+                    var onboarding = new OnboardingWindow(
+                        locService,
+                        _host.Services.GetRequiredService<IThemeService>(),
+                        _host.Services.GetRequiredService<IProfileService>()) { Owner = mainWindow };
                     ThemeService.TrySetDarkTitleBar(onboarding, themeService.AppliedTheme == AppliedTheme.Dark);
                     onboarding.ShowDialog();
                     var updated = settingsService.Current;

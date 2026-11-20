@@ -68,4 +68,12 @@
   - Added localized `Dashboard.EstimatedTimeSavedTooltip` ("Based on 45 minutes saved per contract.") to all four `Strings*.resx` files and attached it to the estimated-time-saved tile in `DashboardView.xaml`.
 - Tests: same suite as FIX 5; no test regressions.
 
-NEXT STEP: FIX 7 - Settings subtitle and dedicated data/privacy card
+## FIX 7: Settings text
+- Status: Done
+- Verification (from code, not visually verified):
+  - `Settings.Subtitle` is now "Language, theme, AI and data options." in all four `Strings*.resx` files (fr/ar/es localized).
+  - Moved `Settings.EncryptionWarning` out of the OpenAI card into a dedicated card titled `Settings.DataPrivacySection` ("Data and privacy") in `SettingsView.xaml`.
+  - No AI controls were modified: the OpenAI card keeps its profiles, preset, endpoint, key and model controls untouched.
+- Tests: same suite as FIX 6; no test regressions.
+
+NEXT STEP: FIX 8 - Empty states in AnalyzeView

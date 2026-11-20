@@ -125,9 +125,10 @@
   <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Supprimer définitivement le contrat</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Aller à l'aide et à propos</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
-  <data name="Settings.Subtitle" xml:space="preserve"><value>Connectez DraftEngine à OpenAI et choisissez les valeurs par défaut utilisées pour les nouveaux contrats.</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Options de langue, de thème, d'IA et de données.</value></data>
   <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
   <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Les données des contrats sont chiffrées avec votre profil utilisateur Windows. Ne réinitialisez pas votre mot de passe Windows et ne copiez pas la base de données vers un autre compte Windows : les données deviendraient illisibles. Si vous prévoyez de changer d&apos;utilisateur Windows, exportez d&apos;abord tous les contrats en DOCX/PDF.</value></data>
+  <data name="Settings.DataPrivacySection" xml:space="preserve"><value>Données et confidentialité</value></data>
   <data name="Settings.DataHandling" xml:space="preserve"><value>Traitement de vos données : lorsque vous utilisez les fonctions d&apos;IA (modifications par chat et polissage par IA), le texte du contrat, vos instructions et les réponses du questionnaire sont transmis à OpenAI pour traitement. Le contenu du contrat et l&apos;historique du chat sont stockés chiffrés sur cet ordinateur. N&apos;utilisez pas les fonctions d&apos;IA pour des documents clients privilégiés ou confidentiels que vous n&apos;êtes pas autorisé à partager avec un service tiers.</value></data>
   <data name="Settings.ApiKey" xml:space="preserve"><value>Clé API</value></data>
   <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>Clé API OpenAI</value></data>

@@ -125,9 +125,10 @@
   <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Permanently delete contract</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Go to About and Help</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Open Settings</value></data>
-  <data name="Settings.Subtitle" xml:space="preserve"><value>Connect DraftEngine to OpenAI and choose the defaults used for new contracts.</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Language, theme, AI and data options.</value></data>
   <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
   <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Contract data is encrypted with your Windows user profile. Do not reset your Windows password or copy the database to another Windows account — the data will be unreadable. If you plan to change Windows users, export all contracts to DOCX/PDF first.</value></data>
+  <data name="Settings.DataPrivacySection" xml:space="preserve"><value>Data and privacy</value></data>
   <data name="Settings.DataHandling" xml:space="preserve"><value>How your data is handled: when you use AI features (chat edits and AI polish), the contract text, your instructions and the intake answers are transmitted to OpenAI for processing. Contract content and chat history are stored encrypted on this computer. Do not use AI features for privileged or confidential client material you are not permitted to share with a third-party service.</value></data>
   <data name="Settings.ApiKey" xml:space="preserve"><value>API key</value></data>
   <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>OpenAI API key</value></data>

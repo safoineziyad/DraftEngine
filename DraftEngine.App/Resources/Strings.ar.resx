@@ -125,9 +125,10 @@
   <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>حذف العقد نهائيًا</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>الانتقال إلى حول والمساعدة</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>فتح الإعدادات</value></data>
-  <data name="Settings.Subtitle" xml:space="preserve"><value>اربط DraftEngine بـ OpenAI واختر الإعدادات الافتراضية المستخدمة للعقود الجديدة.</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>خيارات اللغة والمظهر والذكاء الاصطناعي والبيانات.</value></data>
   <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
   <data name="Settings.EncryptionWarning" xml:space="preserve"><value>تُشفَّر بيانات العقود باستخدام ملف تعريف مستخدم Windows الخاص بك. لا تُعِد تعيين كلمة مرور Windows ولا تنسخ قاعدة البيانات إلى حساب Windows آخر — ستصبح البيانات غير قابلة للقراءة. إذا كنت تخطط لتغيير مستخدم Windows، فصدّر جميع العقود إلى DOCX/PDF أولًا.</value></data>
+  <data name="Settings.DataPrivacySection" xml:space="preserve"><value>البيانات والخصوصية</value></data>
   <data name="Settings.DataHandling" xml:space="preserve"><value>كيفية معالجة بياناتك: عند استخدام ميزات الذكاء الاصطناعي (تعديلات المحادثة والتحسين بالذكاء الاصطناعي)، يُرسَل نص العقد وتعليماتك وإجابات الاستبيان إلى OpenAI للمعالجة. يُخزَّن محتوى العقد وسجل المحادثة مشفَّرين على هذا الكمبيوتر. لا تستخدم ميزات الذكاء الاصطناعي لمواد عملاء محمية أو سرية غير مسموح لك بمشاركتها مع خدمة طرف ثالث.</value></data>
   <data name="Settings.ApiKey" xml:space="preserve"><value>مفتاح API</value></data>
   <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>مفتاح OpenAI API</value></data>

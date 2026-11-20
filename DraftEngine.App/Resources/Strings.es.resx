@@ -125,9 +125,10 @@
   <data name="Archived.DeleteConfirmTitle" xml:space="preserve"><value>Eliminar definitivamente el contrato</value></data>
   <data name="Nav.AboutAutomation" xml:space="preserve"><value>Ir a Acerca de y ayuda</value></data>
   <data name="Nav.OpenSettingsAutomation" xml:space="preserve"><value>Abrir configuración</value></data>
-  <data name="Settings.Subtitle" xml:space="preserve"><value>Conecte DraftEngine con OpenAI y elija los valores predeterminados para los contratos nuevos.</value></data>
+  <data name="Settings.Subtitle" xml:space="preserve"><value>Opciones de idioma, tema, IA y datos.</value></data>
   <data name="Settings.OpenAiSection" xml:space="preserve"><value>OpenAI</value></data>
   <data name="Settings.EncryptionWarning" xml:space="preserve"><value>Los datos de los contratos se cifran con su perfil de usuario de Windows. No restablezca su contraseña de Windows ni copie la base de datos a otra cuenta de Windows: los datos quedarían ilegibles. Si planea cambiar de usuario de Windows, exporte primero todos los contratos a DOCX/PDF.</value></data>
+  <data name="Settings.DataPrivacySection" xml:space="preserve"><value>Datos y privacidad</value></data>
   <data name="Settings.DataHandling" xml:space="preserve"><value>Cómo se tratan sus datos: cuando usa funciones de IA (ediciones por chat y pulido con IA), el texto del contrato, sus instrucciones y las respuestas del cuestionario se transmiten a OpenAI para su procesamiento. El contenido del contrato y el historial del chat se almacenan cifrados en este equipo. No use funciones de IA con material privilegiado o confidencial de clientes que no esté autorizado a compartir con un servicio de terceros.</value></data>
   <data name="Settings.ApiKey" xml:space="preserve"><value>Clave API</value></data>
   <data name="Settings.ApiKeyTooltip" xml:space="preserve"><value>Clave API de OpenAI</value></data>

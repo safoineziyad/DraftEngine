@@ -117,20 +117,20 @@
                             Padding="16,10">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" SharedSizeGroup="ColTitle" />
-                                <ColumnDefinition Width="1.2*" SharedSizeGroup="ColType" />
+                                <ColumnDefinition Width="2*" MinWidth="180" SharedSizeGroup="ColTitle" />
+                                <ColumnDefinition Width="1.2*" MinWidth="140" SharedSizeGroup="ColType" />
                                 <ColumnDefinition Width="110" SharedSizeGroup="ColStatus" />
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColEffective" />
                                 <ColumnDefinition Width="90" SharedSizeGroup="ColTerm" />
                                 <ColumnDefinition Width="120" SharedSizeGroup="ColUpdated" />
                                 <ColumnDefinition Width="220" SharedSizeGroup="ColActions" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{loc:T Contracts.ColumnTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="1" Text="{loc:T Contracts.ColumnType}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="2" Text="{loc:T Contracts.ColumnStatus}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="3" Text="{loc:T Contracts.ColumnEffective}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="4" Text="{loc:T Contracts.ColumnTerm}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
-                            <TextBlock Grid.Column="5" Text="{loc:T Contracts.ColumnUpdated}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" />
+                            <TextBlock Text="{loc:T Contracts.ColumnTitle}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="1" Text="{loc:T Contracts.ColumnType}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="2" Text="{loc:T Contracts.ColumnStatus}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="3" Text="{loc:T Contracts.ColumnEffective}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="4" Text="{loc:T Contracts.ColumnTerm}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
+                            <TextBlock Grid.Column="5" Text="{loc:T Contracts.ColumnUpdated}" FontWeight="SemiBold" Style="{StaticResource SecondaryTextStyle}" Margin="0,0,12,0" />
                             <TextBlock Grid.Column="6" Text="" />
                         </Grid>
                     </Border>
@@ -143,8 +143,8 @@
                                         BorderThickness="0,0,0,1">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="2*" SharedSizeGroup="ColTitle" />
-                                            <ColumnDefinition Width="1.2*" SharedSizeGroup="ColType" />
+                                            <ColumnDefinition Width="2*" MinWidth="180" SharedSizeGroup="ColTitle" />
+                                            <ColumnDefinition Width="1.2*" MinWidth="140" SharedSizeGroup="ColType" />
                                             <ColumnDefinition Width="110" SharedSizeGroup="ColStatus" />
                                             <ColumnDefinition Width="120" SharedSizeGroup="ColEffective" />
                                             <ColumnDefinition Width="90" SharedSizeGroup="ColTerm" />

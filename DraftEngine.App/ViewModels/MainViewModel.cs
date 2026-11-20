@@ -53,13 +53,26 @@ public partial class MainViewModel : ObservableObject
     public string VersionDisplay =>
         FormatLocalized("Common.Version", $"Version {AppVersion.Display}", AppVersion.Display);
 
-    /// <summary>Commit label plus hash, or empty when no real hash was stamped.</summary>
-    public string CommitDisplay => AppVersion.HasCommitHash
-        ? $"{GetLocalized("Main.CommitLabel", "Commit")} {AppVersion.CommitHash}"
-        : string.Empty;
+    /// <summary>
+    /// Commit label plus hash. Only Debug builds show it in the sidebar; the About page always
+    /// shows the full build stamp, including the commit hash and UTC build date.
+    /// </summary>
+    public string CommitDisplay =>
+#if DEBUG
+        AppVersion.HasCommitHash
+            ? $"{GetLocalized("Main.CommitLabel", "Commit")} {AppVersion.CommitHash}"
+            : string.Empty;
+#else
+        string.Empty;
+#endif
 
-    /// <summary>True when a build commit hash is available to show in the footer.</summary>
-    public bool HasCommit => AppVersion.HasCommitHash;
+    /// <summary>True only in Debug builds that carry a real commit hash.</summary>
+    public bool HasCommit =>
+#if DEBUG
+        AppVersion.HasCommitHash;
+#else
+        false;
+#endif
 
     /// <summary>The signed update flow (banner, notes, download progress, install confirmation).</summary>
     public UpdateFlowViewModel? UpdateFlow => _updateFlow;

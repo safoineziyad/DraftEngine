@@ -61,4 +61,11 @@
   - Follow-up: removed the remaining `"California"` fallbacks in `AppSettingsService` (save, load, stored DTO) and `BackupModels`; every default now derives from `CountryCatalog.DefaultCode()` (Windows region).
 - Tests: `DraftEngine.App.Tests`: 153 passed (rose from 151). Full suite: 515 passed, 1 pre-existing failed.
 
-NEXT STEP: FIX 6 - Release/Debug build stamp and dashboard tooltip
+## FIX 6: Build stamp and dashboard tile
+- Status: Done
+- Verification (from code, not visually verified):
+  - `MainViewModel.CommitDisplay`/`HasCommit` are now behind `#if DEBUG`: Release builds show only `VersionDisplay` in the sidebar footer; Debug builds still show the commit, and About always shows the full build stamp (commit + UTC build date + data folder link).
+  - Added localized `Dashboard.EstimatedTimeSavedTooltip` ("Based on 45 minutes saved per contract.") to all four `Strings*.resx` files and attached it to the estimated-time-saved tile in `DashboardView.xaml`.
+- Tests: same suite as FIX 5; no test regressions.
+
+NEXT STEP: FIX 7 - Settings subtitle and dedicated data/privacy card

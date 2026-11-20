@@ -233,6 +233,7 @@
   <data name="Dashboard.Subtitle" xml:space="preserve"><value>Tus acuerdos y tu actividad de redacción de un vistazo.</value></data>
   <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>Contratos creados</value></data>
   <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>Tiempo estimado ahorrado</value></data>
+  <data name="Dashboard.EstimatedTimeSavedTooltip" xml:space="preserve"><value>Basado en 45 minutos ahorrados por contrato.</value></data>
   <data name="Common.HoursShort" xml:space="preserve"><value>h</value></data>
   <data name="Dashboard.RecentContracts" xml:space="preserve"><value>Contratos recientes</value></data>
   <data name="Dashboard.Total" xml:space="preserve"><value>en total</value></data>

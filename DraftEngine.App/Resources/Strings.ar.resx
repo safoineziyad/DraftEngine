@@ -233,6 +233,7 @@
   <data name="Dashboard.Subtitle" xml:space="preserve"><value>اتفاقياتك ونشاط الصياغة الخاص بك في لمحة.</value></data>
   <data name="Dashboard.ContractsCreated" xml:space="preserve"><value>العقود المُنشأة</value></data>
   <data name="Dashboard.EstimatedTimeSaved" xml:space="preserve"><value>الوقت المقدَّر الذي وفّرته</value></data>
+  <data name="Dashboard.EstimatedTimeSavedTooltip" xml:space="preserve"><value>استناداً إلى 45 دقيقة يتم توفيرها لكل عقد.</value></data>
   <data name="Common.HoursShort" xml:space="preserve"><value>س</value></data>
   <data name="Dashboard.RecentContracts" xml:space="preserve"><value>العقود الأخيرة</value></data>
   <data name="Dashboard.Total" xml:space="preserve"><value>الإجمالي</value></data>

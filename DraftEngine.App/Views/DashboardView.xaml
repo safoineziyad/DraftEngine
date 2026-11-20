@@ -93,7 +93,7 @@
                                    Margin="0,6,0,0" />
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource Card}" Padding="20" Margin="8,0,0,0">
+                <Border Style="{StaticResource Card}" Padding="20" Margin="8,0,0,0" ToolTip="{loc:T Dashboard.EstimatedTimeSavedTooltip}">
                     <StackPanel>
                         <TextBlock Text="{loc:T Dashboard.EstimatedTimeSaved}" Style="{StaticResource SecondaryTextStyle}" />
                         <TextBlock FontSize="28" FontWeight="SemiBold"
